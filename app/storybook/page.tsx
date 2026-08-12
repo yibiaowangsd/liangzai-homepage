@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import StoryBook from "./StoryBook";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "量子星守护者 · 量仔动画书",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function StorybookPage() {
-  return <StoryBook />;
+  redirect("/");
 }

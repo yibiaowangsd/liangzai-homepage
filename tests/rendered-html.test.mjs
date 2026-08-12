@@ -31,10 +31,9 @@ test("renders development preview metadata", async () => {
   );
   const html = await response.text();
   assert.match(html, developmentPreviewMeta);
-  assert.match(html, /mobile-arsenal-entry/);
-  assert.match(html, /mobile-story-entry/);
-  assert.match(html, /动画书/);
-  assert.match(html, /PQC 武器库/);
+  assert.match(html, /量子星守护者/);
+  assert.match(html, /翻开故事/);
+  assert.match(html, /开始配音/);
 });
 
 test("renders the interactive storybook route", async () => {
@@ -43,7 +42,7 @@ test("renders the interactive storybook route", async () => {
   const { default: worker } = await import(workerUrl.href);
 
   const response = await worker.fetch(
-    new Request("http://localhost/storybook", {
+    new Request("http://localhost/", {
       headers: { accept: "text/html" },
     }),
     {
@@ -63,6 +62,19 @@ test("renders the interactive storybook route", async () => {
   assert.match(html, /开始配音/);
   assert.match(html, /Kyber 与 Aigis/);
   assert.match(html, /合体绝技：靓龙/);
+});
+
+test("keeps the former homepage at the archive route", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("archive-test", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const response = await worker.fetch(new Request("http://localhost/archive"), {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+  }, { waitUntil() {}, passThroughOnException() {} });
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /PERSONAL FILE 000/);
+  assert.match(html, /PQC 武器库/);
 });
 
 test("renders the PQC arsenal route with all four algorithms", async () => {
