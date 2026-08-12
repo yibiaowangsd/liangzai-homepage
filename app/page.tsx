@@ -19,14 +19,6 @@ const chapters = [
   },
 ];
 
-function LiangzaiSprite({ pose = "hero", label }: { pose?: "hero" | "walk" | "sad" | "wave"; label: string }) {
-  return (
-    <figure className={`sprite-frame sprite-${pose}`} aria-label={label} role="img">
-      <img src="/assets/spritesheet.webp" alt="" aria-hidden="true" />
-    </figure>
-  );
-}
-
 export default function Home() {
   return (
     <main id="top" className="paper-shell">
@@ -57,7 +49,7 @@ export default function Home() {
           <div className="signal-line" aria-hidden="true"><i /><i /><i /></div>
           <div className="torn-card">
             <span className="card-note">THE ONE WHO MEASURES LIGHT</span>
-            <LiangzaiSprite pose="hero" label="挥手微笑的量仔" />
+            <img className="hero-photo" src="/assets/story/hero.png" alt="在暖色纸张背景中挥手的量仔全身肖像" />
           </div>
           <p className="margin-note">天线仍在接收<br />来自黎明的信号</p>
         </div>
@@ -86,10 +78,10 @@ export default function Home() {
               <div><dt>弱点</dt><dd>看见朋友难过会过载</dd></div>
             </dl>
           </div>
-          <div className="specimen-note" aria-label="量仔行走姿态标本">
-            <LiangzaiSprite pose="walk" label="向前奔跑的量仔" />
-            <span>FIG. 07 / 永远向信号更亮的地方走</span>
-          </div>
+          <figure className="origin-photo story-photo">
+            <img src="/assets/story/origin.png" alt="深夜实验室中，量仔发现来自地面的青色异常信号" />
+            <figcaption>FIG. 07 / 异响第一次穿过实验室地板</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -107,6 +99,22 @@ export default function Home() {
             <small>SHOR ACCESS / DENIED</small>
           </div>
         </div>
+
+        <figure className="alliance-photo story-photo">
+          <img src="/assets/story/alliance.png" alt="量仔与奶龙在通信隧道前握手，二者之间形成青色钥匙光束" />
+          <figcaption>
+            <span>ARCHIVE 02 / 第一次握手</span>
+            奶龙把柔软变成了勇气，量仔把勇气测成一把新钥匙。
+          </figcaption>
+        </figure>
+
+        <figure className="battle-photo story-photo">
+          <img src="/assets/story/battle.png" alt="量仔与奶龙并肩对抗由破碎因子环构成的 Shor 大魔王" />
+          <figcaption>
+            <span>ARCHIVE 03 / 反 Shor 决战</span>
+            他们面对的不是数学本身，而是把所有秘密都变成答案的野心。
+          </figcaption>
+        </figure>
 
         <div className="chapters">
           {chapters.map((chapter) => (
@@ -147,10 +155,11 @@ export default function Home() {
             <p><span>02</span>午后和奶龙巡查仍在发热的旧隧道。</p>
             <p><span>03</span>夜里保存所有人的晚安，不让任何一条丢失。</p>
           </div>
-          <div className="closing-portrait">
-            <LiangzaiSprite pose="wave" label="开心挥手的量仔" />
+          <figure className="closing-portrait story-photo">
+            <img src="/assets/story/after.png" alt="黎明屋顶上，量仔与奶龙眺望恢复通信的城市" />
+            <figcaption>FIG. 19 / 战后第一个普通清晨</figcaption>
             <span className="cyan-dot" aria-hidden="true" />
-          </div>
+          </figure>
         </div>
       </section>
 
