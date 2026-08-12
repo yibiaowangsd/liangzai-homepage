@@ -152,7 +152,13 @@ export default function ArsenalLab() {
           <a className="arsenal-cta" href="#basics">跟量仔进入武器库 <span>↓</span></a>
         </div>
         <figure className="arsenal-hero-visual">
-          <img src="/assets/story/hero-1ee8364c.png" alt="量仔在武器库中介绍后量子密码装备" />
+          <div className="armory-backdrop" aria-hidden="true">
+            <span className="armory-weapon lattice-shield"><i /><i /><i /><i /></span>
+            <span className="armory-weapon hash-tree"><i /><i /><i /><i /></span>
+            <span className="armory-weapon lattice-blade"><i /><i /><i /></span>
+            <span className="armory-grid" />
+          </div>
+          <img src="/assets/story/hero-1ee8364c.png" alt="量仔在武器库中完整展示全身装备" />
           <figcaption>KEEPER Q-∞ / 四件装备均已校准</figcaption>
           <div className="orbit orbit-a"><i />ML</div>
           <div className="orbit orbit-b"><i />HASH</div>
