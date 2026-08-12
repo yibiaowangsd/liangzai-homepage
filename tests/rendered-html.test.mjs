@@ -32,7 +32,37 @@ test("renders development preview metadata", async () => {
   const html = await response.text();
   assert.match(html, developmentPreviewMeta);
   assert.match(html, /mobile-arsenal-entry/);
+  assert.match(html, /mobile-story-entry/);
+  assert.match(html, /动画书/);
   assert.match(html, /PQC 武器库/);
+});
+
+test("renders the interactive storybook route", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("storybook-test", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+
+  const response = await worker.fetch(
+    new Request("http://localhost/storybook", {
+      headers: { accept: "text/html" },
+    }),
+    {
+      ASSETS: {
+        fetch: async () => new Response("Not found", { status: 404 }),
+      },
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
+  );
+
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /量子星守护者/);
+  assert.match(html, /开始配音/);
+  assert.match(html, /Kyber 与 Aigis/);
+  assert.match(html, /合体绝技：靓龙/);
 });
 
 test("renders the PQC arsenal route with all four algorithms", async () => {
