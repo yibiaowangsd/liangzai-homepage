@@ -112,6 +112,13 @@ const weapons: Weapon[] = [
   },
 ];
 
+const heroWeapons = [
+  { name: "ML-KEM", image: "/assets/pqc/ml-kem-zine-030d4365.webp", note: "晶格护盾" },
+  { name: "ML-DSA", image: "/assets/pqc/ml-dsa-zine-be7db444.webp", note: "晶格印章" },
+  { name: "SLH-DSA", image: "/assets/pqc/slh-dsa-zine-eb6100ca.webp", note: "哈希树杖" },
+  { name: "FN-DSA", image: "/assets/pqc/fn-dsa-zine-97a2ab35.webp", note: "猎隼轻刃" },
+];
+
 const scoreNames = {
   bandwidth: "通信轻巧",
   speed: "执行速度",
@@ -152,17 +159,19 @@ export default function ArsenalLab() {
           <a className="arsenal-cta" href="#basics">跟量仔进入武器库 <span>↓</span></a>
         </div>
         <figure className="arsenal-hero-visual">
-          <div className="armory-backdrop" aria-hidden="true">
-            <span className="armory-weapon lattice-shield"><i /><i /><i /><i /></span>
-            <span className="armory-weapon hash-tree"><i /><i /><i /><i /></span>
-            <span className="armory-weapon lattice-blade"><i /><i /><i /></span>
-            <span className="armory-grid" />
+          <div className="armory-portrait">
+            <img src="/assets/story/liangzai-cutout-af7e8ddc.png" alt="量仔全身装备展示" />
+            <p><span>KEEPER Q-∞</span> 量仔 / 武器管理员</p>
           </div>
-          <img src="/assets/story/liangzai-cutout-af7e8ddc.png" alt="透明背景的量仔全身装备展示" />
-          <figcaption>KEEPER Q-∞ / 四件装备均已校准</figcaption>
-          <div className="orbit orbit-a"><i />ML</div>
-          <div className="orbit orbit-b"><i />HASH</div>
-          <div className="orbit orbit-c"><i />NTRU</div>
+          <div className="armory-algorithms" aria-label="四种 PQC 算法武器照片">
+            {heroWeapons.map((item, index) => (
+              <article className="algorithm-photo" key={item.name}>
+                <img src={item.image} alt={`${item.name} 的${item.note}纸感插图`} />
+                <div><span>{String(index + 1).padStart(2, "0")}</span><strong>{item.name}</strong><small>{item.note}</small></div>
+              </article>
+            ))}
+          </div>
+          <figcaption>ARMORY 004 / 一名守护者，四种算法装备</figcaption>
         </figure>
         <div className="hero-index" aria-label="武器索引">
           {weapons.map((item, index) => <span key={item.id}>{String(index + 1).padStart(2, "0")} {item.name}</span>)}
