@@ -29,7 +29,10 @@ test("renders development preview metadata", async () => {
     response.headers.get("content-type") ?? "",
     /^text\/html\b/i,
   );
-  assert.match(await response.text(), developmentPreviewMeta);
+  const html = await response.text();
+  assert.match(html, developmentPreviewMeta);
+  assert.match(html, /mobile-arsenal-entry/);
+  assert.match(html, /PQC 武器库/);
 });
 
 test("renders the PQC arsenal route with all four algorithms", async () => {
@@ -55,6 +58,11 @@ test("renders the PQC arsenal route with all four algorithms", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /PQC 武器库/);
+  assert.match(html, /旧武器为何失效/);
+  assert.match(html, /Module-LWE 核心样本/);
+  assert.match(html, /Implicit reject/);
+  assert.match(html, /HASH TREES/);
+  assert.match(html, /FIPS 206/);
   for (const algorithm of ["ML-KEM", "ML-DSA", "SLH-DSA", "FN-DSA"]) {
     assert.match(html, new RegExp(algorithm));
   }

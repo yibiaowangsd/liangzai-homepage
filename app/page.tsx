@@ -32,6 +32,7 @@ export default function Home() {
           <a href="#now">现在</a>
           <a href="/pqc-arsenal">PQC 武器库</a>
         </div>
+        <a className="mobile-arsenal-entry" href="/pqc-arsenal">PQC 武器库 ↗</a>
         <p className="file-mark">ARCHIVE / Q-∞</p>
       </nav>
 
