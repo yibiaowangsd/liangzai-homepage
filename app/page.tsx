@@ -49,7 +49,7 @@ export default function Home() {
           <div className="signal-line" aria-hidden="true"><i /><i /><i /></div>
           <div className="torn-card">
             <span className="card-note">THE ONE WHO MEASURES LIGHT</span>
-            <img className="hero-photo" src="/assets/story/hero.png" alt="在暖色纸张背景中挥手的量仔全身肖像" />
+            <img className="hero-photo" src="/assets/story/hero-1ee8364c.png" alt="在暖色纸张背景中挥手的量仔全身肖像" />
           </div>
           <p className="margin-note">天线仍在接收<br />来自黎明的信号</p>
         </div>
@@ -79,7 +79,7 @@ export default function Home() {
             </dl>
           </div>
           <figure className="origin-photo story-photo">
-            <img src="/assets/story/origin.png" alt="深夜实验室中，量仔发现来自地面的青色异常信号" />
+            <img src="/assets/story/origin-19fddd6b.png" alt="深夜实验室中，量仔发现来自地面的青色异常信号" />
             <figcaption>FIG. 07 / 异响第一次穿过实验室地板</figcaption>
           </figure>
         </div>
@@ -101,7 +101,7 @@ export default function Home() {
         </div>
 
         <figure className="alliance-photo story-photo">
-          <img src="/assets/story/alliance.png" alt="量仔与奶龙在通信隧道前握手，二者之间形成青色钥匙光束" />
+          <img src="/assets/story/alliance-0fea97ac.png" alt="量仔与奶龙在通信隧道前握手，二者之间形成青色钥匙光束" />
           <figcaption>
             <span>ARCHIVE 02 / 第一次握手</span>
             奶龙把柔软变成了勇气，量仔把勇气测成一把新钥匙。
@@ -109,7 +109,7 @@ export default function Home() {
         </figure>
 
         <figure className="battle-photo story-photo">
-          <img src="/assets/story/battle.png" alt="量仔与奶龙并肩对抗由破碎因子环构成的 Shor 大魔王" />
+          <img src="/assets/story/battle-cdc1056a.png" alt="量仔与奶龙并肩对抗由破碎因子环构成的 Shor 大魔王" />
           <figcaption>
             <span>ARCHIVE 03 / 反 Shor 决战</span>
             他们面对的不是数学本身，而是把所有秘密都变成答案的野心。
@@ -156,7 +156,7 @@ export default function Home() {
             <p><span>03</span>夜里保存所有人的晚安，不让任何一条丢失。</p>
           </div>
           <figure className="closing-portrait story-photo">
-            <img src="/assets/story/after.png" alt="黎明屋顶上，量仔与奶龙眺望恢复通信的城市" />
+            <img src="/assets/story/after-56273bc8.png" alt="黎明屋顶上，量仔与奶龙眺望恢复通信的城市" />
             <figcaption>FIG. 19 / 战后第一个普通清晨</figcaption>
             <span className="cyan-dot" aria-hidden="true" />
           </figure>
