@@ -30,6 +30,7 @@ export default function Home() {
           <a href="#life">生平</a>
           <a href="#legend">传奇</a>
           <a href="#now">现在</a>
+          <a href="/pqc-arsenal">PQC 武器库</a>
         </div>
         <p className="file-mark">ARCHIVE / Q-∞</p>
       </nav>
