@@ -141,19 +141,19 @@ const pages: StoryPage[] = [
   },
 ];
 
-const narrationCues = [
-  0,
-  5.6435,
-  27.9512,
-  64.5713,
-  89.6622,
-  116.207,
-  147.947,
-  179.831,
-  188.386,
-  211.366,
-  232.952,
-  250.615,
+const narrationTracks = [
+  "/assets/narration-v2/00-intro.mp3",
+  "/assets/narration-v2/01-quantum-star.mp3",
+  "/assets/narration-v2/02-shor-arrives.mp3",
+  "/assets/narration-v2/03-awakening.mp3",
+  "/assets/narration-v2/04-first-battle.mp3",
+  "/assets/narration-v2/05-rescue.mp3",
+  "/assets/narration-v2/06-struggle.mp3",
+  "/assets/narration-v2/07-memory-awakens.mp3",
+  "/assets/narration-v2/08-old-allies.mp3",
+  "/assets/narration-v2/09-fusion.mp3",
+  "/assets/narration-v2/10-final-battle.mp3",
+  "/assets/narration-v2/11-epilogue.mp3",
 ];
 
 type AudioState = "loading" | "playing" | "paused" | "blocked" | "ended";
@@ -208,8 +208,9 @@ export default function StoryBook() {
   const [audioState, setAudioState] = useState<AudioState>("loading");
   const touchStart = useRef<number | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const audioTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const activeCue = useRef(0);
+  const narrationPage = useRef(0);
 
   const turnTo = useCallback(
     (nextIndex: number) => {
@@ -231,8 +232,9 @@ export default function StoryBook() {
     const audio = audioRef.current;
     if (!audio) return;
     if (audio.ended) {
-      audio.currentTime = 0;
-      activeCue.current = 0;
+      narrationPage.current = 0;
+      audio.src = narrationTracks[0];
+      audio.load();
       turnTo(0);
     }
     void audio.play().catch(() => setAudioState("blocked"));
@@ -255,26 +257,25 @@ export default function StoryBook() {
     return () => audio.removeEventListener("canplay", attemptAutoplay);
   }, []);
 
-  useEffect(() => {
+  const advanceNarration = useCallback(() => {
+    const nextPage = narrationPage.current + 1;
+    if (nextPage >= narrationTracks.length) {
+      setAudioState("ended");
+      return;
+    }
+
     const audio = audioRef.current;
     if (!audio) return;
+    narrationPage.current = nextPage;
+    turnTo(nextPage);
+    audio.src = narrationTracks[nextPage];
+    audio.load();
 
-    const syncPage = () => {
-      let cueIndex = 0;
-      for (let index = narrationCues.length - 1; index >= 0; index -= 1) {
-        if (audio.currentTime >= narrationCues[index]) {
-          cueIndex = index;
-          break;
-        }
-      }
-      if (cueIndex === activeCue.current || turning) return;
-      activeCue.current = cueIndex;
-      if (cueIndex !== current) turnTo(cueIndex);
-    };
-
-    audio.addEventListener("timeupdate", syncPage);
-    return () => audio.removeEventListener("timeupdate", syncPage);
-  }, [current, turnTo, turning]);
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    audioTimer.current = setTimeout(() => {
+      void audio.play().catch(() => setAudioState("blocked"));
+    }, reduceMotion ? 100 : 700);
+  }, [turnTo]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -293,6 +294,7 @@ export default function StoryBook() {
   useEffect(
     () => () => {
       if (timer.current) clearTimeout(timer.current);
+      if (audioTimer.current) clearTimeout(audioTimer.current);
       audioRef.current?.pause();
     },
     [],
@@ -322,7 +324,7 @@ export default function StoryBook() {
       <audio
         ref={audioRef}
         className={styles.audioElement}
-        src="/assets/quantum-star-guardian-narration-v1.mp3"
+        src={narrationTracks[0]}
         preload="auto"
         autoPlay
         playsInline
@@ -330,7 +332,7 @@ export default function StoryBook() {
         onPause={() => {
           if (!audioRef.current?.ended) setAudioState("paused");
         }}
-        onEnded={() => setAudioState("ended")}
+        onEnded={advanceNarration}
       />
       <header className={styles.storyNav}>
         <Link href="/archive" className={styles.brand} aria-label="查看量仔主页">
