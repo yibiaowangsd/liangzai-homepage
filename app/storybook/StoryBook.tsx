@@ -131,6 +131,22 @@ const pages: StoryPage[] = [
   },
 ];
 
+const narrationCues = [
+  0,
+  5.64,
+  27.95,
+  64.57,
+  89.66,
+  112.79,
+  135.47,
+  163.52,
+  188.39,
+  218.7,
+  243.44,
+];
+
+type AudioState = "loading" | "playing" | "paused" | "blocked" | "ended";
+
 function TextPage({ page, index, onOpen }: { page: StoryPage; index: number; onOpen?: () => void }) {
   return (
     <div className={`${styles.textPageInner} ${styles[page.tone]} ${page.kind ? styles[page.kind] : ""}`}>
@@ -178,29 +194,11 @@ export default function StoryBook() {
   const [target, setTarget] = useState(0);
   const [direction, setDirection] = useState<"forward" | "backward">("forward");
   const [turning, setTurning] = useState(false);
-  const [narration, setNarration] = useState(false);
-  const [speaking, setSpeaking] = useState(false);
+  const [audioState, setAudioState] = useState<AudioState>("loading");
   const touchStart = useRef<number | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const speakPage = useCallback((index: number) => {
-    if (!("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const page = pages[index];
-    const utterance = new SpeechSynthesisUtterance(
-      `${page.title}。${page.body}。${page.quote}`,
-    );
-    utterance.lang = "zh-CN";
-    utterance.rate = 0.88;
-    utterance.pitch = 1.02;
-    const voices = window.speechSynthesis.getVoices();
-    const chineseVoice = voices.find((voice) => /^zh[-_]/i.test(voice.lang));
-    if (chineseVoice) utterance.voice = chineseVoice;
-    utterance.onstart = () => setSpeaking(true);
-    utterance.onend = () => setSpeaking(false);
-    utterance.onerror = () => setSpeaking(false);
-    window.speechSynthesis.speak(utterance);
-  }, []);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const activeCue = useRef(0);
 
   const turnTo = useCallback(
     (nextIndex: number) => {
@@ -209,16 +207,63 @@ export default function StoryBook() {
       setDirection(nextDirection);
       setTarget(nextIndex);
       setTurning(true);
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       timer.current = setTimeout(() => {
         setCurrent(nextIndex);
         setTurning(false);
-        if (narration) setTimeout(() => speakPage(nextIndex), 80);
       }, reduceMotion ? 90 : 820);
     },
-    [current, narration, speakPage, turning],
+    [current, turning],
   );
+
+  const playNarration = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (audio.ended) {
+      audio.currentTime = 0;
+      activeCue.current = 0;
+      turnTo(0);
+    }
+    void audio.play().catch(() => setAudioState("blocked"));
+  }, [turnTo]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const attemptAutoplay = () => {
+      void audio.play().catch(() => setAudioState("blocked"));
+    };
+
+    if (audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+      attemptAutoplay();
+    } else {
+      audio.addEventListener("canplay", attemptAutoplay, { once: true });
+    }
+
+    return () => audio.removeEventListener("canplay", attemptAutoplay);
+  }, []);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const syncPage = () => {
+      let cueIndex = 0;
+      for (let index = narrationCues.length - 1; index >= 0; index -= 1) {
+        if (audio.currentTime >= narrationCues[index]) {
+          cueIndex = index;
+          break;
+        }
+      }
+      if (cueIndex === activeCue.current || turning) return;
+      activeCue.current = cueIndex;
+      if (cueIndex !== current) turnTo(cueIndex);
+    };
+
+    audio.addEventListener("timeupdate", syncPage);
+    return () => audio.removeEventListener("timeupdate", syncPage);
+  }, [current, turnTo, turning]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -237,28 +282,45 @@ export default function StoryBook() {
   useEffect(
     () => () => {
       if (timer.current) clearTimeout(timer.current);
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      audioRef.current?.pause();
     },
     [],
   );
 
   const toggleNarration = () => {
-    if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) return;
-    if (narration) {
-      window.speechSynthesis.cancel();
-      setSpeaking(false);
-      setNarration(false);
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (!audio.paused) {
+      audio.pause();
     } else {
-      setNarration(true);
-      speakPage(current);
+      playNarration();
     }
   };
+
+  const audioLabel = audioState === "playing"
+    ? "暂停旁白"
+    : audioState === "ended"
+      ? "重新播放旁白"
+      : "继续旁白";
 
   const leftIndex = turning && direction === "backward" ? target : current;
   const rightIndex = turning && direction === "forward" ? target : current;
 
   return (
     <main className={styles.storyShell}>
+      <audio
+        ref={audioRef}
+        className={styles.audioElement}
+        src="/assets/quantum-star-guardian-narration-v1.mp3"
+        preload="auto"
+        autoPlay
+        playsInline
+        onPlay={() => setAudioState("playing")}
+        onPause={() => {
+          if (!audioRef.current?.ended) setAudioState("paused");
+        }}
+        onEnded={() => setAudioState("ended")}
+      />
       <header className={styles.storyNav}>
         <Link href="/archive" className={styles.brand} aria-label="查看量仔主页">
           量仔档案馆 <span>Q-∞</span>
@@ -269,17 +331,22 @@ export default function StoryBook() {
           <button
             type="button"
             onClick={toggleNarration}
-            aria-pressed={narration}
+            aria-label={audioLabel}
           >
-            <i className={speaking ? styles.voicePulse : ""} aria-hidden="true" />
-            {narration ? "关闭配音" : "开始配音"}
+            <i className={audioState === "playing" ? styles.voicePulse : ""} aria-hidden="true" />
+            {audioLabel}
           </button>
         </div>
       </header>
 
       <section className={styles.reader} aria-label="量子星守护者动画书">
+        {audioState === "blocked" && (
+          <button className={styles.audioUnlock} type="button" onClick={playNarration}>
+            浏览器已暂停自动播放，轻触开启故事旁白
+          </button>
+        )}
         <div className={styles.readerIntro}>
-          <p>INTERACTIVE PICTURE BOOK / 约 6 分钟</p>
+          <p>INTERACTIVE PICTURE BOOK / 约 5 分钟</p>
           <p aria-live="polite">{pages[current].chapter} · {pages[current].title}</p>
         </div>
 
