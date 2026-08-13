@@ -91,7 +91,7 @@ const pages: StoryPage[] = [
   {
     chapter: "CHAPTER 07 / 回响",
     title: "尘封的记忆正在苏醒",
-    body: "奶龙的勇气让神树再次发亮，量仔也从星核中抽出最后一束能量。可他们依赖的仍是 Shor 最熟悉的旧力量。因子风暴越转越快，两位战士伤痕累累，意识渐渐沉入黑暗。就在这时，一段被尘封的星际记忆同时浮现在他们心中。",
+    body: "就在这时，一段被尘封的星际记忆同时浮现在他们心中。",
     quote: "真正的默契，不会因为漫长的分别而消失。",
     image: "/assets/book-v2/06-duo-struggle.webp",
     alt: "量仔与奶龙在破碎的黑色因子圆环前共同抵抗风暴",
@@ -149,7 +149,7 @@ const narrationTracks = [
   "/assets/narration-v3/04-first-battle.mp3",
   "/assets/narration-v3/05-rescue.mp3",
   "/assets/narration-v3/06-struggle.mp3",
-  "/assets/narration-v3/07-memory-awakens.mp3",
+  "/assets/narration-v3/07-memory-awakens-v2.mp3",
   "/assets/narration-v3/08-old-allies.mp3",
   "/assets/narration-v3/09-fusion.mp3",
   "/assets/narration-v3/10-final-battle.mp3",
@@ -450,4 +450,3 @@ export default function StoryBook() {
     </main>
   );
 }
-
