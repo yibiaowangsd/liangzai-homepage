@@ -138,7 +138,7 @@ const narrationTracks = [
   "/assets/narration-v3/03-awakening.mp3",
   "/assets/narration-v3/04-first-battle.mp3",
   "/assets/narration-v3/05-rescue.mp3",
-  "/assets/narration-v3/06-struggle-with-memory.mp3",
+  "/assets/narration-v3/06-struggle-with-memory-v2.mp3",
   "/assets/narration-v3/08-old-allies.mp3",
   "/assets/narration-v3/09-fusion.mp3",
   "/assets/narration-v3/10-final-battle.mp3",
