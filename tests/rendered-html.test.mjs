@@ -63,7 +63,9 @@ test("renders the interactive storybook route", async () => {
   assert.match(html, /量子星守护者/);
   assert.match(html, /narration-v3\/00-intro\.mp3/);
   assert.match(html, /继续旁白/);
-  assert.match(html, /尘封的记忆正在苏醒/);
+  assert.match(html, /就在这时，一段被尘封的星际记忆同时浮现在他们心中/);
+  assert.doesNotMatch(html, /CHAPTER 07 \/ 回响/);
+  assert.match(html, /共 11 页/);
   assert.match(html, /Kyber 与 Aigis/);
   assert.match(html, /合体绝技：靓龙/);
 });
@@ -113,4 +115,3 @@ test("renders the PQC arsenal route with all four algorithms", async () => {
     assert.match(html, new RegExp(algorithm));
   }
 });
-
