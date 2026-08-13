@@ -142,18 +142,18 @@ const pages: StoryPage[] = [
 ];
 
 const narrationTracks = [
-  "/assets/narration-v2/00-intro.mp3",
-  "/assets/narration-v2/01-quantum-star.mp3",
-  "/assets/narration-v2/02-shor-arrives.mp3",
-  "/assets/narration-v2/03-awakening.mp3",
-  "/assets/narration-v2/04-first-battle.mp3",
-  "/assets/narration-v2/05-rescue.mp3",
-  "/assets/narration-v2/06-struggle.mp3",
-  "/assets/narration-v2/07-memory-awakens.mp3",
-  "/assets/narration-v2/08-old-allies.mp3",
-  "/assets/narration-v2/09-fusion.mp3",
-  "/assets/narration-v2/10-final-battle.mp3",
-  "/assets/narration-v2/11-epilogue.mp3",
+  "/assets/narration-v3/00-intro.mp3",
+  "/assets/narration-v3/01-quantum-star.mp3",
+  "/assets/narration-v3/02-shor-arrives.mp3",
+  "/assets/narration-v3/03-awakening.mp3",
+  "/assets/narration-v3/04-first-battle.mp3",
+  "/assets/narration-v3/05-rescue.mp3",
+  "/assets/narration-v3/06-struggle.mp3",
+  "/assets/narration-v3/07-memory-awakens.mp3",
+  "/assets/narration-v3/08-old-allies.mp3",
+  "/assets/narration-v3/09-fusion.mp3",
+  "/assets/narration-v3/10-final-battle.mp3",
+  "/assets/narration-v3/11-epilogue.mp3",
 ];
 
 type AudioState = "loading" | "playing" | "paused" | "blocked" | "ended";
@@ -450,3 +450,4 @@ export default function StoryBook() {
     </main>
   );
 }
+

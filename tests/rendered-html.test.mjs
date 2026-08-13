@@ -33,7 +33,7 @@ test("renders development preview metadata", async () => {
   assert.match(html, developmentPreviewMeta);
   assert.match(html, /量子星守护者/);
   assert.match(html, /翻开故事/);
-  assert.match(html, /narration-v2\/00-intro\.mp3/);
+  assert.match(html, /narration-v3\/00-intro\.mp3/);
   assert.match(html, /继续旁白/);
   assert.doesNotMatch(html, /开始配音/);
 });
@@ -61,7 +61,7 @@ test("renders the interactive storybook route", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /量子星守护者/);
-  assert.match(html, /narration-v2\/00-intro\.mp3/);
+  assert.match(html, /narration-v3\/00-intro\.mp3/);
   assert.match(html, /继续旁白/);
   assert.match(html, /尘封的记忆正在苏醒/);
   assert.match(html, /Kyber 与 Aigis/);
@@ -113,3 +113,4 @@ test("renders the PQC arsenal route with all four algorithms", async () => {
     assert.match(html, new RegExp(algorithm));
   }
 });
+
