@@ -168,7 +168,7 @@ export default function ArsenalLab() {
       <header className="arsenal-hero">
         <div className="arsenal-hero-copy"><p className="arsenal-eyebrow"><span>Q-∞ / ARMORY 004</span> 战后装备开放日</p><h1>PQC<br /><em>武器库</em></h1><p className="arsenal-lead">从 Shor 如何拆掉 RSA / ECC，<br />一路走到后量子武器的数学内核。</p><a className="arsenal-cta" href="#break">开始拆解旧武器 <span>↓</span></a></div>
         <figure className="arsenal-hero-visual">
-          <div className="armory-portrait"><img src="/assets/story/liangzai-cutout-af7e8ddc.png" alt="量仔全身装备展示" /><p><span>KEEPER Q-∞</span> 量仔 / 武器管理员</p></div>
+          <div className="armory-portrait"><img src="/assets/characters-v2/arsenal-liangzai-cutout.webp" alt="最新版量仔全身装备展示" /><p><span>KEEPER Q-∞</span> 量仔 / 武器管理员</p></div>
           <div className="armory-algorithms" aria-label="四种 PQC 算法武器照片">{heroWeapons.map((item, index) => <article className="algorithm-photo" key={item.name}><img src={item.image} alt={`${item.name} 的${item.note}纸感插图`} /><div><span>{String(index + 1).padStart(2, "0")}</span><strong>{item.name}</strong><small>{item.note}</small></div></article>)}</div>
           <figcaption>ARMORY 004 / 一名守护者，四种算法装备</figcaption>
         </figure>
