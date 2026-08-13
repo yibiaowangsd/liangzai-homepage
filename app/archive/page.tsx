@@ -115,7 +115,7 @@ export default function Home() {
         </div>
 
         <figure className="alliance-photo story-photo">
-          <img src="/assets/characters-v2/archive-alliance.webp" alt="最新版量仔与奶龙在通信隧道前握手，二者之间形成青色钥匙光束" />
+          <img src="/assets/characters-v2/archive-alliance-v2.webp" alt="最新版量仔与奶龙在通信隧道前握手，二者之间形成青色钥匙光束" />
           <figcaption>
             <span>ARCHIVE 02 / 第一次握手</span>
             奶龙把柔软变成了勇气，量仔把勇气测成一把新钥匙。
