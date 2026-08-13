@@ -81,6 +81,16 @@ const pages: StoryPage[] = [
   {
     chapter: "CHAPTER 06 / 苦战",
     title: "两个人仍在后退",
+    body: "奶龙的勇气让神树再次发亮，量仔也从星核中抽出最后一束能量。可他们依赖的仍是 Shor 最熟悉的旧力量。因子风暴越转越快，两位战士伤痕累累，意识渐渐沉入黑暗。",
+    quote: "旧力量仍在燃烧，却已经无法追上量子风暴。",
+    image: "/assets/book-v2/06-duo-struggle.webp",
+    alt: "量仔与奶龙在破碎的黑色因子圆环前共同抵抗风暴",
+    caption: "ENERGY 03% / SIGNAL FADING",
+    tone: "violet",
+  },
+  {
+    chapter: "CHAPTER 07 / 回响",
+    title: "尘封的记忆正在苏醒",
     body: "奶龙的勇气让神树再次发亮，量仔也从星核中抽出最后一束能量。可他们依赖的仍是 Shor 最熟悉的旧力量。因子风暴越转越快，两位战士伤痕累累，意识渐渐沉入黑暗。就在这时，一段被尘封的星际记忆同时浮现在他们心中。",
     quote: "真正的默契，不会因为漫长的分别而消失。",
     image: "/assets/book-v2/06-duo-struggle.webp",
@@ -89,7 +99,7 @@ const pages: StoryPage[] = [
     tone: "violet",
   },
   {
-    chapter: "CHAPTER 07 / 回忆",
+    chapter: "CHAPTER 08 / 回忆",
     title: "他们本就是老战友",
     body: "很久以前，量仔与奶龙曾一起穿越无信号荒原、修补坍缩的星门，还在双月战役中击退吞光兽。量仔把混乱测成秩序，奶龙把恐惧熬成勇气；当青色与金色交织成双螺旋，他们便能使出响彻量子宇宙的合体绝技。",
     quote: "原来我们缺少的不是力量，而是再一次相信彼此。",
@@ -99,7 +109,7 @@ const pages: StoryPage[] = [
     tone: "gold",
   },
   {
-    chapter: "CHAPTER 08 / 合体",
+    chapter: "CHAPTER 09 / 合体",
     title: "合体绝技：靓龙",
     body: "量仔重新握住奶龙的手。青色测量之光与金色勇气之火绕着他们旋转，旧伤化作星尘，两个身影在耀眼的双螺旋中合而为一。金色龙首、蓝白战甲、量子天线与不肯后退的心——全新的守护形态靓龙，终于在风暴中央睁开双眼。",
     quote: "一个负责精确，一个负责勇敢；合在一起，就是新的可能。",
@@ -109,7 +119,7 @@ const pages: StoryPage[] = [
     tone: "cyan",
   },
   {
-    chapter: "CHAPTER 09 / 决战",
+    chapter: "CHAPTER 10 / 决战",
     title: "Kyber 与 Aigis",
     body: "靓龙右手召来青色晶格神剑 Kyber，左手展开金紫色神盾 Aigis。它们不再把安全寄托于大整数分解或椭圆曲线离散对数，而是来自 Shor 难以击穿的格困难世界。魔王第一次后退，深埋在因子圆环里的恐惧开始颤抖。",
     quote: "旧钥匙可以被看穿，那就锻造一把属于新时代的钥匙。",
@@ -133,16 +143,17 @@ const pages: StoryPage[] = [
 
 const narrationCues = [
   0,
-  5.64,
-  27.95,
-  64.57,
-  89.66,
-  112.79,
-  135.47,
-  163.52,
-  188.39,
-  218.7,
-  243.44,
+  5.6435,
+  27.9512,
+  64.5713,
+  89.6622,
+  116.207,
+  147.947,
+  179.831,
+  188.386,
+  211.366,
+  232.952,
+  250.615,
 ];
 
 type AudioState = "loading" | "playing" | "paused" | "blocked" | "ended";
