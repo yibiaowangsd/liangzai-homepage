@@ -522,6 +522,7 @@
   width: 100%;
   object-fit: contain;
   mix-blend-mode: multiply;
+  mask-image: radial-gradient(ellipse 45% 37% at 50% 61%, #000 25%, transparent 90%);
 }
 .arsenalArt::after {
   content: "";
