@@ -38,11 +38,12 @@ export default function Home() {
           <a href="#life">生平</a>
           <a href="#legend">传奇</a>
           <a href="#now">现在</a>
-          <Link href="/">动画书</Link>
+          <Link href="/">首页</Link>
+          <Link href="/storybook">动画书</Link>
           <a href="/pqc-arsenal">PQC 武器库</a>
         </div>
         <div className="mobile-page-entries">
-          <Link className="mobile-story-entry" href="/">动画书</Link>
+          <Link className="mobile-story-entry" href="/storybook">动画书</Link>
           <a className="mobile-arsenal-entry" href="/pqc-arsenal">武器库</a>
         </div>
         <p className="file-mark">ARCHIVE / Q-∞</p>

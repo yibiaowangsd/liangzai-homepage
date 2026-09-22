@@ -4,7 +4,7 @@ import test from "node:test";
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
 
-test("renders development preview metadata", async () => {
+test("renders the modern homepage and its three experience destinations", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -25,17 +25,16 @@ test("renders development preview metadata", async () => {
   );
 
   assert.equal(response.status, 200);
-  assert.match(
-    response.headers.get("content-type") ?? "",
-    /^text\/html\b/i,
-  );
+  assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
   assert.match(html, developmentPreviewMeta);
-  assert.match(html, /量子星守护者/);
-  assert.match(html, /翻开故事/);
-  assert.match(html, /narration-v3\/00-intro\.mp3/);
-  assert.match(html, /继续旁白/);
-  assert.doesNotMatch(html, /开始配音/);
+  assert.match(html, /小小量仔/);
+  assert.match(html, /大有可为/);
+  for (const route of ["/storybook", "/archive", "/pqc-arsenal"]) {
+    assert.ok(html.includes(`href="${route}"`), `Homepage links to ${route}`);
+  }
+  assert.match(html, /暂停动效/);
+  assert.doesNotMatch(html, /<audio\b/);
 });
 
 test("renders the interactive storybook route", async () => {
@@ -44,7 +43,7 @@ test("renders the interactive storybook route", async () => {
   const { default: worker } = await import(workerUrl.href);
 
   const response = await worker.fetch(
-    new Request("http://localhost/", {
+    new Request("http://localhost/storybook", {
       headers: { accept: "text/html" },
     }),
     {
@@ -63,7 +62,8 @@ test("renders the interactive storybook route", async () => {
   assert.match(html, /量子星守护者/);
   assert.match(html, /narration-v3\/00-intro\.mp3/);
   assert.match(html, /继续旁白/);
-  assert.match(html, /就在这时，一段被尘封的星际记忆同时浮现在他们心中/);
+  assert.match(html, /跳到第 7 页：两个人仍在后退/);
+  assert.match(html, /跳到第 8 页：他们本就是老战友/);
   assert.doesNotMatch(html, /CHAPTER 07 \/ 回响/);
   assert.match(html, /共 11 页/);
   assert.match(html, /Kyber 与 Aigis/);
@@ -74,9 +74,13 @@ test("keeps the former homepage at the archive route", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("archive-test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
-  const response = await worker.fetch(new Request("http://localhost/archive"), {
-    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
-  }, { waitUntil() {}, passThroughOnException() {} });
+  const response = await worker.fetch(
+    new Request("http://localhost/archive"),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /PERSONAL FILE 000/);

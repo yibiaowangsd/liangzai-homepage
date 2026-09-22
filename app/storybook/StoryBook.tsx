@@ -158,7 +158,7 @@ function TextPage({ page, index, onOpen }: { page: StoryPage; index: number; onO
         <button className={styles.openStory} type="button" onClick={onOpen}>翻开故事 <span>→</span></button>
       )}
       {page.kind === "ending" && (
-        <Link className={styles.archiveCta} href="/archive">查看量仔主页 <span>→</span></Link>
+        <Link className={styles.archiveCta} href="/">返回量仔首页 <span>→</span></Link>
       )}
       <div className={styles.pageFoot}>
         <span>量子星守护者</span>
@@ -335,11 +335,11 @@ export default function StoryBook() {
         onEnded={advanceNarration}
       />
       <header className={styles.storyNav}>
-        <Link href="/archive" className={styles.brand} aria-label="查看量仔主页">
+        <Link href="/" className={styles.brand} aria-label="返回量仔首页">
           量仔档案馆 <span>Q-∞</span>
         </Link>
         <div className={styles.navLinks}>
-          <Link href="/archive">量仔主页</Link>
+          <Link href="/">量仔首页</Link>
           <Link href="/pqc-arsenal">PQC 武器库</Link>
           <button
             type="button"
@@ -445,7 +445,7 @@ export default function StoryBook() {
 
       <footer className={styles.storyFooter}>
         <p>注：Kyber 是 ML-KEM 标准化前的名称；绘本以神兵隐喻后量子密码。</p>
-        <Link href="/archive">查看量仔主页 ↗</Link>
+        <Link href="/">返回量仔首页 ↗</Link>
       </footer>
     </main>
   );

@@ -1,35 +1,28 @@
-# 量仔 · Shor 大魔王档案
+# 量仔 LIANGZAI · 小小量仔，大有可为
 
-量仔的 Minimal Zine 风格个人主页，记录它与奶龙共同对抗 Shor 大魔王的传奇经历。
+量仔的现代科技风主页，以深空黑、量子蓝光效、大字号排版和原始角色素材，连接故事、角色档案与 PQC 知识探索。
 
-## 视觉设计
+## 页面
 
-- 暖灰纸张、扫描颗粒与大面积留白
-- 青蓝色作为主强调色，奶龙使用黄色档案标签
-- 量仔原始精灵图以剪贴标本方式呈现
-- 中文宋体、等宽小字与实验性杂志排版组合
+| 路由 | 内容 |
+| --- | --- |
+| `/` | 科技风首页：角色首屏、探索入口、三种特质切换、动效控制 |
+| `/storybook` | 量子星守护者互动动画书，保留翻页与旁白 |
+| `/archive` | 原 Minimal Zine 风格量仔档案 |
+| `/pqc-arsenal` | PQC 武器库与参数交互 |
 
-## 页面内容
+首页使用独立 CSS Module，适配手机、平板和桌面；支持键盘导航、移动菜单、暂停动效与系统减少动态效果设置。所有角色图片复用仓库素材，不改变量仔形象。
 
-- 量仔角色档案
-- 量仔生平与能力介绍
-- 奶量同盟三幕传奇
-- 可展开的战后时间记录
-- 战后日常
+## 开发
 
-## 开发接手
-
-继续开发、调整页面或发布前，请先阅读 [DEVELOPMENT.md](./DEVELOPMENT.md)。其中包含项目结构、视觉约束、素材规则、测试流程、GitHub/Cloudflare 发布方式和常见问题排查。
-
-## 本地运行
+Node.js >=22.13；首次接手请阅读 [DEVELOPMENT.md](./DEVELOPMENT.md)。
 
 ```bash
 npm install
 npm run dev
+npm run build
+node --test tests/rendered-html.test.mjs
+npm run lint
 ```
 
-要求 Node.js 22.13 或更高版本。
-
-## 线上页面
-
-[查看量仔主页](https://liangzai-homepage.rahmartemisia.chatgpt.site)
+`main` 由既有 Cloudflare 流程部署至 [wangyibiao.com](https://wangyibiao.com)。`.openai/hosting.json` 保留原 Sites 项目配置，属于另一条托管链路。
