@@ -4,18 +4,23 @@
 > 主要公开站点：<https://wangyibiao.com>  
 > 本文目标：让新的开发者或新的 AI 对话只阅读这一份文档，就能安全、快速地继续开发。
 
-## 当前首页与路由（2026-09 科技风改版）
+## 当前首页与路由（2026-09 量子探索重构）
 
-用户要求首页改为现代科技风，因此首页 `/` 现由 `app/QuantumHome.tsx` 与独立的 `app/QuantumHome.module.css` 实现，入口和 metadata 位于 `app/page.tsx`。下文旧 Minimal Zine 约束继续适用于档案和武器库，不适用于新版首页。
+首页 `/` 由 `app/QuantumHome.tsx` 编排，样式位于独立的 `app/QuantumHome.module.css`，可复用交互位于 `app/home/`。下文旧 Minimal Zine 约束继续适用于档案和武器库，不适用于新版首页。
 
-- `/`：科技风入口，深空黑与量子蓝、大字号首屏、三类内容入口、探索/守护/同行切换。
-- `/storybook`：直接渲染原 `StoryBook`，不能再重定向到 `/`；保留原翻页、音频与故事素材。
+- `/`：粒子场首屏 → 内容 Bento → 真实内容数量 → 密钥封装/数字签名实验室 → 故事案例 → 三种品牌特质 → 页脚。
+- `/storybook`：原 `StoryBook`，保留 11 页翻页、旁白和素材。
 - `/archive`：原纸感档案页。
 - `/pqc-arsenal`：原 PQC 教学与交互页。
-- 首页量仔使用现有 `characters-v2/arsenal-liangzai-cutout.webp`，完整等比显示；无需新图片或运行时依赖。
-- 首页动效可以暂停，并尊重 `prefers-reduced-motion`；移动端菜单支持 Escape 关闭并返回焦点。
-- 修改路由时同步检查档案页动画书链接、动画书返回首页链接，以及 `tests/rendered-html.test.mjs`。
-- SSR 测试只检查首屏实际渲染的内容和章节导航；后续章节正文需通过翻页验证，不能要求所有正文出现在初始 HTML。
+- `home/Navigation.tsx`：桌面/手机导航，菜单 Escape 关闭与焦点恢复。手机菜单采用浮层定位，避免关闭时引起锚点偏移。
+- `home/Motion.tsx`：集中管理动效偏好、滚动显现、磁吸按钮、阅读进度和计数。服务端及无 JS 时正文仍可见。
+- `home/QuantumField.tsx`：Canvas 2D 投影粒子，量子环/球体插值，最高 30 FPS、DPR 上限 1.75；离屏或后台停止；减少动态效果时渲染静态画面。
+- `home/QuantumLab.tsx`：ML-KEM/ML-DSA 四步概念演示，支持手动/自动、方向键选择 Tab。私钥相关操作标为本地运算，仅公钥、密文、消息和签名经过公开信道。依据 [FIPS 203](https://csrc.nist.gov/pubs/fips/203/final) 与 [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final)。
+- `home/BrandStory.tsx`：探索/守护/同行切换，复用现有角色素材。
+- 首页新增依赖仅 `framer-motion` 和 `lucide-react`，版本已固定；没有 Three.js/WebGL 运行时、外部字体或远程图片请求。
+- 首页量仔仍使用 `characters-v2/arsenal-liangzai-cutout.webp`，完整等比显示。数据区的 4/11/3 分别表示算法数、故事页数和主要探索入口数，不是性能或业务指标。
+- 修改后至少执行构建、现有四路由渲染测试及浏览器验证。全仓 `tsc` 目前缺少既有 Cloudflare 类型（`cloudflare:workers`、`Fetcher`、`D1Database`）；不要为首页视觉工作改动部署架构。
+- 本次改动在功能分支提交；只有合并至 `main` 才会触发现有主域名部署。
 
 ---
 
