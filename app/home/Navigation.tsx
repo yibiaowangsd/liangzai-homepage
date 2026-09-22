@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { RollingLabel } from "./Actions";
 import s from "../QuantumHome.module.css";
 
 const links = [
@@ -54,13 +55,12 @@ export default function Navigation() {
         <nav aria-label="主导航" className={s.desktopNav}>
           {links.map((link) => (
             <Link key={link.href} href={link.href}>
-              {link.label}
+              <RollingLabel>{link.label}</RollingLabel>
             </Link>
           ))}
         </nav>
         <Link href="/pqc-arsenal" className={s.navCta}>
-          进入武器库
-          <ArrowUpRight size={14} aria-hidden />
+          <RollingLabel>进入武器库</RollingLabel>
         </Link>
         <button
           ref={toggle}
@@ -83,9 +83,8 @@ export default function Navigation() {
           <Link key={link.href} href={link.href} onClick={() => setOpen(false)}>
             <span>
               <small>0{index + 1}</small>
-              {link.label}
+              <RollingLabel>{link.label}</RollingLabel>
             </span>
-            <ArrowUpRight size={18} aria-hidden />
           </Link>
         ))}
       </nav>

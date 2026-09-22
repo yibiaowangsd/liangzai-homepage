@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
 import { m } from "framer-motion";
 import { Reveal, useMotionPreference } from "./Motion";
+import { TextLink } from "./Actions";
 import s from "../QuantumHome.module.css";
 
 const modes = [
@@ -78,10 +77,7 @@ export default function BrandStory() {
             <p className={s.modeEnglish}>{mode.en}</p>
             <h3>{mode.title}</h3>
             <p>{mode.description}</p>
-            <Link href={mode.href}>
-              {mode.action}
-              <ArrowUpRight size={17} aria-hidden />
-            </Link>
+            <TextLink href={mode.href}>{mode.action}</TextLink>
           </div>
         </Reveal>
         <Reveal className={s.aboutVisual} delay={0.1}>

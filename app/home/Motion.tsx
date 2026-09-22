@@ -1,7 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowUpRight, Pause, Play } from "lucide-react";
+import { Pause, Play } from "lucide-react";
 import {
   createContext,
   useContext,
@@ -10,16 +9,13 @@ import {
   useState,
   useSyncExternalStore,
   type ReactNode,
-  type PointerEvent,
 } from "react";
 import {
   LazyMotion,
   domAnimation,
   m,
   useInView,
-  useMotionValue,
   useReducedMotion,
-  useSpring,
   useScroll,
   animate,
 } from "framer-motion";
@@ -110,49 +106,6 @@ export function Reveal({
       }}
     >
       {children}
-    </m.div>
-  );
-}
-
-export function MagneticLink({
-  children,
-  href,
-  secondary = false,
-  className = "",
-}: {
-  children: ReactNode;
-  href: string;
-  secondary?: boolean;
-  className?: string;
-}) {
-  const { enabled } = useMotionPreference();
-  const targetX = useMotionValue(0);
-  const targetY = useMotionValue(0);
-  const x = useSpring(targetX, { stiffness: 220, damping: 22 });
-  const y = useSpring(targetY, { stiffness: 220, damping: 22 });
-  function move(event: PointerEvent<HTMLDivElement>) {
-    if (!enabled || event.pointerType !== "mouse") return;
-    const rect = event.currentTarget.getBoundingClientRect();
-    targetX.set((event.clientX - rect.left - rect.width / 2) * 0.12);
-    targetY.set((event.clientY - rect.top - rect.height / 2) * 0.2);
-  }
-  return (
-    <m.div
-      className={s.magnetic}
-      style={{ x: enabled ? x : 0, y: enabled ? y : 0 }}
-      onPointerMove={move}
-      onPointerLeave={() => {
-        targetX.set(0);
-        targetY.set(0);
-      }}
-    >
-      <Link
-        href={href}
-        className={`${secondary ? s.secondary : s.primary} ${className}`}
-      >
-        <span>{children}</span>
-        <ArrowUpRight size={17} aria-hidden />
-      </Link>
     </m.div>
   );
 }

@@ -156,27 +156,26 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  gap: 17px;
-  min-height: 40px;
-  padding: 0 18px;
+  min-height: 42px;
+  padding: 0 21px;
   font-size: 11px;
-  border: 1px solid #ffffff30;
-  border-radius: 7px;
-  background: linear-gradient(#ffffff0c, #ffffff03);
-  box-shadow: inset 0 1px #ffffff0c;
+  border: 1px solid #a4bbd83d;
+  border-radius: 99px;
+  background: linear-gradient(150deg, #c0daff16, #ffffff03 65%);
+  box-shadow:
+    inset 0 1px #d6e7ff15,
+    0 3px 12px #0003;
   transition:
     background 0.2s,
-    border-color 0.2s;
+    border-color 0.2s,
+    box-shadow 0.3s;
 }
-.navCta:hover {
-  background: #ffffff12;
-  border-color: #ffffff65;
-}
-.navCta svg {
-  transition: transform 0.3s var(--ease);
-}
-.navCta:hover svg {
-  transform: translate(2px, -2px);
+.navCta:is(:hover, :focus-visible) {
+  background: #bcd9ff18;
+  border-color: #c5dfff85;
+  box-shadow:
+    inset 0 1px #eaf3ff40,
+    0 0 24px #9ecbff0d;
 }
 .menuButton,
 .mobileNav,
@@ -273,71 +272,166 @@
   margin-top: 32px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 28px;
 }
-.magnetic {
+
+/* Interaction vocabulary: a liquid capsule, kinetic text, and full-card feedback. */
+.rollingLabel {
+  display: inline-block;
+  height: 1.5em;
+  line-height: 1.5;
+  overflow: hidden;
+  vertical-align: middle;
+}
+.rollingTrack,
+.rollingTrack > span {
+  display: block;
+  line-height: inherit;
+  white-space: nowrap;
+}
+.rollingTrack {
+  transition: transform 0.55s var(--ease);
+}
+.site :is(a, button):is(:hover, :focus-visible) .rollingTrack {
+  transform: translateY(-50%);
+}
+.textLink {
+  position: relative;
   display: inline-flex;
+  align-items: center;
+  align-self: center;
+  justify-self: end;
+  width: fit-content;
+  min-height: 44px;
+  color: #c4ccd9;
+  font-size: 12px;
 }
-.primary,
-.secondary {
-  min-height: 50px;
+.textLink::after,
+.inlineLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 7px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0.25);
+  transform-origin: left;
+  opacity: 0.5;
+  transition:
+    transform 0.6s var(--ease),
+    opacity 0.3s;
+}
+.textLink:is(:hover, :focus-visible)::after,
+.bentoCard:is(:hover, :focus-visible) .inlineLink::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+.actionLink {
+  display: inline-flex;
+  flex-shrink: 0;
+  border-radius: 99px;
+  padding: 4px;
+  margin: -4px;
+  color: #eff4ff;
+  font-size: 13px;
+  font-weight: 540;
+  letter-spacing: 0.025em;
+}
+.actionSurface {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  border-radius: 8px;
-  padding: 0 21px;
-  font-size: 13px;
-  font-weight: 550;
+  gap: 13px;
+  min-height: 56px;
+  padding: 7px 28px 7px 8px;
   position: relative;
+  isolation: isolate;
   overflow: hidden;
-  transition:
-    background 0.25s,
-    border-color 0.25s,
-    box-shadow 0.25s;
-}
-.primary {
-  color: #14191f;
-  background: linear-gradient(180deg, #fff, #dce5ef);
-  border: 1px solid white;
+  border: 1px solid #bfddff52;
+  border-radius: inherit;
+  background: linear-gradient(145deg, #d2e4ff1f, #a1bcdf08 46%, #0b0d12);
   box-shadow:
-    inset 0 -2px 2px #73859822,
-    0 0 22px #c5e4ff07;
+    inset 0 1px #d8e7ff22,
+    0 6px 24px #0004;
+  transition:
+    color 0.4s,
+    border-color 0.4s,
+    box-shadow 0.4s;
 }
-.primary::before {
+.actionBeam {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  opacity: 0.6;
+}
+.actionBeam::before {
   content: "";
   position: absolute;
-  inset: -60% 0;
-  width: 35%;
-  background: linear-gradient(90deg, transparent, #ffffffb3, transparent);
-  transform: translateX(-160%) rotate(22deg);
-  transition: transform 0.75s var(--ease);
-  pointer-events: none;
+  width: 320px;
+  height: 320px;
+  top: calc(50% - 160px);
+  left: calc(50% - 160px);
+  background: conic-gradient(
+    from 45deg,
+    transparent 65%,
+    #a7d7ff 85%,
+    #fff 90%,
+    transparent 95%
+  );
+  animation: edgeOrbit 4s linear infinite paused;
 }
-.primary:hover::before {
-  transform: translateX(410%) rotate(22deg);
+.actionBeam::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(145deg, #252e3b, #13171e 45%, #0c0f15);
 }
-.primary:hover {
+.actionFill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(120deg, #fff, #d1e0f3);
+  clip-path: circle(19px at 27px 50%);
+  transition: clip-path 0.7s var(--ease);
+}
+.actionOrb {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  color: #233e5b;
+}
+.actionOrb svg {
+  transition: transform 0.8s var(--ease);
+}
+.actionLink:is(:hover, :focus-visible) .actionSurface {
+  color: #111c2d;
+  border-color: #e0efff9c;
   box-shadow:
-    0 0 26px #a5d8ff25,
-    inset 0 1px white;
+    0 0 30px #9ecbff18,
+    inset 0 1px #ffffff80;
 }
-.secondary {
-  border: 1px solid #ffffff24;
-  background: #ffffff03;
-  color: #d7dce5;
+.actionLink:is(:hover, :focus-visible) .actionFill {
+  clip-path: circle(120% at 27px 50%);
 }
-.secondary:hover {
-  border-color: #9eb9d873;
-  background: #c1dcff0a;
+.actionLink:is(:hover, :focus-visible) .actionOrb svg {
+  transform: rotate(90deg);
 }
-.primary svg,
-.secondary svg {
-  transition: transform 0.3s var(--ease);
+.actionLink:is(:hover, :focus-visible) .actionBeam::before {
+  animation-play-state: running;
 }
-.primary:hover svg,
-.secondary:hover svg {
-  transform: translate(2px, -2px);
+.actionLink:active .actionSurface {
+  scale: 0.98;
+}
+@keyframes edgeOrbit {
+  to {
+    transform: rotate(1turn);
+  }
 }
 .heroSignature {
   display: flex;
@@ -455,6 +549,8 @@
   backdrop-filter: blur(15px);
 }
 .fieldControl button {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -471,9 +567,27 @@
     color 0.25s;
 }
 .fieldControl button[aria-pressed="true"] {
-  background: #ffffff0e;
-  border-color: #ffffff12;
   color: #e0edff;
+}
+.fieldControl::before,
+.labTabs::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  width: calc(50% - 6px);
+  border: 1px solid #c8dfff27;
+  border-radius: inherit;
+  background: linear-gradient(145deg, #c7dfff1f, #a3c6ff09);
+  box-shadow:
+    inset 0 1px #ffffff12,
+    0 2px 6px #0003;
+  transition: transform 0.45s var(--ease);
+  pointer-events: none;
+}
+.fieldControl[data-selected="1"]::before {
+  transform: translateX(calc(100% + 4px));
 }
 .fieldControl button:hover {
   color: #fff;
@@ -611,6 +725,29 @@
   border-color: #afc6e94d;
   box-shadow: 0 18px 50px #00000025;
 }
+.bentoCard::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    transparent 25%,
+    #d0e8ff0e 45%,
+    #fff1 50%,
+    transparent 65%
+  );
+  transform: translateX(-110%);
+  transition: transform 1s var(--ease);
+}
+.bentoCard:is(:hover, :focus-visible)::before {
+  transform: translateX(110%);
+}
+.bentoCard:focus-visible {
+  border-color: #afc6e94d;
+}
 .cardTop {
   position: absolute;
   top: 26px;
@@ -696,21 +833,30 @@
   align-items: center;
   justify-content: space-between;
   font-size: 11px;
+  position: relative;
+  min-height: 50px;
 }
-.roundArrow {
-  width: 35px;
-  height: 35px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #ffffff30;
-  border-radius: 50%;
-  transition:
-    background 0.3s,
-    transform 0.4s var(--ease);
+.cardLink::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  height: 1px;
+  width: 100%;
+  background: #d9e9ff;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.65s var(--ease);
 }
-.storyCard:hover .roundArrow {
-  background: #ffffff1a;
-  transform: rotate(45deg);
+.storyCard:is(:hover, :focus-visible) .cardLink::before {
+  transform: scaleX(1);
+}
+.cardIndex {
+  color: #a0aebf;
+  font:
+    8px/1.5 ui-monospace,
+    monospace;
+  letter-spacing: 0.06em;
 }
 .arsenalCard {
   background:
@@ -749,6 +895,11 @@
   color: #c8def8;
   font-size: 13px;
   margin-top: 20px;
+  position: relative;
+  min-height: 30px;
+}
+.inlineLink::after {
+  bottom: 0;
 }
 .arsenalVisual {
   position: absolute;
@@ -992,14 +1143,20 @@
   border-bottom: 1px solid var(--line);
 }
 .labTabs {
+  flex-shrink: 0;
   padding: 4px;
   display: flex;
   gap: 3px;
   background: #02050a5e;
   border: 1px solid #ffffff0f;
-  border-radius: 9px;
+  border-radius: 30px;
+  position: relative;
 }
 .labTabs button {
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1007,7 +1164,7 @@
   border: 1px solid transparent;
   padding: 0 17px;
   min-height: 36px;
-  border-radius: 6px;
+  border-radius: 30px;
   background: none;
   color: #a7b3c5;
   font-size: 13px;
@@ -1017,9 +1174,15 @@
 }
 .labTabs button[aria-selected="true"] {
   color: #e0eafa;
-  background: #2631436b;
-  border-color: #accdff1f;
-  box-shadow: inset 0 1px #ffffff0b;
+}
+.labTabs::before {
+  width: calc(50% - 5.5px);
+}
+.labTabs[data-selected="1"]::before {
+  transform: translateX(calc(100% + 3px));
+}
+.labTabs button:hover {
+  color: #fff;
 }
 .labTag {
   font:
@@ -1030,6 +1193,9 @@
   display: inline-flex;
   gap: 9px;
   align-items: center;
+}
+.labTag small {
+  font: inherit;
 }
 .labTag > span {
   width: 4px;
@@ -1174,6 +1340,13 @@
   gap: 11px;
   color: #9aa7ba;
   font-size: 13px;
+  transition: color 0.3s;
+}
+.labSteps button:is(:hover, :focus-visible) {
+  color: #e0edff;
+}
+.labSteps button:is(:hover, :focus-visible) i {
+  background: #a5d8ff70;
 }
 .labSteps button span {
   color: #536278;
@@ -1225,18 +1398,39 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  min-width: 108px;
-  min-height: 43px;
+  gap: 10px;
+  padding: 5px 17px 5px 5px;
+  min-width: 120px;
+  min-height: 44px;
   border: 1px solid #ffffff24;
-  border-radius: 7px;
-  background: #ffffff05;
+  border-radius: 99px;
+  background: linear-gradient(145deg, #d6e7ff10, #ffffff03);
   color: #c2cfdf;
   font-size: 12px !important;
   flex-shrink: 0;
+  transition:
+    border-color 0.3s,
+    background 0.3s;
 }
-.playButton:hover:not(:disabled) {
-  background: #ffffff0c;
+.playButton:is(:hover, :focus-visible):not(:disabled) {
+  background: #d3e7ff14;
+  border-color: #bedaff6b;
+}
+.playIcon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #d5e5ff17;
+  color: #d3e5ff;
+  transition:
+    background 0.3s,
+    color 0.3s;
+}
+.playButton[aria-pressed="true"] .playIcon {
+  background: #dbe9fa;
+  color: #111c2d;
 }
 .labFootnote {
   padding: 17px 37px;
@@ -1377,17 +1571,22 @@
   bottom: 44px;
   display: flex;
   align-items: center;
-  gap: 28px;
-  padding: 14px 19px;
-  border: 1px solid #ffffff40;
-  background: #ffffff0c;
-  backdrop-filter: blur(10px);
-  border-radius: 8px;
+  gap: 13px;
+  padding: 16px 23px;
+  border: 1px solid #ffffff66;
+  background: #dce8ff12;
+  backdrop-filter: blur(18px);
+  border-radius: 99px;
   font-size: 11px;
-  transition: background 0.3s;
+  transition:
+    background 0.4s,
+    color 0.4s,
+    border-color 0.4s;
 }
-.cinematic:hover .cinematicButton {
-  background: #ffffff20;
+.cinematic:is(:hover, :focus-visible) .cinematicButton {
+  background: #edf3fa;
+  color: #121a26;
+  border-color: #fff;
 }
 .about {
   background: #edeeeb;
@@ -1445,6 +1644,10 @@
 }
 .modeButtons button[aria-pressed="true"]::after {
   transform: scaleX(1);
+}
+.modeButtons button:hover::after {
+  transform: scaleX(1);
+  opacity: 0.5;
 }
 .brandPanel {
   min-height: 195px;
@@ -1731,6 +1934,22 @@
 .site[data-motion="paused"] .cinematic:hover img {
   transform: none;
 }
+.site[data-motion="paused"] .rollingTrack,
+.site[data-motion="paused"] .actionOrb svg,
+.site[data-motion="paused"] .bentoCard::before {
+  transform: none !important;
+  transition: none !important;
+}
+.site[data-motion="paused"] .bentoCard::before {
+  opacity: 0;
+}
+.site[data-motion="paused"] .actionSurface,
+.site[data-motion="paused"] .actionFill,
+.site[data-motion="paused"] .fieldControl::before,
+.site[data-motion="paused"] .labTabs::before,
+.site[data-motion="paused"] .textLink::after {
+  transition: none !important;
+}
 @media (prefers-reduced-motion: reduce) {
   .site *,
   .site *::before,
@@ -1748,6 +1967,13 @@
     transform: none;
   }
   .motionToggle {
+    display: none;
+  }
+  .rollingTrack,
+  .actionOrb svg {
+    transform: none !important;
+  }
+  .bentoCard::before {
     display: none;
   }
 }
@@ -1795,11 +2021,9 @@
   .heroSignature {
     margin-top: 23px;
   }
-  .primary,
-  .secondary {
-    gap: 16px;
-    padding-inline: 16px;
-    font-size: 11px;
+  .actionSurface {
+    gap: 11px;
+    padding-right: 22px;
   }
   .heroEyebrow {
     font-size: 8px;
@@ -1979,13 +2203,20 @@
     justify-content: center;
     gap: 9px;
   }
-  .primary,
-  .secondary {
-    min-height: 46px;
-    padding-inline: 15px;
-    gap: 15px;
+  .actionLink {
     font-size: 12px;
-    border-radius: 7px;
+  }
+  .actionSurface {
+    min-height: 52px;
+    padding-block: 5px;
+    padding-right: 21px;
+    gap: 9px;
+  }
+  .actions .textLink {
+    font-size: 11px;
+  }
+  .actions {
+    gap: 22px;
   }
   .heroSignature {
     display: none;
@@ -2227,20 +2458,23 @@
   .labToolbar {
     padding: 14px 13px;
     min-height: 65px;
+    gap: 10px;
   }
   .labTabs {
-    padding: 3px;
+    padding: 4px;
   }
   .labTabs button {
-    padding: 0 11px;
-    font-size: 12px;
+    padding: 0 9px;
+    gap: 6px;
+    font-size: 11px;
     min-height: 35px;
   }
   .labTag {
     font-size: 9px;
     letter-spacing: 0;
   }
-  .labTag > span {
+  .labTag > span,
+  .labTag small {
     display: none;
   }
   .network {
@@ -2485,11 +2719,18 @@
   .hero h1 {
     font-size: 46px;
   }
-  .primary,
-  .secondary {
-    font-size: 9px;
-    padding-inline: 12px;
-    gap: 11px;
+  .actionLink {
+    font-size: 11px;
+  }
+  .actionSurface {
+    padding-right: 16px;
+    gap: 7px;
+  }
+  .actions {
+    gap: 16px;
+  }
+  .actions .textLink {
+    font-size: 10px;
   }
   .heroVisual {
     height: 332px;

@@ -16,6 +16,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useMotionPreference } from "./Motion";
+import { RollingLabel } from "./Actions";
 import s from "../QuantumHome.module.css";
 
 const experiments = [
@@ -159,7 +160,12 @@ export default function QuantumLab() {
   return (
     <div ref={ref} className={s.labShell}>
       <div className={s.labToolbar}>
-        <div role="tablist" aria-label="选择密码学演示" className={s.labTabs}>
+        <div
+          role="tablist"
+          aria-label="选择密码学演示"
+          className={s.labTabs}
+          data-selected={kind}
+        >
           {experiments.map((item, index) => (
             <button
               key={item.en}
@@ -182,7 +188,8 @@ export default function QuantumLab() {
         </div>
         <span className={s.labTag}>
           <span />
-          {experiment.en} / INTERACTIVE
+          {experiment.en}
+          <small>/ INTERACTIVE</small>
         </span>
       </div>
       <div id="lab-panel" role="tabpanel" aria-labelledby={`lab-tab-${kind}`}>
@@ -284,20 +291,22 @@ export default function QuantumLab() {
             title={!enabled ? "已减少动态效果，可手动选择步骤" : undefined}
             aria-pressed={playing}
           >
-            {playing ? (
-              <Pause size={15} aria-hidden />
-            ) : (
-              <Play size={15} aria-hidden />
-            )}
+            <span className={s.playIcon} aria-hidden>
+              {playing ? <Pause size={13} /> : <Play size={13} />}
+            </span>
             {playing ? "暂停演示" : "自动演示"}
           </button>
         </div>
       </div>
       <div className={s.labFootnote}>
         <span>概念可视化 · 不执行真实密码运算</span>
-        <a href={experiment.source} target="_blank" rel="noreferrer">
-          阅读 NIST 标准
-          <ArrowRight size={13} aria-hidden />
+        <a
+          className={s.textLink}
+          href={experiment.source}
+          target="_blank"
+          rel="noreferrer"
+        >
+          <RollingLabel>阅读 NIST 标准</RollingLabel>
         </a>
       </div>
     </div>

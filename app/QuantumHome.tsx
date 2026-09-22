@@ -3,15 +3,13 @@
 import Link from "next/link";
 import { useState } from "react";
 import {
-  ArrowDown,
-  ArrowRight,
-  ArrowUpRight,
   AudioLines,
   BookOpen,
   Box,
   CircleDot,
   Fingerprint,
   Layers3,
+  Mouse,
   ScanLine,
   ShieldCheck,
   Sparkles,
@@ -20,9 +18,9 @@ import Navigation from "./home/Navigation";
 import QuantumField from "./home/QuantumField";
 import QuantumLab from "./home/QuantumLab";
 import BrandStory from "./home/BrandStory";
+import { ActionLink, RollingLabel, TextLink } from "./home/Actions";
 import {
   Counter,
-  MagneticLink,
   MotionProvider,
   MotionToggle,
   ReadingProgress,
@@ -42,7 +40,6 @@ function Hero() {
           <a href="#lab" className={s.announcement}>
             <span className={s.statusDot} />
             量子探索实验室，现已开启
-            <ArrowUpRight size={13} aria-hidden />
           </a>
           <p className={s.heroEyebrow}>
             A SMALL EXPLORER. AN INFINITE UNIVERSE.
@@ -57,10 +54,8 @@ function Hero() {
             和量仔一起，探索量子世界的无限可能。
           </p>
           <div className={s.actions}>
-            <MagneticLink href="/storybook">开启量子之旅</MagneticLink>
-            <MagneticLink href="#lab" secondary>
-              探索技术实验室
-            </MagneticLink>
+            <ActionLink href="/storybook">开启量子之旅</ActionLink>
+            <TextLink href="#lab">探索技术实验室</TextLink>
           </div>
           <div className={s.heroSignature}>
             <span />
@@ -96,7 +91,11 @@ function Hero() {
             <br />
             STATE: CURIOUS
           </div>
-          <div className={s.fieldControl} aria-label="粒子场形态">
+          <div
+            className={s.fieldControl}
+            aria-label="粒子场形态"
+            data-selected={field === "orbit" ? 0 : 1}
+          >
             <button
               aria-pressed={field === "orbit"}
               onClick={() => setField("orbit")}
@@ -118,7 +117,7 @@ function Hero() {
       <div className={s.heroBottom}>
         <a href="#universe" className={s.scrollCue}>
           <span>
-            <ArrowDown size={16} aria-hidden />
+            <Mouse size={17} strokeWidth={1.3} aria-hidden />
           </span>
           向下探索<small>SCROLL TO DISCOVER</small>
         </a>
@@ -179,9 +178,9 @@ function Universe() {
                 </h3>
                 <span>和量仔、奶龙一起，迎战 Shor 大魔王。</span>
                 <div className={s.cardLink}>
-                  翻开量子星守护者
-                  <span className={s.roundArrow}>
-                    <ArrowUpRight size={19} aria-hidden />
+                  <RollingLabel>翻开量子星守护者</RollingLabel>
+                  <span className={s.cardIndex} aria-hidden>
+                    01 / STORY
                   </span>
                 </div>
               </div>
@@ -197,7 +196,6 @@ function Universe() {
                   <ShieldCheck size={14} aria-hidden />
                   THE ARSENAL
                 </span>
-                <ArrowUpRight size={19} aria-hidden />
               </div>
               <div className={s.arsenalVisual} aria-hidden>
                 <div className={s.algorithmStack}>
@@ -224,8 +222,7 @@ function Universe() {
                 </h3>
                 <p>认识 4 种抗量子算法，找到你的守护之力。</p>
                 <span className={s.inlineLink}>
-                  进入 PQC 武器库
-                  <ArrowRight size={17} aria-hidden />
+                  <RollingLabel>进入 PQC 武器库</RollingLabel>
                 </span>
               </div>
             </Link>
@@ -237,7 +234,6 @@ function Universe() {
                   <ScanLine size={14} aria-hidden />
                   MAKE IT VISIBLE
                 </span>
-                <ArrowUpRight size={18} aria-hidden />
               </div>
               <div className={s.signalArt} aria-hidden>
                 <AudioLines size={86} strokeWidth={0.8} />
@@ -259,7 +255,6 @@ function Universe() {
             <Link href="/archive" className={`${s.bentoCard} ${s.archiveCard}`}>
               <div className={s.cardTop}>
                 <span>THE ORIGINAL</span>
-                <ArrowUpRight size={18} aria-hidden />
               </div>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -340,10 +335,7 @@ function Laboratory() {
           <QuantumLab />
         </Reveal>
         <Reveal className={s.algorithmRail}>
-          <Link href="/pqc-arsenal#weapons">
-            继续深入武器库
-            <ArrowUpRight size={13} aria-hidden />
-          </Link>
+          <TextLink href="/pqc-arsenal#weapons">继续深入武器库</TextLink>
           <div>
             {algorithms.map((name) => (
               <span key={name}>{name}</span>
@@ -364,10 +356,7 @@ function FeaturedStory() {
           <h2 id="featured-title">
             每一次突破，<span>都有故事。</span>
           </h2>
-          <Link href="/storybook">
-            发现完整故事
-            <ArrowUpRight size={17} aria-hidden />
-          </Link>
+          <TextLink href="/storybook">发现完整故事</TextLink>
         </Reveal>
         <Reveal>
           <Link className={s.cinematic} href="/storybook">
@@ -393,8 +382,8 @@ function FeaturedStory() {
               <span>当精确与勇敢相遇，新的力量就此诞生。</span>
             </div>
             <span className={s.cinematicButton}>
-              进入故事
-              <ArrowUpRight size={19} aria-hidden />
+              <BookOpen size={17} strokeWidth={1.3} aria-hidden />
+              <RollingLabel>进入故事</RollingLabel>
             </span>
           </Link>
         </Reveal>
@@ -415,7 +404,7 @@ function Closing() {
           <span>下一站，无限。</span>
         </h2>
         <p>宇宙很大，好奇心更大。你的故事，从这里开始。</p>
-        <MagneticLink href="/storybook">量仔，带我去看看</MagneticLink>
+        <ActionLink href="/storybook">量仔，带我去看看</ActionLink>
       </Reveal>
     </section>
   );
@@ -432,13 +421,10 @@ function Footer() {
           <p>来自量子星，连接每一种可能。</p>
         </div>
         <nav aria-label="页脚导航">
-          <Link href="/storybook">量仔故事</Link>
-          <Link href="/pqc-arsenal">PQC 武器库</Link>
-          <Link href="/archive">角色档案</Link>
-          <a href="#main-content">
-            回到顶部
-            <ArrowUpRight size={14} aria-hidden />
-          </a>
+          <TextLink href="/storybook">量仔故事</TextLink>
+          <TextLink href="/pqc-arsenal">PQC 武器库</TextLink>
+          <TextLink href="/archive">角色档案</TextLink>
+          <TextLink href="#main-content">回到顶部</TextLink>
         </nav>
       </div>
       <div className={s.footerBottom}>
