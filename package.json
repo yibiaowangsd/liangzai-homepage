@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
+    "framer-motion": "13.4.0",
+    "lucide-react": "1.47.0",
     "next": "16.2.6",
     "react": "19.2.6",
     "react-dom": "19.2.6"
@@ -40,5 +42,5 @@
     "wrangler": "4.92.0"
   },
   "type": "module",
-  "displayName": "\u91cf\u4ed4 \u00b7 Shor \u5927\u9b54\u738b\u6863\u6848"
+  "displayName": "量仔 · Shor 大魔王档案"
 }
