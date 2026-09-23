@@ -1,0 +1,315 @@
+.portal-hero:has(.guardian-stage) {
+  background: radial-gradient(
+    ellipse at 78% 45%,
+    #12293d 0,
+    #0a1420 24%,
+    #060a10 60%
+  );
+  min-height: 830px;
+  overflow: hidden;
+}
+.guardian-stage {
+  position: absolute;
+  z-index: 1;
+  right: -3%;
+  top: -3%;
+  bottom: 66px;
+  width: 65%;
+  isolation: isolate;
+}
+.guardian-canvas {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  opacity: 0;
+  transition: opacity 1.15s;
+  cursor: grab;
+  touch-action: pan-y;
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 97%, transparent);
+}
+.guardian-canvas:focus-visible {
+  outline: 1px solid #9ddcff;
+  outline-offset: -15px;
+  border-radius: 16px;
+}
+.guardian-canvas.is-dragging {
+  cursor: grabbing;
+}
+.guardian-stage[data-status="ready"] .guardian-canvas {
+  opacity: 1;
+}
+.guardian-atmosphere {
+  position: absolute;
+  inset: 5% 0 4%;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 54% 46%,
+    #24689935 0,
+    #12344d15 36%,
+    transparent 66%
+  );
+}
+.guardian-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s;
+  pointer-events: none;
+}
+.guardian-fallback img {
+  position: relative;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+  mask-image: linear-gradient(0deg, transparent, #000 9%, #000 96%, transparent), linear-gradient(90deg, transparent, #000 14%, #000 93%, transparent);
+  mask-composite: intersect;
+}
+.guardian-stage[data-status="ready"] .guardian-fallback {
+  opacity: 0;
+}
+.guardian-stage[data-status="fallback"] .guardian-canvas {
+  opacity: 0;
+  pointer-events: none;
+}
+.guardian-scene-label {
+  position: absolute;
+  left: 50%;
+  top: 5.5%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  font: 8px var(--font-mono-en);
+  letter-spacing: 0.19em;
+  color: #a5bccf;
+  pointer-events: none;
+}
+.guardian-scene-label > span:last-child {
+  padding-left: 16px;
+  margin-left: 6px;
+  border-left: 1px solid #8baccd40;
+  font-size: 7px;
+  color: #6c8297;
+}
+.guardian-live-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #a1e3ff;
+  box-shadow: 0 0 10px #a1e3ff;
+}
+.guardian-controls {
+  position: absolute;
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 95%;
+  text-align: center;
+  z-index: 5;
+}
+.guardian-instruction {
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  color: #bdccd8;
+  text-shadow: 0 1px 5px #000, 0 1px 15px #000;
+  margin-bottom: 15px;
+}
+.guardian-actions {
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  background: #0b1520b3;
+  border: 1px solid #95bdd02e;
+  backdrop-filter: blur(16px);
+  border-radius: 6px;
+  box-shadow: 0 12px 35px #0003;
+}
+.guardian-actions button {
+  font-size: 11px;
+  background: transparent;
+  border: 0;
+  border-radius: 3px;
+  padding: 9px 14px;
+  color: #95a9bd;
+  min-height: 36px;
+  transition:
+    background 0.25s,
+    color 0.25s;
+}
+.guardian-actions button:hover,
+.guardian-actions button[aria-pressed="true"] {
+  background: #7cb9db18;
+  color: #e5f5ff;
+}
+.guardian-actions button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+.guardian-actions button:focus-visible {
+  outline: 1px solid #b0d7f2;
+  outline-offset: 2px;
+}
+.guardian-actions .guardian-hello {
+  border-left: 1px solid #aac8e02c;
+  margin-left: 6px;
+  padding-left: 17px;
+  color: #dcecf8;
+}
+.guardian-hello span {
+  margin-left: 14px;
+  color: #8ccded;
+}
+.portal-hero:has(.guardian-stage) .portal-copy {
+  max-width: 57%;
+  pointer-events: none;
+}
+.portal-hero:has(.guardian-stage) .portal-copy a,
+.portal-hero:has(.guardian-stage) .portal-copy button {
+  pointer-events: auto;
+}
+.portal-hero:has(.guardian-stage) .portal-copy h1 {
+  font-size: clamp(64px, 6.6vw, 108px);
+}
+.portal-hero:has(.guardian-stage) .portal-copy .eyebrow {
+  max-width: 100%;
+  font-size: 8px !important;
+}
+.portal-hero:has(.guardian-stage) .hero-baseline {
+  z-index: 6;
+}
+.portal-hero:has(.guardian-stage):after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, #060a10 0, #060a10c9 25%, transparent 53%),
+    linear-gradient(0deg, #07090c 1%, transparent 15%);
+}
+@media (max-width: 1100px) and (min-width: 701px) {
+  .guardian-stage {
+    right: -14%;
+    width: 80%;
+    top: 3%;
+    bottom: 76px;
+  }
+  .guardian-controls {
+    left: 52%;
+    bottom: 4%;
+  }
+  .guardian-scene-label {
+    display: none;
+  }
+  .portal-hero:has(.guardian-stage) .portal-copy {
+    padding-top: 120px;
+    max-width: 56%;
+  }
+  .portal-hero:has(.guardian-stage) .portal-copy h1 {
+    font-size: 66px;
+  }
+  .guardian-actions button {
+    padding-inline: 12px;
+  }
+  .portal-hero:has(.guardian-stage) {
+    min-height: 800px;
+  }
+}
+@media (max-width: 700px) {
+  .portal-hero:has(.guardian-stage) {
+    height: auto;
+    min-height: 990px;
+    max-height: none;
+    background: radial-gradient(ellipse at 50% 68%, #163044, #060a10 58%);
+  }
+  .portal-hero:has(.guardian-stage) .portal-copy {
+    max-width: 100%;
+    padding: 40px 6vw 0;
+  }
+  .portal-hero:has(.guardian-stage) .portal-copy h1 {
+    font-size: 56px;
+    line-height: 1.13;
+    letter-spacing: -0.07em;
+    margin-bottom: 24px;
+  }
+  .portal-hero:has(.guardian-stage) .portal-copy .eyebrow {
+    font-size: 6px !important;
+    margin-bottom: 28px;
+  }
+  .portal-hero:has(.guardian-stage) .hero-summary {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+  .portal-hero:has(.guardian-stage) .hero-actions {
+    gap: 25px;
+  }
+  .guardian-stage {
+    top: 350px;
+    bottom: 65px;
+    right: -7%;
+    width: 114%;
+  }
+  .guardian-scene-label {
+    top: 1.5%;
+    font-size: 7px;
+  }
+  .guardian-scene-label > span:last-child {
+    font-size: 6px;
+  }
+  .guardian-controls {
+    bottom: 4%;
+  }
+  .guardian-instruction {
+    font-size: 10px;
+    margin-bottom: 12px;
+  }
+  .guardian-actions button {
+    font-size: 11px;
+    padding: 8px 12px;
+    min-height: 42px;
+  }
+  .guardian-actions .guardian-hello {
+    padding-left: 12px;
+    margin-left: 3px;
+  }
+  .guardian-hello span {
+    margin-left: 8px;
+  }
+  .portal-hero:has(.guardian-stage):after {
+    background:
+      linear-gradient(0deg, #07090c 0, transparent 12%),
+      linear-gradient(180deg, #060a10 0, transparent 40%);
+  }
+  .portal-hero:has(.guardian-stage) .hero-baseline {
+    bottom: 0;
+    min-height: 65px;
+  }
+
+}
+@media (max-width: 380px) {
+  .portal-hero:has(.guardian-stage) .portal-copy h1 {
+    font-size: 50px;
+  }
+  .guardian-actions button {
+    padding-inline: 10px;
+  }
+  .guardian-stage {
+    top: 355px;
+  }
+  .portal-hero:has(.guardian-stage) {
+    min-height: 980px;
+  }
+}
+[data-motion="paused"] .guardian-canvas,
+[data-motion="paused"] .guardian-fallback {
+  transition: none;
+}

@@ -9,6 +9,7 @@ import {
 } from "./experience/Motion";
 import QuantumSculpture from "./experience/QuantumSculpture";
 import FilmDialog from "./experience/FilmDialog";
+import InteractiveGuardian from "./experience/InteractiveGuardian";
 
 const paths = [
   {
@@ -63,9 +64,7 @@ export default function QuantumHome() {
                 scrub: 1,
               },
             })
-            .to(".portal-image", { scale: 1.14, yPercent: 12 }, 0)
-            .to(".portal-copy", { yPercent: 26, opacity: 0.2 }, 0)
-            .to(".hero-guardian", { yPercent: -16, rotation: 4 }, 0);
+            .to(".portal-copy", { yPercent: 16, opacity: 0.35 }, 0);
           const rail = track.current!;
           gsap.to(rail, {
             x: () =>
@@ -94,17 +93,7 @@ export default function QuantumHome() {
   return (
     <main ref={root} id="main-content" className="cinematic-home">
       <section ref={hero} className="portal-hero" aria-labelledby="home-title">
-        <div className="portal-scene" aria-hidden="true">
-          <img
-            className="portal-image"
-            src="/assets/cinematic/quantum-portal-v1.webp"
-            alt=""
-            width="1672"
-            height="941"
-            fetchPriority="high"
-          />
-          <div className="portal-shade" />
-        </div>
+        <InteractiveGuardian />
         <div className="portal-copy">
           <p className="eyebrow" data-intro>
             <span className="status-light" /> A LITTLE CURIOSITY. AN INFINITE
@@ -127,15 +116,6 @@ export default function QuantumHome() {
             </Link>
             <FilmDialog />
           </div>
-        </div>
-        <div className="hero-guardian" data-intro>
-          <img
-            src="/assets/characters-v2/arsenal-liangzai-cutout.webp"
-            alt="蓝白战甲的量仔，漂浮在量子门前"
-            width="1024"
-            height="1536"
-          />
-          <span>LIANGZAI / Q–∞</span>
         </div>
         <div className="hero-baseline">
           <a href="#worlds">
