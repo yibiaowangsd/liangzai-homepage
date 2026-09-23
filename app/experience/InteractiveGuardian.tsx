@@ -38,7 +38,7 @@ export default function InteractiveGuardian() {
     if(!instance){if(status!=="loading")setStatus("fallback");return;}
     setStatus("loading");instance.setMotion(false);
     try{await instance.setModel(next);if(version===request.current){instance.setView(viewRef.current);instance.setMotion(motion.current);setStatus("ready");}}
-    catch{if(version===request.current)setStatus("fallback");}
+    catch{if(version===request.current){instance.dispose();if(runtime.current===instance)runtime.current=null;setStatus("fallback");}}
   }
   function selectView(next:ModelView){viewRef.current=next;setView(next);runtime.current?.setView(next);}
   return (
