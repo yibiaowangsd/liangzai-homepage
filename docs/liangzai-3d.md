@@ -4,11 +4,11 @@
 
 ## 模型来源与资源
 
-`app/experience/three/model-catalog.json` 记录原文件 SHA-256、压缩版本 SHA-256、几何统计及分块路径。使用 gltfpack / EXT_meshopt_compression 压缩，保留命名部件、材质、贴图；没有设置减面参数。位置 16 bit、法线 12 bit、UV 14 bit 量化。奶龙的少量退化三角形在清理时被移除，正常表面保留。模型总下载由约 19.5 MB 降为约 4.1 MB；奶龙贴图字节与原件一致。
+`app/experience/three/model-catalog.json` 记录原文件 SHA-256、Web 版本 SHA-256、几何统计、贴图尺寸及分块路径。使用 gltfpack / EXT_meshopt_compression 压缩，保留命名部件、材质；没有设置减面参数。位置 16 bit、法线 12 bit、UV 14 bit 量化。奶龙的少量退化三角形在清理时被移除，正常表面保留。P0 优化将奶龙 PNG 从 4096×2048 缩为 2048×1024，保留原图哈希作为来源记录；Web 贴图有独立哈希，不再与原图字节相同。当前量仔 1,396,772 字节，奶龙 2,601,084 字节，两者约 4.0 MB。
 
 为避免发布接口在单次大文件请求上长时间等待，模型以最大 384 KiB 的内容哈希分块存放在 `public/assets/models/observatory/`。加载器并行下载当前所需模型的所有部分，校验长度、按顺序合并后交给原生 GLTFLoader + MeshoptDecoder 解码。默认只加载量仔，奶龙按需加载，加载过的角色在当前场景中复用。分块 URL 含模型内容哈希，避免 CDN 混合新旧资源。
 
-模型准备：`npm run models:prepare -- /path/to/liangzai-refined.glb /path/to/nailong.glb`。完整压缩 GLB 留在忽略目录 `outputs/model-packed/`；原始附件不改写。提交生成的 catalog 与 `.bin` 文件。
+模型准备：`npm run models:prepare -- /path/to/liangzai-refined.glb /path/to/nailong.glb`。脚本在 Meshopt 压缩后仅调整奶龙嵌入贴图，不重新编码几何。也可运行 `npm run models:prepare -- --refresh-textures`，从当前分片重建 Web 贴图而无需原始附件；此模式校验旧分片并保留原件来源字段，重复运行不会再次缩小或重采样 2K 贴图。完整 Web GLB 留在忽略目录 `outputs/model-packed/`；原始附件不改写。提交生成的 catalog 与 `.bin` 文件。上一版哈希分片暂时保留，避免发布前已打开的页面按旧 catalog 切换奶龙时发生 404。
 
 ## 交互与场景
 
@@ -16,11 +16,18 @@
 - 正面 / 侧面 / 背面 / 复位；拖拽旋转；键盘左右键 / Home；点击角色或 Enter 唤起星光。
 - 两个上传模型没有骨骼或内置动画，因此保留原始造型，采用刚性转动、轻微浮动和底座星光响应。没有强行绑定或弯曲奶龙表面。
 - 大面积柔光、暖白主光、淡蓝轮廓光、定制棚拍反射环境，减少强烈色染。玻璃星空底座包含星云纹理、细小星点、星座连线及金属边缘；背景圆环降低亮度，突出角色。
-- GSAP quickTo 缓和拖动，timeline 控制星光与浮动；减少动态效果 / 全站暂停动效时停止连续动画。手机限制像素比与帧率、关闭 bloom；离屏和后台暂停绘制。
+- GSAP quickTo 缓和拖动，timeline 控制星光与浮动。唯一的 requestAnimationFrame 调度器提交 GPU 绘制，姿态、resize、模型切换只标记重绘并合并到一帧。加载/预编译期间不提交场景帧；compileAsync 使用与 Composer 一致的离屏目标，编译完成后才允许首次绘制。旧的异步请求无法解锁新请求的编译屏障。
+- 减少动态效果 / 全站暂停动效时停止连续动画，只在显式改变姿态等操作后重绘。手机继续限制像素比与帧率、关闭 bloom；离屏和后台取消绘制请求，恢复可见时绘制最新状态。退出页面取消待执行帧。
+- 保留 1024×1024 主光阴影，关闭自动逐帧更新。姿态变化和星光升起时随可见帧更新；轻微待机浮动最多 10 Hz；静止时复用阴影。
+- Composer 保持 DPR 1、主体渲染尺寸不变；在 Composer resize 后单独把 Bloom 的尺寸设为一半，亮部及模糊中间目标像素约减少 75%，最终叠加仍执行。Five-level Bloom、材质和棚拍灯光均保留。
 - 下载有 18 秒上限、着色器准备有 10 秒上限；快速切换只应用最后一次选择；退出页面中止请求并释放网格、纹理、ImageBitmap、渲染目标和监听器。WebGL 不可用或加载失败时提供三种模式的四视角渲染预览。
 
 ## 渲染与验证
 
 `scripts/render-observatory.py` 使用 Blender 4.5 / bpy，从原始 GLB 渲染完整场景。运行：`python scripts/render-observatory.py liangzai.glb nailong.glb`；也可追加 `duo:reset` 等指定视角。PNG 输出至 `outputs/observatory-renders/`，转换为同名 WebP 后提交到展台资源目录。离线渲染与 Three.js 的实时反射细节会不同。
 
-测试覆盖资源分块 SHA-256、Meshopt 解码、有限几何数值、贴图原样保留、原始模型尺寸归一化、双角色站位与底座边界；已有测试覆盖五个 SSR 页面及 Worker 禁止的顶层计时器。浏览器已验证分块下载与实际 GLTF 解码：量仔 68 个网格，奶龙 5 个网格，奶龙贴图成功解码为 4096 × 2048。当前自动预览浏览器禁用了 WebGL，网页检查覆盖模式/视角兼容预览和桌面/手机布局；实时 WebGL 操作与帧率仍需支持 WebGL 的设备复核。
+测试覆盖资源分块 SHA-256、Meshopt 解码、有限几何数值、Web 贴图校验和实际像素解码、原始模型尺寸归一化、双角色站位与底座边界；已有测试覆盖五个 SSR 页面及 Worker 禁止的顶层计时器。新增调度测试覆盖编译前禁止绘制、重复重绘合并、切换期间暂停、离屏恢复、暂停动效后单次重绘、释放后不再绘制和阴影 10 Hz 预算。
+
+P0 验证：构建和 15 项测试通过；改动范围 TypeScript 检查通过，定向 ESLint 无错误。与 P0 前文件比较，量仔整个 GLB 字节一致；奶龙 Meshopt 压缩流、accessors、meshes、nodes、materials 均一致，只替换贴图及对应容器偏移。奶龙贴图实际解码为 2048×1024。按 RGBA8 加完整 mipmap 估算，该贴图显存由约 42.7 MiB 降至 10.7 MiB；这不是整页 GPU 内存实测值。
+
+当前浏览器无法访问本地预览，未对本次修改报告真实 WebGL FPS 或 GPU 百分比。完整仓库 `tsc` 仍受原有 Cloudflare 全局类型缺失影响（`cloudflare:workers`、`Fetcher`、`D1Database`），不在本次 P0 修改范围。合并前建议在支持 WebGL 的设备复核单/双模型、拖动、三个视角、星光、动效暂停、离屏恢复及快速连续切换。

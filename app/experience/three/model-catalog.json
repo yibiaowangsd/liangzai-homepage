@@ -2,21 +2,24 @@
   "liangzai": {
     "source": "liangzai-refined(1).glb",
     "sourceSha256": "edeecdde1b287390494d778d8ff1043616b167937ff5888dc8036191b533424d",
-    "sha256": "20a34368260a4038fd7b9f183a300ea3d57c32de88d120d58513eca253522f6c",
     "sourceBytes": 6245080,
-    "bytes": 1396772,
     "sourceGeometry": {
       "triangles": 330348,
       "materials": 11,
       "meshes": 68,
       "images": 0
     },
+    "sourceImageHashes": [],
+    "sha256": "20a34368260a4038fd7b9f183a300ea3d57c32de88d120d58513eca253522f6c",
+    "bytes": 1396772,
     "geometry": {
       "triangles": 330348,
       "materials": 11,
       "meshes": 68,
       "images": 0
     },
+    "imageHashes": [],
+    "images": [],
     "parts": [
       {
         "url": "/assets/models/observatory/liangzai-20a3436826-01.bin",
@@ -34,63 +37,74 @@
         "url": "/assets/models/observatory/liangzai-20a3436826-04.bin",
         "bytes": 217124
       }
-    ],
-    "sourceImageHashes": [],
-    "imageHashes": []
+    ]
   },
   "nailong": {
     "source": "nailong (1).glb",
     "sourceSha256": "ab4739296473fdc3e75cdcb661379e8420ab7ffafc8254f024de7c997e0ed054",
-    "sha256": "a404ac855b9b2a245b33da99b3a6221c719ebcb0076d9a44400882c5dec7fb8c",
     "sourceBytes": 13256364,
-    "bytes": 2668764,
     "sourceGeometry": {
       "triangles": 483994,
       "materials": 4,
       "meshes": 5,
       "images": 1
     },
+    "sourceImageHashes": [
+      "fd4bcc45b0c12e86a72fbcab00726f14780677b78fb7eeeb6b91fa7cec0192b8"
+    ],
+    "sha256": "8d98604f399fddd8a192e694fa7dcb6ce716cbe95224d9203e7d78c29bfe0d3a",
+    "bytes": 2601084,
     "geometry": {
       "triangles": 483522,
       "materials": 4,
       "meshes": 5,
       "images": 1
     },
-    "parts": [
+    "imageHashes": [
+      "6ec52e0a9c9826fcf80af79cdadbe71ad1b875dd90511653aa4c4df7d619c877"
+    ],
+    "images": [
       {
-        "url": "/assets/models/observatory/nailong-a404ac855b-01.bin",
-        "bytes": 393216
-      },
-      {
-        "url": "/assets/models/observatory/nailong-a404ac855b-02.bin",
-        "bytes": 393216
-      },
-      {
-        "url": "/assets/models/observatory/nailong-a404ac855b-03.bin",
-        "bytes": 393216
-      },
-      {
-        "url": "/assets/models/observatory/nailong-a404ac855b-04.bin",
-        "bytes": 393216
-      },
-      {
-        "url": "/assets/models/observatory/nailong-a404ac855b-05.bin",
-        "bytes": 393216
-      },
-      {
-        "url": "/assets/models/observatory/nailong-a404ac855b-06.bin",
-        "bytes": 393216
-      },
-      {
-        "url": "/assets/models/observatory/nailong-a404ac855b-07.bin",
-        "bytes": 309468
+        "width": 2048,
+        "height": 1024,
+        "bytes": 45929,
+        "sha256": "6ec52e0a9c9826fcf80af79cdadbe71ad1b875dd90511653aa4c4df7d619c877"
       }
     ],
-    "sourceImageHashes": [
-      "fd4bcc45b0c12e86a72fbcab00726f14780677b78fb7eeeb6b91fa7cec0192b8"
+    "parts": [
+      {
+        "url": "/assets/models/observatory/nailong-8d98604f39-01.bin",
+        "bytes": 393216
+      },
+      {
+        "url": "/assets/models/observatory/nailong-8d98604f39-02.bin",
+        "bytes": 393216
+      },
+      {
+        "url": "/assets/models/observatory/nailong-8d98604f39-03.bin",
+        "bytes": 393216
+      },
+      {
+        "url": "/assets/models/observatory/nailong-8d98604f39-04.bin",
+        "bytes": 393216
+      },
+      {
+        "url": "/assets/models/observatory/nailong-8d98604f39-05.bin",
+        "bytes": 393216
+      },
+      {
+        "url": "/assets/models/observatory/nailong-8d98604f39-06.bin",
+        "bytes": 393216
+      },
+      {
+        "url": "/assets/models/observatory/nailong-8d98604f39-07.bin",
+        "bytes": 241788
+      }
     ],
-    "imageHashes": [
-      "fd4bcc45b0c12e86a72fbcab00726f14780677b78fb7eeeb6b91fa7cec0192b8"
-    ]
+    "textureOptimization": {
+      "method": "resize-only",
+      "maxWidth": 2048,
+      "maxHeight": 1024
+    }
   }
 }

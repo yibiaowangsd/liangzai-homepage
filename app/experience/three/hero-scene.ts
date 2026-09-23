@@ -7,6 +7,7 @@ import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUnifo
 import { gsap } from "gsap";
 import { loadCharacter, disposeObject, VIEW_ANGLES, type CharacterId, type ModelMode, type ModelView } from "./character-assets";
 import { createObservatory, createStudioEnvironment } from "./observatory";
+import { createFrameScheduler, createShadowBudget } from "./render-scheduler";
 
 export type HeroScene = {
   setMotion(enabled: boolean): void;
@@ -21,7 +22,9 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:"high-performance"});
   renderer.setClearColor(0x050a13,0);renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.96;
-  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  // r186 already maps the removed PCFSoftShadowMap to PCFShadowMap.
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
+  renderer.shadowMap.autoUpdate=false;
   const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x050a13,.035);
   const camera=new THREE.PerspectiveCamera(35,1,.1,60);
   camera.position.set(0,4.5,11.8);camera.lookAt(0,2.55,0);
@@ -43,19 +46,37 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const bloom=new UnrealBloomPass(new THREE.Vector2(512,512),.13,.45,1.8),output=new OutputPass();
   composer.addPass(renderPass);composer.addPass(bloom);composer.addPass(output);
   const actors=new Map<CharacterId,THREE.Group>(), pending=new Map<CharacterId,Promise<THREE.Group>>();
-  let enabled=false,visible=true,disposed=false,lostContext=false,attached=false;
-  let width=1,height=1,lastFrame=0,time=0,resizeFrame=0,modelRequest=0;
+  const compiledActors=new Set<CharacterId>();
+  let enabled=false,visible=true,disposed=false,lostContext=false,ready=false,preparing=0;
+  let width=1,height=1,time=0,resizeFrame=0,modelRequest=0;
   let mode:ModelMode="liangzai",activeView:ModelView="reset";
   const pose={yaw:VIEW_ANGLES.reset,pitch:0,gaze:0,lift:0,energy:0};
   const ctx=gsap.context(()=>{});
   let pulseTimeline:gsap.core.Timeline | null=null;
-  const render=()=>{if(!disposed&&!lostContext)composer.render();};
+  const shadows=createShadowBudget();
+  const frames=createFrameScheduler({
+    requestFrame:callback=>requestAnimationFrame(callback),
+    cancelFrame:handle=>cancelAnimationFrame(handle),
+    canRender:()=>ready&&!preparing&&visible&&!document.hidden&&!disposed&&!lostContext,
+    continuous:()=>enabled,
+    fps:()=>width<600?30:45,
+    render(now,delta){
+      if(enabled)time+=delta;
+      updateScene();
+      renderer.shadowMap.needsUpdate=shadows.shouldUpdate(now,enabled);
+      composer.render();
+    },
+  });
+  const invalidate=(shadowChanged=false)=>{
+    if(shadowChanged)shadows.invalidate();
+    frames.invalidate();
+  };
   const applyPose=()=>{
     for(const [id,actor] of actors){
       actor.rotation.y=pose.yaw+(mode==="duo"?(id==="liangzai"?.055:-.055):0);
       actor.rotation.x=pose.pitch;actor.rotation.z=pose.gaze;
     }
-    if(!attached)render();
+    invalidate(true);
   };
   const yawTo=gsap.quickTo(pose,"yaw",{duration:.65,ease:"power3.out",onUpdate:applyPose});
   const pitchTo=gsap.quickTo(pose,"pitch",{duration:.65,ease:"power3.out",onUpdate:applyPose});
@@ -67,16 +88,9 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     (observatory.pulse.material as THREE.MeshBasicMaterial).opacity=pose.energy*.4;
     observatory.pulse.scale.setScalar(1+pose.energy*.075);
   }
-  function tick(now:number){
-    const elapsed=now-lastFrame;
-    if(elapsed<1/(width<600?30:45))return;
-    lastFrame=now;time+=Math.min(elapsed,.06);updateScene();render();
-  }
   const sync=()=>{
-    const active=enabled&&visible&&!document.hidden&&!disposed&&!lostContext;
-    if(active&&!attached){gsap.ticker.add(tick);attached=true;}
-    else if(!active&&attached){gsap.ticker.remove(tick);attached=false;}
-    if(!active)render();
+    frames.sync();
+    invalidate();
   };
   const resize=()=>{
     if(disposed)return;
@@ -84,10 +98,13 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     if(Math.abs(width-r.width)<.5&&Math.abs(height-r.height)<.5)return;
     width=r.width;height=r.height;
     renderer.setPixelRatio(Math.min(window.devicePixelRatio,width<600?1.15:1.5));renderer.setSize(width,height,false);composer.setSize(width,height);
+    // Composer intentionally stays at DPR 1. Only the soft glow is downsampled.
+    // Apply after composer.setSize(), which otherwise overwrites pass sizes.
+    bloom.setSize(Math.max(1,Math.round(width*.5)),Math.max(1,Math.round(height*.5)));
     camera.aspect=width/height;
     // Keep the broad pedestal and both silhouettes inside portrait screens.
     camera.fov=THREE.MathUtils.radToDeg(2*Math.atan(Math.tan(THREE.MathUtils.degToRad(35/2))/Math.min(1,width/height/.9)));
-    camera.updateProjectionMatrix();bloom.enabled=width>=600;render();
+    camera.updateProjectionMatrix();bloom.enabled=width>=600;invalidate();
   };
   const observer=new ResizeObserver(()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(resize);});observer.observe(canvas);
   const visibility=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;sync();},{threshold:.025});visibility.observe(canvas);
@@ -103,9 +120,9 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   function resonate(){
     if(disposed||lostContext)return;
     pulseTimeline?.kill();pose.lift=pose.energy=0;
-    if(!enabled){render();return;}
+    if(!enabled){invalidate();return;}
     ctx.add(()=>{
-      pulseTimeline=gsap.timeline({onUpdate:()=>{updateScene();if(!attached)render();}})
+      pulseTimeline=gsap.timeline({onUpdate:()=>invalidate(true)})
         .to(pose,{lift:.11,energy:1,duration:.55,ease:"sine.out"})
         .to(pose,{lift:0,energy:0,duration:1.2,ease:"sine.inOut"});
     });
@@ -135,32 +152,52 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   for(const [type,listener] of Object.entries(listeners))canvas.addEventListener(type,listener as EventListener);
   document.addEventListener("visibilitychange",sync);
   function dispose(){
-    if(disposed)return;disposed=true;modelRequest++;ctx.revert();[yawTo,pitchTo,gazeTo].forEach(t=>t.tween.kill());gsap.ticker.remove(tick);
+    if(disposed)return;disposed=true;modelRequest++;frames.dispose();ctx.revert();[yawTo,pitchTo,gazeTo].forEach(t=>t.tween.kill());
     observer.disconnect();visibility.disconnect();cancelAnimationFrame(resizeFrame);document.removeEventListener("visibilitychange",sync);signal.removeEventListener("abort",dispose);
     for(const [type,listener] of Object.entries(listeners))canvas.removeEventListener(type,listener as EventListener);
-    disposeObject(scene);actors.clear();pending.clear();environment.dispose();key.shadow.dispose();bloom.dispose();output.dispose();renderPass.dispose();composer.dispose();renderer.dispose();renderer.forceContextLoss();
+    disposeObject(scene);actors.clear();pending.clear();compiledActors.clear();environment.dispose();key.shadow.dispose();bloom.dispose();output.dispose();renderPass.dispose();composer.dispose();renderer.dispose();renderer.forceContextLoss();
   }
   signal.addEventListener("abort",dispose,{once:true});
   resize();
   return {
-    setMotion(value){enabled=value;if(!value){pulseTimeline?.progress(1).kill();[yawTo,pitchTo,gazeTo].forEach(t=>t.tween.pause());pose.pitch=pose.gaze=pose.lift=pose.energy=0;applyPose();updateScene();}sync();},
+    setMotion(value){enabled=value;if(!value){pulseTimeline?.progress(1).kill();[yawTo,pitchTo,gazeTo].forEach(t=>t.tween.pause());pose.pitch=pose.gaze=pose.lift=pose.energy=0;applyPose();}sync();},
     setView,resonate,dispose,
     async setModel(next){
       if(disposed||lostContext)throw new Error("3D unavailable");
       const request=++modelRequest,ids:CharacterId[]=next==="duo"?["liangzai","nailong"]:[next];
-      await Promise.all(ids.map(ensure));
-      if(disposed||request!==modelRequest)return;
-      mode=next;
-      for(const [id,actor] of actors){
-        actor.visible=ids.includes(id);actor.scale.setScalar(next==="duo"?.87:1);
-        actor.position.set(next==="duo"?(id==="liangzai"?-1.24:1.22):0,.092,next==="duo"?(id==="nailong"?.12:0):0);
-      }
-      camera.zoom=next==="duo"?.94:1;camera.updateProjectionMatrix();setView(activeView);updateScene();applyPose();
+      preparing=request;frames.sync();
       let timer:ReturnType<typeof setTimeout>|undefined;
-      try{await Promise.race([renderer.compileAsync(scene,camera),new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error("3D shader timeout")),10000);})]);}
-      finally{clearTimeout(timer);}
-      if(disposed||request!==modelRequest)return;
-      render();sync();
+      try{
+        await Promise.all(ids.map(ensure));
+        if(disposed||request!==modelRequest)return;
+        mode=next;
+        for(const [id,actor] of actors){
+          actor.visible=ids.includes(id);actor.scale.setScalar(next==="duo"?.87:1);
+          actor.position.set(next==="duo"?(id==="liangzai"?-1.24:1.22):0,.092,next==="duo"?(id==="nailong"?.12:0):0);
+        }
+        camera.zoom=next==="duo"?.94:1;camera.updateProjectionMatrix();setView(activeView);updateScene();applyPose();
+        if(ids.some(id=>!compiledActors.has(id))){
+          // Compile the same linear/HDR variant that RenderPass will actually use.
+          // Restore the target synchronously; another selection may arrive while awaiting.
+          const previousTarget=renderer.getRenderTarget();
+          let compiled:Promise<THREE.Object3D>;
+          try{renderer.setRenderTarget(composer.readBuffer);compiled=renderer.compileAsync(scene,camera);}
+          finally{renderer.setRenderTarget(previousTarget);}
+          await Promise.race([compiled,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new Error("3D shader timeout")),10000);})]);
+          if(disposed||request!==modelRequest)return;
+          ids.forEach(id=>compiledActors.add(id));
+        }
+        ready=true;
+        invalidate(true);
+      }catch(error){
+        // A failed older request must not replace a newer working selection with fallback.
+        if(disposed||request!==modelRequest)return;
+        ready=false;
+        throw error;
+      }finally{
+        clearTimeout(timer);
+        if(request===modelRequest){preparing=0;frames.sync();}
+      }
     },
   };
 }

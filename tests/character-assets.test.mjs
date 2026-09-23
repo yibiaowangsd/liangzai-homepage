@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { Box3, Vector3, Texture } from 'three';
 import { prepareCharacter } from '../app/experience/three/character-assets.ts';
+import sharp from 'sharp';
 const catalog=JSON.parse(await readFile(new URL('../app/experience/three/model-catalog.json',import.meta.url),'utf8'));
 const sha=buffer=>createHash('sha256').update(buffer).digest('hex');
 async function load(id){
@@ -18,14 +19,22 @@ async function load(id){
  const gltf=await loader.parseAsync(binary.buffer.slice(binary.byteOffset,binary.byteOffset+binary.byteLength),'');
  return {gltf,binary};
 }
-for(const id of ['liangzai','nailong'])test(`${id}: uploaded geometry decodes, chunks and embedded artwork remain intact`,async()=>{
+for(const id of ['liangzai','nailong'])test(`${id}: uploaded geometry decodes and Web texture metadata matches`,async()=>{
  const {gltf,binary}=await load(id),m=catalog[id];
  assert.ok(m.bytes<m.sourceBytes*.3);assert.ok(m.geometry.triangles>=m.sourceGeometry.triangles*.998);
  assert.equal(m.geometry.materials,m.sourceGeometry.materials);
  const json=JSON.parse(binary.subarray(20,20+binary.readUInt32LE(12)).toString());
  const start=28+binary.readUInt32LE(12);
  const images=(json.images??[]).map(im=>{const v=json.bufferViews[im.bufferView];return sha(binary.subarray(start+(v.byteOffset??0),start+(v.byteOffset??0)+v.byteLength));});
- assert.deepEqual(images,m.sourceImageHashes,'Embedded artwork must be byte-identical to the upload');
+ assert.deepEqual(images,m.imageHashes,'Embedded artwork must match the published Web asset');
+ assert.equal(images.length,m.sourceImageHashes.length,'Texture resizing must not add or drop artwork');
+ for(let i=0;i<(json.images??[]).length;i++){
+  const v=json.bufferViews[json.images[i].bufferView];
+  const data=binary.subarray(start+(v.byteOffset??0),start+(v.byteOffset??0)+v.byteLength);
+  const decoded=await sharp(data).raw().toBuffer({resolveWithObject:true});
+  assert.equal(decoded.info.width,m.images[i].width);assert.equal(decoded.info.height,m.images[i].height);
+  if(id==='nailong'){assert.equal(decoded.info.width,2048);assert.equal(decoded.info.height,1024);}
+ }
  let vertices=0;gltf.scene.traverse(node=>{if(node.geometry){const p=node.geometry.getAttribute('position');vertices+=p.count;for(let i=0;i<p.count;i++)assert.ok(Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)));}});
  assert.ok(vertices>10000);assert.equal(gltf.animations.length,0,'Uploads are static models; do not invent an embedded rig');
  const normalized=prepareCharacter(gltf.scene,id);const b=new Box3().setFromObject(normalized);
