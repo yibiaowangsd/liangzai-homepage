@@ -1,25 +1,26 @@
-# 量仔三维首页
+# 双角色星空展台
 
-根据角色主人提供的正面、侧面和背面设计图，重建可编辑的部件式三维角色。蓝白陶瓷外壳、金色猫耳内衬、双球弹簧天线、耳机、点阵眼睛、笑脸、Q 胸徽、手指、脚踝扣件和背部面板均为真实网格，不依赖角色贴图。
+当前首页使用角色主人提供的 `liangzai-refined(1).glb` 与 `nailong (1).glb`。旧的程序建模与旧预览已移除。
 
-## 模型与再编辑
+## 模型来源与资源
 
-- `public/assets/models/liangzai-v1.glb`：可导入 Blender 等支持 glTF 2.0 的软件。包含命名部件、PBR 材质以及 Idle / Hello 两段动画。
-- `app/experience/three/liangzai-model.ts`：参数化建模源文件，首页和 GLB 导出共用。+Y 向上，+Z 为正面。模型尺寸用于画面比例，并非实物尺寸标定。
-- `npm run model:export`：重新导出并自动重新导入检查。Node 22.13+。
-- 角色通过父子节点进行刚性关节运动，没有蒙皮骨骼或表情拓扑；如需影视级动作，可在 Blender 中继续绑定。
-- `scripts/render-liangzai.py`：使用 Blender 4.5 的 Python 模块 `bpy` 在 CPU 上渲染模型预览。导入交付 GLB，重建同构的圆环、地台与灯光。`python scripts/render-liangzai.py reset front side back`。输出在忽略目录 `outputs/model-renders/`。
+`app/experience/three/model-catalog.json` 记录原文件 SHA-256、压缩版本 SHA-256、几何统计及分块路径。使用 gltfpack / EXT_meshopt_compression 压缩，保留命名部件、材质、贴图；没有设置减面参数。位置 16 bit、法线 12 bit、UV 14 bit 量化。奶龙的少量退化三角形在清理时被移除，正常表面保留。模型总下载由约 19.5 MB 降为约 4.1 MB；奶龙贴图字节与原件一致。
 
-## 首页行为
+为避免发布接口在单次大文件请求上长时间等待，模型以最大 384 KiB 的内容哈希分块存放在 `public/assets/models/observatory/`。加载器并行下载当前所需模型的所有部分，校验长度、按顺序合并后交给原生 GLTFLoader + MeshoptDecoder 解码。默认只加载量仔，奶龙按需加载，加载过的角色在当前场景中复用。分块 URL 含模型内容哈希，避免 CDN 混合新旧资源。
 
-角色、金属圆环与地台在同一个 Three.js 场景中渲染，使用统一环境反射、冷色轮廓光和实时阴影。支持拖动旋转、正侧背视角、复位、鼠标视线跟随、点击角色挥手；键盘左右键转动，Home 复位，Enter 打招呼。GSAP quickTo 缓和拖动和视线，timeline 驱动挥手，useEffect 与 gsap.context 在退出首页时清理资源。
+模型准备：`npm run models:prepare -- /path/to/liangzai-refined.glb /path/to/nailong.glb`。完整压缩 GLB 留在忽略目录 `outputs/model-packed/`；原始附件不改写。提交生成的 catalog 与 `.bin` 文件。
 
-Three.js 从客户端 effect 延迟导入，服务端不会初始化 WebGL 或计时器。浏览器不支持 WebGL、初始化失败或丢失上下文时，展示由同一 GLB 渲染的正侧背预览，并保留视角切换。初始化设 12 秒上限。预览图片与实时渲染使用不同渲染器，反射细节会有差别。
+## 交互与场景
 
-手机降低像素比、目标帧率并关闭 bloom；离屏、后台和全站暂停动效时停止持续渲染。减少动态效果模式下，视角按钮立即切换。Three.js 的全尺寸库与模型不加入其他页面的初始下载。
+- 三种模式：量仔、奶龙、同时展示。双角色在各自轴心旋转，自动调整比例、站位与取景，前视不互相遮挡。
+- 正面 / 侧面 / 背面 / 复位；拖拽旋转；键盘左右键 / Home；点击角色或 Enter 唤起星光。
+- 两个上传模型没有骨骼或内置动画，因此保留原始造型，采用刚性转动、轻微浮动和底座星光响应。没有强行绑定或弯曲奶龙表面。
+- 大面积柔光、暖白主光、淡蓝轮廓光、定制棚拍反射环境，减少强烈色染。玻璃星空底座包含星云纹理、细小星点、星座连线及金属边缘；背景圆环降低亮度，突出角色。
+- GSAP quickTo 缓和拖动，timeline 控制星光与浮动；减少动态效果 / 全站暂停动效时停止连续动画。手机限制像素比与帧率、关闭 bloom；离屏和后台暂停绘制。
+- 下载有 18 秒上限、着色器准备有 10 秒上限；快速切换只应用最后一次选择；退出页面中止请求并释放网格、纹理、ImageBitmap、渲染目标和监听器。WebGL 不可用或加载失败时提供三种模式的四视角渲染预览。
 
-## 验证
+## 渲染与验证
 
-`node --test tests/liangzai-model.test.mjs` 检查 GLB 导入、有限数值、关键角色部件、动画有效运动与面罩穿模回归；现有 rendered-html 测试覆盖五个页面和 Worker 无计时器导入。
+`scripts/render-observatory.py` 使用 Blender 4.5 / bpy，从原始 GLB 渲染完整场景。运行：`python scripts/render-observatory.py liangzai.glb nailong.glb`；也可追加 `duo:reset` 等指定视角。PNG 输出至 `outputs/observatory-renders/`，转换为同名 WebP 后提交到展台资源目录。离线渲染与 Three.js 的实时反射细节会不同。
 
-本次浏览器预览环境禁用了 WebGL，因此网页检查覆盖桌面/手机布局、兼容预览和页面导航；模型造型通过 Blender CPU 渲染检查。实时 WebGL 画面及拖拽帧率需要在支持 WebGL 的设备上复核。
+测试覆盖资源分块 SHA-256、Meshopt 解码、有限几何数值、贴图原样保留、原始模型尺寸归一化、双角色站位与底座边界；已有测试覆盖五个 SSR 页面及 Worker 禁止的顶层计时器。浏览器已验证分块下载与实际 GLTF 解码：量仔 68 个网格，奶龙 5 个网格，奶龙贴图成功解码为 4096 × 2048。当前自动预览浏览器禁用了 WebGL，网页检查覆盖模式/视角兼容预览和桌面/手机布局；实时 WebGL 操作与帧率仍需支持 WebGL 的设备复核。
