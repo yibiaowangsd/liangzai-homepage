@@ -4,26 +4,22 @@
 > 主要公开站点：<https://wangyibiao.com>  
 > 本文目标：让新的开发者或新的 AI 对话只阅读这一份文档，就能安全、快速地继续开发。
 
-## 当前首页与路由（2026-09 量子探索重构）
+## 当前全站与路由（2026-09 GSAP 电影感重构）
 
-首页 `/` 由 `app/QuantumHome.tsx` 编排，样式位于独立的 `app/QuantumHome.module.css`，可复用交互位于 `app/home/`。下文旧 Minimal Zine 约束继续适用于档案和武器库，不适用于新版首页。
+当前视觉是深黑、拉丝银、冰蓝光效。此版本覆盖首页、故事书、角色档案、PQC 武器库和新增个人简介页，下文 Minimal Zine 说明仅作历史记录。完整动画规范、素材来源与验证方式见 [docs/gsap-motion.md](docs/gsap-motion.md)。
 
-- `/`：粒子场首屏 → 内容 Bento → 真实内容数量 → 密钥封装/数字签名实验室 → 故事案例 → 三种品牌特质 → 页脚。
-- `/storybook`：原 `StoryBook`，保留 11 页翻页、旁白和素材。
-- `/archive`：原纸感档案页。
-- `/pqc-arsenal`：原 PQC 教学与交互页。
-- `home/Navigation.tsx`：桌面/手机导航，菜单 Escape 关闭与焦点恢复。手机菜单采用浮层定位，避免关闭时引起锚点偏移。
-- `home/Motion.tsx`：集中管理动效偏好、滚动显现、阅读进度和计数。服务端及无 JS 时正文仍可见。
-- `home/Actions.tsx`：统一主操作 `ActionLink`、次级入口 `TextLink` 和滚动文案 `RollingLabel`。主操作采用深色胶囊、轨道核心、银白扩散填充和磁吸表面；外层点击区域固定，避免指针追逐。文字入口采用双行滚动和细线反馈，重复文案对辅助技术隐藏。
-- 首页的导航、CTA、卡片、故事入口和页脚均不使用装饰性小箭头；实验室流程内有信息意义的方向箭头继续保留。卡片整面扫光，二选一控件使用滑动高亮。手机、键盘焦点、全局暂停和系统减少动态效果均有对应状态，不新增依赖。
-- 按钮交互参考：[Aceternity Magnetic Button](https://ui.aceternity.com/components/magnetic-button)、[Hover Border Gradient](https://ui.aceternity.com/components/hover-border-gradient)、[Magic UI Shiny Button](https://magicui.design/docs/components/shiny-button)。参考交互思路后在现有组件内实现，未拷贝整套模板或安装组件库。
-- `home/QuantumField.tsx`：Canvas 2D 投影粒子，量子环/球体插值，最高 30 FPS、DPR 上限 1.75；离屏或后台停止；减少动态效果时渲染静态画面。
-- `home/QuantumLab.tsx`：ML-KEM/ML-DSA 四步概念演示，支持手动/自动、方向键选择 Tab。私钥相关操作标为本地运算，仅公钥、密文、消息和签名经过公开信道。依据 [FIPS 203](https://csrc.nist.gov/pubs/fips/203/final) 与 [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final)。
-- `home/BrandStory.tsx`：探索/守护/同行切换，复用现有角色素材。
-- 首页新增依赖仅 `framer-motion` 和 `lucide-react`，版本已固定；没有 Three.js/WebGL 运行时、外部字体或远程图片请求。
-- 首页量仔仍使用 `characters-v2/arsenal-liangzai-cutout.webp`，完整等比显示。数据区的 4/11/3 分别表示算法数、故事页数和主要探索入口数，不是性能或业务指标。
-- 修改后至少执行构建、现有四路由渲染测试及浏览器验证。全仓 `tsc` 目前缺少既有 Cloudflare 类型（`cloudflare:workers`、`Fetcher`、`D1Database`）；不要为首页视觉工作改动部署架构。
-- 本次改动在功能分支提交；只有合并至 `main` 才会触发现有主域名部署。
+- `/`：金属量子门、滚动视差、横向世界入口、可切换粒子雕塑、短片与人物入口。
+- `/storybook`：电影式阅读器，保留原 11 页内容及逐页旁白，支持章节、翻页、键盘和触屏。
+- `/archive`：深色角色档案，保留原故事、战斗记录与战后内容。
+- `/pqc-arsenal`：深色交互控制台，保留四种算法、数学推导、参数规格和资料链接。
+- `/about`：量仔背后的人，使用已知姓名与研究方向，不添加未经确认的履历。
+- `app/experience/`：全站导航、页脚、动效偏好、GSAP 生命周期、粒子雕塑、视频弹窗及共享样式。
+- 首页和新页面使用 `gsap`、`@gsap/react`，官方技能来源为 `greensock/gsap-skills`；旧 `app/home/` 保留但不再挂载。
+- 量仔原图保持等比；新生成素材仅用于量子门场景。按钮采用银色矩形、细线文字入口，避免重复胶囊和装饰小箭头。
+- 动效遵循系统减少动态效果，可全站手动暂停；离屏、后台停止粒子循环。短片手动打开、手动播放，关闭或后台暂停。
+- `package-lock.json` 已提交，可使用 `npm ci`。修改后执行构建、五路由渲染测试与浏览器验证。
+- 全仓 `tsc` 的既有 Cloudflare 类型缺口（`cloudflare:workers`、`Fetcher`、`D1Database`）未改变；不要为视觉工作改动部署架构。
+- `main` 触发现有 Cloudflare 主域名部署。
 
 ---
 
@@ -34,7 +30,7 @@
 ```text
 请先完整阅读仓库根目录 DEVELOPMENT.md，再开始修改。
 以 origin/main 最新提交为准，先检查 git status 和最近提交，不要覆盖已有改动。
-保持 Minimal Zine 纸感视觉体系，复用现有量仔原图，不要重新生成或拉伸量仔。
+保持当前黑银冰蓝的 GSAP 视觉体系，先读 docs/gsap-motion.md；复用现有量仔原图，不要拉伸量仔。
 修改后至少执行 npm run build 和 node --test tests/rendered-html.test.mjs；
 如果需要发布，先说明改动范围，再提交到 GitHub，并确认 Cloudflare 部署结果。
 ```
@@ -81,14 +77,14 @@
 | 数据库 | Drizzle/D1 脚手架已保留，但当前业务未使用数据库 |
 | Node.js | `>= 22.13.0` |
 
-当前仓库没有提交 `package-lock.json`，普通本地环境使用：
+当前仓库已提交 `package-lock.json`，普通本地环境使用：
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-不要直接把 `npm ci` 当作默认安装命令；没有锁文件时它会失败。`scripts/install-ci.sh` 是 Sites 环境脚手架的一部分，并假设存在锁文件，普通接手开发不需要优先调用它。
+`scripts/install-ci.sh` 是 Sites 环境脚手架的一部分；普通本地开发可直接使用锁文件安装。
 
 ---
 
@@ -328,7 +324,7 @@ public/assets/pqc/fn-dsa-zine-97a2ab35.webp
 ### 9.1 启动开发环境
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 

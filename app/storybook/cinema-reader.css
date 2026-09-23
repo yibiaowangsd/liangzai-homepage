@@ -1,0 +1,450 @@
+.cinema-reader {
+  background: #080c12;
+  --reader-accent: #a6d9f8;
+}
+.cinema-reader[data-tone="gold"] {
+  --reader-accent: #edcd94;
+}
+.cinema-reader[data-tone="violet"] {
+  --reader-accent: #c1b3e2;
+}
+.reader-bar {
+  height: 68px;
+  margin: 0 4vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--hairline);
+  position: relative;
+  z-index: 5;
+  font: 9px var(--font-mono-en);
+  letter-spacing: 0.06em;
+}
+.reader-bar > span {
+  color: #8d9fb0;
+}
+.reader-bar > button {
+  padding: 12px 0;
+  border: 0;
+  background: none;
+  font-size: 11px;
+  display: flex;
+  gap: 20px;
+}
+.reader-bar i {
+  font-style: normal;
+}
+.reader-stage {
+  min-height: 650px;
+  height: calc(100svh - 260px);
+  max-height: 950px;
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+.reader-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+.reader-image {
+  position: absolute;
+  height: 100%;
+  width: 70%;
+  right: 0;
+  object-fit: cover;
+  object-position: center 40%;
+}
+.reader-art-shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      90deg,
+      #080c12 12%,
+      #080c12ed 33%,
+      #080c1266 59%,
+      transparent
+    ),
+    linear-gradient(0deg, #080c12, transparent 35%, #080c121a);
+}
+.reader-caption {
+  position: absolute;
+  bottom: 38px;
+  right: 5vw;
+  font: 8px var(--font-mono-en);
+  letter-spacing: 0.17em;
+  color: #d2dce8;
+  text-shadow: 0 1px 12px #000;
+}
+.reader-copy {
+  padding: 80px 0 75px 6vw;
+  align-self: center;
+  grid-column: 1;
+  position: relative;
+  z-index: 1;
+}
+.reader-copy .eyebrow {
+  font-size: 9px !important;
+  color: var(--reader-accent);
+  margin-bottom: 30px;
+}
+.reader-copy h1 {
+  font-weight: 400;
+  font-size: clamp(36px, 4.25vw, 66px);
+  line-height: 1.22;
+  letter-spacing: -0.055em;
+  max-width: 560px;
+  margin: 0 0 30px;
+}
+.reader-body {
+  color: #c0cbd7;
+  font-size: 15px;
+  line-height: 2.05 !important;
+  margin: 0;
+  max-width: 490px;
+}
+.reader-copy blockquote {
+  color: var(--reader-accent);
+  border-left: 1px solid var(--reader-accent);
+  padding-left: 20px;
+  font-size: 12px;
+  line-height: 1.9;
+  margin: 28px 0;
+  max-width: 450px;
+}
+.reader-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 4vw;
+  padding: 22px 0;
+  border-block: 1px solid var(--hairline);
+  gap: 20px;
+}
+.reader-audio {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+.reader-audio > button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  background: none;
+  font-size: 12px;
+  padding: 8px 0;
+}
+.reader-audio > span {
+  font-size: 10px;
+  color: #8396a9;
+}
+.audio-icon {
+  font-size: 20px;
+  color: var(--reader-accent);
+}
+.reader-pagination {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.reader-pagination button {
+  background: none;
+  border: 1px solid #6b819344;
+  padding: 12px 20px;
+  border-radius: 3px;
+  font-size: 11px;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+}
+.reader-pagination button:hover:not(:disabled) {
+  border-color: #b2cadf;
+  background: #bfd6e812;
+}
+.reader-pagination > span {
+  font: 10px var(--font-mono-en);
+  color: #6e8195;
+}
+.reader-pagination b {
+  font-size: 18px;
+  color: #d9e7f3;
+  font-weight: 400;
+}
+.reader-timeline {
+  display: flex;
+  gap: 12px;
+  overflow: auto;
+  padding: 28px 4vw 16px;
+}
+.reader-timeline > button {
+  flex: 0 0 120px;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  color: #6c8298;
+  position: relative;
+  transition: color 0.3s;
+}
+.reader-timeline > button > span {
+  display: block;
+  aspect-ratio: 1.6;
+  background-size: cover;
+  background-position: center;
+  border-radius: 3px;
+  border: 1px solid transparent;
+  filter: saturate(0.2);
+  opacity: 0.45;
+  transition:
+    filter 0.3s,
+    opacity 0.3s,
+    border-color 0.3s;
+}
+.reader-timeline > button:hover > span,
+.reader-timeline > button[aria-current] > span {
+  opacity: 1;
+  filter: saturate(0.8);
+  border-color: var(--reader-accent);
+}
+.reader-timeline > button[aria-current] {
+  color: #deecf8;
+}
+.reader-timeline small {
+  font: 8px var(--font-mono-en);
+  display: inline-block;
+  margin: 10px 8px 0 0;
+}
+.reader-timeline strong {
+  font-weight: 400;
+  font-size: 9px;
+  white-space: nowrap;
+}
+.reader-note {
+  margin: 0 4vw;
+  padding: 15px 0 30px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: #6e8398;
+}
+.story-contents {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 20px 6vw 30px;
+  border-bottom: 1px solid var(--hairline);
+  gap: 10px;
+  background: #121b25;
+}
+.story-contents button {
+  text-align: left;
+  padding: 16px;
+  background: #18222c;
+  border: 1px solid transparent;
+  font-size: 12px;
+}
+.story-contents button[aria-current] {
+  border-color: #aacce3;
+}
+.story-contents span {
+  font: 9px var(--font-mono-en);
+  color: #84a0b9;
+  margin-right: 15px;
+}
+@media (max-width: 1000px) {
+  .reader-stage {
+    min-height: 660px;
+    grid-template-columns: 1fr 1fr;
+  }
+  .reader-copy h1 {
+    font-size: 44px;
+  }
+  .reader-body {
+    font-size: 14px;
+  }
+  .reader-image {
+    width: 80%;
+  }
+  .reader-copy {
+    padding-top: 65px;
+    padding-bottom: 60px;
+  }
+  .reader-art-shade {
+    background:
+      linear-gradient(
+        90deg,
+        #080c12 5%,
+        #080c12ee 22%,
+        #080c1288 55%,
+        #080c1200
+      ),
+      linear-gradient(0deg, #080c12, transparent);
+  }
+  .reader-controls {
+    gap: 15px;
+  }
+  .reader-audio {
+    gap: 10px;
+  }
+  .reader-audio > span {
+    font-size: 8px;
+  }
+  .reader-pagination {
+    gap: 13px;
+  }
+}
+@media (max-width: 650px) {
+  .reader-bar {
+    height: 57px;
+    font-size: 7px;
+    margin: 0 6vw;
+  }
+  .reader-bar > span {
+    display: none;
+  }
+  .reader-bar > button {
+    font-size: 10px;
+  }
+  .reader-stage {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+  }
+  .reader-art {
+    position: relative;
+    height: 340px;
+    z-index: 0;
+    order: 0;
+  }
+  .reader-image {
+    width: 100%;
+    height: 100%;
+    object-position: center 35%;
+  }
+  .reader-art-shade {
+    background: linear-gradient(0deg, #080c12, transparent 50%, #080c120a);
+  }
+  .reader-caption {
+    right: auto;
+    left: 6vw;
+    bottom: 23px;
+    font-size: 6px;
+    letter-spacing: 0.08em;
+  }
+  .reader-copy {
+    padding: 10px 6vw 30px;
+    align-self: auto;
+    order: 1;
+  }
+  .reader-copy .eyebrow {
+    font-size: 8px !important;
+    margin-bottom: 18px;
+  }
+  .reader-copy h1 {
+    font-size: 36px;
+    max-width: 100%;
+    margin-bottom: 20px;
+  }
+  .reader-body {
+    font-size: 13px;
+    line-height: 1.95 !important;
+  }
+  .reader-copy blockquote {
+    font-size: 11px;
+    margin: 22px 0;
+    padding-left: 13px;
+  }
+  .reader-controls {
+    margin: 0 6vw;
+    flex-wrap: wrap;
+    padding: 15px 0;
+    gap: 20px;
+  }
+  .reader-audio {
+    justify-content: space-between;
+    width: 100%;
+    gap: 15px;
+  }
+  .reader-audio > button {
+    font-size: 11px;
+  }
+  .reader-audio > span {
+    font-size: 9px;
+  }
+  .reader-pagination {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .reader-pagination button {
+    min-width: 100px;
+    font-size: 11px;
+  }
+  .reader-timeline {
+    gap: 10px;
+    padding: 22px 6vw 12px;
+  }
+  .reader-timeline > button {
+    flex-basis: 100px;
+  }
+  .reader-timeline strong {
+    font-size: 8px;
+  }
+  .reader-note {
+    margin: 0 6vw;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 8px;
+    padding-bottom: 25px;
+  }
+  .story-contents {
+    grid-template-columns: 1fr 1fr;
+    padding: 15px 6vw;
+    gap: 7px;
+  }
+  .story-contents button {
+    font-size: 10px;
+    padding: 13px 8px;
+  }
+  .story-contents span {
+    font-size: 7px;
+    margin-right: 6px;
+  }
+}
+@media (max-width: 650px) {
+  .reader-body {
+    font-size: 15px;
+  }
+  .reader-copy blockquote {
+    font-size: 13px;
+  }
+  .reader-audio > button,
+  .reader-pagination button {
+    font-size: 13px;
+  }
+  .reader-timeline > button {
+    min-height: 98px;
+  }
+  .reader-bar > button {
+    min-height: 44px;
+  }
+  .reader-note {
+    font-size: 11px;
+  }
+  .story-contents button {
+    min-height: 50px;
+    font-size: 12px;
+  }
+}
+
+.reader-timeline {
+  scrollbar-width: thin;
+  scrollbar-color: #50657a #0c121a;
+}

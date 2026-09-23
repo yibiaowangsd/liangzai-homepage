@@ -1,0 +1,595 @@
+.cinematic-arsenal {
+  --arsenal-dark: #132130;
+  --arsenal-paper: #080c12;
+  --arsenal-cyan: #a7d4f7;
+  --arsenal-violet: #9cafe1;
+  --arsenal-gold: #cab98c;
+  --paper: #0c141e;
+  --ink: #d6e2ed;
+  --muted: #94a5b7;
+  --cyan: #abdafa;
+  --cyan-dark: #a9cfea;
+  --rule: #b0ccea26;
+  --font-serif-cn: var(--font-display);
+  color: #dce6ef;
+  background: #080c12;
+  background-image: none;
+  max-width: none;
+}
+.arsenal-index {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 5vw;
+  height: 65px;
+  border-bottom: 1px solid var(--rule);
+  gap: 20px;
+}
+.arsenal-index > span {
+  font: 8px var(--font-mono-en);
+  letter-spacing: 0.14em;
+  color: #8da5b9;
+}
+.arsenal-index > div {
+  display: flex;
+  gap: 28px;
+}
+.arsenal-index a {
+  font-size: 10px;
+  color: #a2b5c5;
+  padding: 12px 0;
+}
+.arsenal-index a:hover {
+  color: white;
+}
+.cinematic-arsenal .arsenal-hero {
+  min-height: 760px;
+  padding: 70px 6vw 35px;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: center;
+  background: radial-gradient(ellipse at 77% 45%, #263d5166, transparent 58%);
+}
+.cinematic-arsenal .arsenal-hero:before {
+  display: none;
+}
+.cinematic-arsenal .arsenal-hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(70px, 8.8vw, 135px);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.07em;
+  margin: 35px 0;
+}
+.cinematic-arsenal .arsenal-hero h1 em {
+  font-size: 0.47em;
+  line-height: 1.7;
+  letter-spacing: -0.06em;
+  color: #a0bad0;
+  -webkit-text-stroke: 0;
+  margin: 0;
+  white-space: nowrap;
+}
+.cinematic-arsenal .arsenal-lead {
+  margin: 0 0 35px;
+  font: 400 16px/1.9 var(--font-display);
+  color: #a4b6c7;
+}
+.cinematic-arsenal .arsenal-hero-visual {
+  width: 100%;
+  padding: 0 0 40px;
+  border: 0;
+  background: none;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 20px;
+  justify-self: stretch;
+  align-items: center;
+}
+.cinematic-arsenal .armory-portrait {
+  background: none;
+  border: 0;
+  align-self: center;
+}
+.cinematic-arsenal .armory-portrait img {
+  filter: drop-shadow(0 5px 35px #b1d7fc20);
+}
+.cinematic-arsenal .armory-portrait p {
+  font-size: 10px;
+  color: #b6cbdc;
+}
+.cinematic-arsenal .armory-algorithms {
+  gap: 13px;
+}
+.cinematic-arsenal .algorithm-photo {
+  padding: 0 0 10px;
+  border: 1px solid #7795ae4d;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #121e2a;
+  box-shadow: 0 10px 30px #0004;
+  transition:
+    transform 0.5s,
+    border-color 0.5s;
+}
+.cinematic-arsenal .algorithm-photo:hover {
+  transform: translateY(-6px);
+  border-color: #a3c9e9;
+}
+.cinematic-arsenal .algorithm-photo img {
+  aspect-ratio: 1;
+  filter: grayscale(0.3) brightness(0.75);
+  height: auto;
+  max-height: 170px;
+  object-fit: cover;
+}
+.cinematic-arsenal .algorithm-photo > div {
+  padding: 12px 10px 0;
+  gap: 6px;
+}
+.cinematic-arsenal .algorithm-photo strong {
+  font-size: 12px;
+}
+.cinematic-arsenal .algorithm-photo small {
+  font-size: 9px;
+}
+.cinematic-arsenal .arsenal-hero-visual > figcaption {
+  font-size: 7px;
+  left: 0;
+  color: #7b95ab;
+}
+.cinematic-arsenal .hero-index {
+  background: none;
+  color: #8ca5b9;
+  border-top: 1px solid var(--rule);
+  padding-top: 20px;
+  font-size: 8px;
+}
+.cinematic-arsenal .arsenal-section {
+  padding-top: 35px;
+  padding-bottom: 95px;
+  margin-inline: 5vw;
+}
+.cinematic-arsenal .arsenal-section-head {
+  font-size: 9px;
+  color: #7f98ae;
+}
+.cinematic-arsenal .big-question h2,
+.cinematic-arsenal .math-heading h2,
+.cinematic-arsenal .loadout-title h2 {
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  font-size: clamp(36px, 4.2vw, 62px);
+  line-height: 1.35;
+}
+.cinematic-arsenal .marker-note {
+  font-family: var(--font-display);
+  color: #86a5bf;
+  background: none;
+  transform: none;
+}
+.cinematic-arsenal .section-intro-grid,
+.cinematic-arsenal .math-heading {
+  padding-top: 80px;
+}
+.cinematic-arsenal .quantum-note {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #a1b3c3;
+}
+.cinematic-arsenal .shor-mark {
+  background: none;
+  color: #a7cbe3;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  transform: none;
+  padding: 10px;
+  font-size: 10px;
+}
+.cinematic-arsenal .legacy-lab,
+.cinematic-arsenal .lattice-lab,
+.cinematic-arsenal .weapon-console {
+  border: 1px solid var(--rule);
+  background: linear-gradient(130deg, #17212d9c, #0c131e);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.cinematic-arsenal .legacy-tabs,
+.cinematic-arsenal .legacy-tabs button,
+.cinematic-arsenal .attack-flow,
+.cinematic-arsenal .algorithm-flow,
+.cinematic-arsenal .weapon-tabs,
+.cinematic-arsenal .weapon-tabs button,
+.cinematic-arsenal .lattice-visual {
+  border-color: var(--rule);
+}
+.cinematic-arsenal .legacy-tabs button,
+.cinematic-arsenal .weapon-tabs button {
+  transition: background 0.35s;
+}
+.cinematic-arsenal .legacy-tabs button.active,
+.cinematic-arsenal .weapon-tabs button.active {
+  background: #233a4c;
+  color: #dff1ff;
+  box-shadow: inset 0 -2px #aedfff;
+}
+.cinematic-arsenal .legacy-tabs span,
+.cinematic-arsenal .weapon-tabs small,
+.cinematic-arsenal .legacy-tabs .active span,
+.cinematic-arsenal .weapon-tabs button.active small {
+  color: #a1b4c5;
+}
+.cinematic-arsenal .legacy-theory p {
+  font-size: 13px;
+  color: #b2c0cc;
+}
+.cinematic-arsenal .attack-flow button.active,
+.cinematic-arsenal .algorithm-flow button.active {
+  background: #1e3c52;
+  box-shadow: inset 0 -2px #a6d8f7;
+  color: #d8efff;
+}
+.cinematic-arsenal .attack-flow button:hover,
+.cinematic-arsenal .algorithm-flow button:hover {
+  background: #1a2c3a;
+}
+.cinematic-arsenal .attack-flow .active code,
+.cinematic-arsenal .algorithm-flow .active code {
+  color: #c4d9e9;
+}
+.cinematic-arsenal .flow-detail {
+  color: #b9cddd;
+  background: #08131e;
+  min-height: 90px;
+}
+.cinematic-arsenal .grover-note {
+  background: #142331;
+  border-color: var(--rule);
+  color: #b4c5d4;
+}
+.cinematic-arsenal .grover-note > span {
+  color: #9dc5e4;
+}
+.cinematic-arsenal .job-switch button {
+  border-color: var(--rule);
+  background: none;
+  color: #8faabd;
+}
+.cinematic-arsenal .job-switch button.active {
+  background: #223c50;
+  color: #e3f1fa;
+}
+.cinematic-arsenal .crypto-demo {
+  background: #0e1823;
+  border-color: var(--rule);
+}
+.cinematic-arsenal .demo-person > span {
+  background: #142635;
+  color: #c6e8fd;
+  border-color: #698ca6;
+}
+.cinematic-arsenal .packet {
+  background: #b9dff5;
+  color: #10212e;
+  border-color: #b9dff5;
+  box-shadow: 0 0 35px #9ed7fd20;
+}
+.cinematic-arsenal .demo-result {
+  color: #b8daf1;
+}
+.cinematic-arsenal .lattice-visual {
+  background-image:
+    linear-gradient(#83b1d214 1px, transparent 1px),
+    linear-gradient(90deg, #83b1d214 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.cinematic-arsenal .lattice-visual > span {
+  box-shadow: 0 0 14px #a8d9ff30;
+  border-color: #a8cee7;
+  background: #547b96;
+}
+.cinematic-arsenal .lattice-visual > span.target {
+  background: #d1edff;
+}
+.cinematic-arsenal .lattice-control p,
+.cinematic-arsenal .lattice-equation p {
+  color: #a8bccd;
+}
+.cinematic-arsenal .lattice-equation code {
+  background: #08111b;
+  color: #b9daef;
+}
+.cinematic-arsenal .assumption-grid article {
+  background: #0f1924;
+  border: 1px solid var(--rule);
+  padding: 25px;
+  border-radius: 5px;
+  transform: none;
+}
+.cinematic-arsenal .assumption-grid h3 {
+  font-size: 20px;
+  font-weight: 400;
+}
+.cinematic-arsenal .assumption-grid code {
+  color: #aec9dd;
+  background: #07111d;
+}
+.cinematic-arsenal .assumption-grid p {
+  color: #a5b9ca;
+  font-size: 12px;
+}
+.cinematic-arsenal .weapon-tabs {
+  border: 1px solid var(--rule);
+  border-radius: 5px 5px 0 0;
+  overflow: hidden;
+}
+.cinematic-arsenal .weapon-console {
+  border-radius: 0 0 5px 5px;
+}
+.cinematic-arsenal .weapon-identity h2 {
+  font-size: clamp(32px, 4.3vw, 64px);
+  font-weight: 400;
+  letter-spacing: -0.055em;
+}
+.cinematic-arsenal .weapon-identity > strong {
+  transform: none;
+  background: #233e53;
+  color: #c7e1f3;
+  padding: 8px 12px;
+  border-radius: 3px;
+}
+.cinematic-arsenal .weapon-glyph {
+  background: #21374a88;
+  border-color: #a8d0ec;
+  filter: drop-shadow(0 0 22px #9bbbd533);
+}
+.cinematic-arsenal .weapon-identity > span {
+  line-height: 1.7;
+}
+.cinematic-arsenal .weapon-explain .simple-line {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.7;
+}
+.cinematic-arsenal .weapon-explain dd {
+  font-size: 12px;
+  line-height: 1.9;
+  color: #a6bdce;
+}
+.cinematic-arsenal .score-row i {
+  background: #2b3a47;
+}
+.cinematic-arsenal .score-row i.filled {
+  background: #aacde8;
+}
+.cinematic-arsenal .weapon-deep-dive {
+  background: #0b151f;
+}
+.cinematic-arsenal .equation-strip code {
+  background: #152838;
+  color: #c0e0f6;
+  border-color: var(--rule);
+}
+.cinematic-arsenal .implementation-notes {
+  background: #142330;
+  border-color: var(--rule);
+  color: #a9c1d1;
+}
+.cinematic-arsenal .parameter-bench {
+  background: #142432;
+  border-color: var(--rule);
+}
+.cinematic-arsenal .bench-readout {
+  background: none;
+  border-color: var(--rule);
+}
+.cinematic-arsenal .bench-readout strong {
+  font-size: 20px;
+  color: #cee9fa;
+}
+.cinematic-arsenal .mission-list article {
+  background: #111d29;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  transform: none;
+}
+.cinematic-arsenal .mission-list h3 {
+  font-weight: 400;
+  font-size: 25px;
+}
+.cinematic-arsenal .mission-list p,
+.cinematic-arsenal .loadout-title p {
+  color: #a4b7c7;
+}
+.cinematic-arsenal .mission-list b {
+  color: #b2d5f1;
+  background: none;
+}
+.cinematic-arsenal .final-map {
+  background: #101d2a;
+  border: 1px solid var(--rule);
+}
+.cinematic-arsenal .final-map > div {
+  background: none;
+  color: #c2d9eb;
+  border-color: var(--rule);
+}
+.cinematic-arsenal .final-map .final-door {
+  background: #21384a;
+}
+.cinematic-arsenal .arsenal-sources {
+  background: #0c151f;
+  color: #8fa7bb;
+  border-top: 1px solid var(--rule);
+  padding: 35px 6vw 50px;
+}
+.cinematic-arsenal .arsenal-sources p {
+  font-size: 11px;
+}
+.cinematic-arsenal input[type="range"] {
+  accent-color: #b3dafa;
+}
+.cinematic-arsenal :where(button, a):focus-visible {
+  outline-color: #ceebff;
+}
+@media (max-width: 1000px) {
+  .cinematic-arsenal .arsenal-hero {
+    min-height: 650px;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .cinematic-arsenal .arsenal-hero h1 {
+    font-size: 82px;
+  }
+  .cinematic-arsenal .arsenal-hero-visual {
+    grid-template-columns: 0.75fr 1.25fr;
+    gap: 10px;
+  }
+  .cinematic-arsenal .algorithm-photo > div {
+    padding: 8px 5px 0;
+  }
+  .cinematic-arsenal .algorithm-photo strong {
+    font-size: 10px;
+  }
+  .cinematic-arsenal .algorithm-photo small {
+    font-size: 7px;
+  }
+  .cinematic-arsenal .arsenal-lead {
+    font-size: 14px;
+  }
+  .cinematic-arsenal .armory-portrait p {
+    font-size: 8px;
+  }
+  .cinematic-arsenal .arsenal-eyebrow {
+    font-size: 8px;
+  }
+  .cinematic-arsenal .arsenal-eyebrow span {
+    display: block;
+    margin-bottom: 8px;
+  }
+}
+@media (max-width: 700px) {
+  .arsenal-index {
+    height: 55px;
+    margin-inline: 6vw;
+  }
+  .arsenal-index > span {
+    display: none;
+  }
+  .arsenal-index > div {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .arsenal-index a {
+    font-size: 9px;
+  }
+  .cinematic-arsenal .arsenal-hero {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    padding: 50px 6vw 25px;
+    gap: 35px;
+    min-height: 0;
+  }
+  .cinematic-arsenal .arsenal-hero h1 {
+    font-size: 92px;
+    margin: 25px 0;
+  }
+  .cinematic-arsenal .arsenal-hero h1 em {
+    font-size: 0.44em;
+    line-height: 1.5;
+  }
+  .cinematic-arsenal .arsenal-lead {
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+  .cinematic-arsenal .arsenal-hero-visual {
+    width: 100%;
+    grid-template-columns: 0.9fr 1.1fr;
+    padding-bottom: 25px;
+    gap: 12px;
+  }
+  .cinematic-arsenal .algorithm-photo img {
+    max-height: 110px;
+    aspect-ratio: 1;
+  }
+  .cinematic-arsenal .armory-portrait img {
+    max-height: 330px;
+  }
+  .cinematic-arsenal .armory-algorithms {
+    gap: 9px;
+  }
+  .cinematic-arsenal .algorithm-photo strong {
+    font-size: 10px;
+  }
+  .cinematic-arsenal .algorithm-photo small {
+    font-size: 8px;
+  }
+  .cinematic-arsenal .arsenal-hero-visual > figcaption {
+    font-size: 6px;
+    bottom: 0;
+  }
+  .cinematic-arsenal .hero-index {
+    font-size: 6px;
+    gap: 8px;
+  }
+  .cinematic-arsenal .arsenal-section {
+    margin-inline: 6vw;
+    padding: 25px 0 60px;
+  }
+  .cinematic-arsenal .arsenal-section-head {
+    font-size: 7px;
+    gap: 10px;
+    line-height: 1.6;
+  }
+  .cinematic-arsenal .big-question h2,
+  .cinematic-arsenal .math-heading h2,
+  .cinematic-arsenal .loadout-title h2 {
+    font-size: 31px;
+    line-height: 1.4;
+  }
+  .cinematic-arsenal .section-intro-grid,
+  .cinematic-arsenal .math-heading {
+    padding: 50px 0 35px;
+  }
+  .cinematic-arsenal .lattice-lab {
+    margin: 0 0 45px;
+  }
+  .cinematic-arsenal .assumption-grid article {
+    padding: 20px;
+  }
+  .cinematic-arsenal .assumption-grid h3 {
+    font-size: 19px;
+  }
+  .cinematic-arsenal .weapon-tabs {
+    margin-top: 35px;
+  }
+  .cinematic-arsenal .weapon-tabs strong {
+    font-size: 19px;
+  }
+  .cinematic-arsenal .weapon-tabs button {
+    padding: 16px 12px;
+    min-height: 94px;
+  }
+  .cinematic-arsenal .weapon-identity h2 {
+    font-size: 54px;
+  }
+  .cinematic-arsenal .weapon-console > div {
+    padding: 28px 20px;
+  }
+  .cinematic-arsenal .weapon-explain .simple-line {
+    font-size: 21px;
+  }
+  .cinematic-arsenal .weapon-identity > span {
+    margin-top: 20px;
+  }
+  .cinematic-arsenal .bench-readout strong {
+    font-size: 17px;
+  }
+  .cinematic-arsenal .arsenal-sources {
+    padding: 25px 6vw;
+  }
+  .cinematic-arsenal .arsenal-sources p {
+    font-size: 10px;
+  }
+}
