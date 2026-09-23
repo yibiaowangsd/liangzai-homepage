@@ -4,7 +4,7 @@ import test from "node:test";
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
 
-test("renders the modern homepage and its three experience destinations", async () => {
+test("renders the modern homepage and its four experience destinations", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -30,10 +30,13 @@ test("renders the modern homepage and its three experience destinations", async 
   assert.match(html, developmentPreviewMeta);
   assert.match(html, /小小量仔/);
   assert.match(html, /大有可为/);
-  for (const route of ["/storybook", "/archive", "/pqc-arsenal"]) {
+  for (const route of ["/storybook", "/archive", "/pqc-arsenal", "/about"]) {
     assert.ok(html.includes(`href="${route}"`), `Homepage links to ${route}`);
   }
-  assert.match(html, /暂停动效/);
+  assert.match(html, /开启动效|暂停动效/);
+  assert.match(html, /让想象/);
+  assert.match(html, /观看宇宙序章/);
+  assert.doesNotMatch(html, /<video\b/);
   assert.doesNotMatch(html, /<audio\b/);
 });
 
@@ -70,7 +73,7 @@ test("renders the interactive storybook route", async () => {
   assert.match(html, /合体绝技：靓龙/);
 });
 
-test("keeps the former homepage at the archive route", async () => {
+test("renders the redesigned character archive", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("archive-test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -118,4 +121,22 @@ test("renders the PQC arsenal route with all four algorithms", async () => {
   for (const algorithm of ["ML-KEM", "ML-DSA", "SLH-DSA", "FN-DSA"]) {
     assert.match(html, new RegExp(algorithm));
   }
+});
+
+test("renders the human profile without invented credentials or private contact details", async () => {
+  const { default: worker } = await import("../dist/server/index.js");
+  const response = await worker.fetch(
+    new Request("http://localhost/about"),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /量仔背后的人/);
+  assert.match(html, /WANG YIBIAO/);
+  assert.match(html, /PQC 与 QKD/);
+  assert.match(html, /https:\/\/github.com\/yibiaowangsd/);
+  assert.doesNotMatch(html, /foxmail|博士|首席|教授/);
 });

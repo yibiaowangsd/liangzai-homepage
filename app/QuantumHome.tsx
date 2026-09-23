@@ -1,461 +1,285 @@
 "use client";
-
+import { useRef } from "react";
 import Link from "next/link";
-import { useState } from "react";
 import {
-  AudioLines,
-  BookOpen,
-  Box,
-  CircleDot,
-  Fingerprint,
-  Layers3,
-  Mouse,
-  ScanLine,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
-import Navigation from "./home/Navigation";
-import QuantumField from "./home/QuantumField";
-import QuantumLab from "./home/QuantumLab";
-import BrandStory from "./home/BrandStory";
-import { ActionLink, RollingLabel, TextLink } from "./home/Actions";
-import {
-  Counter,
-  MotionProvider,
-  MotionToggle,
-  ReadingProgress,
-  Reveal,
-} from "./home/Motion";
-import s from "./QuantumHome.module.css";
+  gsap,
+  useGSAP,
+  usePageMotion,
+  useExperience,
+} from "./experience/Motion";
+import QuantumSculpture from "./experience/QuantumSculpture";
+import FilmDialog from "./experience/FilmDialog";
 
-const algorithms = ["ML-KEM", "ML-DSA", "SLH-DSA", "FN-DSA"];
-
-function Hero() {
-  const [field, setField] = useState<"orbit" | "sphere">("orbit");
-  return (
-    <section className={s.hero} aria-labelledby="hero-title">
-      <div className={s.heroAmbient} aria-hidden />
-      <div className={s.heroInner}>
-        <div className={s.heroCopy}>
-          <a href="#lab" className={s.announcement}>
-            <span className={s.statusDot} />
-            量子探索实验室，现已开启
-          </a>
-          <p className={s.heroEyebrow}>
-            A SMALL EXPLORER. AN INFINITE UNIVERSE.
-          </p>
-          <h1 id="hero-title">
-            <span>好奇无界。</span>
-            <span className={s.heroAccent}>未来可期。</span>
-          </h1>
-          <p className={s.heroDescription}>
-            让复杂科技，变成触手可及的奇遇。
-            <br />
-            和量仔一起，探索量子世界的无限可能。
-          </p>
-          <div className={s.actions}>
-            <ActionLink href="/storybook">开启量子之旅</ActionLink>
-            <TextLink href="#lab">探索技术实验室</TextLink>
-          </div>
-          <div className={s.heroSignature}>
-            <span />
-            好奇心驱动
-            <span className={s.signatureDivider} />
-            生来向未来
-          </div>
-        </div>
-        <div className={s.heroVisual}>
-          <div className={s.fieldGlow} aria-hidden />
-          <QuantumField mode={field} />
-          <div className={s.guardianFloat}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className={s.guardian}
-              src="/assets/characters-v2/arsenal-liangzai-cutout.webp"
-              width="1024"
-              height="1536"
-              fetchPriority="high"
-              alt="白色战甲、蓝色天线的量仔，悬浮在量子粒子场中央"
-            />
-          </div>
-          <div className={s.visualCaption}>
-            <span className={s.crosshair} aria-hidden>
-              +
-            </span>
-            <div>
-              LIANGZAI / 量仔<small>来自量子星的探索者</small>
-            </div>
-          </div>
-          <div className={s.fieldCoordinates} aria-hidden>
-            QUANTUM FIELD / 001
-            <br />
-            STATE: CURIOUS
-          </div>
-          <div
-            className={s.fieldControl}
-            aria-label="粒子场形态"
-            data-selected={field === "orbit" ? 0 : 1}
-          >
-            <button
-              aria-pressed={field === "orbit"}
-              onClick={() => setField("orbit")}
-            >
-              <CircleDot size={14} aria-hidden />
-              量子环
-            </button>
-            <button
-              aria-pressed={field === "sphere"}
-              onClick={() => setField("sphere")}
-            >
-              <Box size={14} aria-hidden />
-              星球
-            </button>
-          </div>
-          <span className={s.fieldHint}>移动指针，感受量子场</span>
-        </div>
-      </div>
-      <div className={s.heroBottom}>
-        <a href="#universe" className={s.scrollCue}>
-          <span>
-            <Mouse size={17} strokeWidth={1.3} aria-hidden />
-          </span>
-          向下探索<small>SCROLL TO DISCOVER</small>
-        </a>
-        <span className={s.heroBottomBrand}>科技有深度，好奇无边界。</span>
-        <MotionToggle />
-      </div>
-    </section>
-  );
-}
-
-function Universe() {
-  return (
-    <section
-      id="universe"
-      className={s.universe}
-      aria-labelledby="universe-title"
-    >
-      <div className={s.container}>
-        <Reveal className={s.sectionHeading}>
-          <div>
-            <p className={s.kicker}>01 / A UNIVERSE OF POSSIBILITIES</p>
-            <h2 id="universe-title">
-              不止想象。
-              <br />
-              <span>现在，亲自探索。</span>
-            </h2>
-          </div>
-          <p>
-            从沉浸故事到硬核密码学，
-            <br />
-            每一次好奇，都有新的入口。
-          </p>
-        </Reveal>
-        <div className={s.bento}>
-          <Reveal className={s.storyCell}>
-            <Link href="/storybook" className={`${s.bentoCard} ${s.storyCard}`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/assets/book-v2/00-cover.webp"
-                width="1600"
-                height="900"
-                alt="量仔与奶龙站在发光的量子星前"
-                loading="lazy"
-              />
-              <div className={s.cardTop}>
-                <span>
-                  <BookOpen size={14} aria-hidden />
-                  THE STORY
-                </span>
-                <span className={s.cardPill}>11 页互动故事</span>
-              </div>
-              <div className={s.storyCopy}>
-                <p>勇气、友谊，还有一点量子魔法。</p>
-                <h3>
-                  欢迎来到
-                  <br />
-                  量子星。
-                </h3>
-                <span>和量仔、奶龙一起，迎战 Shor 大魔王。</span>
-                <div className={s.cardLink}>
-                  <RollingLabel>翻开量子星守护者</RollingLabel>
-                  <span className={s.cardIndex} aria-hidden>
-                    01 / STORY
-                  </span>
-                </div>
-              </div>
-            </Link>
-          </Reveal>
-          <Reveal className={s.arsenalCell} delay={0.08}>
-            <Link
-              href="/pqc-arsenal"
-              className={`${s.bentoCard} ${s.arsenalCard}`}
-            >
-              <div className={s.cardTop}>
-                <span>
-                  <ShieldCheck size={14} aria-hidden />
-                  THE ARSENAL
-                </span>
-              </div>
-              <div className={s.arsenalVisual} aria-hidden>
-                <div className={s.algorithmStack}>
-                  <div>
-                    <ShieldCheck size={32} strokeWidth={1} />
-                    <code>ML-KEM</code>
-                  </div>
-                  <div>
-                    <Fingerprint size={32} strokeWidth={1} />
-                    <code>ML-DSA</code>
-                  </div>
-                  <div>
-                    <Layers3 size={32} strokeWidth={1} />
-                    <code>SLH-DSA</code>
-                  </div>
-                </div>
-              </div>
-              <div className={s.arsenalCopy}>
-                <span className={s.miniLabel}>POST-QUANTUM CRYPTOGRAPHY</span>
-                <h3>
-                  未来的安全感，
-                  <br />
-                  从这里开始。
-                </h3>
-                <p>认识 4 种抗量子算法，找到你的守护之力。</p>
-                <span className={s.inlineLink}>
-                  <RollingLabel>进入 PQC 武器库</RollingLabel>
-                </span>
-              </div>
-            </Link>
-          </Reveal>
-          <Reveal className={s.signalCell} delay={0.12}>
-            <a href="#lab" className={`${s.bentoCard} ${s.signalCard}`}>
-              <div className={s.cardTop}>
-                <span>
-                  <ScanLine size={14} aria-hidden />
-                  MAKE IT VISIBLE
-                </span>
-              </div>
-              <div className={s.signalArt} aria-hidden>
-                <AudioLines size={86} strokeWidth={0.8} />
-                <div>
-                  <span>ek</span>
-                  <i />
-                  <span>K</span>
-                </div>
-              </div>
-              <h3>
-                让秘密，
-                <br />
-                在眼前发生。
-              </h3>
-              <p>点一步，读懂一次密钥封装。</p>
-            </a>
-          </Reveal>
-          <Reveal className={s.archiveCell} delay={0.18}>
-            <Link href="/archive" className={`${s.bentoCard} ${s.archiveCard}`}>
-              <div className={s.cardTop}>
-                <span>THE ORIGINAL</span>
-              </div>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/assets/characters-v2/archive-hero.webp"
-                width="1122"
-                height="1402"
-                alt="量仔的纸感角色档案"
-                loading="lazy"
-              />
-              <div>
-                <span className={s.miniLabel}>PERSONAL FILE 000</span>
-                <h3>认识量仔。</h3>
-                <p>小小身躯，大大宇宙。</p>
-              </div>
-            </Link>
-          </Reveal>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Stats() {
-  return (
-    <section className={s.stats} aria-label="探索内容一览">
-      <div className={s.container}>
-        <Reveal className={s.statsInner}>
-          <div className={s.statsIntro}>
-            <p className={s.kicker}>02 / MORE TO EXPLORE</p>
-            <h2>
-              把好奇，
-              <br />
-              变成看得见的收获。
-            </h2>
-            <p>这里的每一个数字，都是一个探索起点。</p>
-          </div>
-          <Counter
-            value={4}
-            label="种抗量子算法"
-            detail="封装 · 签名 · 参数探索"
-          />
-          <Counter
-            value={11}
-            label="页沉浸式故事"
-            detail="翻页 · 旁白 · 量子冒险"
-          />
-          <Counter
-            value={3}
-            label="种探索方式"
-            detail="故事 · 知识 · 角色档案"
-          />
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-function Laboratory() {
-  return (
-    <section id="lab" className={s.lab} aria-labelledby="lab-title">
-      <div className={s.container}>
-        <Reveal className={s.sectionHeading}>
-          <div>
-            <p className={s.kicker}>03 / UNDER THE SURFACE</p>
-            <h2 id="lab-title">
-              看不见的科技。
-              <br />
-              <span>看得懂的力量。</span>
-            </h2>
-          </div>
-          <p>
-            从一个公钥，到一次信任。
-            <br />
-            亲手切换步骤，看懂密码学如何工作。
-          </p>
-        </Reveal>
-        <Reveal>
-          <QuantumLab />
-        </Reveal>
-        <Reveal className={s.algorithmRail}>
-          <TextLink href="/pqc-arsenal#weapons">继续深入武器库</TextLink>
-          <div>
-            {algorithms.map((name) => (
-              <span key={name}>{name}</span>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-function FeaturedStory() {
-  return (
-    <section className={s.featured} aria-labelledby="featured-title">
-      <div className={s.container}>
-        <Reveal className={s.featuredHeading}>
-          <p className={s.kicker}>04 / BEYOND THE ORDINARY</p>
-          <h2 id="featured-title">
-            每一次突破，<span>都有故事。</span>
-          </h2>
-          <TextLink href="/storybook">发现完整故事</TextLink>
-        </Reveal>
-        <Reveal>
-          <Link className={s.cinematic} href="/storybook">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/assets/book-v2/08-fusion.webp"
-              alt="量仔与奶龙合体为靓龙，在量子宇宙中并肩守护"
-              width="1600"
-              height="900"
-              loading="lazy"
-            />
-            <span className={s.cinematicLabel}>
-              <Sparkles size={14} aria-hidden />
-              THE POWER OF TOGETHER
-            </span>
-            <div className={s.cinematicCopy}>
-              <p>量子星守护者 / 高光时刻</p>
-              <h3>
-                一份勇气。
-                <br />
-                无限可能。
-              </h3>
-              <span>当精确与勇敢相遇，新的力量就此诞生。</span>
-            </div>
-            <span className={s.cinematicButton}>
-              <BookOpen size={17} strokeWidth={1.3} aria-hidden />
-              <RollingLabel>进入故事</RollingLabel>
-            </span>
-          </Link>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-function Closing() {
-  return (
-    <section className={s.closing} aria-labelledby="closing-title">
-      <div className={s.closingGlow} aria-hidden />
-      <Reveal>
-        <p className={s.kicker}>THE FUTURE IS AN OPEN QUESTION.</p>
-        <h2 id="closing-title">
-          保持好奇。
-          <br />
-          <span>下一站，无限。</span>
-        </h2>
-        <p>宇宙很大，好奇心更大。你的故事，从这里开始。</p>
-        <ActionLink href="/storybook">量仔，带我去看看</ActionLink>
-      </Reveal>
-    </section>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className={s.footer}>
-      <div className={s.footerTop}>
-        <div>
-          <Link href="/" className={s.footerBrand}>
-            量仔<span>LIANGZAI</span>
-          </Link>
-          <p>来自量子星，连接每一种可能。</p>
-        </div>
-        <nav aria-label="页脚导航">
-          <TextLink href="/storybook">量仔故事</TextLink>
-          <TextLink href="/pqc-arsenal">PQC 武器库</TextLink>
-          <TextLink href="/archive">角色档案</TextLink>
-          <TextLink href="#main-content">回到顶部</TextLink>
-        </nav>
-      </div>
-      <div className={s.footerBottom}>
-        <span>LIANGZAI · STAY CURIOUS. GO FURTHER.</span>
-        <span>
-          <i />
-          好奇心，永远在线。
-        </span>
-      </div>
-    </footer>
-  );
-}
-
+const paths = [
+  {
+    no: "01",
+    en: "THE STORY",
+    name: "一场关于守护的\n宇宙冒险。",
+    body: "量仔 × 奶龙。11 页故事，一次穿越未知的旅程。",
+    href: "/storybook",
+    image: "/assets/book-v2/08-fusion.webp",
+    alt: "量仔与奶龙合体后的蓝金守护者",
+  },
+  {
+    no: "02",
+    en: "THE ARSENAL",
+    name: "面向未来的\n安全感。",
+    body: "从数学直觉，到后量子密码的四种守护之力。",
+    href: "/pqc-arsenal",
+    image: "/assets/cinematic/quantum-portal-v1.webp",
+    alt: "冰蓝色光芒环绕的金属量子门",
+  },
+  {
+    no: "03",
+    en: "THE GUARDIAN",
+    name: "小小量仔。\n大有可为。",
+    body: "一根接收星光的天线，一颗始终在线的好奇心。",
+    href: "/archive",
+    image: "/assets/characters-v2/arsenal-liangzai-cutout.webp",
+    alt: "量仔的蓝白战甲全身形象",
+  },
+];
 export default function QuantumHome() {
+  const root = useRef<HTMLElement>(null),
+    hero = useRef<HTMLElement>(null),
+    track = useRef<HTMLDivElement>(null),
+    chapter = useRef<HTMLElement>(null);
+  const { enabled } = useExperience();
+  usePageMotion(root);
+  useGSAP(
+    () => {
+      if (!enabled) return;
+      const mm = gsap.matchMedia();
+      mm.add(
+        "(min-width: 1101px) and (prefers-reduced-motion: no-preference)",
+        () => {
+          gsap
+            .timeline({
+              defaults: { ease: "none" },
+              scrollTrigger: {
+                trigger: hero.current,
+                start: "top top",
+                end: "bottom top",
+                scrub: 1,
+              },
+            })
+            .to(".portal-image", { scale: 1.14, yPercent: 12 }, 0)
+            .to(".portal-copy", { yPercent: 26, opacity: 0.2 }, 0)
+            .to(".hero-guardian", { yPercent: -16, rotation: 4 }, 0);
+          const rail = track.current!;
+          gsap.to(rail, {
+            x: () =>
+              -Math.max(
+                0,
+                rail.scrollWidth - chapter.current!.clientWidth + 96,
+              ),
+            ease: "none",
+            scrollTrigger: {
+              trigger: chapter.current,
+              start: "top 78px",
+              end: () =>
+                `+=${Math.max(650, rail.scrollWidth - chapter.current!.clientWidth)}`,
+              pin: true,
+              scrub: 0.8,
+              invalidateOnRefresh: true,
+            },
+          });
+        },
+        root,
+      );
+      return () => mm.revert();
+    },
+    { scope: root, dependencies: [enabled], revertOnUpdate: true },
+  );
   return (
-    <MotionProvider>
-      <a className={s.skip} href="#main-content">
-        跳到主要内容
-      </a>
-      <ReadingProgress />
-      <Navigation />
-      <main id="main-content" tabIndex={-1}>
-        <Hero />
-        <Universe />
-        <Stats />
-        <Laboratory />
-        <FeaturedStory />
-        <BrandStory />
-        <Closing />
-      </main>
-      <Footer />
-    </MotionProvider>
+    <main ref={root} id="main-content" className="cinematic-home">
+      <section ref={hero} className="portal-hero" aria-labelledby="home-title">
+        <div className="portal-scene" aria-hidden="true">
+          <img
+            className="portal-image"
+            src="/assets/cinematic/quantum-portal-v1.webp"
+            alt=""
+            width="1672"
+            height="941"
+            fetchPriority="high"
+          />
+          <div className="portal-shade" />
+        </div>
+        <div className="portal-copy">
+          <p className="eyebrow" data-intro>
+            <span className="status-light" /> A LITTLE CURIOSITY. AN INFINITE
+            UNIVERSE.
+          </p>
+          <h1 id="home-title" data-title>
+            让想象，
+            <br />
+            <em>穿越边界。</em>
+          </h1>
+          <p className="hero-summary" data-intro>
+            走近量子世界。
+            <br />
+            和量仔一起，把未知变成可能。
+          </p>
+          <div className="hero-actions" data-intro>
+            <Link className="silver-button" data-magnetic href="/storybook">
+              <span>开启探索</span>
+              <i aria-hidden="true" />
+            </Link>
+            <FilmDialog />
+          </div>
+        </div>
+        <div className="hero-guardian" data-intro>
+          <img
+            src="/assets/characters-v2/arsenal-liangzai-cutout.webp"
+            alt="蓝白战甲的量仔，漂浮在量子门前"
+            width="1024"
+            height="1536"
+          />
+          <span>LIANGZAI / Q–∞</span>
+        </div>
+        <div className="hero-baseline">
+          <a href="#worlds">
+            <i aria-hidden="true" />
+            向下，发现更多
+          </a>
+          <span>EST. IN CURIOSITY</span>
+          <span>01 — 05 / EXPLORE THE UNKNOWN</span>
+        </div>
+      </section>
+      <section
+        className="manifesto section-wrap"
+        aria-labelledby="manifesto-title"
+      >
+        <p className="eyebrow" data-reveal>
+          BEYOND WHAT YOU KNOW
+        </p>
+        <h2 id="manifesto-title" data-reveal>
+          世界很大。
+          <br />
+          好奇心，<span className="silver-text">可以更大。</span>
+        </h2>
+        <div className="manifesto-bottom" data-reveal>
+          <span className="orbital-symbol" aria-hidden="true">
+            ✳
+          </span>
+          <p>
+            这里是量仔的探索宇宙。
+            <br />
+            让深奥的科学有温度，让看不见的技术被看见。
+            <br />
+            一个故事，一次实验，一个通向未来的入口。
+          </p>
+        </div>
+      </section>
+      <section
+        id="worlds"
+        ref={chapter}
+        className="worlds-section"
+        aria-labelledby="worlds-title"
+      >
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">01 / ENTER THE UNIVERSE</p>
+            <h2 id="worlds-title">
+              三个世界。<em>无限可能。</em>
+            </h2>
+          </div>
+          <span className="micro-label">滚动探索 · 点击进入</span>
+        </div>
+        <div className="world-track" ref={track}>
+          {paths.map((p, i) => (
+            <Link
+              className={`world-card world-card-${i}`}
+              href={p.href}
+              key={p.no}
+            >
+              <div className="world-card-image">
+                <img src={p.image} alt={p.alt} loading="lazy" />
+              </div>
+              <div className="world-card-top">
+                <span>{p.en}</span>
+                <span>{p.no} / 03</span>
+              </div>
+              <div className="world-card-copy">
+                <h3>{p.name}</h3>
+                <p>{p.body}</p>
+                <span className="card-enter">
+                  进入这个世界<span aria-hidden="true">＋</span>
+                </span>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+      <section
+        className="field-section section-wrap"
+        id="lab"
+        aria-labelledby="field-title"
+      >
+        <div className="field-copy" data-reveal>
+          <p className="eyebrow">02 / MAKE THE INVISIBLE VISIBLE</p>
+          <h2 id="field-title">
+            触碰。
+            <br />
+            改变。
+            <br />
+            <em>感受共振。</em>
+          </h2>
+          <p>
+            有些世界，需要亲手探索。
+            <br />
+            移动指针，切换形态，看粒子在秩序与想象之间流动。
+          </p>
+          <Link className="line-link" href="/pqc-arsenal#math">
+            从直觉，走进密码学
+          </Link>
+          <small>交互艺术 · 不表示真实量子态</small>
+        </div>
+        <QuantumSculpture />
+      </section>
+      <section className="cinema-banner" aria-labelledby="cinema-title">
+        <img
+          data-parallax="10"
+          src="/assets/book-v2/09-final-battle.webp"
+          alt="靓龙以晶格剑和护盾迎战 Shor"
+          loading="lazy"
+        />
+        <div className="cinema-vignette" />
+        <div className="cinema-copy" data-reveal>
+          <p className="eyebrow">03 / COURAGE IS A SHARED SECRET</p>
+          <h2 id="cinema-title">
+            所有伟大的冒险，
+            <br />
+            都始于<span>并肩。</span>
+          </h2>
+          <p>精确与勇气相遇。新的力量，从此诞生。</p>
+          <Link className="silver-button" data-magnetic href="/storybook">
+            进入量子星守护者
+            <i aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
+      <section className="human-teaser section-wrap">
+        <div data-reveal>
+          <p className="eyebrow">04 / THE HUMAN BEHIND THE SIGNAL</p>
+          <h2>
+            量仔背后，
+            <br />
+            是一个<span className="silver-text">认真探索的人。</span>
+          </h2>
+        </div>
+        <div className="human-teaser-copy" data-reveal>
+          <p>
+            在算法与协议之间，寻找安全的答案。
+            <br />
+            在技术与表达之间，让复杂的事变得易懂。
+          </p>
+          <Link className="line-link" href="/about">
+            认识量仔背后的人
+          </Link>
+          <span>CRYPTOGRAPHY / ENGINEERING / CURIOSITY</span>
+        </div>
+      </section>
+    </main>
   );
 }
