@@ -29,3 +29,7 @@
 执行 `npm run build`、`node --test tests/rendered-html.test.mjs`、`npm run lint`。五条渲染用例检查页面标题、主要入口、故事数据、算法内容与人物页；浏览器检查桌面和 390px 手机宽度、菜单、翻页/旁白、算法/参数、短片、粒子形态及动效开关。
 
 现有 `<img>` lint 提示保留；全仓 tsc 仍有既有 Cloudflare ambient types 缺口，构建和服务器渲染检查单独验证。
+
+## Cloudflare SSR 边界
+
+GSAP 插件只在 `typeof window !== "undefined"` 时注册。`useGSAP` 的 headless 注册会唤醒 ticker；SSR 模块求值阶段不得启动计时器。回归检查在独立进程中禁止计时器后加载实际构建的 Motion 模块，避免 Node 普通渲染检查遗漏该类 Worker 错误。

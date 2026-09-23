@@ -16,7 +16,11 @@ import { SplitText } from "gsap/SplitText";
 
 // Official greensock/gsap-skills: scoped React lifecycle, timelines,
 // responsive matchMedia and transform-only continuous interactions.
-gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
+// useGSAP is headless and registration wakes GSAP's ticker.
+// Never create that timer while Cloudflare evaluates the SSR module.
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
+}
 export { gsap, useGSAP, ScrollTrigger, SplitText };
 const MotionContext = createContext({
   enabled: false,

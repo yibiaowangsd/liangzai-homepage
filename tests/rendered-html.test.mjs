@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readdir } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
 
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
@@ -139,4 +141,29 @@ test("renders the human profile without invented credentials or private contact 
   assert.match(html, /PQC 与 QKD/);
   assert.match(html, /https:\/\/github.com\/yibiaowangsd/);
   assert.doesNotMatch(html, /foxmail|博士|首席|教授/);
+});
+
+test("SSR animation module does not start a Worker-forbidden timer", async () => {
+  const assets = new URL("../dist/server/ssr/assets/", import.meta.url);
+  const motionBundle = (await readdir(assets)).find((name) =>
+    /^Motion-.*\.js$/.test(name),
+  );
+  assert.ok(
+    motionBundle,
+    "Animation SSR module exists in the production build",
+  );
+  const script = `
+    globalThis.setTimeout = () => { throw new Error("Timer during SSR module initialization"); };
+    globalThis.setInterval = () => { throw new Error("Interval during SSR module initialization"); };
+    await import(${JSON.stringify(new URL(motionBundle, assets).href)});
+  `;
+  const child = spawnSync(
+    process.execPath,
+    ["--input-type=module", "-e", script],
+    {
+      encoding: "utf8",
+      timeout: 10000,
+    },
+  );
+  assert.equal(child.status, 0, child.stderr || String(child.error || ""));
 });
