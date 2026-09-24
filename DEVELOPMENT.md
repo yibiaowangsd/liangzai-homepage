@@ -1,568 +1,77 @@
-# 量仔主页开发与接手手册
+# 量仔主页开发文档
 
-> 适用仓库：`yibiaowangsd/liangzai-homepage`  
-> 主要公开站点：<https://wangyibiao.com>  
-> 本文目标：让新的开发者或新的 AI 对话只阅读这一份文档，就能安全、快速地继续开发。
+适用仓库：[`yibiaowangsd/liangzai-homepage`](https://github.com/yibiaowangsd/liangzai-homepage)。本文根据 2026-09-24 的 `main` 代码整理；接手时仍以仓库最新代码为准。
 
-## 当前全站与路由（2026-09 GSAP 电影感重构）
+## 1. 站点结构
 
-当前视觉是深黑、拉丝银、冰蓝光效。此版本覆盖首页、故事书、角色档案、PQC 武器库和新增个人简介页，下文 Minimal Zine 说明仅作历史记录。完整动画规范、素材来源与验证方式见 [docs/gsap-motion.md](docs/gsap-motion.md)。
-
-- `/`：金属量子门、滚动视差、横向世界入口、可切换粒子雕塑、短片与人物入口。
-- `/storybook`：电影式阅读器，保留原 11 页内容及逐页旁白，支持章节、翻页、键盘和触屏。
-- `/archive`：深色角色档案，保留原故事、战斗记录与战后内容。
-- `/pqc-arsenal`：深色交互控制台，保留四种算法、数学推导、参数规格和资料链接。
-- `/about`：量仔背后的人，使用已知姓名与研究方向，不添加未经确认的履历。
-- `app/experience/`：全站导航、页脚、动效偏好、GSAP 生命周期、粒子雕塑、视频弹窗及共享样式。
-- 首页和新页面使用 `gsap`、`@gsap/react`，官方技能来源为 `greensock/gsap-skills`；旧 `app/home/` 保留但不再挂载。
-- 量仔原图保持等比；新生成素材仅用于量子门场景。按钮采用银色矩形、细线文字入口，避免重复胶囊和装饰小箭头。
-- 动效遵循系统减少动态效果，可全站手动暂停；离屏、后台停止粒子循环。短片手动打开、手动播放，关闭或后台暂停。
-- `package-lock.json` 已提交，可使用 `npm ci`。修改后执行构建、五路由渲染测试与浏览器验证。
-- 全仓 `tsc` 的既有 Cloudflare 类型缺口（`cloudflare:workers`、`Fetcher`、`D1Database`）未改变；不要为视觉工作改动部署架构。
-- `main` 触发现有 Cloudflare 主域名部署。
-
----
-
-## 1. 新对话接手时先做什么
-
-把下面这段直接发给新的开发对话即可：
-
-```text
-请先完整阅读仓库根目录 DEVELOPMENT.md，再开始修改。
-以 origin/main 最新提交为准，先检查 git status 和最近提交，不要覆盖已有改动。
-保持当前黑银冰蓝的 GSAP 视觉体系，先读 docs/gsap-motion.md；复用现有量仔原图，不要拉伸量仔。
-修改后至少执行 npm run build 和 node --test tests/rendered-html.test.mjs；
-如果需要发布，先说明改动范围，再提交到 GitHub，并确认 Cloudflare 部署结果。
-```
-
-建议接手顺序：
-
-1. 阅读本文和 `README.md`。
-2. 检查 `git status -sb`，确认没有来源不明的本地修改。
-3. 执行 `git fetch origin`，确认当前分支与 `origin/main` 的关系。
-4. 只阅读与任务相关的页面、样式和素材，不做无关的全仓库重构。
-5. 修改后完成构建、测试、视觉检查，再决定是否发布。
-
-编写本文时，页面业务基线为提交 `40fd826`（PQC 武器库 Hero 简化版）。接手时不要固定依赖该提交，应始终以最新 `origin/main` 为准。
-
----
-
-## 2. 项目定位
-
-这是一个以公司吉祥物“量仔”为主角的 Minimal Zine 风格网站，目前包含两个主要页面：
-
-| 路由 | 页面 | 作用 |
+| 页面 | 入口 | 关键实现 |
 | --- | --- | --- |
-| `/` | 量仔档案主页 | 介绍量仔、奶量同盟、反 Shor 故事和战后日常 |
-| `/pqc-arsenal` | PQC 武器库 | 面向初学者讲解 ML-KEM、ML-DSA、SLH-DSA、FN-DSA，并提供交互式参数和选型说明 |
+| `/` | `app/page.tsx` | `app/QuantumHome.tsx`、`app/experience/InteractiveGuardian.tsx`、`QuantumSculpture.tsx`、`FilmDialog.tsx` |
+| `/storybook` | `app/storybook/page.tsx` | `StoryBook.tsx` 负责翻页与旁白，`storyData.ts` 负责页面和音轨路径 |
+| `/archive` | `app/archive/page.tsx` | 角色档案和战后内容 |
+| `/pqc-arsenal` | `app/pqc-arsenal/page.tsx` | `ArsenalLab.tsx` 的算法数据与交互；`cinematic-arsenal.css` 调整暗色视觉 |
+| `/about` | `app/about/page.tsx` | 作者简介；只使用已公开且确认的信息 |
 
-网站同时保留两类托管相关配置：
+`app/layout.tsx` 加载全局样式，并装配 `ExperienceProvider`、全站导航及页脚。`app/experience/Motion.tsx` 管理 GSAP、系统减少动态效果与手动暂停。样式分工：`app/globals.css` 保留基础变量及 PQC 组件基础样式；`app/experience/cinematic.css` 为全站暗色视觉；`app/experience/guardian-3d.css` 为展台；各页面目录的 CSS 为页面局部样式。修改样式时注意 PQC 暗色样式会覆盖部分基础规则。
 
-- GitHub `main` 分支是当前 Cloudflare 自动部署的代码源，公开主域名为 `wangyibiao.com`。
-- `.openai/hosting.json` 对应 ChatGPT Sites 项目，README 中的 `chatgpt.site` 地址属于另一条托管链路。
+首页的 3D 场景在客户端动态加载 `app/experience/three/hero-scene.ts`；其中 `character-assets.ts` 按 `model-catalog.json` 读取当前角色模型分片、校验长度并以 GLTFLoader/MeshoptDecoder 解析。`render-scheduler.ts` 合并重绘请求，暂停或离屏时停止连续绘制。加载失败时 `InteractiveGuardian.tsx` 显示对应模式与视角的 WebP 预览。
 
-不要混淆两条部署链路。若任务明确要求更新 `wangyibiao.com`，核心动作是更新 GitHub `main` 并检查 Cloudflare 部署；不要为了这个目标擅自创建新的 Sites 项目或修改 `project_id`。
+## 2. 环境和命令
 
----
-
-## 3. 技术栈与运行条件
-
-| 项目 | 当前实现 |
-| --- | --- |
-| 框架 | Next.js App Router 16.2.6 |
-| UI | React 19.2.6 + TypeScript |
-| 构建 | Vinext 0.0.50 + Vite 8 |
-| 部署运行时 | Cloudflare Worker |
-| 样式 | 全局 CSS + Tailwind CSS 导入，页面主体仍以手写 CSS 为主 |
-| 数据库 | Drizzle/D1 脚手架已保留，但当前业务未使用数据库 |
-| Node.js | `>= 22.13.0` |
-
-当前仓库已提交 `package-lock.json`，普通本地环境使用：
+Node.js ≥ 22.13，推荐使用锁文件安装：
 
 ```bash
 npm ci
 npm run dev
 ```
 
-`scripts/install-ci.sh` 是 Sites 环境脚手架的一部分；普通本地开发可直接使用锁文件安装。
-
----
-
-## 4. 目录与文件职责
-
-```text
-liangzai-homepage/
-├── app/
-│   ├── layout.tsx                 # 全站 metadata、favicon、全局样式入口
-│   ├── page.tsx                   # 量仔档案主页
-│   ├── globals.css                # 两个页面的主要样式，避免无关的大范围重写
-│   ├── pqc-arsenal/
-│   │   ├── page.tsx               # PQC 页面 metadata 与组件入口
-│   │   └── ArsenalLab.tsx         # PQC 数据、交互状态与完整页面结构
-│   └── chatgpt-auth.ts            # ChatGPT Sites 认证辅助，当前公开页面未使用
-├── public/
-│   ├── assets/story/              # 量仔主页和故事图片
-│   ├── assets/pqc/                # PQC 武器库算法图片
-│   ├── assets/spritesheet.webp    # 量仔动画精灵图
-│   └── favicon.svg
-├── tests/rendered-html.test.mjs   # Worker 产物与两个路由的基础测试
-├── worker/index.ts                # Vinext 的 Cloudflare Worker 入口
-├── scripts/
-│   ├── build-verified.sh          # 有超时保护的构建入口
-│   ├── validate-artifact.sh       # 校验 Worker ESM 入口与 hosting manifest
-│   ├── install-ci.sh              # Sites 环境安装脚本，普通本地开发慎用
-│   └── sites-env.sh               # Sites 隔离环境辅助
-├── vite.config.ts                 # Vinext、Sites、Cloudflare 插件及预览 host 配置
-├── next.config.ts                 # Next.js 配置，目前基本为空
-├── package.json
-└── .openai/hosting.json           # 已有 Sites 项目标识，不要随意改动
-```
-
-### 修改任务与入口文件对应关系
-
-| 要修改的内容 | 优先查看 |
+| 命令 | 用途 |
 | --- | --- |
-| 首页故事、标题、章节 | `app/page.tsx` |
-| 首页与全站纸张风格 | `app/globals.css` 中 PQC 注释之前的部分 |
-| PQC 算法文字、参数、状态 | `app/pqc-arsenal/ArsenalLab.tsx` 中 `weapons` 数组 |
-| PQC Hero 四张算法图 | `heroWeapons` 数组、`public/assets/pqc/` |
-| PQC 交互行为 | `ArsenalLab()` 内的 `selected`、`levelIndex`、`demo` |
-| PQC 页面布局 | `app/globals.css` 中 `/* PQC arsenal */` 后的选择器 |
-| 页面标题与 SEO 描述 | 对应目录下的 `page.tsx` 或根 `layout.tsx` |
-| Cloudflare Worker 行为 | `worker/index.ts`，非必要不要改 |
+| `npm run dev` | Vite/Vinext 开发服务器；默认监听 `0.0.0.0` |
+| `npm run build` | 限时 Vinext 构建，并校验 Worker 入口及 Sites 清单 |
+| `npm test` | 构建后运行 `tests/*.test.mjs` |
+| `npm run lint` | ESLint；忽略 `dist` 和 `.next` |
+| `npm run validate:artifact` | 单独校验 `dist/server/index.js` 和 `dist/.openai/hosting.json` |
+| `npm run models:prepare -- <量仔.glb> <奶龙.glb>` | 从原始模型生成压缩分片与清单 |
+| `npm run models:prepare -- --refresh-textures` | 从现有分片重建 Web 贴图，不需要原始模型 |
 
----
+`npm run install:ci` 与 `scripts/sites-env.sh` 是已有 Sites 环境辅助；普通开发直接运行 `npm ci`。`worker/index.ts` 是 Worker 入口，处理 Vinext 请求与可选图像优化。`vite.config.ts` 同时配置 Vinext、Cloudflare 和 Sites 打包插件；`.openai/hosting.json` 中的 `project_id` 是已有 Sites 项目标识，不要随意替换。当前业务没有数据库，也没有 D1 绑定。
 
-## 5. 页面结构
+## 3. 资源与模型
 
-### 5.1 首页 `/`
+| 资源目录 | 当前用途 |
+| --- | --- |
+| `public/assets/models/observatory/` | 两个角色的压缩模型分片、单人及双人模式的四视角 WebP 预览 |
+| `public/assets/book-v2/`、`book-v3/` | 故事书与首页实际引用的插图；修订过的页由 v3 文件覆盖 |
+| `public/assets/narration-v3/` | `storyData.ts` 中 11 个逐页音轨 |
+| `public/assets/characters-v2/` | 首页、角色档案、武器库和简介页图片 |
+| `public/assets/pqc/` | 武器库的四张算法配图 |
+| `public/assets/cinematic/` | 首页量子门及按需打开的序章视频 |
 
-首页由以下部分组成：
+模型清单既记录原始 GLB 的来源校验值，也记录部署分片的哈希、长度与贴图规格。编辑模型时，重新生成 `model-catalog.json` 与分片并运行 `tests/character-assets.test.mjs`；不要仅改文件名或删掉仍在清单中的分片。WebP 回退图的路径由 `${mode}-${view}.webp` 动态拼接，`mode` 为 `liangzai`、`nailong`、`duo`，`view` 为 `front`、`side`、`back`、`reset`，因此不能只凭全文搜索判断它们无用。
 
-1. 档案式导航栏。
-2. 量仔 Hero。
-3. 生平与角色能力。
-4. 奶量同盟与反 Shor 故事。
-5. 可展开的战后记录。
-6. 战后日常与页脚。
+新增或更换故事素材时，更新 `app/storybook/storyData.ts`、对应页面和测试。资源清理时先检查 JSX/CSS/JSON 中的完整 `/assets/...` 路径，再检查动态模板、模型清单和测试。不要把当前版本的资源重新改成无哈希的旧路径。视频只在打开弹窗后挂载；故事旁白从用户触发的播放动作开始。
 
-主要故事素材位于 `public/assets/story/`。文件名已包含内容哈希，例如：
+2026-09-24 清理记录：删除不再挂载的旧 `app/home/` 与其 CSS Module、未启用的 D1/Drizzle 与认证示例，以及 41 个无现用路由引用的旧图片、旁白和上一版模型分片；公开素材目录减少约 22.4 MiB。Git 历史仍可找回这些版本。旧版本已打开的浏览器页如果继续请求刚删除的哈希分片，可能需要刷新页面以加载新清单。
 
-- `hero-1ee8364c.png`
-- `origin-19fddd6b.png`
-- `alliance-0fea97ac.png`
-- `battle-cdc1056a.png`
-- `after-56273bc8.png`
+## 4. 页面行为与维护点
 
-不要把页面引用改回没有哈希的旧文件名，否则 Cloudflare/CDN 可能继续返回旧图片，或在部署时出现新旧文件不一致。
+- 首页展台支持量仔、奶龙及双人模式，正面、侧面、背面和复位视角。默认只按需加载当前角色的模型；设备不能使用 WebGL 或加载失败时切换预览图。场景参数、资源预算和验证细节见 [docs/liangzai-3d.md](docs/liangzai-3d.md)。
+- GSAP 动效跟随系统减少动态效果，另有全站暂停按钮。离屏、后台和暂停状态不能保持无意义的渲染循环。组件卸载时释放动画、事件监听和 Three.js 资源。参考 [docs/gsap-motion.md](docs/gsap-motion.md)。
+- `ArsenalLab.tsx` 的四种算法和参数集中在组件的数据数组中；新增算法时同步处理类型、切换状态、界面与来源说明。教学评分不能表述为实测性能或正式安全结论。
+- 故事书的插图与音轨按 `storyData.ts` 的页序关联；改页序时同时核对旁白、章节跳转和页面测试。
+- 图片保留准确替代文本，交互用真实按钮；动效暂停、键盘控制及语义状态不可因视觉调整而丢失。
 
-### 5.2 PQC 武器库 `/pqc-arsenal`
+## 5. 验证与发布
 
-PQC 页面主要分为：
-
-1. Hero：左侧标题，右侧“一张量仔 + 四张算法照片”。
-2. 从零开始：解释 KEM 与数字签名的区别。
-3. 四件武器：算法 Tab、原理、用途、注意事项和规格滑块。
-4. 如何选择：按任务推荐算法。
-5. 标准来源和页脚。
-
-`ArsenalLab.tsx` 中的关键数据结构：
-
-- `WeaponId`：四种算法的稳定内部 ID。
-- `Weapon`：算法的完整展示字段。
-- `weapons`：算法内容的唯一主要数据源。
-- `heroWeapons`：Hero 四张照片与标签的映射。
-- `scoreNames`：相对能力评分的中文名称。
-
-交互状态：
-
-- `selected`：当前选中的算法。
-- `levelIndex`：当前参数规格。
-- `demo`：KEM 与签名演示切换。
-
-新增算法时，至少要同步检查：类型、`weapons` 数组、Hero 是否需要展示、Tab 网格、测试和移动端布局。不要只增加一段 JSX。
-
----
-
-## 6. 视觉规范
-
-### 6.1 固定视觉语言
-
-项目当前使用 Minimal Zine / 纸张档案风格：
-
-- 暖灰或象牙纸背景。
-- 可见但克制的纸张纤维、扫描颗粒和印刷误差。
-- 大面积留白。
-- 青色作为主要高饱和强调色。
-- 中文宋体/衬线字体与英文等宽小字组合。
-- 细边框、档案编号和小型注释可以使用，但不应堆叠成复杂拼贴。
-
-全局颜色和字体变量位于 `app/globals.css` 的 `:root`：
-
-```css
---paper
---ink
---muted
---cyan
---cyan-dark
---milk
---rule
---font-sans-cn
---font-serif-cn
---font-mono-en
-```
-
-新增颜色时优先复用这些变量。除非整个页面主题需要调整，不要在多个组件里散落近似色值。
-
-### 6.2 PQC Hero 的强制约束
-
-这是最容易被后续修改破坏的区域，必须保持：
-
-- 右侧只有一个量仔主体。
-- 量仔旁边是四张互不遮挡的算法卡片。
-- 不再添加悬浮圆章、额外武器线稿、重复网格、旋转纸片或多层投影。
-- 不把量仔和算法图合成为一张新图。
-- 不用生成式模型重新绘制量仔，避免五官、天线和身体比例漂移。
-- 量仔图片使用 `object-fit: contain`，保持完整比例。
-- 桌面端为量仔与算法卡片并排；移动端改为上下排列。
-
-当前量仔源文件：
-
-```text
-public/assets/story/liangzai-cutout-af7e8ddc.png
-```
-
-该文件是 1024×1536 RGBA 透明图片，是当前 Hero 的量仔形象基准。不要用截图或带纸张背景的 Hero 图替换它。
-
-### 6.3 四张 PQC 算法照片
-
-当前文件：
-
-```text
-public/assets/pqc/ml-kem-zine-030d4365.webp
-public/assets/pqc/ml-dsa-zine-be7db444.webp
-public/assets/pqc/slh-dsa-zine-eb6100ca.webp
-public/assets/pqc/fn-dsa-zine-97a2ab35.webp
-```
-
-素材规范：
-
-- 页面使用尺寸为 640×1067 WebP，约 3:5。
-- 单张图约 80% 留白，只保留一个算法视觉隐喻。
-- 青色是唯一主要高饱和色。
-- 不在图片内生成算法名称；名称由 HTML 输出，保证可读性和无障碍。
-- ML-KEM：晶格护盾。
-- ML-DSA：晶格印章。
-- SLH-DSA：哈希树杖。
-- FN-DSA：猎隼轻刃。
-
-替换图片时采用内容哈希文件名：
-
-```text
-<meaningful-name>-<sha256前8位>.webp
-```
-
-推荐流程：
-
-1. 生成或编辑原始 PNG。
-2. 人工检查主体、留白、文字污染和重复物体。
-3. 转换为适合网页的 WebP。
-4. 计算内容哈希并写入文件名。
-5. 更新 `heroWeapons` 中的路径。
-6. 保留旧文件到新版本验证完成；确认无引用后再单独清理。
-
----
-
-## 7. 响应式与无障碍要求
-
-主要断点：
-
-- `980px`：桌面双栏逐步转为单栏，PQC Tab 改为两列。
-- `640px`：移动端布局、字号、卡片间距和交互面板进一步压缩。
-
-修改后至少检查：
-
-- 1440px 左右桌面宽度。
-- 1024px 左右窄桌面/平板宽度。
-- 390px 左右手机宽度。
-
-无障碍约束：
-
-- 页面图片必须有准确 `alt`。
-- 装饰元素使用 `aria-hidden="true"`，不要让读屏器朗读无意义图形。
-- Tab 保留 `role="tablist"`、`role="tab"` 和 `aria-selected`。
-- 交互按钮必须使用真实 `<button>`，不要用可点击 `<div>`。
-- 算法名称不要只存在于图片中。
-- 焦点状态、文字对比度和触摸区域不能因视觉优化而删除。
-
----
-
-## 8. 内容与 PQC 数据更新规则
-
-算法参数集中在 `weapons[].levels`，不要把同一组参数复制到多个 JSX 区域。
-
-当前页面定位是“初学者可理解的教学展示”，写作要求：
-
-- 先说算法解决什么任务，再解释数学基础。
-- KEM 与数字签名必须明确区分。
-- 避免把 KEM 描述为直接加密长消息。
-- 性能评分是相对教学展示，不应写成正式基准结论。
-- FN-DSA 页面当前明确标注“尚未定稿”，相关参数为近似展示。
-
-如果更新标准状态、算法 ID 或参数，必须优先核对 NIST 官方标准/草案，并同步修改：
-
-1. `weapons` 数组的 `code`、`status`、`principle`、`levels`。
-2. 页面底部资料说明与链接。
-3. 可能受影响的测试或描述。
-
-不要仅根据二手博客更新标准状态。
-
----
-
-## 9. 本地开发、构建与测试
-
-### 9.1 启动开发环境
-
-```bash
-npm ci
-npm run dev
-```
-
-默认由 Vite/Vinext 启动。`vite.config.ts` 已包含：
-
-- `host: "0.0.0.0"`
-- `allowedHosts: ["terminal.local"]`
-- Vinext 插件
-- Sites 插件
-- Cloudflare Vite 插件
-
-除非有明确的预览兼容问题，不要改端口、移除 `terminal.local` 或把 `dev` 改回 `vinext dev`。
-
-### 9.2 必做验证
-
-```bash
-npm run build
-node --test tests/rendered-html.test.mjs
-```
-
-也可一次执行：
+修改完成后执行：
 
 ```bash
 npm test
-```
-
-当前测试应包含两项：
-
-1. 首页输出 `codex-preview=development` metadata。
-2. `/pqc-arsenal` 成功渲染，并包含四种算法名称。
-
-建议同时执行：
-
-```bash
 npm run lint
 git diff --check
 ```
 
-若 `npm run build` 成功，应生成并验证：
+测试覆盖首页及四个子路由的 SSR、PQC 内容、故事书、Worker 的 GSAP 计时器边界、模型分片哈希与解码、贴图规格、双角色站位、回退预览图和帧调度。页面交互或视觉调整还应在浏览器检查：五条路由、三种模型模式、视角切换、键盘与拖动、WebGL 回退、故事翻页与音轨、动效暂停、算法切换，以及控制台中是否有资源 404 或 hydration 报错。桌面为主要体验，窄屏仍应可访问。
 
-```text
-dist/server/index.js
-dist/.openai/hosting.json
-```
-
-其中 Worker 模块必须提供 ESM 默认导出和可调用的 `fetch(request, env, ctx)`。
-
-### 9.3 页面修改后的检查清单
-
-- `/` 返回 200。
-- `/pqc-arsenal` 返回 200。
-- 四张 PQC 图片路径存在且可以加载。
-- 量仔没有被裁切、压扁或横向拉伸。
-- Hero 没有出现重复背景、重复人物或卡片互相覆盖。
-- 四个算法 Tab 均可切换。
-- 参数滑块在每种算法下不会越界。
-- KEM/签名演示按钮可以切换。
-- 手机宽度没有横向滚动条。
-- 控制台没有图片 404 或 hydration 错误。
-
----
-
-## 10. GitHub 与 Cloudflare 发布流程
-
-### 10.1 开始修改前
-
-```bash
-git status -sb
-git fetch origin
-git log --oneline --decorate -5 origin/main
-```
-
-如果工作区存在与当前任务无关的修改，不要执行 `git add -A`，也不要用 `git reset --hard`、`git checkout --` 等命令覆盖它们。
-
-推荐在新分支开发：
-
-```bash
-git switch main
-git pull --ff-only origin main
-git switch -c agent/<简短任务名>
-```
-
-如果用户明确授权直接更新 `main`，仍需先确认远端没有新增提交，并使用正常的快进推送；不要强推 `main`。
-
-### 10.2 提交前
-
-```bash
-npm run build
-node --test tests/rendered-html.test.mjs
-git diff --check
-git status --short
-git diff --stat
-```
-
-只暂存当前任务文件，提交信息保持简短，例如：
-
-```text
-docs: add development handoff guide
-fix: simplify PQC armory hero
-feat: add PQC comparison section
-```
-
-### 10.3 发布后
-
-GitHub `main` 更新会触发 Cloudflare 自动部署。发布后应检查：
-
-1. GitHub `main` 是否指向预期提交。
-2. Cloudflare 构建是否成功。
-3. `https://wangyibiao.com/` 是否正常。
-4. `https://wangyibiao.com/pqc-arsenal` 是否正常。
-5. 浏览器强制刷新后是否仍显示新图。
-6. 开发者工具 Network 中是否出现图片 404。
-
-如果代码已更新但图片仍是旧版，优先检查：
-
-- JSX 是否仍引用旧文件名。
-- 新图片是否真正提交到 `public/assets/`。
-- Cloudflare 部署是否使用最新提交。
-- 图片是否沿用了旧 URL，导致 CDN 命中缓存。
-
-最稳妥的处理是更换带内容哈希的新文件名，而不是反复覆盖同名图片。
-
-在 ChatGPT Work 环境中，如果 `gh` 不可用但 GitHub 应用已有写权限，可以使用仓库连接能力提交；更新分支引用时必须基于最新父提交，并保持 `force=false`。
-
----
-
-## 11. ChatGPT Sites 相关注意事项
-
-仓库包含 `.openai/hosting.json`，说明它也关联了一个已有 Sites 项目：
-
-```json
-{
-  "d1": null,
-  "project_id": "<已有项目标识>",
-  "r2": null
-}
-```
-
-注意：
-
-- 不要创建第二个同名 Sites 项目。
-- 不要修改或复制 `project_id` 到其他仓库。
-- 当前没有 D1/R2 业务需求，不要仅因脚手架存在就引入数据库或对象存储。
-- 若明确使用 Sites 做预览或部署，应遵循 Sites 生命周期，不要手动伪造部署产物。
-- 若任务目标是 GitHub → Cloudflare 的 `wangyibiao.com`，不要把 Sites 部署成功误认为主域名已经更新。
-
-在部分云端开发环境中，预览服务可能显示运行中，但浏览器连接仍超时。这通常是预览基础设施问题，不代表项目源码错误。若 `npm run build`、产物校验和路由测试均通过，不要为了修复临时连接问题随意重写 Vite host、端口或页面样式。
-
----
-
-## 12. 常见问题与排查
-
-### 12.1 右侧看起来像叠了很多层
-
-检查是否重新引入了以下内容：
-
-- 绝对定位的装饰武器。
-- 多个 orbit 圆章。
-- 背景网格与算法图同时出现。
-- 旋转、裁切、多层阴影和纸片叠加。
-- 同一张量仔图在背景和前景各出现一次。
-
-正确结构应始终是：
-
-```text
-arsenal-hero-visual
-├── armory-portrait        # 一个量仔
-└── armory-algorithms      # 四张独立算法卡片
-```
-
-### 12.2 量仔失真或不完整
-
-按顺序检查：
-
-1. 是否仍引用 `liangzai-cutout-af7e8ddc.png`。
-2. 是否设置 `object-fit: contain`。
-3. 图片容器是否有固定宽高比与足够高度。
-4. 是否误加了 `object-fit: cover`。
-5. 是否使用 `transform: scaleX(...)`、非等比尺寸或剪切路径。
-
-不要通过重新生成量仔解决 CSS 拉伸问题。
-
-### 12.3 本地正常，Cloudflare 图片缺失
-
-检查大小写、路径和提交内容：
-
-```bash
-git ls-files public/assets
-rg -n '/assets/' app
-```
-
-Linux/Cloudflare 路径区分大小写。Windows 本地能加载不代表部署环境一定能加载。
-
-### 12.4 页面能打开，但交互失效
-
-确认 `ArsenalLab.tsx` 顶部仍保留：
-
-```tsx
-"use client";
-```
-
-并检查浏览器控制台是否存在 hydration、资源加载或 React 错误。
-
-### 12.5 新算法参数切换后滑块越界
-
-当前实现会使用：
-
-```ts
-Math.min(levelIndex, weapon.levels.length - 1)
-```
-
-新增算法时仍应检查默认 `levelIndex` 是否适合该算法的规格数量，并在 `chooseWeapon()` 中处理特殊情况。
-
----
-
-## 13. 安全修改原则
-
-- 不覆盖用户尚未提交的改动。
-- 不强推 `main`。
-- 不删除旧素材，除非已确认没有任何引用并获得明确授权。
-- 不把 API 密钥、部署凭据或访问令牌写入仓库。
-- `.env*` 只用于本地环境，并保持忽略状态。
-- 不随意修改 `.openai/hosting.json`、Worker 入口或 Cloudflare 绑定。
-- 不因页面暂时无法预览就跳过构建和测试。
-- 修改技术内容时优先使用 NIST 等官方来源。
-- 任何生成式图片都必须人工检查主体完整性、重复元素、乱码和水印。
-
----
-
-## 14. 完成任务时的交付格式
-
-新对话完成开发后，最终回复至少包含：
-
-1. 实际完成了什么。
-2. 修改了哪些关键文件。
-3. 执行了哪些构建或测试，结果如何。
-4. 是否已经提交 GitHub，提交链接或 SHA 是什么。
-5. 是否已经验证 `wangyibiao.com` 的公开效果。
-6. 如果无法完成公开验证，要明确说明限制，不要把“已推送”写成“已部署验证成功”。
-
-这样可以避免下一次对话误判项目状态。
+`main` 是 `wangyibiao.com` 的现有 Cloudflare 部署来源。提交到 GitHub 前确认当前分支与远端最新状态，切勿强推；推送后检查构建结果、站点首页和受影响路由。GitHub 更新并不等于 Cloudflare 已完成部署。`.openai/hosting.json` 对应独立 Sites 配置，不要为了更新主域名而创建或替换 Sites 项目。

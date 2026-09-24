@@ -1,30 +1,30 @@
-# 量仔 LIANGZAI · 好奇无界，未来可期
+# 量仔主页
 
-以量仔为主角的量子探索网站。首页采用深空黑、银白大字、冷色粒子场与错落 Bento Grid，将互动故事、密码学知识和角色档案串联起来。
-
-## 页面
+以量仔和奶龙为主角的量子探索网站。当前主页为黑银与冰蓝配色，包含按需加载的 3D 展台、互动故事、角色档案和 PQC 教学页面。
 
 | 路由 | 内容 |
 | --- | --- |
-| `/` | 粒子场首屏、内容 Bento、数字展示、密码学实验室、故事案例与品牌介绍 |
-| `/storybook` | 11 页量子星守护者互动动画书，保留翻页与旁白 |
-| `/archive` | 原 Minimal Zine 风格量仔档案 |
-| `/pqc-arsenal` | PQC 武器库、算法流程与参数交互 |
+| `/` | 量仔／奶龙 3D 展台、章节入口、粒子雕塑与短片 |
+| `/storybook` | 11 页动画书、章节切换和逐页旁白 |
+| `/archive` | 角色故事与档案 |
+| `/pqc-arsenal` | ML-KEM、ML-DSA、SLH-DSA、FN-DSA 的教学交互 |
+| `/about` | 项目作者简介 |
 
-首页使用 React、CSS Modules、Framer Motion 和 Lucide。Canvas 量子场支持两种形态、鼠标响应、离屏/后台停止；所有动效提供暂停与系统减少动态效果适配。密钥封装和数字签名演示是概念可视化，不执行真实密码运算。所有角色和故事图片复用仓库中的素材。
+技术栈：Next.js App Router、React 19、TypeScript、Vinext/Vite、Cloudflare Worker、Three.js 与 GSAP。算法交互是概念演示，不执行真实密码运算。
 
-首页入口采用分层交互：主按钮为磁吸胶囊与扩散光面，次级链接为滚动文字与细线，卡片响应覆盖整张卡片。导航、CTA 和卡片不使用装饰性箭头；可复用组件位于 `app/home/Actions.tsx`。
+## 本地运行
 
-## 开发
-
-Node.js >=22.13；接手前请阅读 [DEVELOPMENT.md](./DEVELOPMENT.md)。
+需要 Node.js ≥ 22.13。仓库根目录执行：
 
 ```bash
-npm install
+npm ci
 npm run dev
-npm run build
-node --test tests/rendered-html.test.mjs
+npm test
 npm run lint
 ```
 
-`main` 由既有 Cloudflare 流程部署至 [wangyibiao.com](https://wangyibiao.com)。`.openai/hosting.json` 保留原 Sites 项目配置，属于另一条托管链路。
+`npm test` 包含生产构建、五个路由的服务端渲染检查、3D 资源与帧调度检查。构建产物在 `dist/`，不提交到 Git。
+
+开发入口、目录职责、模型生成、素材管理、验证与发布方式见 [DEVELOPMENT.md](./DEVELOPMENT.md)。3D 和动效细节分别见 [docs/liangzai-3d.md](./docs/liangzai-3d.md)、[docs/gsap-motion.md](./docs/gsap-motion.md)。
+
+`main` 是现有 [wangyibiao.com](https://wangyibiao.com) 的 Cloudflare 部署代码源；`.openai/hosting.json` 属于仓库已有的另一条 Sites 托管配置。

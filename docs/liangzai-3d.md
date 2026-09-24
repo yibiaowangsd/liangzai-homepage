@@ -8,7 +8,7 @@
 
 为避免发布接口在单次大文件请求上长时间等待，模型以最大 384 KiB 的内容哈希分块存放在 `public/assets/models/observatory/`。加载器并行下载当前所需模型的所有部分，校验长度、按顺序合并后交给原生 GLTFLoader + MeshoptDecoder 解码。默认只加载量仔，奶龙按需加载，加载过的角色在当前场景中复用。分块 URL 含模型内容哈希，避免 CDN 混合新旧资源。
 
-模型准备：`npm run models:prepare -- /path/to/liangzai-refined.glb /path/to/nailong.glb`。脚本在 Meshopt 压缩后仅调整奶龙嵌入贴图，不重新编码几何。也可运行 `npm run models:prepare -- --refresh-textures`，从当前分片重建 Web 贴图而无需原始附件；此模式校验旧分片并保留原件来源字段，重复运行不会再次缩小或重采样 2K 贴图。完整 Web GLB 留在忽略目录 `outputs/model-packed/`；原始附件不改写。提交生成的 catalog 与 `.bin` 文件。上一版哈希分片暂时保留，避免发布前已打开的页面按旧 catalog 切换奶龙时发生 404。
+模型准备：`npm run models:prepare -- /path/to/liangzai-refined.glb /path/to/nailong.glb`。脚本在 Meshopt 压缩后仅调整奶龙嵌入贴图，不重新编码几何。也可运行 `npm run models:prepare -- --refresh-textures`，从当前分片重建 Web 贴图而无需原始附件；此模式校验旧分片并保留原件来源字段，重复运行不会再次缩小或重采样 2K 贴图。完整 Web GLB 留在忽略目录 `outputs/model-packed/`；原始附件不改写。提交生成的 catalog 与 `.bin` 文件。当前仓库只保留清单引用的模型分片；旧版本已打开的浏览器页如请求旧分片，应刷新以获取最新清单。
 
 ## 交互与场景
 
