@@ -11,31 +11,39 @@ const HASHES = { mlkem: ['sm3', 'shake'], aigisenc: ['sm3', 'shake'], mldsa: ['s
 const DEFAULT_HASH = { mlkem: 'shake', aigisenc: 'sm3', mldsa: 'shake', slhdsa: 'sha2', aigissig: 'sm3' };
 const DEFAULT_VARIANT = { mlkem: '768', aigisenc: '2', mldsa: '65', slhdsa: '128f', aigissig: '2' };
 const NAMES = { mlkem: 'ML-KEM', aigisenc: 'Aigis-enc', mldsa: 'ML-DSA', slhdsa: 'SLH-DSA', aigissig: 'Aigis-sig' };
+const CATEGORIES = { kem: '密钥封装 · 41 项', sig: '数字签名 · 34 项', kex: '密钥交换 · 9 项', hash: '哈希算法 · 35 项' };
+const FACTS = {
+  PublicKeyBytes: '公钥', SecretKeyBytes: '私钥', CiphertextBytes: '密文', SharedSecretBytes: '共享密钥',
+  SignatureBytes: '签名', Passes: '交互轮数', InitiatorStateBytes: '发起方状态',
+  ResponderStateBytes: '响应方状态', TotalMessageBytes: '总消息', DigestBits: '摘要位数', DigestBytes: '摘要长度',
+};
 const FIELD_SIZES = {
   'kem-public': 'pk', 'kem-private': 'sk', 'kem-alice-public': 'pk', 'kem-cipher': 'out', 'kem-bob-cipher': 'out',
   'sig-public': 'pk', 'sig-private': 'sk', 'signature': 'out', 'sig-verifier-public': 'pk', 'verify-signature': 'out',
 };
 const name = () => `${NAMES[$('#family').value]}-${$('#variant').value.toUpperCase()} · ${$('#hash').value.toUpperCase()}`;
 const isKem = () => ['mlkem', 'aigisenc'].includes($('#family').value);
+const isNgcc = () => $('#library').value === 'ngcc';
 const hex = bytes => Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
 const equal = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
 const elapsed = value => value == null ? '—' : `${value.toFixed(2)} ms`;
 let worker, ready = false, busy = false, active = null, serial = 0, resetSerial = 0, sizes = null;
+let catalog = null, catalogPromise = null, pqmagicFamily = 'mlkem';
 let aliceSecret = null, keyTime = null, actionTime = null;
 let flowOutcome = null;
 
-function refresh() { renderDialogue({ kem: isKem(), sizes, busy, ready, outcome: flowOutcome, decode: decodeInput }); }
+function refresh() { renderDialogue({ kem: isKem(), sizes, busy, ready: ready && !isNgcc(), outcome: flowOutcome, decode: decodeInput }); }
 function status(value, kind = '') { $('#message').textContent = value; $('#message').className = `message ${kind}`; refresh(); }
 function runtime(value, kind = '') { $('#runtime').className = `runtime ${kind}`; $('#runtime').lastElementChild.textContent = value; }
 function setBusy(value) {
   busy = value;
-  document.querySelectorAll('[data-work]').forEach(control => { control.disabled = value || !ready || !sizes; });
+  document.querySelectorAll('[data-work]').forEach(control => { control.disabled = value || !ready || !sizes || isNgcc(); });
   document.querySelectorAll('select, [data-field], [data-import], [data-copy], .message-input').forEach(control => { control.disabled = value; });
   $('#clear-all').disabled = value;
   refresh();
 }
 function request(type, payload = {}) {
-  if (!ready || busy || active) throw new Error('WASM 正在加载或已有任务运行');
+  if (isNgcc() || !ready || busy || active) throw new Error('当前算法没有可运行的浏览器实现');
   const requestId = ++serial;
   return new Promise((resolve, reject) => {
     active = { requestId, resolve, reject };
@@ -49,8 +57,7 @@ function startWorker() {
     worker.onmessage = ({ data }) => {
       if (data.type === 'ready') {
         ready = true;
-        runtime('本地运行', 'ready');
-        configureVariant();
+        if (!isNgcc()) { runtime('本地运行', 'ready'); configureVariant(); }
       } else if (data.type === 'error' && !ready && !active) {
         runtime('加载失败', 'error'); status(data.message, 'error');
       } else if ((data.type === 'result' || data.type === 'error') && data.requestId === active?.requestId) {
@@ -118,7 +125,7 @@ function resetFields({ blankMessage = false } = {}) {
   document.querySelectorAll('[data-field]').forEach(input => { input.value = ''; input.removeAttribute('aria-invalid'); });
   document.querySelectorAll('[data-import]').forEach(input => { input.value = ''; });
   $('#sign-message').value = blankMessage ? '' : '这是一条测试消息。'; $('#verify-message').value = '';
-  keyTime = null; resetKem(); resetSig(); $('#check-result').textContent = '尚未运行'; $('#check-result').className = '';
+  keyTime = null; resetKem(); resetSig();
 }
 function showSizes() {
   for (const [id, key] of Object.entries(FIELD_SIZES)) $(`#size-${id}`).textContent = `${sizes[key]} B`;
@@ -129,6 +136,7 @@ function showSizes() {
   $('#fact-two-label').textContent = isKem() ? '共享密钥逐字节比较' : '签名验证结果';
 }
 async function configureVariant() {
+  if (isNgcc() || !ready) return;
   sizes = null; resetFields();
   try {
     const pending = request('describe');
@@ -141,11 +149,11 @@ async function configureVariant() {
   finally { setBusy(false); }
 }
 async function operation(type, payload, onSuccess) {
-  if (!ready || busy || !sizes) return;
+  if (isNgcc() || !ready || busy || !sizes) return;
   try {
     const pending = request(type, payload);
     setBusy(true);
-    status(`正在执行 ${name()} ${({ generate: '密钥生成', encapsulate: '封装', decapsulate: '解封装', sign: '签名', verify: '验签', check: '一次检查' })[type]}…`);
+    status(`正在执行 ${name()} ${({ generate: '密钥生成', encapsulate: '封装', decapsulate: '解封装', sign: '签名', verify: '验签' })[type]}…`);
     onSuccess(await pending);
   } catch (error) { status(error.message, 'error'); }
   finally { setBusy(false); }
@@ -163,8 +171,83 @@ function configureVariants(preferDefault = false) {
     return option;
   }));
 }
+async function loadCatalog() {
+  if (!catalogPromise) catalogPromise = fetch('./ngcc-catalog.json').then(async response => {
+    if (!response.ok) throw new Error(`无法载入候选目录（HTTP ${response.status}）`);
+    const data = await response.json();
+    if (!Array.isArray(data.candidates) || data.candidates.length !== 119) throw new Error('征集目录数据不完整');
+    return data.candidates;
+  }).catch(error => { catalogPromise = null; throw error; });
+  catalog = await catalogPromise;
+}
+function configureCatalogParameters() {
+  const candidate = catalog.find(item => item.id === $('#family').value);
+  $('#variant').replaceChildren(...candidate.parameters.map((item, index) => new Option(item.label, String(index))));
+}
+function showCatalog() {
+  const candidate = catalog?.find(item => item.id === $('#family').value);
+  const parameter = candidate?.parameters[Number($('#variant').value)];
+  if (!candidate || !parameter) return;
+  sizes = null; resetFields();
+  $('#flow-title').textContent = '2026 国内征集算法';
+  $('#catalog-name').textContent = candidate.name;
+  $('#catalog-id').textContent = candidate.id;
+  $('#catalog-type').textContent = CATEGORIES[candidate.type].split(' · ')[0];
+  $('#catalog-facts').replaceChildren(...Object.entries(parameter.sizes).map(([key, value]) => {
+    const box = document.createElement('div'), label = document.createElement('dt'), size = document.createElement('dd');
+    label.textContent = FACTS[key];
+    size.textContent = `${value.toLocaleString('zh-CN')} ${key === 'Passes' ? '轮' : key === 'DigestBits' ? 'bit' : 'B'}`;
+    box.append(label, size); return box;
+  }));
+  $('#catalog-path').textContent = parameter.source;
+  $('#catalog-official').href = candidate.page;
+  $('#catalog-archive').href = candidate.archive;
+  runtime('候选资料 · 未接入验证');
+  status(`${candidate.name} / ${parameter.label}：可查阅参数；暂无可运行的浏览器实现。`);
+  setBusy(false);
+}
+async function switchLibrary() {
+  sizes = null; resetFields();
+  const directory = isNgcc();
+  $('#catalog-detail').classList.toggle('hidden', !directory);
+  $('#hash-field').classList.toggle('hidden', directory);
+  $('#clear-all').classList.toggle('hidden', directory);
+  for (const selector of ['.journey', '#kem-flow', '#sig-flow', '#manual-result']) {
+    $(selector).classList.toggle('hidden', directory);
+  }
+  if (directory) {
+    $('#family').replaceChildren(new Option('正在加载征集目录…', ''));
+    $('#variant').replaceChildren();
+    runtime('候选资料 · 加载中');
+    status('正在加载 2026 年征集算法与参数…');
+    try {
+      if (!catalog) await loadCatalog();
+      if (!isNgcc()) return;
+      $('#family').replaceChildren(...Object.entries(CATEGORIES).map(([type, title]) => {
+        const group = document.createElement('optgroup'); group.label = title;
+        group.append(...catalog.filter(item => item.type === type).map(item => new Option(`${item.name} (${item.id})`, item.id)));
+        return group;
+      }));
+      configureCatalogParameters(); showCatalog();
+    } catch (error) { status(error.message, 'error'); runtime('候选目录加载失败', 'error'); }
+  } else {
+    $('#family').replaceChildren(...[
+      ['密钥封装', ['mlkem', 'aigisenc']], ['数字签名', ['mldsa', 'slhdsa', 'aigissig']],
+    ].map(([label, names]) => {
+      const group = document.createElement('optgroup'); group.label = label;
+      group.append(...names.map(value => new Option(NAMES[value], value)));
+      return group;
+    }));
+    $('#family').value = pqmagicFamily;
+    $('#family').dispatchEvent(new Event('change'));
+    runtime(ready ? '本地运行' : '正在加载…', ready ? 'ready' : '');
+  }
+}
+$('#library').addEventListener('change', switchLibrary);
 $('#family').addEventListener('change', () => {
+  if (isNgcc()) { configureCatalogParameters(); showCatalog(); return; }
   const family = $('#family').value;
+  pqmagicFamily = family;
   $('#hash').replaceChildren(...HASHES[family].map(hash => {
     const option = new Option(hash === 'sm3' ? 'SM3' : hash === 'sha2' ? 'SHA2' : 'SHAKE / SHA3', hash);
     option.selected = hash === DEFAULT_HASH[family];
@@ -173,10 +256,10 @@ $('#family').addEventListener('change', () => {
   configureVariants(true);
   configureVariant();
 });
-$('#hash').addEventListener('change', () => { configureVariants(); configureVariant(); });
-$('#variant').addEventListener('change', configureVariant);
+$('#hash').addEventListener('change', () => { if (!isNgcc()) { configureVariants(); configureVariant(); } });
+$('#variant').addEventListener('change', () => isNgcc() ? showCatalog() : configureVariant());
 $('#clear-all').addEventListener('click', () => {
-  if (busy) return;
+  if (busy || isNgcc()) return;
   resetFields({ blankMessage: true });
   status('已清空所有输入与结果；算法、参数集和哈希选项保持当前选择。', 'success');
 });
@@ -324,12 +407,6 @@ document.querySelectorAll('[data-copy]').forEach(button => button.addEventListen
   }
   catch { status('复制失败：请检查浏览器剪贴板权限。', 'error'); }
 }));
-$('#run-check').addEventListener('click', () => operation('check', {}, output => {
-  $('#check-result').textContent = `${output.passed ? '✓ 通过' : '! 未通过'} · ${output.checks.map(check => `${check.label}${check.passed ? '✓' : '✕'}`).join(' · ')} · 生成 ${elapsed(output.times[0])}，${isKem() ? '封装' : '签名'} ${elapsed(output.times[1])}，${isKem() ? '解封装' : '验签'} ${elapsed(output.times[2])}`;
-  $('#check-result').className = output.passed ? 'good' : 'bad';
-  status(output.passed ? '一次正确性检查通过。' : '正确性检查出现异常。', output.passed ? 'success' : 'error');
-}));
-
 const supportedOrigin = globalThis.isSecureContext || (import.meta.env?.DEV && location.hostname === 'terminal.local');
 if (!supportedOrigin || !globalThis.crypto?.getRandomValues || !globalThis.WebAssembly || !globalThis.Worker) {
   runtime('浏览器环境不可用', 'error');

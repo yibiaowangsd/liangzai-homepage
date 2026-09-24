@@ -109,36 +109,6 @@ async function verify(suite, publicKey, message, signature) {
     return { valid: status === 0, ms };
   } finally { a.close(); }
 }
-async function checkOnce(suite) {
-  const keys = await generate(suite);
-  if (suite.kind === 'kem') {
-    const sent = await encapsulate(suite, keys.publicKey);
-    const received = await decapsulate(suite, keys.privateKey.slice(), sent.ciphertext, keys.publicKey);
-    const tampered = sent.ciphertext.slice();
-    tampered[Math.floor(tampered.length / 2)] ^= 1;
-    const rejected = await decapsulate(suite, keys.privateKey.slice(), tampered, keys.publicKey);
-    keys.privateKey.fill(0);
-    const checks = [
-      { label: '双方共享密钥相同', passed: equal(sent.sharedSecret, received.sharedSecret) },
-      { label: '密文篡改后密钥不同', passed: !equal(sent.sharedSecret, rejected.sharedSecret) },
-    ];
-    return { passed: checks.every(check => check.passed), checks,
-      times: [keys.ms, sent.ms, received.ms] };
-  }
-  const message = new TextEncoder().encode('PQMagic algorithm check');
-  const signed = await sign(suite, keys.privateKey.slice(), message);
-  const good = await verify(suite, keys.publicKey, message, signed.signature);
-  const changed = new Uint8Array([...message, 33]);
-  const bad = await verify(suite, keys.publicKey, changed, signed.signature);
-  keys.privateKey.fill(0);
-  const checks = [
-    { label: '原文签名验证通过', passed: good.valid },
-    { label: '修改消息后验证失败', passed: !bad.valid },
-  ];
-  return { passed: checks.every(check => check.passed), checks,
-    times: [keys.ms, signed.ms, good.ms] };
-}
-
 self.onmessage = async ({ data }) => {
   const { type, requestId, family, variant, hash } = data;
   try {
@@ -157,7 +127,6 @@ self.onmessage = async ({ data }) => {
     else if (type === 'decapsulate' && suite.kind === 'kem') result = await decapsulate(suite, data.privateKey, data.ciphertext, data.publicKey);
     else if (type === 'sign' && suite.kind === 'sig') result = await sign(suite, data.privateKey, data.message);
     else if (type === 'verify' && suite.kind === 'sig') result = await verify(suite, data.publicKey, data.message, data.signature);
-    else if (type === 'check') result = await checkOnce(suite);
     else throw new Error('此算法不支持所选操作');
     postMessage({ type: 'result', requestId, result });
     if (type === 'generate') result.privateKey.fill(0);
