@@ -9,6 +9,7 @@ const links = [
   ["/storybook", "量仔故事", "STORY"],
   ["/archive", "角色档案", "CHARACTER"],
   ["/pqc-arsenal", "PQC 武器库", "ARSENAL"],
+  ["/pqc-practice/index.html", "PQC 武器实战", "PRACTICE"],
   ["/about", "量仔背后的人", "THE HUMAN"],
 ];
 export function SiteHeader() {
@@ -89,15 +90,19 @@ export function SiteHeader() {
           </strong>
         </Link>
         <nav className="desktop-nav" aria-label="主导航">
-          {links.map(([href, text]) => (
-            <Link
-              href={href}
-              key={href}
-              aria-current={path === href ? "page" : undefined}
-            >
-              {text}
-            </Link>
-          ))}
+          {links.map(([href, text]) =>
+            href.endsWith(".html") ? (
+              <a href={href} key={href}>{text}</a>
+            ) : (
+              <Link
+                href={href}
+                key={href}
+                aria-current={path === href ? "page" : undefined}
+              >
+                {text}
+              </Link>
+            ),
+          )}
         </nav>
         <div className="chrome-actions">
           <button
@@ -129,19 +134,21 @@ export function SiteHeader() {
       {open && (
         <div ref={menu} id="mobile-menu" className="mobile-menu">
           <nav aria-label="移动导航">
-            {links.map(([href, text, en], i) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setOpen(false)}
-                aria-current={path === href ? "page" : undefined}
-              >
-                <small>
-                  0{i + 1} / {en}
-                </small>
-                <span>{text}</span>
-              </Link>
-            ))}
+            {links.map(([href, text, en], i) => {
+              const content = <><small>0{i + 1} / {en}</small><span>{text}</span></>;
+              return href.endsWith(".html") ? (
+                <a key={href} href={href} onClick={() => setOpen(false)}>{content}</a>
+              ) : (
+                <Link
+                  key={href}
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  aria-current={path === href ? "page" : undefined}
+                >
+                  {content}
+                </Link>
+              );
+            })}
           </nav>
           <p>STAY CURIOUS. GO BEYOND.</p>
         </div>
@@ -159,11 +166,13 @@ export function SiteFooter() {
         <p>以好奇为起点。与未来，共振。</p>
       </div>
       <nav aria-label="页脚导航">
-        {links.slice(1).map(([href, text]) => (
-          <Link key={href} href={href}>
-            {text}
-          </Link>
-        ))}
+        {links.slice(1).map(([href, text]) =>
+          href.endsWith(".html") ? (
+            <a key={href} href={href}>{text}</a>
+          ) : (
+            <Link key={href} href={href}>{text}</Link>
+          ),
+        )}
       </nav>
       <div className="footer-bottom">
         <span>© 2026 LIANGZAI · A QUANTUM EXPLORATION</span>

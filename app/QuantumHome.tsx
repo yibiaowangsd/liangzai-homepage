@@ -210,9 +210,14 @@ export default function QuantumHome() {
             <br />
             移动指针，切换形态，看粒子在秩序与想象之间流动。
           </p>
-          <Link className="line-link" href="/pqc-arsenal#math">
-            从直觉，走进密码学
-          </Link>
+          <div className="field-links">
+            <Link className="line-link" href="/pqc-arsenal#math">
+              从直觉，走进密码学
+            </Link>
+            <a className="line-link" href="/pqc-practice/index.html">
+              PQC 武器实战
+            </a>
+          </div>
           <small>交互艺术 · 不表示真实量子态</small>
         </div>
         <QuantumSculpture />
