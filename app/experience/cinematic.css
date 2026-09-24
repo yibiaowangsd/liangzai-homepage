@@ -718,6 +718,11 @@ button:disabled {
   color: #91a0b0;
   font-size: 14px;
 }
+.field-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+}
 .field-copy > small {
   display: block;
   font-size: 10px;
