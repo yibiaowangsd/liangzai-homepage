@@ -15,6 +15,8 @@ test('the 2026 candidate catalog has every category and a distinct choice for ea
     assert.match(candidate.id, /^(kem|sign|kex|hash)-\d{2}$/);
     assert.equal(new URL(candidate.page).hostname, 'www.niccs.org.cn');
     assert.equal(new URL(candidate.archive).hostname, 'www.niccs.org.cn');
+    assert.ok(Array.isArray(candidate.team) && candidate.team.length > 0, `${candidate.id} is missing its submitters`);
+    assert.ok(candidate.team.every(person => typeof person === 'string' && person.trim()), `${candidate.id} has an invalid submitter`);
     assert.ok(candidate.parameters.length > 0, `${candidate.id} is missing parameter instances`);
     assert.equal(new Set(candidate.parameters.map(instance => instance.label)).size, candidate.parameters.length,
       `${candidate.id} has indistinguishable parameter labels`);

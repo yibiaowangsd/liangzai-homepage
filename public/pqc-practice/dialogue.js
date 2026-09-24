@@ -86,11 +86,13 @@ export function renderDialogue(state) {
     const input = $('#' + id), expected = state.sizes?.[sizeKey];
     if (!input) continue;
     const raw = input.value.trim();
+    const variable = state.ngccSig && sizeKey === 'out' && (id === 'signature' || id === 'verify-signature');
     if (raw && expected) {
-      try { materials[id] = state.decode(raw, expected, '输入'); } catch { /* Guidance does not block editing. */ }
+      try { materials[id] = state.decode(raw, variable ? { min: 1, max: expected } : expected, '输入'); }
+      catch { /* Guidance does not block editing. */ }
     }
     const bytes = materials[id], count = bytes?.length ?? (raw ? measure(raw) : null);
-    $('#size-' + id).textContent = expected ? (raw ? (count ?? '?') + ' / ' : '') + expected + ' B' : '— B';
+    $('#size-' + id).textContent = expected ? (raw ? (count ?? '?') + ' / ' : '') + (variable ? '≤ ' : '') + expected + ' B' : '— B';
     $('#material-' + id).classList.toggle('has-data', !!bytes);
     $('#material-' + id).classList.toggle('invalid', input.getAttribute('aria-invalid') === 'true');
   }
@@ -130,7 +132,7 @@ export function renderDialogue(state) {
     ['Alice 可以开始封装', '确认收到的公钥，生成密文和 Alice 的本地共享密钥。'],
     ['把密文送回 Bob', '点击第二条通道的“发送密文”。共享密钥保留在 Alice 端。'],
     [has('kem-private') ? '轮到 Bob 解封装' : '补入 Bob 的本地私钥', has('kem-private') ? '使用本地私钥处理收到的密文，再逐字节比较双方结果。' : '密文已经就绪；粘贴或导入配套私钥后，即可解封装。'],
-    ['双方已建立相同的共享密钥', '两端的 32 字节完全一致。中间通道只传送了公钥和密文。'],
+    ['双方已建立相同的共享密钥', `两端的 ${state.sizes?.ss ?? 32} 字节完全一致。中间通道只传送了公钥和密文。`],
   ] : [
     ['准备 Alice 的密钥', '生成测试密钥对，或在 Alice 端粘贴 / 导入已有的密钥。'],
     ['让 Bob 收到公钥', '点击中间通道的“发送公钥”，为另一端验签做好准备。'],
@@ -163,11 +165,13 @@ export function renderDialogue(state) {
     $('#' + next[stage]).classList.add('is-next');
   }
   for (const id of ['kem-bob-secret', 'kem-alice-secret']) {
-    const present = /^[a-f0-9]{64}$/i.test($('#' + id).textContent.trim());
+    const sharedSize = state.sizes?.ss ?? 32;
+    const present = new RegExp(`^[a-f0-9]{${sharedSize * 2}}$`, 'i').test($('#' + id).textContent.trim());
     $('#box-' + id).classList.toggle('has-secret', present);
     $('#box-' + id).classList.toggle('matched', present && passed && state.kem);
     $('#box-' + id).classList.toggle('mismatched', present && failed && state.kem);
-    $('#state-' + id).textContent = !present ? '尚未建立 · 32 B' : passed && state.kem ? '已对齐 · 32 / 32 字节一致' : failed && state.kem ? '对照失败 · 共享密钥不同' : '已建立 · 等待对照';
+    $('#state-' + id).textContent = !present ? `尚未建立 · ${sharedSize} B` : passed && state.kem
+      ? `已对齐 · ${sharedSize} / ${sharedSize} 字节一致` : failed && state.kem ? '对照失败 · 共享密钥不同' : '已建立 · 等待对照';
   }
   const verdict = $('#signature-verdict');
   verdict.classList.toggle('pass', !state.kem && passed);
