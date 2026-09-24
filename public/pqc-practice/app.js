@@ -1,4 +1,6 @@
 import { renderDialogue, animateTransfer, resetTransfers } from './dialogue.js';
+import { ngccModule } from './ngcc-runtime.js';
+import { NGCC_REPORTS } from './ngcc-reports.js';
 const $ = selector => document.querySelector(selector);
 const VARIANTS = {
   mlkem: ['512', '768', '1024'],
@@ -21,9 +23,12 @@ const FIELD_SIZES = {
   'kem-public': 'pk', 'kem-private': 'sk', 'kem-alice-public': 'pk', 'kem-cipher': 'out', 'kem-bob-cipher': 'out',
   'sig-public': 'pk', 'sig-private': 'sk', 'signature': 'out', 'sig-verifier-public': 'pk', 'verify-signature': 'out',
 };
-const name = () => `${NAMES[$('#family').value]}-${$('#variant').value.toUpperCase()} · ${$('#hash').value.toUpperCase()}`;
-const isKem = () => ['mlkem', 'aigisenc'].includes($('#family').value);
 const isNgcc = () => $('#library').value === 'ngcc';
+const selectedCandidate = () => catalog?.find(item => item.id === $('#family').value);
+const isRunnable = () => !isNgcc() || !!ngccModule($('#family').value, $('#variant').value);
+const isKem = () => isNgcc() ? selectedCandidate()?.type === 'kem' : ['mlkem', 'aigisenc'].includes($('#family').value);
+const name = () => isNgcc() ? `${selectedCandidate()?.name} / ${selectedCandidate()?.parameters[Number($('#variant').value)]?.name}`
+  : `${NAMES[$('#family').value]}-${$('#variant').value.toUpperCase()} · ${$('#hash').value.toUpperCase()}`;
 const hex = bytes => Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
 const equal = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
 const elapsed = value => value == null ? '—' : `${value.toFixed(2)} ms`;
@@ -32,22 +37,24 @@ let catalog = null, catalogPromise = null, pqmagicFamily = 'mlkem';
 let aliceSecret = null, keyTime = null, actionTime = null;
 let flowOutcome = null;
 
-function refresh() { renderDialogue({ kem: isKem(), sizes, busy, ready: ready && !isNgcc(), outcome: flowOutcome, decode: decodeInput }); }
+function refresh() { renderDialogue({ kem: isKem(), sizes, busy, ready: ready && isRunnable(),
+  ngccSig: isNgcc() && !isKem(), outcome: flowOutcome, decode: decodeInput }); }
 function status(value, kind = '') { $('#message').textContent = value; $('#message').className = `message ${kind}`; refresh(); }
 function runtime(value, kind = '') { $('#runtime').className = `runtime ${kind}`; $('#runtime').lastElementChild.textContent = value; }
 function setBusy(value) {
   busy = value;
-  document.querySelectorAll('[data-work]').forEach(control => { control.disabled = value || !ready || !sizes || isNgcc(); });
+  document.querySelectorAll('[data-work]').forEach(control => { control.disabled = value || !ready || !sizes || !isRunnable(); });
   document.querySelectorAll('select, [data-field], [data-import], [data-copy], .message-input').forEach(control => { control.disabled = value; });
   $('#clear-all').disabled = value;
   refresh();
 }
 function request(type, payload = {}) {
-  if (isNgcc() || !ready || busy || active) throw new Error('当前算法没有可运行的浏览器实现');
+  if (!isRunnable() || !ready || busy || active) throw new Error('当前配置没有可运行的浏览器实现，或任务仍在执行');
   const requestId = ++serial;
   return new Promise((resolve, reject) => {
     active = { requestId, resolve, reject };
-    try { worker.postMessage({ type, requestId, family: $('#family').value, variant: $('#variant').value, hash: $('#hash').value, ...payload }); }
+    try { worker.postMessage({ type, requestId, library: $('#library').value,
+      family: $('#family').value, variant: $('#variant').value, hash: $('#hash').value, ...payload }); }
     catch (error) { active = null; reject(error); }
   });
 }
@@ -57,7 +64,7 @@ function startWorker() {
     worker.onmessage = ({ data }) => {
       if (data.type === 'ready') {
         ready = true;
-        if (!isNgcc()) { runtime('本地运行', 'ready'); configureVariant(); }
+        if (isRunnable()) { runtime('本地运行', 'ready'); configureVariant(); }
       } else if (data.type === 'error' && !ready && !active) {
         runtime('加载失败', 'error'); status(data.message, 'error');
       } else if ((data.type === 'result' || data.type === 'error') && data.requestId === active?.requestId) {
@@ -89,15 +96,21 @@ function decodeInput(input, expected, label) {
     try { candidates.push(Uint8Array.from(atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')), char => char.charCodeAt(0))); }
     catch { /* Not Base64. */ }
   }
-  const match = candidates.find(bytes => bytes.length === expected);
+  const match = candidates.find(bytes => typeof expected === 'number' ? bytes.length === expected
+    : bytes.length >= expected.min && bytes.length <= expected.max);
   if (match) return match;
-  if (candidates.length) throw new Error(`${label}长度应为 ${expected} 字节，当前为 ${candidates.map(bytes => bytes.length).join(' 或 ')} 字节`);
+  if (candidates.length) throw new Error(`${label}长度应为 ${typeof expected === 'number' ? expected : `${expected.min} 至 ${expected.max}`} 字节，当前为 ${candidates.map(bytes => bytes.length).join(' 或 ')} 字节`);
   throw new Error(`${label}格式无效：请使用 HEX 或 Base64`);
+}
+function expectedSize(id) {
+  const size = sizes[FIELD_SIZES[id]];
+  return isNgcc() && !isKem() && (id === 'signature' || id === 'verify-signature')
+    ? { min: 1, max: size } : size;
 }
 function read(id) {
   const input = $(`#${id}`);
   try {
-    const bytes = decodeInput(input.value, sizes[FIELD_SIZES[id]], input.labels?.[0]?.textContent || '输入');
+    const bytes = decodeInput(input.value, expectedSize(id), input.labels?.[0]?.textContent || '输入');
     input.removeAttribute('aria-invalid');
     return bytes;
   } catch (error) { input.setAttribute('aria-invalid', 'true'); input.focus(); throw error; }
@@ -132,11 +145,11 @@ function showSizes() {
   $('#kem-flow').classList.toggle('hidden', !isKem());
   $('#sig-flow').classList.toggle('hidden', isKem());
   $('#flow-title').textContent = isKem() ? '密钥交换' : '签名验证';
-  $('#fact-one-label').textContent = isKem() ? '公私钥对应关系' : '签名状态';
+  $('#fact-one-label').textContent = isKem() ? (isNgcc() ? '密钥配套情况' : '公私钥对应关系') : '签名状态';
   $('#fact-two-label').textContent = isKem() ? '共享密钥逐字节比较' : '签名验证结果';
 }
 async function configureVariant() {
-  if (isNgcc() || !ready) return;
+  if (!isRunnable() || !ready) return;
   sizes = null; resetFields();
   try {
     const pending = request('describe');
@@ -144,12 +157,13 @@ async function configureVariant() {
     const description = await pending;
     sizes = description.sizes;
     showSizes();
-    status('请使用与当前算法、参数和哈希配套的密钥。');
+    status(isNgcc() ? '已载入征集参考实现；请使用与此参数实例配套的密钥。'
+      : '请使用与当前算法、参数和哈希配套的密钥。');
   } catch (error) { status(error.message, 'error'); }
   finally { setBusy(false); }
 }
 async function operation(type, payload, onSuccess) {
-  if (isNgcc() || !ready || busy || !sizes) return;
+  if (!isRunnable() || !ready || busy || !sizes) return;
   try {
     const pending = request(type, payload);
     setBusy(true);
@@ -184,32 +198,69 @@ function configureCatalogParameters() {
   const candidate = catalog.find(item => item.id === $('#family').value);
   $('#variant').replaceChildren(...candidate.parameters.map((item, index) => new Option(item.label, String(index))));
 }
+function showReports(candidate) {
+  const list = $('#report-list');
+  const reports = NGCC_REPORTS[candidate.id] || [];
+  if (!reports.length) {
+    const empty = document.createElement('p');
+    empty.className = 'report-empty';
+    empty.textContent = '当前页尚未整理此候选的中文摘要。可查阅 ngcc.dev 报告索引；未列出条目不代表通过安全评估。';
+    list.replaceChildren(empty);
+    return;
+  }
+  const ul = document.createElement('ul'); ul.className = 'report-items';
+  for (const item of reports) {
+    const li = document.createElement('li'), id = document.createElement('b'), link = document.createElement('a');
+    id.textContent = item.id;
+    link.textContent = item.zh; link.href = `https://ngcc.dev/reports/${candidate.id}.html`;
+    link.target = '_blank'; link.rel = 'noopener noreferrer';
+    const note = document.createElement('span'); note.className = 'report-note';
+    note.textContent = `${item.severity} · ${item.status}`;
+    li.append(id, link, note); ul.append(li);
+  }
+  list.replaceChildren(ul);
+}
 function showCatalog() {
   const candidate = catalog?.find(item => item.id === $('#family').value);
   const parameter = candidate?.parameters[Number($('#variant').value)];
   if (!candidate || !parameter) return;
   sizes = null; resetFields();
+  const runnable = isRunnable();
   $('#flow-title').textContent = '2026 国内征集算法';
   $('#catalog-name').textContent = candidate.name;
   $('#catalog-id').textContent = candidate.id;
   $('#catalog-type').textContent = CATEGORIES[candidate.type].split(' · ')[0];
+  $('#catalog-notice').textContent = runnable
+    ? '此参数集已由征集提交源码编译为浏览器 WASM，可在下方运行。部分实现作了必要的兼容和安全修补；功能验证不构成安全认证。'
+    : '此参数集尚未接入可运行的浏览器实现。可查阅原始参数、提交团队与源码；下方不展示无法执行的操作。';
   $('#catalog-facts').replaceChildren(...Object.entries(parameter.sizes).map(([key, value]) => {
     const box = document.createElement('div'), label = document.createElement('dt'), size = document.createElement('dd');
     label.textContent = FACTS[key];
     size.textContent = `${value.toLocaleString('zh-CN')} ${key === 'Passes' ? '轮' : key === 'DigestBits' ? 'bit' : 'B'}`;
     box.append(label, size); return box;
   }));
+  $('#catalog-team').textContent = candidate.team.join('、');
   $('#catalog-path').textContent = parameter.source;
   $('#catalog-official').href = candidate.page;
   $('#catalog-archive').href = candidate.archive;
-  runtime('候选资料 · 未接入验证');
-  status(`${candidate.name} / ${parameter.label}：可查阅参数；暂无可运行的浏览器实现。`);
+  $('#report-panel').classList.remove('hidden');
+  showReports(candidate);
+  $('.journey').classList.toggle('hidden', !runnable);
+  $('#manual-result').classList.toggle('hidden', !runnable);
+  $('#clear-all').classList.toggle('hidden', !runnable);
+  $('#kem-flow').classList.add('hidden');
+  $('#sig-flow').classList.add('hidden');
+  runtime(runnable ? '征集实现 · 本地运行' : '候选资料 · 未接入验证', runnable ? 'ready' : '');
+  status(runnable ? `${candidate.name} / ${parameter.label}：正在载入 WASM…`
+    : `${candidate.name} / ${parameter.label}：可查阅参数；暂无可运行的浏览器实现。`);
   setBusy(false);
+  if (runnable) configureVariant();
 }
 async function switchLibrary() {
   sizes = null; resetFields();
   const directory = isNgcc();
   $('#catalog-detail').classList.toggle('hidden', !directory);
+  $('#report-panel').classList.toggle('hidden', !directory);
   $('#hash-field').classList.toggle('hidden', directory);
   $('#clear-all').classList.toggle('hidden', directory);
   for (const selector of ['.journey', '#kem-flow', '#sig-flow', '#manual-result']) {
@@ -225,7 +276,8 @@ async function switchLibrary() {
       if (!isNgcc()) return;
       $('#family').replaceChildren(...Object.entries(CATEGORIES).map(([type, title]) => {
         const group = document.createElement('optgroup'); group.label = title;
-        group.append(...catalog.filter(item => item.type === type).map(item => new Option(`${item.name} (${item.id})`, item.id)));
+        group.append(...catalog.filter(item => item.type === type).map(item => new Option(
+          `${ngccModule(item.id, 0) ? '● ' : ''}${item.name} (${item.id})`, item.id)));
         return group;
       }));
       configureCatalogParameters(); showCatalog();
@@ -259,9 +311,9 @@ $('#family').addEventListener('change', () => {
 $('#hash').addEventListener('change', () => { if (!isNgcc()) { configureVariants(); configureVariant(); } });
 $('#variant').addEventListener('change', () => isNgcc() ? showCatalog() : configureVariant());
 $('#clear-all').addEventListener('click', () => {
-  if (busy || isNgcc()) return;
+  if (busy || !isRunnable()) return;
   resetFields({ blankMessage: true });
-  status('已清空所有输入与结果；算法、参数集和哈希选项保持当前选择。', 'success');
+  status('已清空所有输入与结果；算法库、算法和参数集保持当前选择。', 'success');
 });
 document.querySelectorAll('[data-field]').forEach(input => input.addEventListener('input', () => {
   input.removeAttribute('aria-invalid');
@@ -322,7 +374,8 @@ $('#kem-decapsulate').addEventListener('click', () => attempt(() => {
   const publicKey = $('#kem-alice-public').value.trim() ? read('kem-alice-public') : null;
   operation('decapsulate', { privateKey, ciphertext, publicKey }, output => {
     $('#kem-bob-secret').textContent = hex(output.sharedSecret);
-    $('#fact-one').textContent = output.pairMatches === null ? '未提供甲方公钥' : output.pairMatches ? '关联一致' : '关联不一致';
+    $('#fact-one').textContent = isNgcc() ? '通过双方共享密钥比对' : output.pairMatches === null
+      ? '未提供甲方公钥' : output.pairMatches ? '关联一致' : '关联不一致';
     $('#fact-one').className = output.pairMatches === false ? 'bad' : output.pairMatches ? 'good' : '';
     if (aliceSecret) {
       const matches = equal(aliceSecret, output.sharedSecret);
@@ -330,7 +383,7 @@ $('#kem-decapsulate').addEventListener('click', () => attempt(() => {
       $('#manual-result').classList.remove('pass', 'fail');
       $('#manual-result').classList.add(matches ? 'pass' : 'fail');
       $('#manual-summary').textContent = matches ? '验证通过 · 双方得到相同的共享密钥' : '验证失败 · 双方共享密钥不同';
-      $('#fact-two').textContent = matches ? '32 / 32 字节一致' : '密钥不同';
+      $('#fact-two').textContent = matches ? `${sizes.ss} / ${sizes.ss} 字节一致` : '密钥不同';
       $('#fact-two').className = matches ? 'good' : 'bad';
       status($('#manual-summary').textContent, matches ? 'success' : 'error');
     } else {
@@ -373,17 +426,19 @@ $('#verify-button').addEventListener('click', () => attempt(() => {
 
 document.querySelectorAll('[data-import]').forEach(input => input.addEventListener('change', async () => {
   const file = input.files?.[0]; if (!file) return;
-  const id = input.dataset.import, selected = `${$('#family').value}/${$('#variant').value}/${$('#hash').value}`, currentReset = resetSerial;
+  const id = input.dataset.import, selected = `${$('#library').value}/${$('#family').value}/${$('#variant').value}/${$('#hash').value}`, currentReset = resetSerial;
   try {
     if (file.size > 256 * 1024) throw new Error('文件超过 256 KiB，请导入单个原始密钥或签名');
-    const expected = sizes[FIELD_SIZES[id]];
+    const expected = expectedSize(id);
     let bytes;
     if (/\.bin$/i.test(file.name)) {
       bytes = new Uint8Array(await file.arrayBuffer());
-      if (bytes.length !== expected) throw new Error(`文件长度应为 ${expected} 字节，当前为 ${bytes.length} 字节`);
+      const valid = typeof expected === 'number' ? bytes.length === expected
+        : bytes.length >= expected.min && bytes.length <= expected.max;
+      if (!valid) throw new Error(`文件长度应为 ${typeof expected === 'number' ? expected : `${expected.min} 至 ${expected.max}`} 字节，当前为 ${bytes.length} 字节`);
     } else if (/\.(hex|txt|b64)$/i.test(file.name)) bytes = decodeInput(await file.text(), expected, file.name);
     else throw new Error('请选择 .bin、.hex、.txt 或 .b64 文件');
-    if (busy || currentReset !== resetSerial || selected !== `${$('#family').value}/${$('#variant').value}/${$('#hash').value}`) return;
+    if (busy || currentReset !== resetSerial || selected !== `${$('#library').value}/${$('#family').value}/${$('#variant').value}/${$('#hash').value}`) return;
     write(id, bytes); $(`#${id}`).dispatchEvent(new Event('input'));
     if (id.includes('private')) bytes.fill(0);
     status(`${file.name} 已导入。`, 'success');

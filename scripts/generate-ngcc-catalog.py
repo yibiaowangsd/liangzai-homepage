@@ -25,6 +25,12 @@ def main():
     if len(downloads) != 119 or len(parameters) != 586:
         raise ValueError("NGCC candidate count changed; review the catalog before publishing")
 
+    teams = {}
+    for category in ("kem", "sign", "kex", "hash"):
+        for item in rows(source / f"data/{category}.csv"):
+            key = f"{category}-{int(item['No']):02d}"
+            teams[key] = [person.strip() for person in item["Submitters"].split(",") if person.strip()]
+
     candidates = {}
     for item in downloads:
         key = item["ID"]
@@ -32,6 +38,7 @@ def main():
             "id": key,
             "type": "sig" if item["Category"] == "sign" else item["Category"],
             "name": item["Algorithm"],
+            "team": teams[key],
             "page": item["PageURL"],
             "archive": item["DownloadURL"],
             "parameters": [],
