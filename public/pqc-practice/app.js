@@ -215,8 +215,16 @@ function showReports(candidate) {
     link.textContent = item.zh; link.href = `https://ngcc.dev/reports/${candidate.id}.html`;
     link.target = '_blank'; link.rel = 'noopener noreferrer';
     const note = document.createElement('span'); note.className = 'report-note';
-    note.textContent = `${item.severity} · ${item.status}`;
-    li.append(id, link, note); ul.append(li);
+    note.textContent = `${item.severity} · ${item.status} · 影响：${item.affected}`;
+    li.append(id, link, note);
+    for (const [label, value] of [['证据', item.evidence], ['影响边界', item.impact], ['修复方向', item.repair]]) {
+      if (!value) continue;
+      const detail = document.createElement('p');
+      detail.className = 'report-detail';
+      const strong = document.createElement('strong'); strong.textContent = `${label}：`;
+      detail.append(strong, document.createTextNode(value)); li.append(detail);
+    }
+    ul.append(li);
   }
   list.replaceChildren(ul);
 }
