@@ -1,0 +1,61 @@
+name: NGCC submitted-source WASM rebuild
+
+on:
+  push:
+    branches: [feat/ngcc-more-wasm]
+    paths:
+      - '.github/workflows/ngcc-wasm-rebuild.yml'
+      - 'scripts/build-ngcc-expanded.py'
+      - 'scripts/check-ngcc-module.mjs'
+      - 'scripts/ngcc-wasm-bridge.c'
+      - 'scripts/ngcc-wasm-introspect.mk'
+      - 'tests/fixtures/ngcc-hash01.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  hash-first-batch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/checkout@v4
+        with:
+          repository: ngcc-dev/ngcc-harness
+          ref: c5261784ef27e7363b1bbace3d687932fda35ccd
+          path: ngcc-harness
+          sparse-checkout: |
+            api
+            hash-01
+      - uses: emscripten-core/setup-emsdk@v15
+        with:
+          version: '6.0.10'
+      - name: Check native reference implementation and official KATs
+        run: |
+          make -s -C ngcc-harness/api harness
+          make -s -C ngcc-harness/hash-01 -j2 libs
+          make -s -C ngcc-harness/hash-01 test
+          make -s -C ngcc-harness/hash-01 clean
+      - name: Compile each parameter to WASM and compare native vectors
+        run: python3 scripts/build-ngcc-expanded.py ngcc-harness hash-01 --seconds 90
+      - name: Require all three verified modules
+        run: |
+          node -e 'const r=require("./work/ngcc-wasm-rebuild/results.json");if(r.length!==3||r.some(x=>x.status!=="verified"))process.exit(1)'
+      - name: Preserve individual build and runtime logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ngcc-hash01-rebuild-logs
+          path: work/ngcc-wasm-rebuild/
+          if-no-files-found: ignore
+      - name: Commit verified browser modules to feature branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add public/pqc-practice/wasm/ngcc-hash-01-*.mjs public/pqc-practice/wasm/ngcc-hash-01-*.wasm
+          git diff --cached --quiet || git commit -m 'Build verified AFS-TrEDM reference WASM for three parameters'
+          git push origin HEAD:feat/ngcc-more-wasm
