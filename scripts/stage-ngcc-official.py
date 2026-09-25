@@ -261,11 +261,17 @@ for index, item in enumerate(candidate['parameters']):
                      f'-Isrc/{label}/lib/blake2/ref')
     elif candidate_id == 'kem-20':
         family = 'Frost-CC' if '-CC-' in label else 'Frost'
+        frost_dir = source_dir / family / 'src'
+        reference = frost_dir / 'frost_macrify_reference.c'
+        if not reference.is_file():
+            raise FileNotFoundError(f'{candidate_id} {label}: missing reference macro implementation')
+        shutil.copyfile(reference, frost_dir / 'frost_macrify.c')
         selected = ['KEM_AlgorithmInstance.c', 'auxfunc.c', 'drng.c',
                     'randombytes_adapter.c', 'common/aes/aes_c.c',
                     'common/sha3/fips202.c']
         selected += sorted(p.relative_to(source_dir).as_posix()
-                           for p in (source_dir / family / 'src').glob('*.c'))
+                           for p in frost_dir.glob('*.c')
+                           if not p.name.startswith('frost_macrify'))
         lines.append(f'SRCS_{label} := {" ".join(selected)}')
         lines.append(f'INC_{label} := -Isrc/{label}/{family}/src '
                      f'-Isrc/{label}/common/aes -Isrc/{label}/common/sha3')
@@ -282,6 +288,8 @@ for index, item in enumerate(candidate['parameters']):
         lines.append(f'CFLAGS_{label} := -DPARAMS={label.lower()} '
                      f'-DALLOW_DEEP_TREES -DSUBMISSION_DRNG '
                      f'-DPARAMNAME=\\\"{label}\\\"')
+    elif candidate_id == 'sign-30':
+        lines.append(f'CFLAGS_{label} := -DUSE_SHA3')
     instance_header = {'hash': 'CryptHash_AlgorithmInstance.h',
                        'kem': 'KEM_AlgorithmInstance.h',
                        'sig': 'SIG_AlgorithmInstance.h',
