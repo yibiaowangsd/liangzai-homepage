@@ -227,6 +227,23 @@ for index, item in enumerate(candidate['parameters']):
         if any(not (source_dir / name).is_file() for name in selected):
             raise ValueError(f'{candidate_id} {label}: submitted GreatWall source missing')
         lines.append(f'SRCS_{label} := {" ".join(selected)}')
+    elif candidate_id == 'sign-05':
+        # The submitted Makefiles enumerate SM4 and optional Ballet utilities;
+        # the generic top-level C glob omits those nested library sources.
+        direct = [p.name for p in source_dir.glob('*.c')
+                  if not p.name.startswith('KAT_') and not p.stem.endswith('_bench')]
+        utilities = [p.relative_to(source_dir).as_posix()
+                     for folder in ('utils_sm4', 'utils_ballet')
+                     for p in (source_dir / folder).glob('*.c')]
+        lines.append(f'SRCS_{label} := {" ".join(sorted(direct + utilities))}')
+        include_dirs = [folder for folder in ('utils_sm4', 'utils_ballet')
+                        if (source_dir / folder).is_dir()]
+        lines.append(f'INC_{label} := '
+                     + ' '.join(f'-Isrc/{label}/{folder}' for folder in include_dirs))
+        flags = ['-include', 'fallbacks.h', '-DSM4_SBOX_TABLE']
+        if 'utils_ballet' in include_dirs:
+            flags.extend(('-DUSE_BALLET=1', '-DHAVE_BALLET_CORE=1'))
+        lines.append(f'CFLAGS_{label} := {" ".join(flags)}')
     elif candidate_id == 'sign-19':
         backend = 'SHAKE' if '-SHAKE-' in label else 'SM3'
         core = ('address counter merkle octopus randombytes sign tfors utils '
