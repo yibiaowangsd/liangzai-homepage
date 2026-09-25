@@ -8,6 +8,8 @@
 
 后续批量构建从该快照已有 Makefile 的 71 个候选逐参数尝试（包括较慢的签名和密钥交换）。28 个隔离任务在 `ngcc-wasm-rebuild.yml` 中列出待尝试的剩余 59 个候选；5 个较早接入的 KEM/签名候选、5 个先前哈希候选及 2 个新接入的 KEM 候选已单独构建。`check-ngcc-native.py` 对原生测试向量逐参数设置时限，`ngcc-native-hash-vectors.py` 保存原生参考摘要，`build-ngcc-expanded.py` 构建 WASM 并运行相应往返或原生摘要比对。原生测试失败时仍会尝试编译，但不会发布该产物。浏览器密钥交换另设 `/pqc-practice/kex.html`；仅在双方的完整协议产出相同共享密钥时登记模块。最终提交的 `ngcc-build-status.json` 逐参数记载构建结果，并从接入记录页链接至 Actions 逐项日志；“本快照未收录源码”仅说明所固定的 ngcc-harness 提交没有对应的可构建目录，不表示官方未公开提交包。
 
+其余 48 个候选的官方归档链接已逐项从 GitHub Actions 运行环境尝试读取；48 个 GET 请求均返回 HTTP 405。结果记载在 `ngcc-official-probe.json` 及对应的 [工作流](https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36096545542) 中。HTTP 405 是该次下载访问失败，不是提交源码不存在的证据；由于没有取到源码，这 48 个候选的 249 组参数无法据此宣称已完成编译或 KAT 验证。
+
 这份页面以 ChatGPT Sites 的“PQC 会话实验室”源码提交 `6397843359f3b1273e1f430abf7aac69e369489e` 为基础，保留 40 组 PQMagic WASM 模块及其本地密钥生成、封装、解封装、签名和验签流程，并添加了算法库选择和征集候选目录。原页面底部的快速自检已移除。可运行流程在浏览器的 Web Worker 中执行，数据无需发送到后端。浏览器需支持 WebAssembly 与 Web Crypto。
 
 `ngcc-catalog.json` 快照取自 [ngcc-harness](https://github.com/ngcc-dev/ngcc-harness) 提交 `c5261784ef27e7363b1bbace3d687932fda35ccd` 的 `downloads.csv`、`data/parameters.csv` 和 `data/{kem,sign,kex,hash}.csv`，按官方候选编号列出 41 个 KEM、34 个签名、9 个密钥交换及 35 个哈希候选，合计 119 个候选、586 个实现参数实例。每项提供官方候选页、提交源码包、提交团队成员、实例参数与参考实现目录。数据可用 `python3 scripts/generate-ngcc-catalog.py /path/to/ngcc-harness` 重新生成；候选数量改变时生成脚本会要求人工核对。
