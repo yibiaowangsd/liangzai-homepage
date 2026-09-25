@@ -1,7 +1,7 @@
 {
   "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd",
   "toolchain": "Emscripten 6.0.10",
-  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36142743040",
+  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36143111211",
   "results": {
     "sign-01": [
       {
@@ -1795,9 +1795,9 @@
     ],
     "kem-35": [
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-35-0.link.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36142743040"
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-35-0.check.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36143111211"
       },
       {
         "status": "compile_failed",
