@@ -1,4 +1,4 @@
-name: Build fourth official NGCC public-key source batch
+name: Repair fourth official NGCC public-key source batch
 
 on:
   push:
@@ -25,10 +25,6 @@ jobs:
             id: sign-21
           - name: rhyme
             id: sign-22
-          - name: sqisign
-            id: sign-26
-          - name: polarlac
-            id: kem-30
           - name: zen
             id: kem-41
     env:

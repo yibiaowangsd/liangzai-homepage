@@ -112,6 +112,12 @@ for item in candidate['parameters']:
         ntt = list((source_dir / 'ntt').glob('*/ntt_ref.c'))
         if len(ntt) != 1:
             raise ValueError(f'{candidate_id} {label}: expected one scalar NTT source')
+        # Larger variants retain the 128-bit NTT header path in the submission.
+        actual_header = ntt[0].relative_to(source_dir).with_name('ntt_ref.h').as_posix()
+        poly_header = source_dir / 'poly_ntt.h'
+        original = poly_header.read_text()
+        if 'ntt/q15361n256/ntt_ref.h' in original and actual_header != 'ntt/q15361n256/ntt_ref.h':
+            poly_header.write_text(original.replace('ntt/q15361n256/ntt_ref.h', actual_header))
         excluded = ('KAT_', 'PQCgenKAT', 'test', 'bench', 'main')
         direct = [p.name for p in source_dir.glob('*.c') if not p.name.startswith(excluded)]
         relative_ntt = ntt[0].relative_to(source_dir).as_posix()
@@ -123,11 +129,60 @@ for item in candidate['parameters']:
             lines.append(f'KATDIR_{label} := {directory}')
         else:
             print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}', flush=True)
+    elif candidate_id == 'kem-34':
+        # The unrelated kex.c requires an absent kem.h and is outside the KEM API.
+        c_files = [p.name for p in source_dir.glob('*.c')
+                   if p.name != 'kex.c' and not p.name.startswith('KAT_')]
+        lines.append(f'SRCS_{label} := {" ".join(sorted(c_files))}')
+    elif candidate_id == 'sign-20':
+        level = label.split('-')[-1]
+        if level not in ('128', '256', '384', '512'):
+            raise ValueError(f'{candidate_id} {label}: invalid level')
+        core = ('fq_arith', 'rsdp', 'restr', 'mpc', 'keygen', 'sign', 'verify')
+        adapters = ('SIG_AlgorithmInstance', 'utils_adapter', 'hash_adapter',
+                    'drng', 'auxfunc')
+        source_files = [f'src/{name}.c' for name in core]
+        source_files += [f'api_pkc/{name}.c' for name in adapters]
+        if any(not (source_dir / name).is_file() for name in source_files):
+            raise ValueError(f'{candidate_id} {label}: submitted adapter source missing')
+        lines.append(f'SRCS_{label} := {" ".join(source_files)}')
+        lines.append(f'INC_{label} := -Isrc/{label}/api_pkc -Isrc/{label}/include')
+        lines.append(f'DEFS_{label} := -DQINGLUAN_{level}')
+        lines.append(f'SHIMDEFS_{label} := -DNGCC_INSTANCE_HEADER=\\\"api_pkc/SIG_AlgorithmInstance.h\\\"')
+    elif candidate_id == 'sign-22':
+        mode = label.rsplit('-', 1)[-1]
+        if mode not in ('128', '256', '384', '512'):
+            raise ValueError(f'{candidate_id} {label}: invalid Rhyme mode')
+        core = ('poly', 'ntt', 'ntt_tables', 'sampler', 'encoding', 'packing',
+                'sign', 'zpntt', 'symmetric-shake')
+        keygen = ('kg_main', 'kg_solver', 'kg_zint', 'kg_ntt', 'kg_primes')
+        source_files = [f'src/{name}.c' for name in core]
+        source_files += [f'src/keygen/{name}.c' for name in keygen]
+        source_files += ['rhyme_xof.c', 'randombytes.c', 'auxfunc.c',
+                         'drng.c', 'SIG_AlgorithmInstance.c']
+        if 'SHAKE' in label:
+            source_files.append('src/fips202.c')
+        else:
+            source_files.extend(('sm3.c', 'sm3_xof.c'))
+        if any(not (source_dir / name).is_file() for name in source_files):
+            raise ValueError(f'{candidate_id} {label}: submitted Rhyme source missing')
+        lines.append(f'SRCS_{label} := {" ".join(source_files)}')
+        lines.append(f'INC_{label} := -Isrc/{label}/include -Isrc/{label}/src/keygen')
+        lines.append(f'CFLAGS_{label} := -DRHYME_NO_AES -DRHYME_MODE={mode}')
+    elif candidate_id in ('sign-14', 'sign-21'):
+        # The submission Makefiles select the SM3 pseudo-XOF by default.
+        lines.append(f'CFLAGS_{label} := -DXOF_PSEUDO')
+    elif candidate_id == 'kem-41':
+        # SPEED_KEM/cpucycles are executable benchmark code, not KEM sources.
+        c_files = [p.name for p in source_dir.glob('*.c')
+                   if p.name not in ('SPEED_KEM.c', 'cpucycles.c')
+                   and not p.name.startswith('KAT_')]
+        lines.append(f'SRCS_{label} := {" ".join(sorted(c_files))}')
     instance_header = {'hash': 'CryptHash_AlgorithmInstance.h',
                        'kem': 'KEM_AlgorithmInstance.h',
                        'sig': 'SIG_AlgorithmInstance.h',
                        'kex': 'KEX_AlgorithmInstance.h'}[candidate['type']]
-    if not (source_dir / instance_header).is_file():
+    if candidate_id != 'sign-20' and not (source_dir / instance_header).is_file():
         prefix = {'hash': 'CryptHash', 'kem': 'KEM', 'sig': 'SIG',
                   'kex': 'KEX'}[candidate['type']]
         alternatives = [p for p in source_dir.glob(prefix + '*.h')
