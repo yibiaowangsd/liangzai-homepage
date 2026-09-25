@@ -6,6 +6,7 @@ are copied as reference material but are never executed or linked.
 """
 import hashlib
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -63,8 +64,13 @@ shutil.copytree(source_root, destination, dirs_exist_ok=True)
 lines = [f'NGCC_ID := {candidate_id}', f'NGCC_TYPE := {candidate["type"]}',
          f'NGCC_ALG := {candidate_id}', 'include ../api/link_rules.mk', '']
 labels = []
-for item in candidate['parameters']:
+for index, item in enumerate(candidate['parameters']):
     label = Path(item['source']).name
+    if label in labels:
+        label = re.sub(r'[^A-Za-z0-9_-]', '_',
+                       Path(item['source']).parent.name + '-' + label)
+    if label in labels:
+        label += f'-{index}'
     source_dir = destination / item['source']
     if label in labels or not source_dir.is_dir():
         raise ValueError(f'{candidate_id}: duplicate label or missing source {label}')
@@ -72,12 +78,14 @@ for item in candidate['parameters']:
     if candidate_id == 'hash-16':
         # The submitted LLH main file already includes llh_core.c directly.
         lines.append(f'SRCS_{label} := CryptHash_AlgorithmInstance.c drng.c')
-        vectors = list(destination.rglob(f'KAT_CryptHash_{label}.txt'))
+        vectors = list(destination.rglob(f'KAT_2_12_{label}.txt'))
         if len(vectors) == 1:
             directory = vectors[0].parent.relative_to(destination).as_posix()
             lines.append(f'KATDIR_{label} := {directory}')
         else:
-            print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}', flush=True)
+            nearby = sorted(p.name for p in destination.rglob('KAT_*.txt'))[:12]
+            print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}; '
+                  f'archive KAT examples: {nearby}', flush=True)
     elif candidate_id == 'hash-23':
         # QILIN's local uint64_t/uint8_t aliases conflict with the system shim.
         header = source_dir / 'CryptHash_AlgorithmInstance.h'
@@ -128,7 +136,9 @@ for item in candidate['parameters']:
             directory = vectors[0].parent.relative_to(destination).as_posix()
             lines.append(f'KATDIR_{label} := {directory}')
         else:
-            print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}', flush=True)
+            nearby = sorted(p.name for p in destination.rglob('KAT_*.txt'))[:12]
+            print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}; '
+                  f'archive KAT examples: {nearby}', flush=True)
     elif candidate_id == 'kem-34':
         # The unrelated kex.c requires an absent kem.h and is outside the KEM API.
         c_files = [p.name for p in source_dir.glob('*.c')
@@ -169,15 +179,27 @@ for item in candidate['parameters']:
         lines.append(f'SRCS_{label} := {" ".join(source_files)}')
         lines.append(f'INC_{label} := -Isrc/{label}/include -Isrc/{label}/src/keygen')
         lines.append(f'CFLAGS_{label} := -DRHYME_NO_AES -DRHYME_MODE={mode}')
+        lines.append(f'KATNAME_{label} := {label}')
     elif candidate_id in ('sign-14', 'sign-21'):
         # The submission Makefiles select the SM3 pseudo-XOF by default.
         lines.append(f'CFLAGS_{label} := -DXOF_PSEUDO')
+        vectors = list(destination.rglob(f'KAT_SIG_{label}.txt'))
+        if len(vectors) == 1:
+            directory = vectors[0].parent.relative_to(destination).as_posix()
+            lines.append(f'KATDIR_{label} := {directory}')
     elif candidate_id == 'kem-41':
         # SPEED_KEM/cpucycles are executable benchmark code, not KEM sources.
         c_files = [p.name for p in source_dir.glob('*.c')
                    if p.name not in ('SPEED_KEM.c', 'cpucycles.c')
                    and not p.name.startswith('KAT_')]
         lines.append(f'SRCS_{label} := {" ".join(sorted(c_files))}')
+    elif candidate_id == 'kem-30':
+        vectors = list(destination.rglob(f'KAT_KEM_{label}.txt'))
+        if len(vectors) == 1:
+            directory = vectors[0].parent.relative_to(destination).as_posix()
+            lines.append(f'KATDIR_{label} := {directory}')
+        else:
+            print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}', flush=True)
     instance_header = {'hash': 'CryptHash_AlgorithmInstance.h',
                        'kem': 'KEM_AlgorithmInstance.h',
                        'sig': 'SIG_AlgorithmInstance.h',
