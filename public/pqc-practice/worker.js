@@ -1,21 +1,19 @@
 import { ngccModule } from './ngcc-runtime.js';
 const SLH_LEVELS = ['128f', '128s', '192f', '192s', '256f', '256s'];
 const SUITES = {
-  mlkem: { kind: 'kem', hashes: ['sm3', 'shake'], variants: () => ['512', '768', '1024'], module: (value, hash) => `mlkem${value}${hash}` },
-  aigisenc: { kind: 'kem', hashes: ['sm3', 'shake'], variants: () => ['1', '2', '3', '4'], module: (value, hash) => `aigisenc${value}${hash}` },
-  mldsa: { kind: 'sig', hashes: ['sm3', 'shake'], variants: () => ['44', '65', '87'], module: (value, hash) => `mldsa${value}${hash}` },
-  aigissig: { kind: 'sig', hashes: ['sm3', 'shake'], variants: () => ['1', '2', '3'], module: (value, hash) => `aigissig${value}${hash}` },
-  slhdsa: { kind: 'sig', hashes: ['sm3', 'sha2', 'shake'], variants: hash => hash === 'sm3' ? SLH_LEVELS.slice(0, 2) : SLH_LEVELS, module: (value, hash) => `slh${hash}${value}` },
+  mlkem: { kind: 'kem', hashes: ['shake'], variants: () => ['512', '768', '1024'], module: (value, hash) => `mlkem${value}${hash}` },
+  mldsa: { kind: 'sig', hashes: ['shake'], variants: () => ['44', '65', '87'], module: (value, hash) => `mldsa${value}${hash}` },
+  slhdsa: { kind: 'sig', hashes: ['sha2', 'shake'], variants: () => SLH_LEVELS, module: (value, hash) => `slh${hash}${value}` },
 };
 const loaded = new Map();
 const equal = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
 const suiteFor = (library, family, variant, hash) => {
   if (library === 'ngcc') {
-    const module = ngccModule(family, variant);
-    if (!module) throw new Error('此候选参数集尚未接入可运行的 WASM 实现');
-    return { family, variant, library, kind: family.startsWith('kem-') ? 'kem' : 'sig', module };
+    const moduleName = ngccModule(family, variant);
+    if (!moduleName) throw new Error('此候选参数集尚未接入可运行的 WASM 实现');
+    return { family, variant, library, kind: family.startsWith('kem-') ? 'kem' : 'sig', module: moduleName };
   }
-  if (library !== 'pqmagic') throw new Error('未知算法库');
+  if (library !== 'nist') throw new Error('未知算法库');
   const suite = SUITES[family];
   if (!suite?.hashes.includes(hash) || !suite.variants(hash).includes(variant)) throw new Error('不支持所选算法、哈希或参数集');
   return { ...suite, family, variant, hash, library, module: suite.module(variant, hash) };
@@ -135,7 +133,7 @@ self.onmessage = async ({ data }) => {
   const { type, requestId, library, family, variant, hash } = data;
   try {
     if (type === 'init') {
-      await load(suiteFor('pqmagic', 'mlkem', '768', 'shake'));
+      await load(suiteFor('nist', 'mlkem', '768', 'shake'));
       postMessage({ type: 'ready' });
       return;
     }

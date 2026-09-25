@@ -2,9 +2,9 @@ import { NGCC_KEX_WASM } from './ngcc-kex-runtime.js';
 
 self.onmessage = async ({ data }) => {
   try {
-    const module = NGCC_KEX_WASM[data.id]?.[data.index];
-    if (!module) throw new Error('当前参数尚无经过验证的浏览器实现');
-    const { default: factory } = await import(`./wasm/${module}.mjs`);
+    const moduleName = NGCC_KEX_WASM[data.id]?.[data.index];
+    if (!moduleName) throw new Error('当前参数尚无经过验证的浏览器实现');
+    const { default: factory } = await import(`./wasm/${moduleName}.mjs`);
     const mod = await factory({ locateFile: name => new URL(`./wasm/${name}`, import.meta.url).href });
     const bytes = mod._lab_shared_bytes();
     if (bytes < 1 || bytes > 1048576) throw new Error('共享密钥长度异常');
@@ -19,7 +19,7 @@ self.onmessage = async ({ data }) => {
       const ms = performance.now() - start;
       const digest = await crypto.subtle.digest('SHA-256', mod.HEAPU8.slice(output, output + bytes));
       const fingerprint = Array.from(new Uint8Array(digest), item => item.toString(16).padStart(2, '0')).join('');
-      postMessage({ fingerprint, bytes, passes: mod._lab_passes(), ms });
+      postMessage({ fingerprint, bytes, passes: mod._lab_passes(), totalBytes: mod._lab_total_bytes(), ms });
     } finally {
       if (seed) { mod.HEAPU8.fill(0, seed, seed + 48); mod._free(seed); }
       if (output) { mod.HEAPU8.fill(0, output, output + bytes); mod._free(output); }

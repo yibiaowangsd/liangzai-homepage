@@ -5,15 +5,13 @@ import { candidateModule, setCandidateProvider, showCandidateWork, stopCandidate
 const $ = selector => document.querySelector(selector);
 const VARIANTS = {
   mlkem: ['512', '768', '1024'],
-  aigisenc: ['1', '2', '3', '4'],
   mldsa: ['44', '65', '87'],
   slhdsa: ['128f', '128s', '192f', '192s', '256f', '256s'],
-  aigissig: ['1', '2', '3'],
 };
-const HASHES = { mlkem: ['sm3', 'shake'], aigisenc: ['sm3', 'shake'], mldsa: ['sm3', 'shake'], slhdsa: ['sm3', 'sha2', 'shake'], aigissig: ['sm3', 'shake'] };
-const DEFAULT_HASH = { mlkem: 'shake', aigisenc: 'sm3', mldsa: 'shake', slhdsa: 'sha2', aigissig: 'sm3' };
-const DEFAULT_VARIANT = { mlkem: '768', aigisenc: '2', mldsa: '65', slhdsa: '128f', aigissig: '2' };
-const NAMES = { mlkem: 'ML-KEM', aigisenc: 'Aigis-enc', mldsa: 'ML-DSA', slhdsa: 'SLH-DSA', aigissig: 'Aigis-sig' };
+const HASHES = { mlkem: ['shake'], mldsa: ['shake'], slhdsa: ['sha2', 'shake'] };
+const DEFAULT_HASH = { mlkem: 'shake', mldsa: 'shake', slhdsa: 'sha2' };
+const DEFAULT_VARIANT = { mlkem: '768', mldsa: '65', slhdsa: '128f' };
+const NAMES = { mlkem: 'ML-KEM', mldsa: 'ML-DSA', slhdsa: 'SLH-DSA' };
 const CATEGORIES = { kem: '密钥封装 · 41 项', sig: '数字签名 · 34 项', kex: '密钥交换 · 9 项', hash: '哈希算法 · 35 项' };
 const FACTS = {
   PublicKeyBytes: '公钥', SecretKeyBytes: '私钥', CiphertextBytes: '密文', SharedSecretBytes: '共享密钥',
@@ -28,17 +26,18 @@ const isNgcc = () => $('#library').value === 'ngcc';
 const selectedCandidate = () => catalog?.find(item => item.id === $('#family').value);
 setCandidateProvider(selectedCandidate);
 const isRunnable = () => !isNgcc() || !!ngccModule($('#family').value, $('#variant').value);
-const isKem = () => isNgcc() ? selectedCandidate()?.type === 'kem' : ['mlkem', 'aigisenc'].includes($('#family').value);
+const isKem = () => isNgcc() ? selectedCandidate()?.type === 'kem' : $('#family').value === 'mlkem';
 const name = () => isNgcc() ? `${selectedCandidate()?.name} / ${selectedCandidate()?.parameters[Number($('#variant').value)]?.name}`
-  : `${NAMES[$('#family').value]}-${$('#variant').value.toUpperCase()} · ${$('#hash').value.toUpperCase()}`;
+  : $('#family').value === 'slhdsa' ? `SLH-DSA-${$('#hash').value.toUpperCase()}-${$('#variant').value.toUpperCase()}`
+    : `${NAMES[$('#family').value]}-${$('#variant').value.toUpperCase()}`;
 const hex = bytes => Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
 const equal = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
 const elapsed = value => value == null ? '—' : `${value.toFixed(2)} ms`;
 let worker, ready = false, busy = false, active = null, serial = 0, resetSerial = 0, sizes = null;
-let catalog = null, catalogPromise = null, pqmagicFamily = 'mlkem';
+let catalog = null, catalogPromise = null, nistFamily = 'mlkem';
 let aliceSecret = null, keyTime = null, actionTime = null;
 let flowOutcome = null;
-let expandedLibrary = 'pqmagic';
+let expandedLibrary = 'nist';
 
 function renderSidebar() {
   const selectedLibrary = $('#library').value;
@@ -47,9 +46,9 @@ function renderSidebar() {
   const root = $('#library-list');
   const previousScroll = root.scrollTop;
   const libraries = [
-    { id: 'pqmagic', label: 'PQMagic', count: '5 种算法', groups: [
-      ['kem', '密钥封装', ['mlkem', 'aigisenc'].map(id => ({ id, name: NAMES[id], ready: true }))],
-      ['sig', '数字签名', ['mldsa', 'slhdsa', 'aigissig'].map(id => ({ id, name: NAMES[id], ready: true }))],
+    { id: 'nist', label: 'NIST 标准算法', count: '3 种算法', groups: [
+      ['kem', '密钥封装 · FIPS 203', ['mlkem'].map(id => ({ id, name: NAMES[id], ready: true }))],
+      ['sig', '数字签名 · FIPS 204 / 205', ['mldsa', 'slhdsa'].map(id => ({ id, name: NAMES[id], ready: true }))],
     ] },
     { id: 'ngcc', label: '2026 国内征集', count: '119 个候选', groups: catalog
       ? Object.entries(CATEGORIES).map(([type, title]) => [type, title,
@@ -284,7 +283,7 @@ function showSizes() {
   for (const [id, key] of Object.entries(FIELD_SIZES)) $(`#size-${id}`).textContent = `${sizes[key]} B`;
   $('#kem-flow').classList.toggle('hidden', !isKem());
   $('#sig-flow').classList.toggle('hidden', isKem());
-  $('#flow-title').textContent = isKem() ? '密钥交换' : '签名验证';
+  $('#flow-title').textContent = isKem() ? '密钥封装实战' : '签名验证';
   $('#fact-one-label').textContent = isKem() ? (isNgcc() ? '密钥配套情况' : '公私钥对应关系') : '签名状态';
   $('#fact-two-label').textContent = isKem() ? '共享密钥逐字节比较' : '签名验证结果';
 }
@@ -316,7 +315,7 @@ function attempt(callback) { try { callback(); } catch (error) { status(error.me
 
 function configureVariants(preferDefault = false) {
   const family = $('#family').value;
-  const variants = family === 'slhdsa' && $('#hash').value === 'sm3' ? VARIANTS.slhdsa.slice(0, 2) : VARIANTS[family];
+  const variants = VARIANTS[family];
   const previous = $('#variant').value;
   const selected = !preferDefault && variants.includes(previous) ? previous : DEFAULT_VARIANT[family];
   $('#variant').replaceChildren(...variants.map(variant => {
@@ -438,13 +437,13 @@ async function switchLibrary() {
     } catch (error) { status(error.message, 'error'); runtime('候选目录加载失败', 'error'); }
   } else {
     $('#family').replaceChildren(...[
-      ['密钥封装', ['mlkem', 'aigisenc']], ['数字签名', ['mldsa', 'slhdsa', 'aigissig']],
+      ['密钥封装', ['mlkem']], ['数字签名', ['mldsa', 'slhdsa']],
     ].map(([label, names]) => {
       const group = document.createElement('optgroup'); group.label = label;
       group.append(...names.map(value => new Option(NAMES[value], value)));
       return group;
     }));
-    $('#family').value = pqmagicFamily;
+    $('#family').value = nistFamily;
     $('#family').dispatchEvent(new Event('change'));
     runtime(ready ? '本地运行' : '正在加载…', ready ? 'ready' : '');
   }
@@ -453,9 +452,10 @@ $('#library').addEventListener('change', switchLibrary);
 $('#family').addEventListener('change', () => {
   if (isNgcc()) { configureCatalogParameters(); showCatalog(); renderSidebar(); return; }
   const family = $('#family').value;
-  pqmagicFamily = family;
+  nistFamily = family;
+  $('#hash-field').classList.toggle('hidden', family !== 'slhdsa');
   $('#hash').replaceChildren(...HASHES[family].map(hash => {
-    const option = new Option(hash === 'sm3' ? 'SM3' : hash === 'sha2' ? 'SHA2' : 'SHAKE / SHA3', hash);
+    const option = new Option(hash === 'sha2' ? 'SHA2' : 'SHAKE', hash);
     option.selected = hash === DEFAULT_HASH[family];
     return option;
   }));
