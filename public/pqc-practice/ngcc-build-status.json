@@ -1,7 +1,7 @@
 {
   "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd",
   "toolchain": "Emscripten 6.0.10",
-  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36101603015",
+  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36102865888",
   "results": {
     "sign-01": [
       {
@@ -2049,34 +2049,34 @@
     ],
     "hash-19": [
       {
-        "status": "runtime_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-0.check.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36101603015"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36102865888"
       },
       {
-        "status": "runtime_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-1.check.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36101603015"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36102865888"
       },
       {
-        "status": "runtime_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-2.check.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36101603015"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36102865888"
       },
       {
-        "status": "runtime_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-3.check.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36101603015"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-3.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36102865888"
       },
       {
-        "status": "runtime_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-4.check.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36101603015"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-4.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36102865888"
       },
       {
-        "status": "runtime_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-5.check.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36101603015"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-5.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36102865888"
       }
     ],
     "hash-20": [

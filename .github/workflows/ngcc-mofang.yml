@@ -1,0 +1,82 @@
+name: NGCC MoFang rotation portability check
+
+on:
+  push:
+    branches: [feat/ngcc-mofang]
+    paths:
+      - '.github/workflows/ngcc-mofang.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      NGCC_IDS: hash-19
+      NGCC_NATIVE_SECONDS: 60
+      NGCC_NATIVE_BUDGET: 200
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ngcc-dev/ngcc-harness
+          ref: c5261784ef27e7363b1bbace3d687932fda35ccd
+          path: ngcc-harness
+          sparse-checkout: |
+            /api/
+            /hash-19/
+          sparse-checkout-cone-mode: false
+      - uses: emscripten-core/setup-emsdk@v15
+        with:
+          version: '6.0.10'
+      - name: Define the source's zero-bit rotation for native and WASM builds
+        run: python3 scripts/patch-ngcc-mofang-rotation.py ngcc-harness
+      - name: Build and cross-check all submitted parameters
+        run: bash scripts/run-ngcc-batch.sh "$NGCC_IDS" ngcc-harness
+      - name: Package verified modules and per-parameter logs
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p work/ngcc-package/public/pqc-practice/wasm work/ngcc-package/work
+          for path in public/pqc-practice/wasm/ngcc-hash-19-*.mjs public/pqc-practice/wasm/ngcc-hash-19-*.wasm; do
+            if [[ -f $path ]]; then cp "$path" work/ngcc-package/public/pqc-practice/wasm/; fi
+          done
+          if [[ -d work/ngcc-wasm-rebuild ]]; then cp -a work/ngcc-wasm-rebuild work/ngcc-package/work/; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ngcc-mofang-check
+          path: work/ngcc-package/
+          if-no-files-found: ignore
+
+  publish:
+    needs: rebuild
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/ngcc-mofang
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: ngcc-mofang-check
+          path: .
+      - name: Retain verified earlier modules and publish only cross-checked pairs
+        run: |
+          python3 scripts/aggregate-ngcc-rebuild.py
+          node --test tests/ngcc-catalog.test.mjs
+          node --check public/pqc-practice/ngcc-hash-runtime.js
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A public/pqc-practice/wasm/ public/pqc-practice/ngcc-runtime.js public/pqc-practice/ngcc-hash-runtime.js public/pqc-practice/ngcc-kex-runtime.js public/pqc-practice/ngcc-build-status.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish KAT-matched MoFang source builds and audit'
+            git push origin HEAD:feat/ngcc-mofang
+          fi
