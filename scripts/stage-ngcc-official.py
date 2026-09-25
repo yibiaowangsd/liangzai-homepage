@@ -182,6 +182,14 @@ for index, item in enumerate(candidate['parameters']):
         lines.append(f'INC_{label} := -Isrc/{label}/include -Isrc/{label}/src/keygen')
         lines.append(f'CFLAGS_{label} := -DRHYME_NO_AES -DRHYME_MODE={mode}')
         lines.append(f'KATNAME_{label} := {label}')
+        vectors = list(destination.rglob(f'KAT_SIG_{label}.txt'))
+        if len(vectors) == 1:
+            directory = vectors[0].parent.relative_to(destination).as_posix()
+            lines.append(f'KATDIR_{label} := {directory}')
+        else:
+            examples = sorted(p.name for p in destination.rglob('KAT_SIG_*.txt'))[:20]
+            print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}; '
+                  f'archive KAT examples: {examples}', flush=True)
     elif candidate_id in ('sign-14', 'sign-21'):
         # The submission Makefiles select the SM3 pseudo-XOF by default.
         lines.append(f'CFLAGS_{label} := -DXOF_PSEUDO')
@@ -202,6 +210,36 @@ for index, item in enumerate(candidate['parameters']):
             lines.append(f'KATDIR_{label} := {directory}')
         else:
             print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}', flush=True)
+    elif candidate_id == 'sign-13':
+        # The submitted reference Makefile selects the seeded DRNG adapter;
+        # its other randomness backends and benchmarks are separate programs.
+        level = re.fullmatch(r'GreatWall(128|192|256|512)[fs]', label)
+        if not level:
+            raise ValueError(f'{candidate_id} {label}: invalid level')
+        core = ('SIG_AlgorithmInstance drng api aes aes_impl block block_impl '
+                'faest greatwall greatwall_impl hash '
+                'KeccakHash KeccakP-1600-reference KeccakSponge owf_proof '
+                'polynomials polynomials_impl prgs quicksilver '
+                'randomness_randombytes small_vole transpose universal_hash '
+                'util vector_com vole_check vole_commit').split()
+        selected = [name + '.c' for name in core]
+        selected.append(f'greatwall-{level.group(1)}-matrix.c')
+        if any(not (source_dir / name).is_file() for name in selected):
+            raise ValueError(f'{candidate_id} {label}: submitted GreatWall source missing')
+        lines.append(f'SRCS_{label} := {" ".join(selected)}')
+    elif candidate_id == 'sign-19':
+        backend = 'SHAKE' if '-SHAKE-' in label else 'SM3'
+        core = ('address counter merkle octopus randombytes sign tfors utils '
+                'utilsx1 gwots gwotsx1 SIG_AlgorithmInstance drng').split()
+        extra = ('hash_shake fips202 thash_shake_simple' if backend == 'SHAKE'
+                 else 'auxfunc hash_sm3 sm3_drng thash_sm3_simple').split()
+        selected = [name + '.c' for name in core + extra]
+        if any(not (source_dir / name).is_file() for name in selected):
+            raise ValueError(f'{candidate_id} {label}: submitted Phoenix source missing')
+        lines.append(f'SRCS_{label} := {" ".join(selected)}')
+        lines.append(f'CFLAGS_{label} := -DPARAMS={label.lower()} '
+                     f'-DALLOW_DEEP_TREES -DSUBMISSION_DRNG '
+                     f'-DPARAMNAME=\\\"{label}\\\"')
     instance_header = {'hash': 'CryptHash_AlgorithmInstance.h',
                        'kem': 'KEM_AlgorithmInstance.h',
                        'sig': 'SIG_AlgorithmInstance.h',
@@ -211,6 +249,9 @@ for index, item in enumerate(candidate['parameters']):
                   'kex': 'KEX'}[candidate['type']]
         alternatives = [p for p in source_dir.glob(prefix + '*.h')
                         if 'ALGORITHM_INSTANCE' in p.read_text(errors='replace')]
+        if not alternatives:
+            alternatives = [p for p in source_dir.glob('*_AlgorithmInstance.h')
+                            if 'ALGORITHM_INSTANCE' in p.read_text(errors='replace')]
         if len(alternatives) != 1:
             raise ValueError(f'{candidate_id} {label}: cannot select the submitted API header')
         lines.append(f'SHIMDEFS_{label} := -DNGCC_INSTANCE_HEADER=\\\"{alternatives[0].name}\\\"')
