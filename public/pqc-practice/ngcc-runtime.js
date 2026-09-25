@@ -9,6 +9,7 @@ export const NGCC_WASM = Object.freeze({
   'sign-16': ['ngcc-sign-16-0', 'ngcc-sign-16-1', 'ngcc-sign-16-2'],
   'sign-18': ['ngcc-sign-18-0', 'ngcc-sign-18-1', 'ngcc-sign-18-2', null],
   'sign-29': [null, 'ngcc-sign-29-1', null],
+  'sign-31': ['ngcc-sign-31-0', 'ngcc-sign-31-1', 'ngcc-sign-31-2'],
   'sign-33': ['ngcc-sign-33-0', 'ngcc-sign-33-1', null],
   'kem-01': ['ngcc-kem-01-0', 'ngcc-kem-01-1', 'ngcc-kem-01-2'],
   'kem-02': ['ngcc-kem-02-0', 'ngcc-kem-02-1', 'ngcc-kem-02-2', 'ngcc-kem-02-3', 'ngcc-kem-02-4'],
