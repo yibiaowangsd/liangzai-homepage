@@ -38,6 +38,133 @@ let worker, ready = false, busy = false, active = null, serial = 0, resetSerial 
 let catalog = null, catalogPromise = null, pqmagicFamily = 'mlkem';
 let aliceSecret = null, keyTime = null, actionTime = null;
 let flowOutcome = null;
+let expandedLibrary = 'pqmagic';
+
+function renderSidebar() {
+  const selectedLibrary = $('#library').value;
+  const selectedFamily = $('#family').value;
+  const query = $('#sidebar-search').value.trim().toLocaleLowerCase();
+  const root = $('#library-list');
+  const previousScroll = root.scrollTop;
+  const libraries = [
+    { id: 'pqmagic', label: 'PQMagic', count: '5 种算法', groups: [
+      ['kem', '密钥封装', ['mlkem', 'aigisenc'].map(id => ({ id, name: NAMES[id], ready: true }))],
+      ['sig', '数字签名', ['mldsa', 'slhdsa', 'aigissig'].map(id => ({ id, name: NAMES[id], ready: true }))],
+    ] },
+    { id: 'ngcc', label: '2026 国内征集', count: '119 个候选', groups: catalog
+      ? Object.entries(CATEGORIES).map(([type, title]) => [type, title,
+        catalog.filter(candidate => candidate.type === type).map(candidate => ({
+          id: candidate.id, name: candidate.name,
+          ready: candidate.parameters.some((_, index) =>
+            ngccModule(candidate.id, index) || candidateModule(candidate, index)),
+        }))]) : [] },
+  ];
+  root.replaceChildren(...libraries.map(library => {
+    const section = document.createElement('section');
+    section.className = 'library-section';
+    const head = document.createElement('button');
+    head.type = 'button'; head.className = 'library-pick';
+    head.dataset.selectLibrary = library.id;
+    head.disabled = busy;
+    head.setAttribute('aria-expanded', String(expandedLibrary === library.id));
+    if (selectedLibrary === library.id) head.setAttribute('aria-current', 'true');
+    const label = document.createElement('strong'), count = document.createElement('small');
+    label.textContent = library.label; count.textContent = library.count;
+    head.append(label, count);
+    head.addEventListener('click', async () => {
+      if (busy) return;
+      const switching = $('#library').value !== library.id;
+      expandedLibrary = switching || expandedLibrary !== library.id ? library.id : null;
+      if (switching) {
+        $('#sidebar-search').value = '';
+        root.scrollTop = 0;
+        $('#library').value = library.id;
+        await switchLibrary();
+      } else renderSidebar();
+    });
+    section.append(head);
+    if (expandedLibrary !== library.id) return section;
+    const content = document.createElement('div');
+    content.className = 'library-choices';
+    if (library.id === 'ngcc' && !catalog) {
+      const loading = document.createElement('p');
+      loading.className = 'sidebar-empty'; loading.textContent = '正在读取征集目录…';
+      content.append(loading);
+    }
+    let visible = 0;
+    for (const [, title, algorithms] of library.groups) {
+      const matches = algorithms.filter(algorithm =>
+        `${algorithm.name} ${algorithm.id}`.toLocaleLowerCase().includes(query));
+      if (!matches.length) continue;
+      visible += matches.length;
+      const group = document.createElement('details');
+      group.className = 'algorithm-category';
+      group.open = Boolean(query) || (selectedLibrary === library.id &&
+        matches.some(algorithm => algorithm.id === selectedFamily));
+      const summary = document.createElement('summary');
+      summary.textContent = title;
+      const count = document.createElement('small');
+      count.textContent = `${matches.length}`;
+      summary.append(count); group.append(summary);
+      for (const algorithm of matches) {
+        const choice = document.createElement('button');
+        choice.type = 'button'; choice.className = 'algorithm-choice';
+        choice.dataset.selectFamily = algorithm.id;
+        choice.disabled = busy;
+        if (selectedLibrary === library.id && selectedFamily === algorithm.id)
+          choice.setAttribute('aria-current', 'true');
+        const name = document.createElement('span'), state = document.createElement('small');
+        name.textContent = algorithm.name;
+        state.textContent = `${algorithm.ready ? '● 可运行' : '○ 资料'} · ${algorithm.id}`;
+        choice.append(name, state);
+        choice.addEventListener('click', () => {
+          if (busy || $('#family').value === algorithm.id) return;
+          $('#family').value = algorithm.id;
+          $('#family').dispatchEvent(new Event('change'));
+          root.querySelector('[aria-current="true"][data-select-family]')?.focus({ preventScroll: true });
+        });
+        group.append(choice);
+      }
+      content.append(group);
+    }
+    if (query && !visible) {
+      const empty = document.createElement('p');
+      empty.className = 'sidebar-empty'; empty.textContent = '没有匹配的算法';
+      content.append(empty);
+    }
+    section.append(content);
+    return section;
+  }));
+  root.scrollTop = previousScroll;
+  document.querySelectorAll('[data-library-shortcut]').forEach(button => {
+    button.disabled = busy;
+    button.classList.toggle('is-selected', selectedLibrary === button.dataset.libraryShortcut);
+  });
+}
+
+$('#sidebar-search').addEventListener('input', renderSidebar);
+$('#sidebar-toggle').addEventListener('click', () => {
+  const collapsed = $('#practice-layout').classList.toggle('is-collapsed');
+  $('#sidebar-toggle').setAttribute('aria-expanded', String(!collapsed));
+  $('#sidebar-toggle').setAttribute('aria-label', collapsed ? '展开算法栏' : '收起算法栏');
+  $('#sidebar-toggle').firstElementChild.textContent = collapsed ? '›' : '‹';
+  if (!collapsed) $('#sidebar-search').focus({ preventScroll: true });
+});
+document.querySelectorAll('[data-library-shortcut]').forEach(button => button.addEventListener('click', async () => {
+  if (busy) return;
+  $('#practice-layout').classList.remove('is-collapsed');
+  $('#sidebar-toggle').setAttribute('aria-expanded', 'true');
+  $('#sidebar-toggle').setAttribute('aria-label', '收起算法栏');
+  $('#sidebar-toggle').firstElementChild.textContent = '‹';
+  const library = button.dataset.libraryShortcut;
+  expandedLibrary = library;
+  if ($('#library').value !== library) {
+    $('#sidebar-search').value = '';
+    $('#library-list').scrollTop = 0;
+    $('#library').value = library;
+    await switchLibrary();
+  } else renderSidebar();
+}));
 
 function refresh() { renderDialogue({ kem: isKem(), sizes, busy, ready: ready && isRunnable(),
   ngccSig: isNgcc() && !isKem(), outcome: flowOutcome, decode: decodeInput }); }
@@ -48,6 +175,8 @@ function setBusy(value) {
   document.querySelectorAll('[data-work]').forEach(control => { control.disabled = value || !ready || !sizes || !isRunnable(); });
   document.querySelectorAll('select, [data-field], [data-import], [data-copy], .message-input').forEach(control => { control.disabled = value; });
   $('#clear-all').disabled = value;
+  document.querySelectorAll('.library-sidebar [data-select-library], .library-sidebar [data-select-family], .library-sidebar [data-library-shortcut]')
+    .forEach(control => { control.disabled = value; });
   refresh();
 }
 function request(type, payload = {}) {
@@ -295,6 +424,7 @@ async function switchLibrary() {
     $('#variant').replaceChildren();
     runtime('候选资料 · 加载中');
     status('正在加载 2026 年征集算法与参数…');
+    renderSidebar();
     try {
       if (!catalog) await loadCatalog();
       if (!isNgcc()) return;
@@ -304,7 +434,7 @@ async function switchLibrary() {
           `${item.parameters.some((_, index) => ngccModule(item.id, index) || candidateModule(item, index)) ? '● ' : ''}${item.name} (${item.id})`, item.id)));
         return group;
       }));
-      configureCatalogParameters(); showCatalog();
+      configureCatalogParameters(); showCatalog(); renderSidebar();
     } catch (error) { status(error.message, 'error'); runtime('候选目录加载失败', 'error'); }
   } else {
     $('#family').replaceChildren(...[
@@ -321,7 +451,7 @@ async function switchLibrary() {
 }
 $('#library').addEventListener('change', switchLibrary);
 $('#family').addEventListener('change', () => {
-  if (isNgcc()) { configureCatalogParameters(); showCatalog(); return; }
+  if (isNgcc()) { configureCatalogParameters(); showCatalog(); renderSidebar(); return; }
   const family = $('#family').value;
   pqmagicFamily = family;
   $('#hash').replaceChildren(...HASHES[family].map(hash => {
@@ -331,6 +461,7 @@ $('#family').addEventListener('change', () => {
   }));
   configureVariants(true);
   configureVariant();
+  renderSidebar();
 });
 $('#hash').addEventListener('change', () => { if (!isNgcc()) { configureVariants(); configureVariant(); } });
 $('#variant').addEventListener('change', () => isNgcc() ? showCatalog() : configureVariant());
@@ -491,3 +622,4 @@ if (!supportedOrigin || !globalThis.crypto?.getRandomValues || !globalThis.WebAs
   runtime('浏览器环境不可用', 'error');
   status('需要 HTTPS 或 localhost，以及 WebAssembly、Web Worker 和 Web Crypto。', 'error');
 } else startWorker();
+renderSidebar();

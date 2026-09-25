@@ -2,7 +2,7 @@
 
 页面的完整静态运行资源位于 `public/pqc-practice/`，可从 `/pqc-practice/index.html` 直接打开。量仔主页的 `/pqc-practice` 路径也会转到该页面。
 
-密钥交换与哈希候选、参数和本地运行都在主工作台通过统一选择器进入。旧 `/pqc-practice/kex.html` 与 `/pqc-practice/hash.html` 会跳转到主工作台；`/pqc-practice/audit.html` 按参数列出全部 586 个实例的提交团队、参考实现目录和**当前发布版本**的接入状态，并可导出筛选后的 CSV。目录不把通用 SHA 计算冒充为征集算法，也不把“未接入”写成“源码不存在”或“编译失败”。工作台与接入记录均面向桌面浏览器。
+密钥交换与哈希候选、参数和本地运行都在主工作台选择。左侧可折叠列表按 PQMagic 与 2026 国内征集两库展示算法类别及候选；旧 `/pqc-practice/kex.html`、`/pqc-practice/hash.html` 已删除。`/pqc-practice/audit.html` 按参数列出全部 586 个实例的提交团队、参考实现目录和**当前发布版本**的接入状态，并可导出筛选后的 CSV。目录不把通用 SHA 计算冒充为征集算法，也不把“未接入”写成“源码不存在”或“编译失败”。工作台与接入记录均面向桌面浏览器。
 
 首批接入的哈希候选 AFS-TrEDM（`hash-01`）、AXIS（`hash-02`）、CHAMP（`hash-04`）、uHash（`hash-05`）、Eijen（`hash-09`）的共 16 组参数已从同一 ngcc-harness 快照源码编译成 WASM，各原生提交实现 KAT 均通过。首批 AFS-TrEDM 三组参数的浏览器 WASM 的空消息、`abc`、`abc!` 摘要逐一与同源码原生结果比对；其余 13 组先通过 KAT 与 WASM 多消息运行检查，后续批次的构建脚本会额外保存原生摘要供逐项比对。主工作台仅在 `ngcc-hash-runtime.js` 已登记该参数时显示摘要计算输入框，在 Web Worker 中计算并设置 30 秒上限。`scripts/build-ngcc-expanded.py` 按候选/参数限时编译，失败产物会删除，逐项日志保存在工作流产物中；构建工具链和源码版本固定在 `.github/workflows/ngcc-wasm-rebuild.yml`。成功编译仅证明所测输入的功能一致，不代表算法安全认证。
 
