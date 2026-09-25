@@ -230,6 +230,13 @@ for index, item in enumerate(candidate['parameters']):
     elif candidate_id == 'sign-05':
         # The submitted Makefiles enumerate SM4 and optional Ballet utilities;
         # the generic top-level C glob omits those nested library sources.
+        fallback = source_dir / 'fallbacks.h'
+        if not fallback.is_file():
+            raise FileNotFoundError(f'{candidate_id} {label}: missing compatibility header')
+        # Emscripten's libc already declares these functions. The native
+        # reference build still uses the unchanged submitted fallback body.
+        fallback.write_text('#ifndef __EMSCRIPTEN__\n' + fallback.read_text()
+                            + '\n#endif /* !__EMSCRIPTEN__ */\n')
         direct = [p.name for p in source_dir.glob('*.c')
                   if not p.name.startswith('KAT_') and not p.stem.endswith('_bench')]
         utilities = [p.relative_to(source_dir).as_posix()
