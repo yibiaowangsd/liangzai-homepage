@@ -69,6 +69,27 @@ for item in candidate['parameters']:
     if label in labels or not source_dir.is_dir():
         raise ValueError(f'{candidate_id}: duplicate label or missing source {label}')
     labels.append(label)
+    if candidate_id == 'hash-16':
+        # The submitted LLH main file already includes llh_core.c directly.
+        lines.append(f'SRCS_{label} := CryptHash_AlgorithmInstance.c drng.c')
+    elif candidate_id == 'hash-23':
+        # QILIN's local uint64_t/uint8_t aliases conflict with the system shim.
+        header = source_dir / 'CryptHash_AlgorithmInstance.h'
+        original = header.read_text()
+        aliases = 'typedef unsigned long long uint64_t;\ntypedef unsigned char uint8_t;'
+        if aliases not in original:
+            raise ValueError(f'{candidate_id} {label}: expected typedefs not found')
+        header.write_text(original.replace(aliases, '#include <stdint.h>', 1))
+    elif candidate_id == 'hash-30':
+        width = label.split('-')[2]
+        if width not in ('1280', '1536'):
+            raise ValueError(f'{candidate_id} {label}: unknown permutation width')
+        lines.append(f'SRCS_{label} := CryptHash_AlgorithmInstance.c drng.c '
+                     f'../../../lib/low/ZuD-{width}/plain/ZuD{width}-plain.c')
+        lines.append(f'INC_{label} := -IZC-DM/Implementations/lib/common')
+    elif candidate_id == 'hash-34':
+        # Use the reference submission's scalar branch for wasm32.
+        lines.append(f'CFLAGS_{label} := -DWCHAIN_DISABLE_SIMD')
     if not (source_dir / 'CryptHash_AlgorithmInstance.h').is_file() and candidate['type'] == 'hash':
         alternatives = [p for p in source_dir.glob('CryptHash*.h')
                         if 'ALGORITHM_INSTANCE' in p.read_text(errors='replace')]
