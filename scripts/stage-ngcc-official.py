@@ -72,6 +72,12 @@ for item in candidate['parameters']:
     if candidate_id == 'hash-16':
         # The submitted LLH main file already includes llh_core.c directly.
         lines.append(f'SRCS_{label} := CryptHash_AlgorithmInstance.c drng.c')
+        vectors = list(destination.rglob(f'KAT_CryptHash_{label}.txt'))
+        if len(vectors) == 1:
+            directory = vectors[0].parent.relative_to(destination).as_posix()
+            lines.append(f'KATDIR_{label} := {directory}')
+        else:
+            print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}', flush=True)
     elif candidate_id == 'hash-23':
         # QILIN's local uint64_t/uint8_t aliases conflict with the system shim.
         header = source_dir / 'CryptHash_AlgorithmInstance.h'
@@ -90,8 +96,41 @@ for item in candidate['parameters']:
     elif candidate_id == 'hash-34':
         # Use the reference submission's scalar branch for wasm32.
         lines.append(f'CFLAGS_{label} := -DWCHAIN_DISABLE_SIMD')
-    if not (source_dir / 'CryptHash_AlgorithmInstance.h').is_file() and candidate['type'] == 'hash':
-        alternatives = [p for p in source_dir.glob('CryptHash*.h')
+    elif candidate_id == 'sign-08':
+        fft = source_dir / 'fft.c'
+        original = fft.read_text()
+        if '__int64_t' not in original:
+            raise ValueError(f'{candidate_id} {label}: expected nonportable integer absent')
+        fft.write_text(original.replace('__int64_t', 'int64_t'))
+        sign = source_dir / 'sign.c'
+        original = sign.read_text()
+        if 'DRNG_ctx drng_algorithm;' not in original:
+            raise ValueError(f'{candidate_id} {label}: expected duplicate DRNG absent')
+        sign.write_text(original.replace('DRNG_ctx drng_algorithm;',
+                                         'extern DRNG_ctx drng_algorithm;', 1))
+    elif candidate_id == 'sign-23':
+        ntt = list((source_dir / 'ntt').glob('*/ntt_ref.c'))
+        if len(ntt) != 1:
+            raise ValueError(f'{candidate_id} {label}: expected one scalar NTT source')
+        excluded = ('KAT_', 'PQCgenKAT', 'test', 'bench', 'main')
+        direct = [p.name for p in source_dir.glob('*.c') if not p.name.startswith(excluded)]
+        relative_ntt = ntt[0].relative_to(source_dir).as_posix()
+        lines.append(f'SRCS_{label} := {" ".join(sorted(direct))} {relative_ntt}')
+    elif candidate_id == 'sign-17':
+        vectors = list(destination.rglob(f'KAT_SIG_{label}.txt'))
+        if len(vectors) == 1:
+            directory = vectors[0].parent.relative_to(destination).as_posix()
+            lines.append(f'KATDIR_{label} := {directory}')
+        else:
+            print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}', flush=True)
+    instance_header = {'hash': 'CryptHash_AlgorithmInstance.h',
+                       'kem': 'KEM_AlgorithmInstance.h',
+                       'sig': 'SIG_AlgorithmInstance.h',
+                       'kex': 'KEX_AlgorithmInstance.h'}[candidate['type']]
+    if not (source_dir / instance_header).is_file():
+        prefix = {'hash': 'CryptHash', 'kem': 'KEM', 'sig': 'SIG',
+                  'kex': 'KEX'}[candidate['type']]
+        alternatives = [p for p in source_dir.glob(prefix + '*.h')
                         if 'ALGORITHM_INSTANCE' in p.read_text(errors='replace')]
         if len(alternatives) != 1:
             raise ValueError(f'{candidate_id} {label}: cannot select the submitted API header')
