@@ -74,7 +74,9 @@ for candidate in catalog:
             continue
         current = {'status': status,
                    **({'log': row['log']} if 'log' in row else {}),
-                   **({'run_url': run_url} if row else {})}
+                   **({'run_url': run_url} if row else {}),
+                   **{field: row[field] for field in ('validation', 'source_url', 'source_sha256')
+                      if field in row}}
         records.append(current if row else prior or current)
     results[candidate['id']] = records
 manifest = {'source_revision': 'c5261784ef27e7363b1bbace3d687932fda35ccd',

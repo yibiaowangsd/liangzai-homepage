@@ -1,7 +1,7 @@
 {
   "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd",
   "toolchain": "Emscripten 6.0.10",
-  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106411989",
+  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
   "results": {
     "sign-01": [
       {
@@ -1818,50 +1818,104 @@
     ],
     "hash-06": [
       {
-        "status": "compile_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-hash-06-0.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106411989"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Cuishen.zip",
+        "source_sha256": "b9192c8a4046d8af48ea19ddefd538f11dd456766b2daf3597762c76a2cc0d6d"
       },
       {
-        "status": "compile_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-hash-06-1.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106411989"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Cuishen.zip",
+        "source_sha256": "b9192c8a4046d8af48ea19ddefd538f11dd456766b2daf3597762c76a2cc0d6d"
       },
       {
-        "status": "compile_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-hash-06-2.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106411989"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Cuishen.zip",
+        "source_sha256": "b9192c8a4046d8af48ea19ddefd538f11dd456766b2daf3597762c76a2cc0d6d"
       }
     ],
     "hash-07": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-07-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Dragon.zip",
+        "source_sha256": "088759817e3193e0ca02c3a3669fd05ac70e833b0447f336666268b61846b26c"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-07-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Dragon.zip",
+        "source_sha256": "088759817e3193e0ca02c3a3669fd05ac70e833b0447f336666268b61846b26c"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-07-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Dragon.zip",
+        "source_sha256": "088759817e3193e0ca02c3a3669fd05ac70e833b0447f336666268b61846b26c"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-07-3.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Dragon.zip",
+        "source_sha256": "088759817e3193e0ca02c3a3669fd05ac70e833b0447f336666268b61846b26c"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-07-4.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Dragon.zip",
+        "source_sha256": "088759817e3193e0ca02c3a3669fd05ac70e833b0447f336666268b61846b26c"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-07-5.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Dragon.zip",
+        "source_sha256": "088759817e3193e0ca02c3a3669fd05ac70e833b0447f336666268b61846b26c"
       }
     ],
     "hash-08": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-08-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Duet.zip",
+        "source_sha256": "989978bcefbe20124943b2003908226c48e0f05b5ec8db510e7cdb89c2299f1e"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-08-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Duet.zip",
+        "source_sha256": "989978bcefbe20124943b2003908226c48e0f05b5ec8db510e7cdb89c2299f1e"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-08-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Duet.zip",
+        "source_sha256": "989978bcefbe20124943b2003908226c48e0f05b5ec8db510e7cdb89c2299f1e"
       }
     ],
     "hash-09": [
@@ -1945,10 +1999,20 @@
     ],
     "hash-13": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-13-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Juzi.zip",
+        "source_sha256": "487f73e34dac7a06ae6718c4a38bcf757c1555676b107415f7b79b17d8c9cf92"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-13-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Juzi.zip",
+        "source_sha256": "487f73e34dac7a06ae6718c4a38bcf757c1555676b107415f7b79b17d8c9cf92"
       }
     ],
     "hash-14": [
@@ -1975,30 +2039,58 @@
     ],
     "hash-15": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-15-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Litchi.zip",
+        "source_sha256": "16c798c93c6fbdc9ac3703113c120fe22df46569a93d7322aaba46effa3273eb"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-15-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Litchi.zip",
+        "source_sha256": "16c798c93c6fbdc9ac3703113c120fe22df46569a93d7322aaba46effa3273eb"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-15-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Litchi.zip",
+        "source_sha256": "16c798c93c6fbdc9ac3703113c120fe22df46569a93d7322aaba46effa3273eb"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-15-3.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Litchi.zip",
+        "source_sha256": "16c798c93c6fbdc9ac3703113c120fe22df46569a93d7322aaba46effa3273eb"
       }
     ],
     "hash-16": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-16-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-16-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-16-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-16-3.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       }
     ],
     "hash-17": [
@@ -2161,13 +2253,19 @@
     ],
     "hash-23": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-23-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-23-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-23-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       }
     ],
     "hash-24": [
@@ -2224,44 +2322,86 @@
     ],
     "hash-28": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-28-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/XRH-1.zip",
+        "source_sha256": "0aa9a5a64a54ddaa82b689d46971973825e48e0577685317d5f9bbab9ba85b02"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-28-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/XRH-1.zip",
+        "source_sha256": "0aa9a5a64a54ddaa82b689d46971973825e48e0577685317d5f9bbab9ba85b02"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-28-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/XRH-1.zip",
+        "source_sha256": "0aa9a5a64a54ddaa82b689d46971973825e48e0577685317d5f9bbab9ba85b02"
       }
     ],
     "hash-29": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-29-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/XRH-2.zip",
+        "source_sha256": "96b67428bbeda82fd797d6f510466313a23f90ea00a5a0a58f4929b8e554a45b"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-29-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/XRH-2.zip",
+        "source_sha256": "96b67428bbeda82fd797d6f510466313a23f90ea00a5a0a58f4929b8e554a45b"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-29-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/XRH-2.zip",
+        "source_sha256": "96b67428bbeda82fd797d6f510466313a23f90ea00a5a0a58f4929b8e554a45b"
       }
     ],
     "hash-30": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-30-0.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-30-1.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-30-2.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-30-3.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-30-4.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-30-5.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       }
     ],
     "hash-31": [
@@ -2318,30 +2458,64 @@
     ],
     "hash-33": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-33-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Thunder.zip",
+        "source_sha256": "db6970d54250084ea73cc1a47bd56c868e5e478cdfa3746ff7b69d30c690b0c8"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-33-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Thunder.zip",
+        "source_sha256": "db6970d54250084ea73cc1a47bd56c868e5e478cdfa3746ff7b69d30c690b0c8"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-33-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Thunder.zip",
+        "source_sha256": "db6970d54250084ea73cc1a47bd56c868e5e478cdfa3746ff7b69d30c690b0c8"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-33-3.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Thunder.zip",
+        "source_sha256": "db6970d54250084ea73cc1a47bd56c868e5e478cdfa3746ff7b69d30c690b0c8"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-33-4.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Thunder.zip",
+        "source_sha256": "db6970d54250084ea73cc1a47bd56c868e5e478cdfa3746ff7b69d30c690b0c8"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-33-5.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Thunder.zip",
+        "source_sha256": "db6970d54250084ea73cc1a47bd56c868e5e478cdfa3746ff7b69d30c690b0c8"
       }
     ],
     "hash-34": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-34-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-34-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36106907902"
       }
     ],
     "hash-35": [

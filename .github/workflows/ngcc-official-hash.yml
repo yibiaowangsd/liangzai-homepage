@@ -2,7 +2,7 @@ name: Build missing NGCC hashes from verified official archives
 
 on:
   push:
-    branches: [feat/ngcc-archive-source]
+    branches: [feat/ngcc-official-hashes]
     paths:
       - '.github/workflows/ngcc-official-hash.yml'
   workflow_dispatch:
@@ -16,13 +16,33 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 3
       matrix:
         include:
-          - name: hash-03
-            ids: hash-03
           - name: hash-06
             ids: hash-06
+          - name: hash-07
+            ids: hash-07
+          - name: hash-08
+            ids: hash-08
+          - name: hash-13
+            ids: hash-13
+          - name: hash-15
+            ids: hash-15
+          - name: hash-16
+            ids: hash-16
+          - name: hash-23
+            ids: hash-23
+          - name: hash-28
+            ids: hash-28
+          - name: hash-29
+            ids: hash-29
+          - name: hash-30
+            ids: hash-30
+          - name: hash-33
+            ids: hash-33
+          - name: hash-34
+            ids: hash-34
     env:
       NGCC_NATIVE_SECONDS: 75
       NGCC_NATIVE_BUDGET: 320
@@ -44,6 +64,23 @@ jobs:
         run: python3 scripts/stage-ngcc-official.py "${{ matrix.ids }}" ngcc-harness
       - name: Native KAT and bounded per-parameter WASM build
         run: bash scripts/run-ngcc-batch.sh "${{ matrix.ids }}" ngcc-harness
+      - name: Record the checksum-verified submission source
+        if: always()
+        run: |
+          python3 - "${{ matrix.ids }}" <<'PY'
+          import json, sys
+          from pathlib import Path
+          candidate_id = sys.argv[1]
+          record = Path('work/ngcc-wasm-rebuild') / (candidate_id + '.results.json')
+          if record.is_file():
+              source = json.loads(Path('scripts/ngcc-official-archives.json').read_text())['candidates'][candidate_id]
+              rows = json.loads(record.read_text())
+              for row in rows:
+                  if row['status'] == 'verified':
+                      row.update(validation='official_kat_native_wasm', source_url=source['url'],
+                                 source_sha256=source['sha256'])
+              record.write_text(json.dumps(rows, ensure_ascii=False, indent=2) + '\n')
+          PY
       - name: Package checked outputs and failure logs
         if: always()
         shell: bash
@@ -70,7 +107,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: feat/ngcc-archive-source
+          ref: feat/ngcc-official-hashes
           fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
@@ -87,5 +124,5 @@ jobs:
           git add -A public/pqc-practice/wasm/ public/pqc-practice/ngcc-runtime.js public/pqc-practice/ngcc-hash-runtime.js public/pqc-practice/ngcc-kex-runtime.js public/pqc-practice/ngcc-build-status.json
           if ! git diff --cached --quiet; then
             git commit -m 'Publish official NGCC hash source builds and audit'
-            git push origin HEAD:feat/ngcc-archive-source
+            git push origin HEAD:feat/ngcc-official-hashes
           fi

@@ -138,6 +138,7 @@ const csv = value => `"${String(value).replaceAll('"', '""')}"`;
 function auditPage(candidates, build) {
   const entries = candidates.flatMap(candidate => candidate.parameters.map((parameter, index) =>
     ({ candidate, parameter, index, state: ready(candidate, index) ? 'ready' : 'pending',
+      buildRecord: build?.results?.[candidate.id]?.[index] || {},
       buildStatus: build?.results?.[candidate.id]?.[index]?.status || 'not_attempted' })));
   const verified = entries.filter(entry => entry.state === 'ready');
   const counts = entries.filter(entry => entry.state !== 'ready').reduce((groups, entry) => {
@@ -159,20 +160,23 @@ function auditPage(candidates, build) {
       `${candidate.id} ${candidate.name} ${parameter.label} ${candidate.team.join(' ')} ${BUILD_LABELS[buildStatus] || buildStatus}`
         .toLocaleLowerCase().includes(query));
     $('audit-count').textContent = `显示 ${visible.length} / ${entries.length} 组参数`;
-    $('audit-rows').replaceChildren(...visible.map(({ candidate, parameter, state: actual, buildStatus }) => {
+    $('audit-rows').replaceChildren(...visible.map(({ candidate, parameter, state: actual, buildStatus, buildRecord }) => {
       const tr = node('tr');
       cell(tr, `${candidate.id} · ${candidate.name}`);
       cell(tr, parameter.label);
       cell(tr, candidate.team.join('、'));
       cell(tr, parameter.source, 'code');
-      cell(tr, actual === 'ready' ? '● 已接入' : `○ ${BUILD_LABELS[buildStatus] || '未接入'}`)
+      cell(tr, actual === 'ready' && buildRecord.validation === 'official_kat_native_wasm'
+        ? '● 已接入 · 官方 KAT / 原生与 WASM 对照'
+        : actual === 'ready' ? '● 已接入' : `○ ${BUILD_LABELS[buildStatus] || '未接入'}`)
         .classList.toggle('audit-ready', actual === 'ready');
       const links = node('td');
-      for (const [label, href] of [['官方资料', candidate.page], ['源码', candidate.archive]]) {
+      for (const [label, href] of [['官方资料', candidate.page], ['源码', buildRecord.source_url || candidate.archive]]) {
         const link = node('a', label);
         link.href = href; link.target = '_blank'; link.rel = 'noopener noreferrer';
         links.append(link, document.createTextNode('  '));
       }
+      if (buildRecord.source_sha256) links.append(node('code', `SHA-256 ${buildRecord.source_sha256}`));
       tr.append(links);
       return tr;
     }));
@@ -181,11 +185,12 @@ function auditPage(candidates, build) {
     $(id).addEventListener(id === 'audit-query' ? 'input' : 'change', update);
   }
   $('audit-export').addEventListener('click', () => {
-    const headings = ['候选编号', '类别', '算法', '参数', '团队成员', '参考实现目录', '本站接入', '构建结果', '官方页面', '提交源码包'];
-    const rows = visible.map(({ candidate, parameter, state, buildStatus }) =>
+    const headings = ['候选编号', '类别', '算法', '参数', '团队成员', '参考实现目录', '本站接入', '构建结果', '官方页面', '提交源码包', '源码SHA256'];
+    const rows = visible.map(({ candidate, parameter, state, buildStatus, buildRecord }) =>
       [candidate.id, TYPES[candidate.type], candidate.name, parameter.label,
         candidate.team.join('、'), parameter.source, state === 'ready' ? '已接入' : '未接入',
-        BUILD_LABELS[buildStatus] || buildStatus, candidate.page, candidate.archive]);
+        BUILD_LABELS[buildStatus] || buildStatus, candidate.page,
+        buildRecord.source_url || candidate.archive, buildRecord.source_sha256 || '']);
     const blob = new Blob(['\uFEFF', [headings, ...rows].map(row => row.map(csv).join(',')).join('\r\n')],
       { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob), link = node('a');
