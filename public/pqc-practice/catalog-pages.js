@@ -1,5 +1,6 @@
 import { NGCC_WASM } from './ngcc-runtime.js';
 import { NGCC_HASH_WASM } from './ngcc-hash-runtime.js';
+import { NGCC_KEX_WASM } from './ngcc-kex-runtime.js';
 import { NGCC_REPORTS } from './ngcc-reports.js';
 
 const $ = id => document.getElementById(id);
@@ -8,13 +9,19 @@ const SIZES = { PublicKeyBytes: '公钥', SecretKeyBytes: '私钥', CiphertextBy
   SharedSecretBytes: '共享密钥', SignatureBytes: '签名', Passes: '交互轮数',
   InitiatorStateBytes: '发起方状态', ResponderStateBytes: '响应方状态',
   TotalMessageBytes: '总消息', DigestBits: '摘要位数', DigestBytes: '摘要长度' };
+const BUILD_LABELS = { verified: '已接入并验证', existing_verified: '已接入并验证',
+  compile_failed: '源码编译失败', runtime_failed: 'WASM 运行失败',
+  timeout: 'WASM 编译或运行超时', native_timeout: '原生测试超时',
+  native_failed: '原生测试失败', source_missing: '本快照缺少实现目录',
+  source_not_in_snapshot: '本快照未收录源码', not_attempted: '本批次未执行' };
 const node = (tag, value, className) => {
   const element = document.createElement(tag);
   if (value != null) element.textContent = value;
   if (className) element.className = className;
   return element;
 };
-const ready = (candidate, index) => Boolean((candidate.type === 'hash' ? NGCC_HASH_WASM : NGCC_WASM)[candidate.id]?.[index]);
+const ready = (candidate, index) => Boolean((candidate.type === 'hash' ? NGCC_HASH_WASM
+  : candidate.type === 'kex' ? NGCC_KEX_WASM : NGCC_WASM)[candidate.id]?.[index]);
 
 function hashPage(candidates) {
   const hashes = candidates.filter(candidate => candidate.type === 'hash');
@@ -110,27 +117,37 @@ const cell = (row, value, kind) => {
   const td = node('td'); td.append(node(kind || 'span', value)); row.append(td); return td;
 };
 const csv = value => `"${String(value).replaceAll('"', '""')}"`;
-function auditPage(candidates) {
+function auditPage(candidates, build) {
   const entries = candidates.flatMap(candidate => candidate.parameters.map((parameter, index) =>
-    ({ candidate, parameter, index, state: ready(candidate, index) ? 'ready' : 'pending' })));
+    ({ candidate, parameter, index, state: ready(candidate, index) ? 'ready' : 'pending',
+      buildStatus: build?.results?.[candidate.id]?.[index]?.status || 'not_attempted' })));
   const verified = entries.filter(entry => entry.state === 'ready');
-  $('audit-summary').textContent = `当前发布版本已接入 ${new Set(verified.map(entry => entry.candidate.id)).size} 个候选的 ${verified.length} 组参数；其余条目可追溯官方资料、压缩包及参考实现目录。编译失败、运行失败与超时需要独立构建日志，不能按“未接入”反推。`;
+  const counts = entries.filter(entry => entry.state !== 'ready').reduce((groups, entry) => {
+    (groups[entry.buildStatus] ||= []).push(entry); return groups;
+  }, {});
+  const breakdown = build ? Object.entries(counts).map(([status, rows]) =>
+    `${BUILD_LABELS[status] || status} ${rows.length} 组`).join('；') : '';
+  $('audit-summary').textContent = `当前发布版本已接入 ${new Set(verified.map(entry => entry.candidate.id)).size} 个候选的 ${verified.length} 组参数。${breakdown || '其余条目等待逐参数构建记录。'}`;
+  if (build?.run_url && !build.run_url.endsWith('/0')) {
+    $('audit-build-link').href = build.run_url;
+    $('audit-build-link').classList.remove('hidden');
+  }
   let visible = entries;
   const update = () => {
     const query = $('audit-query').value.trim().toLocaleLowerCase();
     const type = $('audit-type').value, state = $('audit-state').value;
-    visible = entries.filter(({ candidate, parameter, state: actual }) =>
+    visible = entries.filter(({ candidate, parameter, state: actual, buildStatus }) =>
       (!type || candidate.type === type) && (!state || actual === state) &&
-      `${candidate.id} ${candidate.name} ${parameter.label} ${candidate.team.join(' ')}`
+      `${candidate.id} ${candidate.name} ${parameter.label} ${candidate.team.join(' ')} ${BUILD_LABELS[buildStatus] || buildStatus}`
         .toLocaleLowerCase().includes(query));
     $('audit-count').textContent = `显示 ${visible.length} / ${entries.length} 组参数`;
-    $('audit-rows').replaceChildren(...visible.map(({ candidate, parameter, state: actual }) => {
+    $('audit-rows').replaceChildren(...visible.map(({ candidate, parameter, state: actual, buildStatus }) => {
       const tr = node('tr');
       cell(tr, `${candidate.id} · ${candidate.name}`);
       cell(tr, parameter.label);
       cell(tr, candidate.team.join('、'));
       cell(tr, parameter.source, 'code');
-      cell(tr, actual === 'ready' ? '● 已接入' : '○ 未接入')
+      cell(tr, actual === 'ready' ? '● 已接入' : `○ ${BUILD_LABELS[buildStatus] || '未接入'}`)
         .classList.toggle('audit-ready', actual === 'ready');
       const links = node('td');
       for (const [label, href] of [['官方资料', candidate.page], ['源码', candidate.archive]]) {
@@ -146,11 +163,11 @@ function auditPage(candidates) {
     $(id).addEventListener(id === 'audit-query' ? 'input' : 'change', update);
   }
   $('audit-export').addEventListener('click', () => {
-    const headings = ['候选编号', '类别', '算法', '参数', '团队成员', '参考实现目录', '本站接入', '官方页面', '提交源码包'];
-    const rows = visible.map(({ candidate, parameter, state }) =>
+    const headings = ['候选编号', '类别', '算法', '参数', '团队成员', '参考实现目录', '本站接入', '构建结果', '官方页面', '提交源码包'];
+    const rows = visible.map(({ candidate, parameter, state, buildStatus }) =>
       [candidate.id, TYPES[candidate.type], candidate.name, parameter.label,
         candidate.team.join('、'), parameter.source, state === 'ready' ? '已接入' : '未接入',
-        candidate.page, candidate.archive]);
+        BUILD_LABELS[buildStatus] || buildStatus, candidate.page, candidate.archive]);
     const blob = new Blob(['\uFEFF', [headings, ...rows].map(row => row.map(csv).join(',')).join('\r\n')],
       { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob), link = node('a');
@@ -166,7 +183,11 @@ try {
   const catalog = await response.json();
   if (catalog.candidates?.length !== 119) throw new Error('候选数量与已核对快照不符');
   if (document.body.dataset.page === 'hash') hashPage(catalog.candidates);
-  else auditPage(catalog.candidates);
+  else {
+    const build = await fetch('./ngcc-build-status.json').then(response =>
+      response.ok ? response.json() : null).catch(() => null);
+    auditPage(catalog.candidates, build);
+  }
 } catch (error) {
   const target = document.body.dataset.page === 'hash' ? $('hash-name') : $('audit-count');
   target.textContent = `目录加载失败：${error.message}`;
