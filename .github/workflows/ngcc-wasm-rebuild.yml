@@ -16,11 +16,11 @@ permissions:
   contents: write
 
 jobs:
-  hash-second-batch:
+  kem-sign-pilot:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      NGCC_IDS: 'hash-02 hash-04 hash-05 hash-09'
+      NGCC_IDS: 'kem-02 kem-03 sign-03 sign-04'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,10 +32,10 @@ jobs:
           path: ngcc-harness
           sparse-checkout: |
             /api/
-            /hash-02/
-            /hash-04/
-            /hash-05/
-            /hash-09/
+            /kem-02/
+            /kem-03/
+            /sign-03/
+            /sign-04/
           sparse-checkout-cone-mode: false
       - uses: emscripten-core/setup-emsdk@v15
         with:
@@ -50,6 +50,9 @@ jobs:
               echo "Native KAT failed or exceeded 90 seconds: $id"
               continue
             fi
+            if [[ $id == hash-* ]]; then
+              timeout 30 python3 scripts/ngcc-native-hash-vectors.py ngcc-harness "$id" > "work/ngcc-wasm-rebuild/$id.vectors.log" 2>&1
+            fi
             make -s -C "ngcc-harness/$id" clean
             python3 scripts/build-ngcc-expanded.py ngcc-harness "$id" --seconds 90
             cp work/ngcc-wasm-rebuild/results.json "work/ngcc-wasm-rebuild/$id.results.json"
@@ -58,7 +61,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ngcc-hash02-09-rebuild-logs
+          name: ngcc-kem-sign-pilot-logs
           path: work/ngcc-wasm-rebuild/
           if-no-files-found: ignore
       - name: Commit verified browser modules to feature branch
@@ -67,6 +70,6 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A public/pqc-practice/wasm/
           if ! git diff --cached --quiet; then
-            git commit -m 'Build verified additional NGCC hash WASM parameters'
+            git commit -m 'Build verified NGCC KEM and signature reference WASM'
             git push origin HEAD:feat/ngcc-more-wasm
           fi

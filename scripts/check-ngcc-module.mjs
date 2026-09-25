@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 
-const [file, id, indexText] = process.argv.slice(2);
+const [file, id, indexText, vectorFile] = process.argv.slice(2);
 const index = Number(indexText);
 if (!file || !id || !Number.isSafeInteger(index)) throw new Error('module path, candidate ID and index required');
 const catalog = JSON.parse(readFileSync(new URL('../public/pqc-practice/ngcc-catalog.json', import.meta.url)));
@@ -32,7 +32,9 @@ try {
   const sizes = parameter.sizes;
   if (candidate.type === 'hash') {
     assert.equal(mod._lab_digest_bytes(), sizes.DigestBytes);
-    const known = id === 'hash-01'
+    const known = vectorFile
+      ? JSON.parse(readFileSync(vectorFile))[String(index)]
+      : id === 'hash-01'
       ? JSON.parse(readFileSync(new URL('../tests/fixtures/ngcc-hash01.json', import.meta.url)))[parameter.name]
       : undefined;
     const digests = [];

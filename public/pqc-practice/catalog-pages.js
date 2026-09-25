@@ -47,7 +47,7 @@ function hashPage(candidates) {
     const module = NGCC_HASH_WASM[current.id]?.[Number($('hash-variant').value)];
     $('hash-workbench').classList.toggle('hidden', !module);
     $('hash-notice').textContent = module
-      ? '该参数已从提交参考源码编译为浏览器 WASM，并通过功能对照测试；在下方输入消息可本地计算摘要。测试通过不等于安全认证。'
+      ? '该参数已从提交参考源码编译为浏览器 WASM，并通过原生测试向量与 WASM 运行检查；在下方输入消息可本地计算摘要。测试通过不等于安全认证。'
       : '当前发布版本尚未接入该参数的浏览器 WASM。下方仅展示官方资料，不会用其他哈希函数冒充计算结果。';
     $('hash-status').textContent = '等待输入';
     $('hash-digest').textContent = '等待计算';

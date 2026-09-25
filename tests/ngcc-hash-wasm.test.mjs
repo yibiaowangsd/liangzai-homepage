@@ -8,7 +8,7 @@ const check = fileURLToPath(new URL('../scripts/check-ngcc-module.mjs', import.m
 for (const [id, modules] of Object.entries(NGCC_HASH_WASM)) {
   for (const [index, module] of modules.entries()) {
     if (!module) continue;
-    test(`${id} parameter ${index} matches reference digest vectors`, () => {
+    test(`${id} parameter ${index} passes its WASM runtime check`, () => {
       const wasm = fileURLToPath(new URL(`../public/pqc-practice/wasm/${module}.mjs`, import.meta.url));
       const output = execFileSync(process.execPath, [check, wasm, id, String(index)],
         { encoding: 'utf8', timeout: 30000 });

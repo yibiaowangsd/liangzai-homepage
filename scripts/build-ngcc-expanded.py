@@ -75,6 +75,7 @@ def build_one(harness, candidate, parameter, index, label, limit):
     name = f"ngcc-{candidate['id']}-{index}"
     cd = harness / candidate["id"]
     logfile = LOGS / f"{name}.log"
+    target = WASM / (name + ".mjs")
     record = dict(id=candidate["id"], parameter=index, label=parameter["label"],
                   source=parameter["source"], log=str(logfile.relative_to(REPO)))
     try:
@@ -98,7 +99,6 @@ def build_one(harness, candidate, parameter, index, label, limit):
         bridge_flags = ["-DNGCC_BUILD_" + candidate["type"].upper()]
         if candidate["type"] == "hash":
             bridge_flags.append("-DNGCC_DIGEST_BITS=" + str(parameter["sizes"]["DigestBits"]))
-        target = WASM / (name + ".mjs")
         compiler = "em++" if meta["cxx"].strip() else "emcc"
         link = [compiler, *flags, *bridge_flags, "-I" + str(harness / "api"),
                 str(REPO / "scripts/ngcc-wasm-bridge.c"),
@@ -112,8 +112,14 @@ def build_one(harness, candidate, parameter, index, label, limit):
             record.update(status=status, log=str(link_log.relative_to(REPO)))
             return record
         check_log = LOGS / f"{name}.check.log"
-        status = run(["node", str(REPO / "scripts/check-ngcc-module.mjs"),
-                      str(target), candidate["id"], str(index)], REPO, 30, check_log)
+        check = ["node", str(REPO / "scripts/check-ngcc-module.mjs"),
+                 str(target), candidate["id"], str(index)]
+        if candidate["type"] == "hash":
+            vectors = LOGS / f"{candidate['id']}.vectors.json"
+            if not vectors.is_file() or str(index) not in json.loads(vectors.read_text()):
+                raise ValueError("native digest vectors are missing for this parameter")
+            check.append(str(vectors))
+        status = run(check, REPO, 30, check_log)
         if status != "ok":
             target.unlink(missing_ok=True)
             target.with_suffix(".wasm").unlink(missing_ok=True)
@@ -124,6 +130,8 @@ def build_one(harness, candidate, parameter, index, label, limit):
         record["module"] = target.relative_to(REPO).as_posix()
         return record
     except (ValueError, FileNotFoundError, KeyError, subprocess.TimeoutExpired) as error:
+        target.unlink(missing_ok=True)
+        target.with_suffix(".wasm").unlink(missing_ok=True)
         logfile.write_text(str(error) + "\n")
         record["status"] = "source_missing" if isinstance(error, FileNotFoundError) else "compile_failed"
         return record
