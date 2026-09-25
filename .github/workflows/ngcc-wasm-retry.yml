@@ -1,0 +1,148 @@
+name: NGCC bounded source portability retries
+
+on:
+  push:
+    branches: [feat/ngcc-retry]
+    paths:
+      - '.github/workflows/ngcc-wasm-retry.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - name: piglet
+            ids: kem-04
+            sparse: |
+              /api/
+              /kem-04/
+            seconds: 75
+            budget: 400
+          - name: cedrus-c
+            ids: sign-03
+            sparse: |
+              /api/
+              /sign-03/
+            seconds: 240
+            budget: 950
+          - name: cedrus-alpha
+            ids: sign-04
+            sparse: |
+              /api/
+              /sign-04/
+            seconds: 240
+            budget: 950
+          - name: unverified-hashes
+            ids: hash-14 hash-19
+            sparse: |
+              /api/
+              /hash-14/
+              /hash-19/
+            seconds: 45
+            budget: 120
+          - name: mito
+            ids: kem-23
+            sparse: |
+              /api/
+              /kem-23/
+            seconds: 75
+            budget: 400
+          - name: yuanyang
+            ids: kem-40
+            sparse: |
+              /api/
+              /kem-40/
+            seconds: 75
+            budget: 400
+          - name: cs-sign
+            ids: sign-07
+            sparse: |
+              /api/
+              /sign-07/
+            seconds: 75
+            budget: 400
+          - name: vdoo
+            ids: sign-33
+            sparse: |
+              /api/
+              /sign-33/
+            seconds: 180
+            budget: 480
+    env:
+      NGCC_IDS: ${{ matrix.ids }}
+      NGCC_NATIVE_SECONDS: ${{ matrix.seconds }}
+      NGCC_NATIVE_BUDGET: ${{ matrix.budget }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ngcc-dev/ngcc-harness
+          ref: c5261784ef27e7363b1bbace3d687932fda35ccd
+          path: ngcc-harness
+          sparse-checkout: ${{ matrix.sparse }}
+          sparse-checkout-cone-mode: false
+      - uses: emscripten-core/setup-emsdk@v15
+        with:
+          version: '6.0.10'
+      - name: Guard the x86-only diagnostic timer in the WASM build copy
+        if: matrix.name == 'piglet'
+        run: python3 scripts/patch-ngcc-wasm-portability.py ngcc-harness
+      - name: Retry each parameter with bounded native checks
+        run: bash scripts/run-ngcc-batch.sh "$NGCC_IDS" ngcc-harness
+      - name: Package verified outputs and logs
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p work/ngcc-package/public/pqc-practice/wasm work/ngcc-package/work
+          for id in $NGCC_IDS; do
+            for path in public/pqc-practice/wasm/ngcc-"$id"-*.mjs public/pqc-practice/wasm/ngcc-"$id"-*.wasm; do
+              if [[ -f $path ]]; then cp "$path" work/ngcc-package/public/pqc-practice/wasm/; fi
+            done
+          done
+          if [[ -d work/ngcc-wasm-rebuild ]]; then cp -a work/ngcc-wasm-rebuild work/ngcc-package/work/; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ngcc-retry-${{ matrix.name }}
+          path: work/ngcc-package/
+          if-no-files-found: ignore
+
+  publish:
+    needs: rebuild
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/ngcc-retry
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'ngcc-retry-*'
+          merge-multiple: true
+          path: .
+      - name: Update verified modules and retain earlier per-parameter results
+        run: |
+          python3 scripts/aggregate-ngcc-rebuild.py
+          node --test tests/ngcc-catalog.test.mjs
+          node --check public/pqc-practice/ngcc-runtime.js
+          node --check public/pqc-practice/ngcc-hash-runtime.js
+          node --check public/pqc-practice/ngcc-kex-runtime.js
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A public/pqc-practice/wasm/ public/pqc-practice/ngcc-runtime.js public/pqc-practice/ngcc-hash-runtime.js public/pqc-practice/ngcc-kex-runtime.js public/pqc-practice/ngcc-build-status.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish verified NGCC portability retries and updated audit'
+            git push origin HEAD:feat/ngcc-retry
+          fi

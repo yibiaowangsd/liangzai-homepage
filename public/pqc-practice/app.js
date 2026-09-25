@@ -52,10 +52,17 @@ function request(type, payload = {}) {
   if (!isRunnable() || !ready || busy || active) throw new Error('当前配置没有可运行的浏览器实现，或任务仍在执行');
   const requestId = ++serial;
   return new Promise((resolve, reject) => {
-    active = { requestId, resolve, reject };
+    const timer = setTimeout(() => {
+      if (active?.requestId !== requestId) return;
+      active = null;
+      worker?.terminate(); ready = false;
+      reject(new Error('该参考实现运行超过 45 秒，已停止；正在重新加载工作线程'));
+      startWorker();
+    }, 45000);
+    active = { requestId, resolve, reject, timer };
     try { worker.postMessage({ type, requestId, library: $('#library').value,
       family: $('#family').value, variant: $('#variant').value, hash: $('#hash').value, ...payload }); }
-    catch (error) { active = null; reject(error); }
+    catch (error) { clearTimeout(timer); active = null; reject(error); }
   });
 }
 function startWorker() {
@@ -70,12 +77,14 @@ function startWorker() {
       } else if ((data.type === 'result' || data.type === 'error') && data.requestId === active?.requestId) {
         const pending = active;
         active = null;
+        clearTimeout(pending.timer);
         data.type === 'error' ? pending.reject(new Error(data.message)) : pending.resolve(data.result);
       }
     };
     worker.onerror = event => {
       ready = false;
       const pending = active; active = null;
+      clearTimeout(pending?.timer);
       pending?.reject(new Error(event.message || '工作线程失败'));
       runtime('WASM 加载失败', 'error');
       status(event.message || 'WASM 工作线程失败', 'error');

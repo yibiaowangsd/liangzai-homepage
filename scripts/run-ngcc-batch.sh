@@ -10,7 +10,10 @@ if ! timeout 60 make -s -C "$harness/api" harness > work/ngcc-wasm-rebuild/api.n
 fi
 for id in $ids; do
   echo "Attempting $id"
-  if ! timeout 440 python3 scripts/check-ngcc-native.py "$harness" "$id" --seconds 75 --budget 400 \
+  native_seconds=${NGCC_NATIVE_SECONDS:-75}
+  native_budget=${NGCC_NATIVE_BUDGET:-400}
+  if ! timeout "$((native_budget + 40))" python3 scripts/check-ngcc-native.py "$harness" "$id" \
+       --seconds "$native_seconds" --budget "$native_budget" \
        > "work/ngcc-wasm-rebuild/$id.native.log" 2>&1; then
     echo "Native per-parameter checks incomplete: $id"
   fi

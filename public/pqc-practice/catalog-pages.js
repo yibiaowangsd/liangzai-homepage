@@ -41,9 +41,27 @@ function hashPage(candidates) {
     $('hash-official').href = current.page;
     $('hash-archive').href = current.archive;
     const reports = NGCC_REPORTS[current.id] || [];
-    $('hash-report').textContent = reports.length
-      ? `已整理 ${reports.length} 条发现；可在密钥与签名页的报告区查看，并核对原文。`
-      : '本站尚未整理此候选的中文安全报告；请以 ngcc.dev 的最新报告索引为准。';
+    const report = $('hash-report');
+    if (!reports.length) {
+      report.replaceChildren(node('p', '本站尚未整理此候选的中文安全报告；请以 ngcc.dev 的最新报告索引为准。', 'report-empty'));
+    } else {
+      const list = node('ul', null, 'report-items');
+      for (const item of reports) {
+        const row = node('li'), link = node('a', item.zh);
+        link.href = `https://ngcc.dev/reports/${current.id}.html`;
+        link.target = '_blank'; link.rel = 'noopener noreferrer';
+        row.append(node('b', item.id), link,
+          node('span', `${item.severity} · ${item.status} · 影响：${item.affected}`, 'report-note'));
+        for (const [label, value] of [['证据', item.evidence], ['影响边界', item.impact], ['修复方向', item.repair]]) {
+          if (!value) continue;
+          const detail = node('p', null, 'report-detail');
+          detail.append(node('strong', `${label}：`), document.createTextNode(value));
+          row.append(detail);
+        }
+        list.append(row);
+      }
+      report.replaceChildren(list);
+    }
     renderParameter();
     renderList();
   };
