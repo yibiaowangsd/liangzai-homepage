@@ -296,6 +296,11 @@ for index, item in enumerate(candidate['parameters']):
                      f'-I_ngcc_shared/scloudplus_core/include '
                      f'-I_ngcc_shared/scloudplus_core/common '
                      f'-I_ngcc_shared/scloudplus_core/ref -Isrc/{label}')
+        family = item['label'].split('-')[2]
+        if family not in ('AES', 'SHAKE', 'SM3'):
+            raise ValueError(f'{candidate_id} {label}: unexpected family {family}')
+        lines.append(f'CFLAGS_{label} := -DSCLOUDPLUS_FAMILY_{family} '
+                     f'-DSCLOUDPLUS_TIER_REFERENCE')
     elif candidate_id == 'sign-19':
         backend = 'SHAKE' if '-SHAKE-' in label else 'SM3'
         core = ('address counter merkle octopus randombytes sign tfors utils '
