@@ -10,6 +10,7 @@ export const NGCC_HASH_WASM = Object.freeze({
   'hash-14': ['ngcc-hash-14-0', 'ngcc-hash-14-1', 'ngcc-hash-14-2', 'ngcc-hash-14-3'],
   'hash-17': ['ngcc-hash-17-0', 'ngcc-hash-17-1', 'ngcc-hash-17-2'],
   'hash-18': ['ngcc-hash-18-0', 'ngcc-hash-18-1', 'ngcc-hash-18-2', 'ngcc-hash-18-3', 'ngcc-hash-18-4', 'ngcc-hash-18-5', 'ngcc-hash-18-6', 'ngcc-hash-18-7', 'ngcc-hash-18-8', 'ngcc-hash-18-9'],
+  'hash-19': ['ngcc-hash-19-0', 'ngcc-hash-19-1', 'ngcc-hash-19-2', 'ngcc-hash-19-3', 'ngcc-hash-19-4', 'ngcc-hash-19-5'],
   'hash-20': ['ngcc-hash-20-0', 'ngcc-hash-20-1', 'ngcc-hash-20-2', 'ngcc-hash-20-3', 'ngcc-hash-20-4', 'ngcc-hash-20-5', 'ngcc-hash-20-6', 'ngcc-hash-20-7', 'ngcc-hash-20-8', 'ngcc-hash-20-9'],
   'hash-21': ['ngcc-hash-21-0', 'ngcc-hash-21-1', 'ngcc-hash-21-2'],
   'hash-22': ['ngcc-hash-22-0', 'ngcc-hash-22-1', 'ngcc-hash-22-2'],
