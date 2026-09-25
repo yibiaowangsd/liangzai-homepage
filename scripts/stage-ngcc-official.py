@@ -282,9 +282,12 @@ for index, item in enumerate(candidate['parameters']):
                         for p in destination.rglob('*.c')
                         if '_shared' in p.parts)
         print(f'{candidate_id} {label}: shared C paths: {shared[:120]}', flush=True)
+        matching = sorted(p.relative_to(destination).as_posix()
+                          for p in destination.rglob('scloudplus_param_common.h'))
+        print(f'{candidate_id} {label}: common parameter headers: {matching}', flush=True)
         header_dirs = sorted({p.parent.relative_to(destination).as_posix()
                               for p in destination.rglob('*.h')
-                              if '_shared' in p.parts})
+                              if '_shared' in p.parts or source_dir in p.parents})
         lines.append(f'INC_{label} := '
                      + ' '.join(f'-I{folder}' for folder in header_dirs))
     elif candidate_id == 'sign-19':
