@@ -251,6 +251,9 @@ for index, item in enumerate(candidate['parameters']):
         if 'utils_ballet' in include_dirs:
             flags.extend(('-DUSE_BALLET=1', '-DHAVE_BALLET_CORE=1'))
         lines.append(f'CFLAGS_{label} := {" ".join(flags)}')
+    elif candidate_id in ('sign-28', 'kem-20'):
+        print(f'{candidate_id} {label}: submitted C paths: '
+              f'{sorted(p.relative_to(source_dir).as_posix() for p in source_dir.rglob("*.c"))[:100]}', flush=True)
     elif candidate_id == 'sign-19':
         backend = 'SHAKE' if '-SHAKE-' in label else 'SM3'
         core = ('address counter merkle octopus randombytes sign tfors utils '
@@ -277,7 +280,8 @@ for index, item in enumerate(candidate['parameters']):
             alternatives = [p for p in source_dir.glob('*_AlgorithmInstance.h')
                             if 'ALGORITHM_INSTANCE' in p.read_text(errors='replace')]
         if len(alternatives) != 1:
-            raise ValueError(f'{candidate_id} {label}: cannot select the submitted API header')
+            nearby = sorted(p.name for p in source_dir.rglob('*.h'))[:80]
+            raise ValueError(f'{candidate_id} {label}: cannot select the submitted API header; headers: {nearby}')
         lines.append(f'SHIMDEFS_{label} := -DNGCC_INSTANCE_HEADER=\\\"{alternatives[0].name}\\\"')
     lines.append(f'$(eval $(call ngcc_instance,{label},{item["source"]}))')
 lines.extend(['', 'include ../api/link_finish.mk', ''])
