@@ -1,0 +1,22 @@
+// Generated from source build results; only verified paired modules are selectable.
+export const NGCC_HASH_WASM = Object.freeze({
+  'hash-01': ['ngcc-hash-01-0', 'ngcc-hash-01-1', 'ngcc-hash-01-2'],
+  'hash-02': ['ngcc-hash-02-0', 'ngcc-hash-02-1', 'ngcc-hash-02-2'],
+  'hash-04': ['ngcc-hash-04-0', 'ngcc-hash-04-1'],
+  'hash-05': ['ngcc-hash-05-0', 'ngcc-hash-05-1', 'ngcc-hash-05-2'],
+  'hash-09': ['ngcc-hash-09-0', 'ngcc-hash-09-1', 'ngcc-hash-09-2', 'ngcc-hash-09-3', 'ngcc-hash-09-4'],
+  'hash-10': ['ngcc-hash-10-0', 'ngcc-hash-10-1', 'ngcc-hash-10-2'],
+  'hash-12': ['ngcc-hash-12-0', 'ngcc-hash-12-1', 'ngcc-hash-12-2'],
+  'hash-17': ['ngcc-hash-17-0', 'ngcc-hash-17-1', 'ngcc-hash-17-2'],
+  'hash-18': ['ngcc-hash-18-0', 'ngcc-hash-18-1', 'ngcc-hash-18-2', 'ngcc-hash-18-3', 'ngcc-hash-18-4', 'ngcc-hash-18-5', 'ngcc-hash-18-6', 'ngcc-hash-18-7', 'ngcc-hash-18-8', 'ngcc-hash-18-9'],
+  'hash-20': ['ngcc-hash-20-0', 'ngcc-hash-20-1', 'ngcc-hash-20-2', 'ngcc-hash-20-3', 'ngcc-hash-20-4', 'ngcc-hash-20-5', 'ngcc-hash-20-6', 'ngcc-hash-20-7', 'ngcc-hash-20-8', 'ngcc-hash-20-9'],
+  'hash-21': ['ngcc-hash-21-0', 'ngcc-hash-21-1', 'ngcc-hash-21-2'],
+  'hash-22': ['ngcc-hash-22-0', 'ngcc-hash-22-1', 'ngcc-hash-22-2'],
+  'hash-24': ['ngcc-hash-24-0', 'ngcc-hash-24-1', 'ngcc-hash-24-2'],
+  'hash-25': ['ngcc-hash-25-0', 'ngcc-hash-25-1', 'ngcc-hash-25-2'],
+  'hash-26': ['ngcc-hash-26-0', 'ngcc-hash-26-1'],
+  'hash-27': ['ngcc-hash-27-0', 'ngcc-hash-27-1', 'ngcc-hash-27-2'],
+  'hash-31': ['ngcc-hash-31-0', 'ngcc-hash-31-1', 'ngcc-hash-31-2', 'ngcc-hash-31-3', 'ngcc-hash-31-4', 'ngcc-hash-31-5'],
+  'hash-32': ['ngcc-hash-32-0', 'ngcc-hash-32-1', 'ngcc-hash-32-2', 'ngcc-hash-32-3', 'ngcc-hash-32-4', 'ngcc-hash-32-5'],
+  'hash-35': ['ngcc-hash-35-0', 'ngcc-hash-35-1'],
+});

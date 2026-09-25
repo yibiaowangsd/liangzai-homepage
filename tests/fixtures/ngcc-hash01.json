@@ -1,0 +1,17 @@
+{
+  "AFS-TrEDM-512": {
+    "empty": "3b3e8013f2d9e8157ab171570037f4a47ea1a62133a817a9acf9f54ff0ed66d0",
+    "abc": "d4c6fe53c76557754048aff66bb922266cdf023fc94e990a0226f1b626f72c22",
+    "abc-bang": "8d4bed6d3b7cc97d5addd2cf0ff06da79c0f42058365ff07ab1d6abdcf5682f3"
+  },
+  "AFS-TrEDM-768": {
+    "empty": "30422f49c1de7e5f1880a57938b9ff41347ca3ce462bd4adcf8b3ad6292b8d8e",
+    "abc": "5eeb63a458757b540af5ca186eace4090a0a530bbbe6626929e3942771365d34",
+    "abc-bang": "586b433a3403f3e6f9ca886cd769a97f77e942848d0d0e0032255b12c0a6650b"
+  },
+  "AFS-TrEDM-1024": {
+    "empty": "10f2d4a9b5bb666c5b94819c81cfd8346c777ce25e22a04ebee99ac25fbd96b3",
+    "abc": "56913eadda1a9ea462bc3eee49b16f845b69c175debc0260653e91d40ad8154e",
+    "abc-bang": "3e8e93ddd466746f2462e5f0e30f1fab0425d91b4c98e49cc0d38d0302fa36f6"
+  }
+}

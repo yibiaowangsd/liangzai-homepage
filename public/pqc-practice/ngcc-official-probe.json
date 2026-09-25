@@ -1,0 +1,199 @@
+{
+  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36096545542",
+  "checked": 48,
+  "result": "官方归档下载链接 GET 均返回 HTTP 405；不能据此推断源码未公开。",
+  "candidates": [
+    {
+      "id": "hash-03",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-06",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-07",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-08",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-13",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-15",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-16",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-23",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-28",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-29",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-30",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-33",
+      "status": "http_405"
+    },
+    {
+      "id": "hash-34",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-05",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-11",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-12",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-13",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-15",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-16",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-19",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-20",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-25",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-26",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-28",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-30",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-34",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-35",
+      "status": "http_405"
+    },
+    {
+      "id": "kem-41",
+      "status": "http_405"
+    },
+    {
+      "id": "kex-01",
+      "status": "http_405"
+    },
+    {
+      "id": "kex-04",
+      "status": "http_405"
+    },
+    {
+      "id": "kex-06",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-02",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-05",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-06",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-08",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-13",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-14",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-17",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-19",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-20",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-21",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-22",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-23",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-24",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-26",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-28",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-30",
+      "status": "http_405"
+    },
+    {
+      "id": "sign-31",
+      "status": "http_405"
+    }
+  ]
+}

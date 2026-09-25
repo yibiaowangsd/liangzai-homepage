@@ -1,0 +1,31 @@
+name: Inspect remaining NGCC official submission sources
+
+on:
+  push:
+    branches: [feat/ngcc-more-wasm]
+    paths:
+      - '.github/workflows/ngcc-official-source-probe.yml'
+      - 'scripts/probe-ngcc-official-source.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect official ZIP metadata within time and size limits
+        run: python3 scripts/probe-ngcc-official-source.py --shard '${{ matrix.shard }}'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ngcc-official-zip-probe-${{ matrix.shard }}
+          path: work/ngcc-official-probe/
+          if-no-files-found: ignore

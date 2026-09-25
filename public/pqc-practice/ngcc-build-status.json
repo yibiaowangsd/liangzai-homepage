@@ -1,0 +1,2300 @@
+{
+  "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd",
+  "toolchain": "Emscripten 6.0.10",
+  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36096046849",
+  "results": {
+    "sign-01": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "sign-02": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-03": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-03-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-03-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-03-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-03-3.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-03-4.log"
+      },
+      {
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-03-5.log"
+      },
+      {
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-03-6.log"
+      },
+      {
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-03-7.log"
+      }
+    ],
+    "sign-04": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-04-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-04-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-04-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-04-3.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-04-4.log"
+      },
+      {
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-04-5.log"
+      },
+      {
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-04-6.log"
+      },
+      {
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-04-7.log"
+      }
+    ],
+    "sign-05": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-06": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-07": [
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-07-0.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-07-1.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-07-2.log"
+      }
+    ],
+    "sign-08": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-09": [
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-09-0.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-09-1.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-09-2.check.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-09-3.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-09-4.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-09-5.check.log"
+      }
+    ],
+    "sign-10": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-10-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-10-1.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-10-2.log"
+      }
+    ],
+    "sign-11": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-11-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-11-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-11-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-11-3.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-11-4.log"
+      },
+      {
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-11-5.log"
+      },
+      {
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-11-6.log"
+      },
+      {
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-11-7.log"
+      }
+    ],
+    "sign-12": [
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-0.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-1.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-2.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-3.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-4.log"
+      },
+      {
+        "status": "timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-5.check.log"
+      },
+      {
+        "status": "timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-6.check.log"
+      },
+      {
+        "status": "timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-7.check.log"
+      }
+    ],
+    "sign-13": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-14": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-15": [
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-15-0.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-15-1.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-15-2.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-15-3.check.log"
+      }
+    ],
+    "sign-16": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-16-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-16-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-16-2.log"
+      }
+    ],
+    "sign-17": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-18": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-18-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-18-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-18-2.log"
+      },
+      {
+        "status": "timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-18-3.check.log"
+      }
+    ],
+    "sign-19": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-20": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-21": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-22": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-23": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-24": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-25": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-2.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-3.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-4.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-5.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-6.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-7.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-8.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-9.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-10.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-11.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-12.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-13.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-14.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-15.log"
+      }
+    ],
+    "sign-26": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-27": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-27-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-27-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-27-2.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-27-3.log"
+      }
+    ],
+    "sign-28": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-29": [
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-29-0.check.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-29-1.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-29-2.check.log"
+      }
+    ],
+    "sign-30": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-31": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "sign-32": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-32-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-32-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-32-2.log"
+      }
+    ],
+    "sign-33": [
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-33-0.log"
+      },
+      {
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-33-1.log"
+      },
+      {
+        "status": "timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-33-2.check.log"
+      }
+    ],
+    "sign-34": [
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-34-0.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-34-1.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-34-2.check.log"
+      }
+    ],
+    "kem-01": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "kem-02": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "kem-03": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "kem-04": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-04-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-04-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-04-2.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-04-3.log"
+      }
+    ],
+    "kem-05": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-06": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-06-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-06-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-06-2.log"
+      }
+    ],
+    "kem-07": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-07-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-07-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-07-2.log"
+      }
+    ],
+    "kem-08": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "kem-09": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-09-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-09-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-09-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-09-3.log"
+      }
+    ],
+    "kem-10": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-10-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-10-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-10-2.log"
+      }
+    ],
+    "kem-11": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-12": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-13": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-14": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-0.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-1.check.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-2.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-3.check.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-4.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-5.check.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-6.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-7.check.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-8.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-9.check.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-10.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-14-11.log"
+      }
+    ],
+    "kem-15": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-16": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-17": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-17-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-17-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-17-2.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-17-3.log"
+      }
+    ],
+    "kem-18": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-18-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-18-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-18-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-18-3.log"
+      }
+    ],
+    "kem-19": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-20": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-21": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-21-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-21-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-21-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-21-3.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-21-4.log"
+      }
+    ],
+    "kem-22": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-22-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-22-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-22-2.log"
+      }
+    ],
+    "kem-23": [
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-23-0.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-23-1.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-23-2.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-23-3.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-23-4.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-23-5.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-23-6.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-23-7.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-23-8.log"
+      }
+    ],
+    "kem-24": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-24-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-24-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-24-2.log"
+      }
+    ],
+    "kem-25": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-26": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-27": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "kem-28": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-29": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-29-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-29-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-29-2.log"
+      }
+    ],
+    "kem-30": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-31": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-31-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-31-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-31-2.log"
+      }
+    ],
+    "kem-32": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-32-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-32-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-32-2.log"
+      }
+    ],
+    "kem-33": [
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-33-0.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-33-1.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-33-2.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-33-3.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-33-4.log"
+      }
+    ],
+    "kem-34": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-35": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kem-36": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-36-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-36-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-36-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-36-3.log"
+      }
+    ],
+    "kem-37": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-37-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-37-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-37-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-37-3.log"
+      }
+    ],
+    "kem-38": [
+      {
+        "status": "timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-38-0.check.log"
+      },
+      {
+        "status": "timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-38-1.check.log"
+      },
+      {
+        "status": "timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-38-2.check.log"
+      }
+    ],
+    "kem-39": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "kem-40": [
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-40-0.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-40-1.log"
+      },
+      {
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-40-2.log"
+      }
+    ],
+    "kem-41": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kex-01": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kex-02": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-02-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-02-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-02-2.log"
+      }
+    ],
+    "kex-03": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-3.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-4.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-5.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-6.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-7.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-8.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-9.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-10.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-11.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-12.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-13.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-14.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-15.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-16.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-17.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-18.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-19.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-20.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-21.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-22.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-23.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-03-24.log"
+      }
+    ],
+    "kex-04": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kex-05": [
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-05-0.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-05-1.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-05-2.check.log"
+      }
+    ],
+    "kex-06": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "kex-07": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-0.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-1.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-2.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-3.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-4.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-5.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-6.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-7.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-8.log"
+      }
+    ],
+    "kex-08": [
+      {
+        "status": "timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-08-0.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-08-1.check.log"
+      },
+      {
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-08-2.check.log"
+      }
+    ],
+    "kex-09": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-09-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-09-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-09-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kex-09-3.log"
+      }
+    ],
+    "hash-01": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "hash-02": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "hash-03": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-04": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "hash-05": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "hash-06": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-07": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-08": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-09": [
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      },
+      {
+        "status": "verified"
+      }
+    ],
+    "hash-10": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-10-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-10-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-10-2.log"
+      }
+    ],
+    "hash-11": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-0.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-1.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-2.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-3.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-4.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-5.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-6.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-7.link.log"
+      }
+    ],
+    "hash-12": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-12-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-12-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-12-2.log"
+      }
+    ],
+    "hash-13": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-14": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-14-0.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-14-1.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-14-2.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-14-3.link.log"
+      }
+    ],
+    "hash-15": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-16": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-17": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-17-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-17-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-17-2.log"
+      }
+    ],
+    "hash-18": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-18-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-18-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-18-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-18-3.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-18-4.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-18-5.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-18-6.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-18-7.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-18-8.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-18-9.log"
+      }
+    ],
+    "hash-19": [
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-0.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-1.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-2.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-3.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-4.link.log"
+      },
+      {
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-19-5.link.log"
+      }
+    ],
+    "hash-20": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-20-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-20-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-20-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-20-3.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-20-4.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-20-5.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-20-6.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-20-7.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-20-8.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-20-9.log"
+      }
+    ],
+    "hash-21": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-21-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-21-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-21-2.log"
+      }
+    ],
+    "hash-22": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-22-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-22-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-22-2.log"
+      }
+    ],
+    "hash-23": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-24": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-24-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-24-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-24-2.log"
+      }
+    ],
+    "hash-25": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-25-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-25-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-25-2.log"
+      }
+    ],
+    "hash-26": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-26-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-26-1.log"
+      }
+    ],
+    "hash-27": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-27-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-27-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-27-2.log"
+      }
+    ],
+    "hash-28": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-29": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-30": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-31": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-31-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-31-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-31-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-31-3.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-31-4.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-31-5.log"
+      }
+    ],
+    "hash-32": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-32-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-32-1.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-32-2.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-32-3.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-32-4.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-32-5.log"
+      }
+    ],
+    "hash-33": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-34": [
+      {
+        "status": "source_not_in_snapshot"
+      },
+      {
+        "status": "source_not_in_snapshot"
+      }
+    ],
+    "hash-35": [
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-35-0.log"
+      },
+      {
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-hash-35-1.log"
+      }
+    ]
+  }
+}
