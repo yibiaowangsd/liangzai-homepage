@@ -300,6 +300,7 @@ for index, item in enumerate(candidate['parameters']):
         if family not in ('AES', 'SHAKE', 'SM3'):
             raise ValueError(f'{candidate_id} {label}: unexpected family {family}')
         lines.append(f'CFLAGS_{label} := -DSCLOUDPLUS_FAMILY_{family} '
+                     f'-DSCLOUDPLUS_REF_FAMILY_{family} '
                      f'-DSCLOUDPLUS_TIER_REFERENCE')
     elif candidate_id == 'sign-19':
         backend = 'SHAKE' if '-SHAKE-' in label else 'SM3'
