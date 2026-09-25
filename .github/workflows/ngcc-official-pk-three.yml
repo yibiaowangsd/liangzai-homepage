@@ -1,0 +1,117 @@
+name: Build third official NGCC public-key source batch
+
+on:
+  push:
+    branches: [feat/ngcc-official-pk-three]
+    paths:
+      - '.github/workflows/ngcc-official-pk-three.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        include:
+          - name: bit
+            id: sign-02
+          - name: compass-sig
+            id: sign-06
+          - name: qingluan
+            id: sign-20
+          - name: sigurd
+            id: sign-24
+          - name: compass-kem
+            id: kem-11
+          - name: ctl
+            id: kem-12
+    env:
+      NGCC_NATIVE_SECONDS: 80
+      NGCC_NATIVE_BUDGET: 340
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: ngcc-dev/ngcc-harness
+          ref: c5261784ef27e7363b1bbace3d687932fda35ccd
+          path: ngcc-harness
+          sparse-checkout: |
+            /api/
+            /${{ matrix.id }}/
+          sparse-checkout-cone-mode: false
+      - uses: emscripten-core/setup-emsdk@v15
+        with:
+          version: '6.0.10'
+      - name: Download and checksum the official submission archive
+        run: python3 scripts/stage-ngcc-official.py "${{ matrix.id }}" ngcc-harness
+      - name: Run original KAT and bounded WASM rebuild
+        run: bash scripts/run-ngcc-batch.sh "${{ matrix.id }}" ngcc-harness
+      - name: Record archive SHA-256 for every verified parameter
+        if: always()
+        run: |
+          python3 - "${{ matrix.id }}" <<'PY'
+          import json, sys
+          from pathlib import Path
+          candidate_id = sys.argv[1]
+          record = Path('work/ngcc-wasm-rebuild') / (candidate_id + '.results.json')
+          if record.is_file():
+              source = json.loads(Path('scripts/ngcc-official-archives.json').read_text())['candidates'][candidate_id]
+              rows = json.loads(record.read_text())
+              for row in rows:
+                  if row['status'] == 'verified':
+                      row.update(validation='official_kat_native_wasm', source_url=source['url'],
+                                 source_sha256=source['sha256'])
+              record.write_text(json.dumps(rows, ensure_ascii=False, indent=2) + '\n')
+          PY
+      - name: Package paired modules and bounded attempt logs
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p work/ngcc-package/public/pqc-practice/wasm work/ngcc-package/work
+          for path in public/pqc-practice/wasm/ngcc-${{ matrix.id }}-*.mjs public/pqc-practice/wasm/ngcc-${{ matrix.id }}-*.wasm; do
+            if [[ -f $path ]]; then cp "$path" work/ngcc-package/public/pqc-practice/wasm/; fi
+          done
+          if [[ -d work/ngcc-wasm-rebuild ]]; then cp -a work/ngcc-wasm-rebuild work/ngcc-package/work/; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ngcc-official-${{ matrix.name }}
+          path: work/ngcc-package/
+          if-no-files-found: ignore
+
+  publish:
+    needs: rebuild
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/ngcc-official-pk-three
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'ngcc-official-*'
+          merge-multiple: true
+          path: .
+      - name: Verify aggregate and publish only paired modules
+        run: |
+          python3 scripts/aggregate-ngcc-rebuild.py
+          node --test tests/ngcc-catalog.test.mjs
+          node --check public/pqc-practice/ngcc-runtime.js
+          node --check public/pqc-practice/ngcc-kex-runtime.js
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A public/pqc-practice/wasm/ public/pqc-practice/ngcc-runtime.js public/pqc-practice/ngcc-hash-runtime.js public/pqc-practice/ngcc-kex-runtime.js public/pqc-practice/ngcc-build-status.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish KAT-verified NGCC public-key source builds'
+            git push origin HEAD:feat/ngcc-official-pk-three
+          fi
