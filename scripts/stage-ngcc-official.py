@@ -65,9 +65,16 @@ lines = [f'NGCC_ID := {candidate_id}', f'NGCC_TYPE := {candidate["type"]}',
 labels = []
 for item in candidate['parameters']:
     label = Path(item['source']).name
-    if label in labels or not (destination / item['source']).is_dir():
+    source_dir = destination / item['source']
+    if label in labels or not source_dir.is_dir():
         raise ValueError(f'{candidate_id}: duplicate label or missing source {label}')
     labels.append(label)
+    if not (source_dir / 'CryptHash_AlgorithmInstance.h').is_file() and candidate['type'] == 'hash':
+        alternatives = [p for p in source_dir.glob('CryptHash*.h')
+                        if 'ALGORITHM_INSTANCE' in p.read_text(errors='replace')]
+        if len(alternatives) != 1:
+            raise ValueError(f'{candidate_id} {label}: cannot select the submitted API header')
+        lines.append(f'SHIMDEFS_{label} := -DNGCC_INSTANCE_HEADER=\\\"{alternatives[0].name}\\\"')
     lines.append(f'$(eval $(call ngcc_instance,{label},{item["source"]}))')
 lines.extend(['', 'include ../api/link_finish.mk', ''])
 (destination / 'Makefile').write_text('\n'.join(lines))
