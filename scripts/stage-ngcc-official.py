@@ -287,18 +287,21 @@ for index, item in enumerate(candidate['parameters']):
             raise FileNotFoundError(f'{candidate_id} {label}: missing shared parameters')
         selected = ['../../../_shared/api_pkc/KEM_AlgorithmInstance.c',
                     '../../../_shared/api_pkc/drng.c']
+        family = item['label'].split('-')[2]
+        if family not in ('AES', 'SHAKE', 'SM3'):
+            raise ValueError(f'{candidate_id} {label}: unexpected family {family}')
         selected += sorted('../../../_shared/scloudplus_core/common/' + p.name
-                           for p in (shared / 'scloudplus_core/common').glob('*.c'))
+                           for p in (shared / 'scloudplus_core/common').glob('*.c')
+                           if (p.name == 'hash_sm3_portable.c') == (family == 'SM3'))
         selected += sorted('../../../_shared/scloudplus_core/ref/' + p.name
-                           for p in (shared / 'scloudplus_core/ref').glob('*.c'))
+                           for p in (shared / 'scloudplus_core/ref').glob('*.c')
+                           if p.name != 'sm3_reference.c' or family == 'SM3')
         lines.append(f'SRCS_{label} := {" ".join(selected)}')
+        lines.append(f'NOAUX_{label} := 1')
         lines.append(f'INC_{label} := -I_ngcc_shared/api_pkc '
                      f'-I_ngcc_shared/scloudplus_core/include '
                      f'-I_ngcc_shared/scloudplus_core/common '
                      f'-I_ngcc_shared/scloudplus_core/ref -Isrc/{label}')
-        family = item['label'].split('-')[2]
-        if family not in ('AES', 'SHAKE', 'SM3'):
-            raise ValueError(f'{candidate_id} {label}: unexpected family {family}')
         lines.append(f'CFLAGS_{label} := -DSCLOUDPLUS_FAMILY_{family} '
                      f'-DSCLOUDPLUS_REF_FAMILY_{family} '
                      f'-DSCLOUDPLUS_TIER_REFERENCE')
