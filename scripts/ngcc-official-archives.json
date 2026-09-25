@@ -1,0 +1,341 @@
+{
+  "_source": "https://github.com/wang2000star/ngcc-bak/tree/6d8a90aacfd4003b04ad73c7f06fd674c4cf8750/00-manifest",
+  "candidates": {
+    "sign-02": {
+      "filename": "BiT.zip",
+      "bytes": 46217115,
+      "sha256": "698fbe834279a4100a66c20f3e0b634c738e1150936acf74b55efc6db6975e8d",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/BiT.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101557841271279616.html"
+    },
+    "sign-05": {
+      "filename": "Chinith.zip",
+      "bytes": 12927882,
+      "sha256": "4d31ba3fe8718f59901b7efdf01b4179912ef8e04f58b4b6dbba84186f002283",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/Chinith.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101557150763012096.html"
+    },
+    "sign-06": {
+      "filename": "COMPASS-SIG.zip",
+      "bytes": 38075657,
+      "sha256": "ce88066506fe9b58c300b3ca51462c7a8350484d88ad5b8a9c9f17b5152ca820",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/COMPASS-SIG.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101556993568886784.html"
+    },
+    "sign-08": {
+      "filename": "DARTS.zip",
+      "bytes": 13212635,
+      "sha256": "1846cfe63f0cef83e2e0ca21f5dcadce3c4b16da33713957be6d156e2a9e6e95",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/DARTS.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101556638554607616.html"
+    },
+    "sign-13": {
+      "filename": "GreatWall.zip",
+      "bytes": 21571838,
+      "sha256": "814cd3b977ddc0cc59828861c145580473b1a62a66da852b078edbaf689f5a8d",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/GreatWall.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101555653564256256.html"
+    },
+    "sign-14": {
+      "filename": "Lynxer.zip",
+      "bytes": 17106428,
+      "sha256": "34d863f7df8979c4a5e27fcfe657ed54e81905115c0afc8ef749f50af432f928",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/Lynxer.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101555352421617664.html"
+    },
+    "sign-17": {
+      "filename": "OPS Digital Signature Algorithm.zip",
+      "bytes": 4746912,
+      "sha256": "02322c6792259231ab8eb3cc094be32be02a1b9b6b1d7c86b0029c37b0f04d09",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/OPS%20Digital%20Signature%20Algorithm.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101554635183050752.html"
+    },
+    "sign-19": {
+      "filename": "Phoenix.zip",
+      "bytes": 23235965,
+      "sha256": "ec801791976a10baffa852c479afd12362af3b5fb6420104254fb48814d99918",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/Phoenix.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101554285583618048.html"
+    },
+    "sign-20": {
+      "filename": "QingLuan.zip",
+      "bytes": 28035220,
+      "sha256": "2eb8f3ed205eb7c7e8b3108a997b59643d1aa5579035b8093b4ddbe051a48007",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/QingLuan.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101554097515220992.html"
+    },
+    "sign-21": {
+      "filename": "ReSolveD-alpha.zip",
+      "bytes": 11061844,
+      "sha256": "499821538d7f79464cc1ee1468254b0e49f750794a591ffe038938c4cfa11914",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/ReSolveD-alpha.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101553903805485056.html"
+    },
+    "sign-22": {
+      "filename": "Rhyme.zip",
+      "bytes": 15133161,
+      "sha256": "7b509d21c6674bc23751b8743cb7c2a4a07ee295fafe04e2fa95c0613160bdfd",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/Rhyme.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101553636984836096.html"
+    },
+    "sign-23": {
+      "filename": "shuttle.zip",
+      "bytes": 9327439,
+      "sha256": "09253fd33c2215098177991db3375cb94e4e4a73a65b019783edabefa5bd8a62",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/shuttle.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101553465160978432.html"
+    },
+    "sign-24": {
+      "filename": "Sigurd.zip",
+      "bytes": 17804763,
+      "sha256": "443ab14257658d89a60e14ad0d4b7f4df9fcdd06da4f42fcb29bbbfc75a97153",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/Sigurd.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101553271568683008.html"
+    },
+    "sign-26": {
+      "filename": "SQIsign2D-push12.zip",
+      "bytes": 15147408,
+      "sha256": "98b7e4ffddfe31b5fb0f448345b49228c8d8a7c87078688ba1656b28631448c5",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/SQIsign2D-push12.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101552902641897472.html"
+    },
+    "sign-28": {
+      "filename": "SYDO.zip",
+      "bytes": 51062301,
+      "sha256": "c4ae5b27a188612cd286a786179ce5461e6aca0b8599ba13b8d77b210a940adb",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/SYDO.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101552484230713344.html"
+    },
+    "sign-30": {
+      "filename": "TRINE.zip",
+      "bytes": 67794477,
+      "sha256": "4b22f54b07509833b08d32402ffe06d7566e4c87622f9931079e791c80f4765d",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/TRINE.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101552163232239616.html"
+    },
+    "sign-31": {
+      "filename": "TSUOV.zip",
+      "bytes": 4398417,
+      "sha256": "7ab1effc5fe911c6ab9483ca44a9d9f6d6d911b03eee9f2873b384d97f9aee1d",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/TSUOV.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1DigitalSignature/pc/content/content_2101551978309570560.html"
+    },
+    "kem-05": {
+      "filename": "BIKE_MLThre.zip",
+      "bytes": 38667045,
+      "sha256": "3a5d97532003786374b68b39779cff4e4938f593fef9596f171652c6ff593917",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/BIKE_MLThre.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101513734456954880.html"
+    },
+    "kem-11": {
+      "filename": "COMPASS-KEM.zip",
+      "bytes": 50427183,
+      "sha256": "8fc838488ac0849d4c6afd161f8b9742c7a8b9a330bc3b79df70ced7e2d1d5e2",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/COMPASS-KEM.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101512022090403840.html"
+    },
+    "kem-12": {
+      "filename": "CTL.zip",
+      "bytes": 37952459,
+      "sha256": "512caaf5fa04ea5ab51fb5eeee9e81f8c7c7c430b60727130067634bfb674d01",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/CTL.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101511814187143168.html"
+    },
+    "kem-13": {
+      "filename": "DKEM.zip",
+      "bytes": 8992809,
+      "sha256": "862f40ba424253bae7fadbc9c2f54a568b77e0f97fba4728c5fd1e4e826dddc7",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/DKEM.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101511580744765440.html"
+    },
+    "kem-15": {
+      "filename": "FLIT.zip",
+      "bytes": 5802560,
+      "sha256": "6c560f434b347fbac8334f55b9ba2838cb1cf885d5aa25e95acb66ed6c6de0fe",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/FLIT.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101511175910543360.html"
+    },
+    "kem-16": {
+      "filename": "HARE.zip",
+      "bytes": 16015701,
+      "sha256": "718bb70eee268550fcef2a82e8eb9879c51ecfdbaefd6bfe2157e7639ffc8557",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/HARE.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101510831696596992.html"
+    },
+    "kem-19": {
+      "filename": "Lore.zip",
+      "bytes": 10424731,
+      "sha256": "e33130fb45a3b1e220f8043739d1396a884c0043cb4336104e67e5404c7cc725",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/Lore.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101510396353007616.html"
+    },
+    "kem-20": {
+      "filename": "MAMBA-Frost.zip",
+      "bytes": 23341608,
+      "sha256": "ae363dbefd69d64e99987b64105d60bfa376d97c8b58b055665761559c44c78b",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/MAMBA-Frost.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101510166681309184.html"
+    },
+    "kem-25": {
+      "filename": "NEV.zip",
+      "bytes": 13284152,
+      "sha256": "8105c6241a322661411e870a3087338f48f4f5c477a540387b800c08955cc7fd",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/NEV.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101503060444008448.html"
+    },
+    "kem-26": {
+      "filename": "NSS-HQC.zip",
+      "bytes": 7408070,
+      "sha256": "033994e27bf0dc824078593a98eb51465f979b1bca0932cabb29be6626447638",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/NSS-HQC.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101502496087822336.html"
+    },
+    "kem-28": {
+      "filename": "OAEP-NTRU.zip",
+      "bytes": 6170350,
+      "sha256": "aaab8e0692fd19dd2edda5384b5e85bba74661d478823b48cab3cccb53675756",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/OAEP-NTRU.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101502137470636032.html"
+    },
+    "kem-30": {
+      "filename": "PolarLAC.zip",
+      "bytes": 13109792,
+      "sha256": "906be26ce8d27de335b691ff8490b2344b46d7519d88c799cba0242324e4882c",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/PolarLAC.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101501254599004160.html"
+    },
+    "kem-34": {
+      "filename": "Rudraksh2.zip",
+      "bytes": 19766493,
+      "sha256": "569d526cf7abe38393f69a4513686fa86a0c3b3033cc225b84cc107b20b17b98",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/Rudraksh2.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101499809782910976.html"
+    },
+    "kem-35": {
+      "filename": "Scloud+.zip",
+      "bytes": 12578761,
+      "sha256": "050aad7293ec90fafd9070e82877eedc81caf0aaaca932c995619a3f35429876",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/Scloud%2B.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101499583567319040.html"
+    },
+    "kem-41": {
+      "filename": "ZEN.zip",
+      "bytes": 37391107,
+      "sha256": "69eba070320fc6cb365fb6d43d2b74460487732aeb7e607fac2d6c1b3a64a80e",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/ZEN.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyEncapsulation/pc/content/content_2101498315453059072.html"
+    },
+    "kex-01": {
+      "filename": "ADKEX.zip",
+      "bytes": 9144467,
+      "sha256": "bbadecca0ce9d3f3131129b17c91e0ab89a81e077710e53f7a569a30475a23f2",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Exchange/ADKEX.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyExchange/pc/content/content_2101496452469051392.html"
+    },
+    "kex-04": {
+      "filename": "DKEX.zip",
+      "bytes": 11261599,
+      "sha256": "979c22239b4a2fb6732e68029c06659f8a7b582c00ca163e1ec72874b227e117",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Exchange/DKEX.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyExchange/pc/content/content_2100889723003817984.html"
+    },
+    "kex-06": {
+      "filename": "MAMBA-NIKE.zip",
+      "bytes": 10286525,
+      "sha256": "79b53ff726121ccb1ce970003c06b605e973c4e4f452dbe780e70cd4c40ca018",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Exchange/MAMBA-NIKE.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/R1KeyExchange/pc/content/content_2100889280743821312.html"
+    },
+    "hash-03": {
+      "filename": "C Hash.zip",
+      "bytes": 10629085,
+      "sha256": "d6b40f34b4c4af7ab1929816d8613220ed669aace6bfdd8d2e9496d90ddc5438",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/C%20Hash.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101540728942972928.html"
+    },
+    "hash-06": {
+      "filename": "Cuishen.zip",
+      "bytes": 28396103,
+      "sha256": "b9192c8a4046d8af48ea19ddefd538f11dd456766b2daf3597762c76a2cc0d6d",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Cuishen.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101539989910802432.html"
+    },
+    "hash-07": {
+      "filename": "Dragon.zip",
+      "bytes": 148150104,
+      "sha256": "088759817e3193e0ca02c3a3669fd05ac70e833b0447f336666268b61846b26c",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Dragon.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101539781751689216.html"
+    },
+    "hash-08": {
+      "filename": "Duet.zip",
+      "bytes": 20167520,
+      "sha256": "989978bcefbe20124943b2003908226c48e0f05b5ec8db510e7cdb89c2299f1e",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Duet.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101539583977672704.html"
+    },
+    "hash-13": {
+      "filename": "Juzi.zip",
+      "bytes": 4236858,
+      "sha256": "487f73e34dac7a06ae6718c4a38bcf757c1555676b107415f7b79b17d8c9cf92",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Juzi.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101538489901862912.html"
+    },
+    "hash-15": {
+      "filename": "Litchi.zip",
+      "bytes": 53685148,
+      "sha256": "16c798c93c6fbdc9ac3703113c120fe22df46569a93d7322aaba46effa3273eb",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Litchi.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101538083238924288.html"
+    },
+    "hash-16": {
+      "filename": "LLH.zip",
+      "bytes": 47056236,
+      "sha256": "e79ca6ef17bcf0485ae2462cfe338e904f05551d7a8859271354d469072b3c2d",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/LLH.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101537750001471488.html"
+    },
+    "hash-23": {
+      "filename": "QILIN.zip",
+      "bytes": 31713305,
+      "sha256": "10335345f6a6cca5e4be688ef42230dff983049483acecbd43f38febb7618609",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/QILIN.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101536372126470144.html"
+    },
+    "hash-28": {
+      "filename": "XRH-1.zip",
+      "bytes": 11224132,
+      "sha256": "0aa9a5a64a54ddaa82b689d46971973825e48e0577685317d5f9bbab9ba85b02",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/XRH-1.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101535400742440960.html"
+    },
+    "hash-29": {
+      "filename": "XRH-2.zip",
+      "bytes": 11224353,
+      "sha256": "96b67428bbeda82fd797d6f510466313a23f90ea00a5a0a58f4929b8e554a45b",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/XRH-2.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101534893223268352.html"
+    },
+    "hash-30": {
+      "filename": "ZC-DM.zip",
+      "bytes": 16311230,
+      "sha256": "47e6297d4d707897c64a75a0b490152b2c67abfb1777d89d225b4bcf58a0063b",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/ZC-DM.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101534683994607616.html"
+    },
+    "hash-33": {
+      "filename": "Thunder.zip",
+      "bytes": 146828807,
+      "sha256": "db6970d54250084ea73cc1a47bd56c868e5e478cdfa3746ff7b69d30c690b0c8",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/Thunder.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101533797931110400.html"
+    },
+    "hash-34": {
+      "filename": "WChain.zip",
+      "bytes": 27113718,
+      "sha256": "1ffeb0bd3f3645ea43decaacb0233c7dd23b9b127ac092efc0c12d6661f84023",
+      "url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/WChain.zip",
+      "archived_page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101533578757754880.html"
+    }
+  }
+}

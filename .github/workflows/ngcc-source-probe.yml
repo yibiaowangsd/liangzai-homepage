@@ -1,0 +1,32 @@
+name: Probe NGCC official and backup source
+on:
+  push:
+    branches: [feat/ngcc-archive-source]
+    paths: ['.github/workflows/ngcc-source-probe.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source_probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Probe official archive HTTP range without a full download
+        shell: bash
+        run: |
+          for url in \
+            'https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/Phoenix.zip' \
+            'https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/C%20Hash.zip'; do
+            curl -sS -L --range 0-0 --max-filesize 1048576 --max-time 15 -o /dev/null -w 'official HTTP %{http_code}, bytes %{size_download}, final %{url_effective}\n' "$url" || true
+          done
+      - name: Fetch two reference source folders from the pinned public backup
+        shell: bash
+        run: |
+          git clone -q --depth 1 --filter=blob:none --sparse --no-checkout https://github.com/wang2000star/ngcc-bak.git ngcc-backup
+          cd ngcc-backup
+          git sparse-checkout set --cone '02-hash/C Hash' '02-hash/Cuishen'
+          git checkout -q 6d8a90aacfd4003b04ad73c7f06fd674c4cf8750
+          test -f '02-hash/C Hash/C Hash/Implementations/Reference_Implementation/CHash_1024/CryptHash_AlgorithmInstance.c'
+          test -d '02-hash/Cuishen/Cuishen/Implementations/Reference_Implementation'
+          git rev-parse HEAD
+          du -sh .
