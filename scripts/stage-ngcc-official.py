@@ -131,10 +131,12 @@ for index, item in enumerate(candidate['parameters']):
         relative_ntt = ntt[0].relative_to(source_dir).as_posix()
         lines.append(f'SRCS_{label} := {" ".join(sorted(direct))} {relative_ntt}')
     elif candidate_id == 'sign-17':
-        vectors = list(destination.rglob(f'KAT_SIG_{label}.txt'))
+        submitted_name = f'{label}-reference'
+        vectors = list(destination.rglob(f'KAT_SIG_{submitted_name}.txt'))
         if len(vectors) == 1:
             directory = vectors[0].parent.relative_to(destination).as_posix()
             lines.append(f'KATDIR_{label} := {directory}')
+            lines.append(f'KATNAME_{label} := {submitted_name}')
         else:
             nearby = sorted(p.name for p in destination.rglob('KAT_*.txt'))[:12]
             print(f'{candidate_id} {label}: reference vector matches: {len(vectors)}; '

@@ -10,10 +10,13 @@ if ! timeout 60 make -s -C "$harness/api" harness > work/ngcc-wasm-rebuild/api.n
 fi
 for id in $ids; do
   echo "Attempting $id"
+  range_args=()
+  if [[ -n ${NGCC_INDEX_FROM:-} ]]; then range_args+=(--from-index "$NGCC_INDEX_FROM"); fi
+  if [[ -n ${NGCC_INDEX_TO:-} ]]; then range_args+=(--to-index "$NGCC_INDEX_TO"); fi
   native_seconds=${NGCC_NATIVE_SECONDS:-75}
   native_budget=${NGCC_NATIVE_BUDGET:-400}
   if ! timeout "$((native_budget + 40))" python3 scripts/check-ngcc-native.py "$harness" "$id" \
-       --seconds "$native_seconds" --budget "$native_budget" \
+       --seconds "$native_seconds" --budget "$native_budget" "${range_args[@]}" \
        > "work/ngcc-wasm-rebuild/$id.native.log" 2>&1; then
     echo "Native per-parameter checks incomplete: $id"
   fi
@@ -34,7 +37,7 @@ PY
   if [[ -f $status_file ]]; then mode=(--native-status-file "$status_file"); fi
   rm -f work/ngcc-wasm-rebuild/results.json
   # Partial per-parameter results are flushed after every attempt.
-  timeout 540 python3 scripts/build-ngcc-expanded.py "$harness" "$id" --seconds 55 "${mode[@]}" \
+  timeout 540 python3 scripts/build-ngcc-expanded.py "$harness" "$id" --seconds 55 "${mode[@]}" "${range_args[@]}" \
     > "work/ngcc-wasm-rebuild/$id.attempt.log" 2>&1 || echo "Build batch timed out or crashed: $id"
   if [[ -f work/ngcc-wasm-rebuild/results.json ]]; then
     mv work/ngcc-wasm-rebuild/results.json "work/ngcc-wasm-rebuild/$id.results.json"

@@ -14,6 +14,8 @@ parser.add_argument('harness', type=Path)
 parser.add_argument('candidate')
 parser.add_argument('--seconds', type=int, default=75)
 parser.add_argument('--budget', type=int, default=400)
+parser.add_argument('--from-index', type=int, default=0)
+parser.add_argument('--to-index', type=int, default=1_000_000)
 args = parser.parse_args()
 repo = Path(__file__).resolve().parents[1]
 harness = args.harness.resolve()
@@ -37,6 +39,8 @@ except (FileNotFoundError, subprocess.SubprocessError) as error:
 results = {}
 start = time.monotonic()
 for index, parameter in enumerate(candidate['parameters']):
+    if not args.from_index <= index < args.to_index:
+        continue
     label = labels.get(parameter['source'].rstrip('/'))
     if not label:
         results[str(index)] = 'source_missing'
