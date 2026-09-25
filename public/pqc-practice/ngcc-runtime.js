@@ -11,6 +11,7 @@ export const NGCC_WASM = Object.freeze({
   'sign-11': ['ngcc-sign-11-0', 'ngcc-sign-11-1', 'ngcc-sign-11-2', 'ngcc-sign-11-3', 'ngcc-sign-11-4', null, null, null],
   'sign-16': ['ngcc-sign-16-0', 'ngcc-sign-16-1', 'ngcc-sign-16-2'],
   'sign-18': ['ngcc-sign-18-0', 'ngcc-sign-18-1', 'ngcc-sign-18-2', null],
+  'sign-20': ['ngcc-sign-20-0', 'ngcc-sign-20-1', 'ngcc-sign-20-2', 'ngcc-sign-20-3'],
   'sign-23': ['ngcc-sign-23-0', null, null],
   'sign-24': ['ngcc-sign-24-0', 'ngcc-sign-24-1', 'ngcc-sign-24-2'],
   'sign-29': [null, 'ngcc-sign-29-1', null],
@@ -38,6 +39,7 @@ export const NGCC_WASM = Object.freeze({
   'kem-37': ['ngcc-kem-37-0', 'ngcc-kem-37-1', 'ngcc-kem-37-2', 'ngcc-kem-37-3'],
   'kem-39': ['ngcc-kem-39-0', 'ngcc-kem-39-1', 'ngcc-kem-39-2'],
   'kem-40': ['ngcc-kem-40-0', 'ngcc-kem-40-1', 'ngcc-kem-40-2'],
+  'kem-41': ['ngcc-kem-41-0', 'ngcc-kem-41-1', 'ngcc-kem-41-2'],
 });
 
 export const ngccModule = (candidate, parameter) => NGCC_WASM[candidate]?.[Number(parameter)] || null;

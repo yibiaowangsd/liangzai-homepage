@@ -1,7 +1,7 @@
 {
   "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd",
   "toolchain": "Emscripten 6.0.10",
-  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949",
+  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905",
   "results": {
     "sign-01": [
       {
@@ -372,28 +372,44 @@
     ],
     "sign-14": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-14-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-14-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-14-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-14-3.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-14-4.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-14-5.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-14-6.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-14-7.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       }
     ],
     "sign-15": [
@@ -432,17 +448,17 @@
       {
         "status": "native_failed",
         "log": "work/ngcc-wasm-rebuild/ngcc-sign-17-0.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
         "status": "native_failed",
         "log": "work/ngcc-wasm-rebuild/ngcc-sign-17-1.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
         "status": "native_failed",
         "log": "work/ngcc-wasm-rebuild/ngcc-sign-17-2.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       }
     ],
     "sign-18": [
@@ -527,83 +543,127 @@
     ],
     "sign-20": [
       {
-        "status": "compile_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-sign-20-0.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124737151"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/QingLuan.zip",
+        "source_sha256": "2eb8f3ed205eb7c7e8b3108a997b59643d1aa5579035b8093b4ddbe051a48007"
       },
       {
-        "status": "compile_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-sign-20-1.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124737151"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/QingLuan.zip",
+        "source_sha256": "2eb8f3ed205eb7c7e8b3108a997b59643d1aa5579035b8093b4ddbe051a48007"
       },
       {
-        "status": "compile_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-sign-20-2.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124737151"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/QingLuan.zip",
+        "source_sha256": "2eb8f3ed205eb7c7e8b3108a997b59643d1aa5579035b8093b4ddbe051a48007"
       },
       {
-        "status": "compile_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-sign-20-3.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124737151"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/QingLuan.zip",
+        "source_sha256": "2eb8f3ed205eb7c7e8b3108a997b59643d1aa5579035b8093b4ddbe051a48007"
       }
     ],
     "sign-21": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-21-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-21-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-21-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-21-3.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-21-4.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "timeout",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-21-5.check.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-21-6.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-21-7.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       }
     ],
     "sign-22": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-22-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-22-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-22-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-22-3.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-22-4.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-22-5.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-22-6.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-22-7.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       }
     ],
     "sign-23": [
       {
         "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-sign-23-0.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905",
         "validation": "official_kat_native_wasm",
         "source_url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Digital%20Signature/shuttle.zip",
         "source_sha256": "09253fd33c2215098177991db3375cb94e4e4a73a65b019783edabefa5bd8a62"
@@ -611,12 +671,12 @@
       {
         "status": "compile_failed",
         "log": "work/ngcc-wasm-rebuild/ngcc-sign-23-1.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
         "status": "compile_failed",
         "log": "work/ngcc-wasm-rebuild/ngcc-sign-23-2.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       }
     ],
     "sign-24": [
@@ -1479,19 +1539,29 @@
     ],
     "kem-30": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-30-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125633380"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-30-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125633380"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-30-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125633380"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-30-3.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125633380"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "native_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-30-4.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125633380"
       }
     ],
     "kem-31": [
@@ -1546,19 +1616,19 @@
     ],
     "kem-34": [
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-34-0.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-34-0.check.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-34-1.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-34-1.check.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-34-2.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-34-2.check.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       }
     ],
     "kem-35": [
@@ -1688,13 +1758,28 @@
     ],
     "kem-41": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-41-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/ZEN.zip",
+        "source_sha256": "69eba070320fc6cb365fb6d43d2b74460487732aeb7e607fac2d6c1b3a64a80e"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-41-1.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/ZEN.zip",
+        "source_sha256": "69eba070320fc6cb365fb6d43d2b74460487732aeb7e607fac2d6c1b3a64a80e"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "verified",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-41-2.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Public-Key%20Cryptographic%20Algorithms/Round%201%20candidates/Key%20Encapsulation/ZEN.zip",
+        "source_sha256": "69eba070320fc6cb365fb6d43d2b74460487732aeb7e607fac2d6c1b3a64a80e"
       }
     ],
     "kex-01": [
@@ -2268,24 +2353,36 @@
     ],
     "hash-16": [
       {
-        "status": "native_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-hash-16-0.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/LLH.zip",
+        "source_sha256": "e79ca6ef17bcf0485ae2462cfe338e904f05551d7a8859271354d469072b3c2d"
       },
       {
-        "status": "native_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-hash-16-1.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/LLH.zip",
+        "source_sha256": "e79ca6ef17bcf0485ae2462cfe338e904f05551d7a8859271354d469072b3c2d"
       },
       {
-        "status": "native_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-hash-16-2.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/LLH.zip",
+        "source_sha256": "e79ca6ef17bcf0485ae2462cfe338e904f05551d7a8859271354d469072b3c2d"
       },
       {
-        "status": "native_failed",
+        "status": "verified",
         "log": "work/ngcc-wasm-rebuild/ngcc-hash-16-3.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36125186949"
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905",
+        "validation": "official_kat_native_wasm",
+        "source_url": "https://www.niccs.org.cn/niccs/Proposal/Cryptographic%20Hash%20Algorithms/Round%201%20candidates/LLH.zip",
+        "source_sha256": "e79ca6ef17bcf0485ae2462cfe338e904f05551d7a8859271354d469072b3c2d"
       }
     ],
     "hash-17": [
