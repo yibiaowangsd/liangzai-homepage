@@ -101,7 +101,7 @@ def build_one(harness, candidate, parameter, index, label, limit, native_status=
                  "-sSTACK_SIZE=16777216", "-sEXPORTED_RUNTIME_METHODS=HEAPU8",
                  "-sEXPORTED_FUNCTIONS=" + json.dumps(["_" + item for item in EXPORTS[candidate["type"]]], separators=(",", ":"))]
         bridge_flags = ["-DNGCC_BUILD_" + candidate["type"].upper()]
-        if candidate["type"] == "hash" and native_ok:
+        if candidate["type"] == "hash":
             bridge_flags.append("-DNGCC_DIGEST_BITS=" + str(parameter["sizes"]["DigestBits"]))
         if candidate["type"] == "kex":
             bridge_flags.append("-DNGCC_KEX_PASSES=" + str(parameter["sizes"]["Passes"]))
@@ -120,7 +120,7 @@ def build_one(harness, candidate, parameter, index, label, limit, native_status=
         check_log = LOGS / f"{name}.check.log"
         check = ["node", str(REPO / "scripts/check-ngcc-module.mjs"),
                  str(target), candidate["id"], str(index)]
-        if candidate["type"] == "hash":
+        if candidate["type"] == "hash" and native_ok:
             vectors = LOGS / f"{candidate['id']}.vectors.json"
             if not vectors.is_file() or str(index) not in json.loads(vectors.read_text()):
                 raise ValueError("native digest vectors are missing for this parameter")

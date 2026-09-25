@@ -50,7 +50,10 @@ for index, parameter in enumerate(candidate['parameters']):
     try:
         data, _ = process.communicate(timeout=args.seconds)
         output = data.decode(errors='replace')
-        ok = process.returncode == 0 and f'RESULT {args.candidate} {label} PASS' in output
+        # Submitted test-vector names sometimes differ in case or punctuation
+        # from Makefile target labels; the invoked target is still unique.
+        lines = [line for line in output.splitlines() if line.startswith(f'RESULT {args.candidate} ')]
+        ok = process.returncode == 0 and len(lines) == 1 and re.search(r'\sPASS(?:\s|$)', lines[0]) is not None
         results[str(index)] = 'passed' if ok else 'failed'
     except subprocess.TimeoutExpired:
         os.killpg(process.pid, signal.SIGKILL)
