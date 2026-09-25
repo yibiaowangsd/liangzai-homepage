@@ -1,14 +1,9 @@
 import { NGCC_WASM } from './ngcc-runtime.js';
 import { NGCC_HASH_WASM } from './ngcc-hash-runtime.js';
 import { NGCC_KEX_WASM } from './ngcc-kex-runtime.js';
-import { NGCC_REPORTS } from './ngcc-reports.js';
 
 const $ = id => document.getElementById(id);
 const TYPES = { kem: '密钥封装', sig: '数字签名', kex: '密钥交换', hash: '哈希算法' };
-const SIZES = { PublicKeyBytes: '公钥', SecretKeyBytes: '私钥', CiphertextBytes: '密文',
-  SharedSecretBytes: '共享密钥', SignatureBytes: '签名', Passes: '交互轮数',
-  InitiatorStateBytes: '发起方状态', ResponderStateBytes: '响应方状态',
-  TotalMessageBytes: '总消息', DigestBits: '摘要位数', DigestBytes: '摘要长度' };
 const BUILD_LABELS = { verified: '已接入并验证', existing_verified: '已接入并验证',
   compile_failed: '源码编译失败', runtime_failed: 'WASM 运行失败',
   timeout: 'WASM 编译或运行超时', native_timeout: '原生测试超时',
@@ -22,114 +17,6 @@ const node = (tag, value, className) => {
 };
 const ready = (candidate, index) => Boolean((candidate.type === 'hash' ? NGCC_HASH_WASM
   : candidate.type === 'kex' ? NGCC_KEX_WASM : NGCC_WASM)[candidate.id]?.[index]);
-
-function hashPage(candidates) {
-  const hashes = candidates.filter(candidate => candidate.type === 'hash');
-  let current = hashes[0];
-  let active = null, timer = null;
-  const stop = () => {
-    active?.terminate(); active = null;
-    if (timer) clearTimeout(timer);
-    timer = null; $('hash-run').disabled = false;
-  };
-  const render = () => {
-    $('hash-name').textContent = current.name;
-    $('hash-id').textContent = current.id;
-    $('hash-variant').replaceChildren(...current.parameters.map((parameter, index) =>
-      new Option(parameter.label, String(index))));
-    $('hash-team').textContent = current.team.join('、');
-    $('hash-official').href = current.page;
-    $('hash-archive').href = current.archive;
-    const reports = NGCC_REPORTS[current.id] || [];
-    const report = $('hash-report');
-    if (!reports.length) {
-      report.replaceChildren(node('p', '本站尚未整理此候选的中文安全报告；请以 ngcc.dev 的最新报告索引为准。', 'report-empty'));
-    } else {
-      const list = node('ul', null, 'report-items');
-      for (const item of reports) {
-        const row = node('li'), link = node('a', item.zh);
-        link.href = `https://ngcc.dev/reports/${current.id}.html`;
-        link.target = '_blank'; link.rel = 'noopener noreferrer';
-        row.append(node('b', item.id), link,
-          node('span', `${item.severity} · ${item.status} · 影响：${item.affected}`, 'report-note'));
-        for (const [label, value] of [['证据', item.evidence], ['影响边界', item.impact], ['修复方向', item.repair]]) {
-          if (!value) continue;
-          const detail = node('p', null, 'report-detail');
-          detail.append(node('strong', `${label}：`), document.createTextNode(value));
-          row.append(detail);
-        }
-        list.append(row);
-      }
-      report.replaceChildren(list);
-    }
-    renderParameter();
-    renderList();
-  };
-  const renderParameter = () => {
-    stop();
-    const parameter = current.parameters[Number($('hash-variant').value)];
-    if (!parameter) return;
-    const module = NGCC_HASH_WASM[current.id]?.[Number($('hash-variant').value)];
-    $('hash-workbench').classList.toggle('hidden', !module);
-    $('hash-notice').textContent = module
-      ? '该参数已从提交参考源码编译为浏览器 WASM，并通过原生测试向量与 WASM 运行检查；在下方输入消息可本地计算摘要。测试通过不等于安全认证。'
-      : '当前发布版本尚未接入该参数的浏览器 WASM。下方仅展示官方资料，不会用其他哈希函数冒充计算结果。';
-    $('hash-status').textContent = '等待输入';
-    $('hash-digest').textContent = '等待计算';
-    $('hash-source').textContent = parameter.source;
-    $('hash-facts').replaceChildren(...Object.entries(parameter.sizes).map(([key, value]) => {
-      const box = node('div'), label = node('dt', SIZES[key] || key);
-      const suffix = key === 'DigestBits' ? 'bit' : key === 'Passes' ? '轮' : 'B';
-      box.append(label, node('dd', `${value.toLocaleString('zh-CN')} ${suffix}`));
-      return box;
-    }));
-  };
-  const renderList = () => {
-    const query = $('hash-search').value.trim().toLocaleLowerCase();
-    $('hash-list').replaceChildren(...hashes.filter(candidate =>
-      `${candidate.id} ${candidate.name}`.toLocaleLowerCase().includes(query)).map(candidate => {
-      const button = node('button', `${candidate.name} (${candidate.id})`);
-      button.type = 'button';
-      if (candidate === current) button.setAttribute('aria-current', 'true');
-      button.append(node('small', `${candidate.parameters.length} 组参数 · ${candidate.team.length} 位成员`));
-      button.addEventListener('click', () => { current = candidate; render(); });
-      return button;
-    }));
-  };
-  $('hash-search').addEventListener('input', renderList);
-  $('hash-variant').addEventListener('change', renderParameter);
-  $('hash-run').addEventListener('click', () => {
-    stop();
-    const bytes = new TextEncoder().encode($('hash-message').value);
-    if (bytes.length > 1048576) {
-      $('hash-status').textContent = '消息不得超过 1 MiB'; return;
-    }
-    const index = Number($('hash-variant').value);
-    $('hash-run').disabled = true;
-    $('hash-status').textContent = '正在计算…';
-    $('hash-digest').textContent = '计算中';
-    const worker = new Worker('./hash-worker.js', { type: 'module' });
-    active = worker;
-    timer = setTimeout(() => {
-      if (active !== worker) return;
-      stop(); $('hash-status').textContent = '该实现运行超过 30 秒，已停止';
-      $('hash-digest').textContent = '未生成摘要';
-    }, 30000);
-    worker.onmessage = ({ data }) => {
-      if (active !== worker) return;
-      stop();
-      $('hash-status').textContent = data.error || `完成 · ${data.bytes} B · ${data.ms.toFixed(2)} ms`;
-      $('hash-digest').textContent = data.error ? '未生成摘要' : data.digest;
-    };
-    worker.onerror = () => {
-      if (active !== worker) return;
-      stop(); $('hash-status').textContent = 'WASM 加载或执行失败';
-      $('hash-digest').textContent = '未生成摘要';
-    };
-    worker.postMessage({ id: current.id, index, message: bytes }, [bytes.buffer]);
-  });
-  render();
-}
 
 const cell = (row, value, kind) => {
   const td = node('td'); td.append(node(kind || 'span', value)); row.append(td); return td;
@@ -205,13 +92,9 @@ try {
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
   const catalog = await response.json();
   if (catalog.candidates?.length !== 119) throw new Error('候选数量与已核对快照不符');
-  if (document.body.dataset.page === 'hash') hashPage(catalog.candidates);
-  else {
-    const build = await fetch('./ngcc-build-status.json').then(response =>
-      response.ok ? response.json() : null).catch(() => null);
-    auditPage(catalog.candidates, build);
-  }
+  const build = await fetch('./ngcc-build-status.json').then(response =>
+    response.ok ? response.json() : null).catch(() => null);
+  auditPage(catalog.candidates, build);
 } catch (error) {
-  const target = document.body.dataset.page === 'hash' ? $('hash-name') : $('audit-count');
-  target.textContent = `目录加载失败：${error.message}`;
+  $('audit-count').textContent = `目录加载失败：${error.message}`;
 }

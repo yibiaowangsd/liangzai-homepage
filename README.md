@@ -8,7 +8,7 @@
 | `/storybook` | 11 页动画书、章节切换和逐页旁白 |
 | `/archive` | 角色故事与档案 |
 | `/pqc-arsenal` | ML-KEM、ML-DSA、SLH-DSA、FN-DSA 的教学交互 |
-| `/pqc-practice` | PQC 武器实战：40 组 PQMagic WASM 配置；2026 年国内征集的 119 个候选和 586 个参数实例（含团队成员），其中 5 个候选、15 个实例已有可运行的提交源码 WASM |
+| `/pqc-practice` | PQC 武器实战：40 组 PQMagic WASM 配置；2026 年国内征集的 119 个候选和 586 个参数实例（含团队成员），其中 80 个候选、325 组参数已登记并收录可运行的提交源码 WASM；密钥封装、签名、密钥交换与哈希在同一工作台选择 |
 | `/about` | 项目作者简介 |
 
 技术栈：Next.js App Router、React 19、TypeScript、Vinext/Vite、Cloudflare Worker、Three.js 与 GSAP。武器库的教学交互是概念演示；武器实战页面在浏览器中使用 PQMagic WASM 执行真实算法运算。

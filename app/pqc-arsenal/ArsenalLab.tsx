@@ -584,6 +584,9 @@ export default function ArsenalLab() {
             探索四种守护之力
             <i aria-hidden="true" />
           </a>
+          <a className="arsenal-practice-link" data-intro href="/pqc-practice">
+            已了解原理？进入 PQC 武器实战 <span aria-hidden="true">↗</span>
+          </a>
         </div>
         <figure className="arsenal-hero-visual" data-intro>
           <div className="armory-portrait">

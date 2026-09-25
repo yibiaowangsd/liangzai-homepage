@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
 
-test("renders the modern homepage and its four experience destinations", async () => {
+test("renders the homepage with the integrated practice destination", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -32,9 +32,10 @@ test("renders the modern homepage and its four experience destinations", async (
   assert.match(html, developmentPreviewMeta);
   assert.match(html, /小小量仔/);
   assert.match(html, /大有可为/);
-  for (const route of ["/storybook", "/archive", "/pqc-arsenal", "/about"]) {
+  for (const route of ["/storybook", "/archive", "/pqc-arsenal", "/pqc-practice", "/about"]) {
     assert.ok(html.includes(`href="${route}"`), `Homepage links to ${route}`);
   }
+  assert.match(html, /进入 PQC 武器实战/);
   assert.match(html, /开启动效|暂停动效/);
   assert.match(html, /让想象/);
   assert.match(html, /观看宇宙序章/);

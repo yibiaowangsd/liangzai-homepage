@@ -214,13 +214,26 @@ export default function QuantumHome() {
             <Link className="line-link" href="/pqc-arsenal#math">
               从直觉，走进密码学
             </Link>
-            <a className="line-link" href="/pqc-practice/index.html">
-              PQC 武器实战
-            </a>
           </div>
           <small>交互艺术 · 不表示真实量子态</small>
         </div>
         <QuantumSculpture />
+      </section>
+      <section className="practice-portal section-wrap" aria-labelledby="practice-portal-title">
+        <div className="practice-portal-copy" data-reveal>
+          <p className="eyebrow">03 / THE PRACTICE LAB</p>
+          <h2 id="practice-portal-title">理解之后，<em>亲手验证。</em></h2>
+          <p>从 PQC 武器库走进实战。选择算法与参数，在浏览器中运行密钥封装、签名、密钥交换与哈希的真实 WASM 实现。</p>
+          <a className="silver-button" href="/pqc-practice">
+            进入 PQC 武器实战<i aria-hidden="true" />
+          </a>
+        </div>
+        <div className="practice-portal-visual" aria-hidden="true">
+          <span className="practice-orbit practice-orbit-one" />
+          <span className="practice-orbit practice-orbit-two" />
+          <span className="practice-portal-glyph">Q</span>
+          <span className="practice-portal-label">SELECT / RUN / VERIFY</span>
+        </div>
       </section>
       <section className="cinema-banner" aria-labelledby="cinema-title">
         <img

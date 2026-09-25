@@ -593,3 +593,5 @@
     font-size: 10px;
   }
 }
+
+.arsenal-practice-link{display:block;width:max-content;margin-top:22px;padding-bottom:8px;border-bottom:1px solid #8ba9c0;color:#bdd7ec;font-size:12px;letter-spacing:.02em}.arsenal-practice-link:hover{color:#fff;border-color:#cde7f7}.arsenal-practice-link span{margin-left:12px}

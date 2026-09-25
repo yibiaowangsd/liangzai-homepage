@@ -9,7 +9,7 @@ const links = [
   ["/storybook", "量仔故事", "STORY"],
   ["/archive", "角色档案", "CHARACTER"],
   ["/pqc-arsenal", "PQC 武器库", "ARSENAL"],
-  ["/pqc-practice/index.html", "PQC 武器实战", "PRACTICE"],
+  ["/pqc-practice", "PQC 武器实战", "PRACTICE"],
   ["/about", "量仔背后的人", "THE HUMAN"],
 ];
 export function SiteHeader() {

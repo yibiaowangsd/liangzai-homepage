@@ -2057,3 +2057,10 @@ button:disabled {
 .portal-image {
   max-width: none;
 }
+
+/* The practice lab is a chapter of the same exploration, not a utility link. */
+.practice-portal{position:relative;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:5vw;min-height:430px;margin-top:50px;margin-bottom:100px;padding-top:55px;padding-bottom:55px;border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);overflow:hidden}
+.practice-portal h2{font-size:clamp(40px,5vw,70px);font-weight:400;line-height:1.2;letter-spacing:-.05em;margin:18px 0}.practice-portal h2 em{font-style:normal;color:var(--ice)}.practice-portal-copy>p:not(.eyebrow){max-width:540px;color:#9caab8;font-size:14px;line-height:1.9;margin-bottom:30px}.practice-portal .silver-button{width:max-content}
+.practice-portal-visual{position:relative;min-height:310px;display:grid;place-items:center;background:radial-gradient(ellipse at center,#28435d55,transparent 60%)}.practice-orbit{position:absolute;border:1px solid #a8d9ff50;border-radius:50%;transform:rotate(-22deg)}.practice-orbit-one{width:290px;height:290px;box-shadow:inset 0 0 50px #8cb9dd12,0 0 60px #8cb9dd12}.practice-orbit-two{width:390px;height:175px;transform:rotate(28deg);border-color:#c2d7e335}.practice-portal-glyph{font:200px/1 Arial,sans-serif;letter-spacing:-.1em;color:#d2ecfa;text-shadow:0 0 45px #8dc8ed65}.practice-portal-label{position:absolute;bottom:8px;font:10px/1.4 var(--font-mono-en);letter-spacing:.2em;color:#8fa6b9}
+@media(max-width:1100px){.practice-portal{min-height:350px}.practice-portal-visual{transform:scale(.82)}}
+@media(max-width:750px){.practice-portal{grid-template-columns:1fr;margin-bottom:60px}.practice-portal-visual{min-height:230px;transform:scale(.7);margin:-30px 0}}

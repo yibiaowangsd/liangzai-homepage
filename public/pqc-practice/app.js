@@ -1,6 +1,7 @@
 import { renderDialogue, animateTransfer, resetTransfers } from './dialogue.js';
 import { ngccModule } from './ngcc-runtime.js';
 import { NGCC_REPORTS } from './ngcc-reports.js';
+import { candidateModule, setCandidateProvider, showCandidateWork, stopCandidateWork } from './candidate-workbench.js';
 const $ = selector => document.querySelector(selector);
 const VARIANTS = {
   mlkem: ['512', '768', '1024'],
@@ -25,6 +26,7 @@ const FIELD_SIZES = {
 };
 const isNgcc = () => $('#library').value === 'ngcc';
 const selectedCandidate = () => catalog?.find(item => item.id === $('#family').value);
+setCandidateProvider(selectedCandidate);
 const isRunnable = () => !isNgcc() || !!ngccModule($('#family').value, $('#variant').value);
 const isKem = () => isNgcc() ? selectedCandidate()?.type === 'kem' : ['mlkem', 'aigisenc'].includes($('#family').value);
 const name = () => isNgcc() ? `${selectedCandidate()?.name} / ${selectedCandidate()?.parameters[Number($('#variant').value)]?.name}`
@@ -242,13 +244,15 @@ function showCatalog() {
   const parameter = candidate?.parameters[Number($('#variant').value)];
   if (!candidate || !parameter) return;
   sizes = null; resetFields();
-  const runnable = isRunnable();
-  $('#flow-title').textContent = '2026 国内征集算法';
+  const special = candidate.type === 'kex' || candidate.type === 'hash';
+  const runnable = special ? Boolean(candidateModule(candidate, Number($('#variant').value))) : isRunnable();
+  $('#flow-title').textContent = candidate.type === 'hash' ? '哈希实战'
+    : candidate.type === 'kex' ? '密钥交换实战' : candidate.type === 'sig' ? '签名实战' : '密钥封装实战';
   $('#catalog-name').textContent = candidate.name;
   $('#catalog-id').textContent = candidate.id;
   $('#catalog-type').textContent = CATEGORIES[candidate.type].split(' · ')[0];
   $('#catalog-notice').textContent = runnable
-    ? '此参数集已由征集提交源码编译为浏览器 WASM，可在下方运行。部分实现作了必要的兼容和安全修补；功能验证不构成安全认证。'
+    ? '此参数集已由征集提交源码编译为浏览器 WASM，可在下方运行。功能验证不构成安全认证。'
     : '此参数集尚未接入可运行的浏览器实现。可查阅原始参数、提交团队与源码；下方不展示无法执行的操作。';
   $('#catalog-facts').replaceChildren(...Object.entries(parameter.sizes).map(([key, value]) => {
     const box = document.createElement('div'), label = document.createElement('dt'), size = document.createElement('dd');
@@ -262,22 +266,25 @@ function showCatalog() {
   $('#catalog-archive').href = candidate.archive;
   $('#report-panel').classList.remove('hidden');
   showReports(candidate);
-  $('.journey').classList.toggle('hidden', !runnable);
-  $('#manual-result').classList.toggle('hidden', !runnable);
-  $('#clear-all').classList.toggle('hidden', !runnable);
+  showCandidateWork(candidate, Number($('#variant').value));
+  $('.journey').classList.toggle('hidden', !runnable || special);
+  $('#manual-result').classList.toggle('hidden', !runnable || special);
+  $('#clear-all').classList.toggle('hidden', !runnable || special);
   $('#kem-flow').classList.add('hidden');
   $('#sig-flow').classList.add('hidden');
   runtime(runnable ? '征集实现 · 本地运行' : '候选资料 · 未接入验证', runnable ? 'ready' : '');
   status(runnable ? `${candidate.name} / ${parameter.label}：正在载入 WASM…`
     : `${candidate.name} / ${parameter.label}：可查阅参数；暂无可运行的浏览器实现。`);
   setBusy(false);
-  if (runnable) configureVariant();
+  if (runnable && !special) configureVariant();
+  else if (runnable) status(`${candidate.name} / ${parameter.label}：已接入，可在下方本地运行。`);
 }
 async function switchLibrary() {
-  sizes = null; resetFields();
+  sizes = null; resetFields(); stopCandidateWork();
   const directory = isNgcc();
   $('#catalog-detail').classList.toggle('hidden', !directory);
   $('#report-panel').classList.toggle('hidden', !directory);
+  $('#candidate-workbench').classList.add('hidden');
   $('#hash-field').classList.toggle('hidden', directory);
   $('#clear-all').classList.toggle('hidden', directory);
   for (const selector of ['.journey', '#kem-flow', '#sig-flow', '#manual-result']) {
@@ -294,7 +301,7 @@ async function switchLibrary() {
       $('#family').replaceChildren(...Object.entries(CATEGORIES).map(([type, title]) => {
         const group = document.createElement('optgroup'); group.label = title;
         group.append(...catalog.filter(item => item.type === type).map(item => new Option(
-          `${ngccModule(item.id, 0) ? '● ' : ''}${item.name} (${item.id})`, item.id)));
+          `${item.parameters.some((_, index) => ngccModule(item.id, index) || candidateModule(item, index)) ? '● ' : ''}${item.name} (${item.id})`, item.id)));
         return group;
       }));
       configureCatalogParameters(); showCatalog();
