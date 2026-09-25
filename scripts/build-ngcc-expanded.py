@@ -153,6 +153,8 @@ def main():
     parser.add_argument("harness", type=Path)
     parser.add_argument("candidate", nargs="?", help="candidate ID; omit for all")
     parser.add_argument("--seconds", type=int, default=90, help="per compile/link step timeout")
+    parser.add_argument("--from-index", type=int, default=0)
+    parser.add_argument("--to-index", type=int, default=1_000_000)
     parser.add_argument("--native-unverified", action="store_true",
                         help="still attempt WASM compile after a native KAT failure, but never publish it")
     parser.add_argument("--native-status-file", type=Path,
@@ -180,6 +182,8 @@ def main():
             print(f"{candidate['id']}: cannot read curated Makefile: {error}", file=sys.stderr)
             labels = []
         for index, parameter in enumerate(candidate["parameters"]):
+            if not args.from_index <= index < args.to_index:
+                continue
             if candidate["id"] in EXISTING and index < 3:
                 record = dict(id=candidate["id"], parameter=index, label=parameter["label"],
                               status="existing_verified")
