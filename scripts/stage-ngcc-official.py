@@ -276,20 +276,26 @@ for index, item in enumerate(candidate['parameters']):
         lines.append(f'INC_{label} := -Isrc/{label}/{family}/src '
                      f'-Isrc/{label}/common/aes -Isrc/{label}/common/sha3')
     elif candidate_id == 'kem-35':
-        # The submission shares parameter headers and code outside each
-        # parameter directory; list its actual source tree before selection.
-        shared = sorted(p.relative_to(destination).as_posix()
-                        for p in destination.rglob('*.c')
-                        if '_shared' in p.parts)
-        print(f'{candidate_id} {label}: shared C paths: {shared[:120]}', flush=True)
-        matching = sorted(p.relative_to(destination).as_posix()
-                          for p in destination.rglob('scloudplus_param_common.h'))
-        print(f'{candidate_id} {label}: common parameter headers: {matching}', flush=True)
-        header_dirs = sorted({p.parent.relative_to(destination).as_posix()
-                              for p in destination.rglob('*.h')
-                              if '_shared' in p.parts or source_dir in p.parents})
-        lines.append(f'INC_{label} := '
-                     + ' '.join(f'-I{folder}' for folder in header_dirs))
+        # The archive's directory with spaces cannot be passed verbatim in
+        # compiler flags. Link the copied source to a stable local alias.
+        alias = destination / '_ngcc_shared'
+        if not alias.exists():
+            alias.symlink_to('Implementations and Test_Vectors/Implementations/_shared',
+                            target_is_directory=True)
+        shared = source_dir / '../../../_shared'
+        if not (shared / 'scloudplus_core/include/scloudplus_param_common.h').is_file():
+            raise FileNotFoundError(f'{candidate_id} {label}: missing shared parameters')
+        selected = ['../../../_shared/api_pkc/KEM_AlgorithmInstance.c',
+                    '../../../_shared/api_pkc/drng.c']
+        selected += sorted('../../../_shared/scloudplus_core/common/' + p.name
+                           for p in (shared / 'scloudplus_core/common').glob('*.c'))
+        selected += sorted('../../../_shared/scloudplus_core/ref/' + p.name
+                           for p in (shared / 'scloudplus_core/ref').glob('*.c'))
+        lines.append(f'SRCS_{label} := {" ".join(selected)}')
+        lines.append(f'INC_{label} := -I_ngcc_shared/api_pkc '
+                     f'-I_ngcc_shared/scloudplus_core/include '
+                     f'-I_ngcc_shared/scloudplus_core/common '
+                     f'-I_ngcc_shared/scloudplus_core/ref -Isrc/{label}')
     elif candidate_id == 'sign-19':
         backend = 'SHAKE' if '-SHAKE-' in label else 'SM3'
         core = ('address counter merkle octopus randombytes sign tfors utils '
