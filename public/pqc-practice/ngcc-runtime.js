@@ -38,6 +38,7 @@ export const NGCC_WASM = Object.freeze({
   'kem-37': ['ngcc-kem-37-0', 'ngcc-kem-37-1', 'ngcc-kem-37-2', 'ngcc-kem-37-3'],
   'kem-39': ['ngcc-kem-39-0', 'ngcc-kem-39-1', 'ngcc-kem-39-2'],
   'kem-40': ['ngcc-kem-40-0', 'ngcc-kem-40-1', 'ngcc-kem-40-2'],
+  'kem-41': ['ngcc-kem-41-0', 'ngcc-kem-41-1', 'ngcc-kem-41-2'],
 });
 
 export const ngccModule = (candidate, parameter) => NGCC_WASM[candidate]?.[Number(parameter)] || null;
