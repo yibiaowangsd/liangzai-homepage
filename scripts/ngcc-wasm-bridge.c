@@ -2,6 +2,8 @@
  * Never substitutes a different algorithm for the submitted source. */
 #include <stdint.h>
 #include <stddef.h>
+#include <stdlib.h>
+#include <string.h>
 
 extern int ngcc_seed(const unsigned char *, unsigned long long);
 int lab_seed(const uint8_t *seed, int len) {
@@ -72,6 +74,84 @@ int lab_verify(uint8_t *sig, int len, uint8_t *message, int bytes, uint8_t *pk) 
   if (len < 1 || len > lab_output_bytes() || bytes < 0 || bytes > 65536) return -1;
   return sig_verify(pk, sig_get_pk_len_bytes(), sig, (unsigned long long)len,
                     message, (unsigned long long)bytes);
+}
+#elif defined(NGCC_BUILD_KEX)
+/* A one-shot browser transcript, with exactly the published number of passes.
+ * This runs the submitted reference functions; it does not emulate a KEM. */
+#ifndef NGCC_KEX_PASSES
+#error NGCC_KEX_PASSES must be the published parameter
+#endif
+extern unsigned long long kex_get_passes_num(void), kex_get_pk_len_bytes(void);
+extern unsigned long long kex_get_sk_len_bytes(void), kex_get_sta_len_bytes(void);
+extern unsigned long long kex_get_stb_len_bytes(void), kex_get_ss_len_bytes(void);
+extern unsigned long long kex_get_total_msg_len_bytes(void);
+extern int kex_init_a(uint8_t *, unsigned long long *, uint8_t *, unsigned long long *, uint8_t *, unsigned long long *);
+extern int kex_init_b(uint8_t *, unsigned long long *, uint8_t *, unsigned long long *, uint8_t *, unsigned long long *);
+extern int kex_generate_pass1_msg_a(uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long *, uint8_t *, unsigned long long *);
+#if NGCC_KEX_PASSES >= 2
+extern int kex_generate_pass2_msg_b(uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long *, uint8_t *, unsigned long long *);
+#endif
+#if NGCC_KEX_PASSES >= 3
+extern int kex_generate_pass3_msg_a(uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long *, uint8_t *, unsigned long long *);
+#endif
+#if NGCC_KEX_PASSES >= 4
+extern int kex_generate_pass4_msg_b(uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long *, uint8_t *, unsigned long long *);
+#endif
+extern int kex_derive_ss_a(uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long *);
+extern int kex_derive_ss_b(uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long, uint8_t *, unsigned long long *);
+int lab_passes(void) { return (int)kex_get_passes_num(); }
+int lab_public_bytes(void) { return (int)kex_get_pk_len_bytes(); }
+int lab_private_bytes(void) { return (int)kex_get_sk_len_bytes(); }
+int lab_state_a_bytes(void) { return (int)kex_get_sta_len_bytes(); }
+int lab_state_b_bytes(void) { return (int)kex_get_stb_len_bytes(); }
+int lab_shared_bytes(void) { return (int)kex_get_ss_len_bytes(); }
+int lab_total_bytes(void) { return (int)kex_get_total_msg_len_bytes(); }
+static uint8_t *kexbuf(unsigned long long n) { return n <= 16 * 1024 * 1024 ? (uint8_t *)calloc((size_t)(n ? n : 1), 1) : NULL; }
+int lab_exchange(uint8_t *output) {
+  const unsigned long long pk = kex_get_pk_len_bytes(), sk = kex_get_sk_len_bytes();
+  const unsigned long long sa = kex_get_sta_len_bytes(), sb = kex_get_stb_len_bytes();
+  const unsigned long long ss = kex_get_ss_len_bytes(), total = kex_get_total_msg_len_bytes();
+  if (!output || kex_get_passes_num() != NGCC_KEX_PASSES || NGCC_KEX_PASSES > 4 || !ss) return -1;
+  uint8_t *pka = kexbuf(pk), *ska = kexbuf(sk), *pkb = kexbuf(pk), *skb = kexbuf(sk);
+  uint8_t *sta = kexbuf(sa), *stb = kexbuf(sb), *ssa = kexbuf(ss), *ssb = kexbuf(ss);
+  uint8_t *msg[5] = { NULL, kexbuf(total), kexbuf(total), kexbuf(total), kexbuf(total) };
+  unsigned long long alen = sa, blen = sb, pka_len = pk, ska_len = sk, pkb_len = pk, skb_len = sk;
+  unsigned long long mlen[5] = {0}, ssa_len = ss, ssb_len = ss;
+  uint8_t *ma = NULL, *mb = NULL;
+  unsigned long long ma_len = 0, mb_len = 0;
+  int ok = -1, rc;
+  if (!pka || !ska || !pkb || !skb || !sta || !stb || !ssa || !ssb || !msg[1] || !msg[2] || !msg[3] || !msg[4]) goto done;
+  if (kex_init_a(pka, &pka_len, ska, &ska_len, sta, &alen) < 0 ||
+      kex_init_b(pkb, &pkb_len, skb, &skb_len, stb, &blen) < 0 ||
+      pka_len > pk || ska_len > sk || pkb_len > pk || skb_len > sk || alen > sa || blen > sb) goto done;
+  rc = kex_generate_pass1_msg_a(ska, ska_len, pkb, pkb_len, sta, &alen, msg[1], &mlen[1]);
+  if (rc < 0 || alen > sa || mlen[1] > total) goto done;
+  ma = msg[1]; ma_len = mlen[1];
+#if NGCC_KEX_PASSES >= 2
+  rc = kex_generate_pass2_msg_b(skb, skb_len, pka, pka_len, msg[1], mlen[1], stb, &blen, msg[2], &mlen[2]);
+  if (rc < 0 || blen > sb || mlen[2] > total) goto done;
+  mb = msg[2]; mb_len = mlen[2];
+#endif
+#if NGCC_KEX_PASSES >= 3
+  rc = kex_generate_pass3_msg_a(ska, ska_len, pkb, pkb_len, msg[2], mlen[2], sta, &alen, msg[3], &mlen[3]);
+  if (rc < 0 || alen > sa || mlen[3] > total) goto done;
+  ma = msg[3]; ma_len = mlen[3];
+#endif
+#if NGCC_KEX_PASSES >= 4
+  rc = kex_generate_pass4_msg_b(skb, skb_len, pka, pka_len, msg[3], mlen[3], stb, &blen, msg[4], &mlen[4]);
+  if (rc < 0 || blen > sb || mlen[4] > total) goto done;
+  mb = msg[4]; mb_len = mlen[4];
+#endif
+  if (kex_derive_ss_a(ska, ska_len, pkb, pkb_len, mb, mb_len, sta, alen, ssa, &ssa_len) < 0 ||
+      kex_derive_ss_b(skb, skb_len, pka, pka_len, ma, ma_len, stb, blen, ssb, &ssb_len) < 0 ||
+      ssa_len != ss || ssb_len != ss || memcmp(ssa, ssb, ss)) goto done;
+  memcpy(output, ssa, ss);
+  ok = 0;
+done:
+  free(pka); free(ska); free(pkb); free(skb); free(sta); free(stb);
+  free(ssa); free(ssb);
+  for (int i = 1; i <= 4; i++) free(msg[i]);
+  return ok;
 }
 #else
 #error Unsupported candidate type

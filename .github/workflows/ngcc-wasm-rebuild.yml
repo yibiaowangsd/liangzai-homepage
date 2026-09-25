@@ -6,70 +6,257 @@ on:
     paths:
       - '.github/workflows/ngcc-wasm-rebuild.yml'
       - 'scripts/build-ngcc-expanded.py'
+      - 'scripts/check-ngcc-native.py'
       - 'scripts/check-ngcc-module.mjs'
       - 'scripts/ngcc-wasm-bridge.c'
-      - 'scripts/ngcc-wasm-introspect.mk'
-      - 'tests/fixtures/ngcc-hash01.json'
+      - 'scripts/run-ngcc-batch.sh'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  kem-sign-pilot:
+  build:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        include:
+          - name: batch-01
+            ids: 'hash-10 hash-11'
+            sparse: |
+              /api/
+              /hash-10/
+              /hash-11/
+          - name: batch-02
+            ids: 'hash-12 hash-14 hash-17'
+            sparse: |
+              /api/
+              /hash-12/
+              /hash-14/
+              /hash-17/
+          - name: batch-03
+            ids: 'hash-18'
+            sparse: |
+              /api/
+              /hash-18/
+          - name: batch-04
+            ids: 'hash-19 hash-20'
+            sparse: |
+              /api/
+              /hash-19/
+              /hash-20/
+          - name: batch-05
+            ids: 'hash-21 hash-22 hash-24 hash-25'
+            sparse: |
+              /api/
+              /hash-21/
+              /hash-22/
+              /hash-24/
+              /hash-25/
+          - name: batch-06
+            ids: 'hash-26 hash-27 hash-31'
+            sparse: |
+              /api/
+              /hash-26/
+              /hash-27/
+              /hash-31/
+          - name: batch-07
+            ids: 'hash-32 hash-35'
+            sparse: |
+              /api/
+              /hash-32/
+              /hash-35/
+          - name: batch-08
+            ids: 'kem-04 kem-06 kem-07'
+            sparse: |
+              /api/
+              /kem-04/
+              /kem-06/
+              /kem-07/
+          - name: batch-09
+            ids: 'kem-09 kem-10'
+            sparse: |
+              /api/
+              /kem-09/
+              /kem-10/
+          - name: batch-10
+            ids: 'kem-14'
+            sparse: |
+              /api/
+              /kem-14/
+          - name: batch-11
+            ids: 'kem-17 kem-18 kem-21'
+            sparse: |
+              /api/
+              /kem-17/
+              /kem-18/
+              /kem-21/
+          - name: batch-12
+            ids: 'kem-22 kem-23'
+            sparse: |
+              /api/
+              /kem-22/
+              /kem-23/
+          - name: batch-13
+            ids: 'kem-24 kem-29 kem-31'
+            sparse: |
+              /api/
+              /kem-24/
+              /kem-29/
+              /kem-31/
+          - name: batch-14
+            ids: 'kem-32 kem-33 kem-36'
+            sparse: |
+              /api/
+              /kem-32/
+              /kem-33/
+              /kem-36/
+          - name: batch-15
+            ids: 'kem-37 kem-38 kem-40'
+            sparse: |
+              /api/
+              /kem-37/
+              /kem-38/
+              /kem-40/
+          - name: batch-16
+            ids: 'sign-03'
+            sparse: |
+              /api/
+              /sign-03/
+          - name: batch-17
+            ids: 'sign-04'
+            sparse: |
+              /api/
+              /sign-04/
+          - name: batch-18
+            ids: 'sign-07 sign-09'
+            sparse: |
+              /api/
+              /sign-07/
+              /sign-09/
+          - name: batch-19
+            ids: 'sign-10 sign-11'
+            sparse: |
+              /api/
+              /sign-10/
+              /sign-11/
+          - name: batch-20
+            ids: 'sign-12'
+            sparse: |
+              /api/
+              /sign-12/
+          - name: batch-21
+            ids: 'sign-15 sign-16 sign-18'
+            sparse: |
+              /api/
+              /sign-15/
+              /sign-16/
+              /sign-18/
+          - name: batch-22
+            ids: 'sign-25'
+            sparse: |
+              /api/
+              /sign-25/
+          - name: batch-23
+            ids: 'sign-27 sign-29 sign-32'
+            sparse: |
+              /api/
+              /sign-27/
+              /sign-29/
+              /sign-32/
+          - name: batch-24
+            ids: 'sign-33 sign-34'
+            sparse: |
+              /api/
+              /sign-33/
+              /sign-34/
+          - name: batch-25
+            ids: 'kex-02 kex-05'
+            sparse: |
+              /api/
+              /kex-02/
+              /kex-05/
+          - name: batch-26
+            ids: 'kex-03'
+            sparse: |
+              /api/
+              /kex-03/
+          - name: batch-27
+            ids: 'kex-07'
+            sparse: |
+              /api/
+              /kex-07/
+          - name: batch-28
+            ids: 'kex-08 kex-09'
+            sparse: |
+              /api/
+              /kex-08/
+              /kex-09/
     env:
-      NGCC_IDS: 'kem-02 kem-03 sign-03 sign-04'
+      NGCC_IDS: ${{ matrix.ids }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/checkout@v4
         with:
           repository: ngcc-dev/ngcc-harness
           ref: c5261784ef27e7363b1bbace3d687932fda35ccd
           path: ngcc-harness
-          sparse-checkout: |
-            /api/
-            /kem-02/
-            /kem-03/
-            /sign-03/
-            /sign-04/
+          sparse-checkout: ${{ matrix.sparse }}
           sparse-checkout-cone-mode: false
       - uses: emscripten-core/setup-emsdk@v15
         with:
           version: '6.0.10'
-      - name: Check each native reference implementation and build WASM
-        run: |
-          mkdir -p work/ngcc-wasm-rebuild
-          make -s -C ngcc-harness/api harness
-          for id in $NGCC_IDS; do
-            echo "Attempting ${id}"
-            if ! timeout 90 make -s -C "ngcc-harness/$id" -j2 test > "work/ngcc-wasm-rebuild/$id.native.log" 2>&1; then
-              echo "Native KAT failed or exceeded 90 seconds: $id"
-              continue
-            fi
-            if [[ $id == hash-* ]]; then
-              timeout 30 python3 scripts/ngcc-native-hash-vectors.py ngcc-harness "$id" > "work/ngcc-wasm-rebuild/$id.vectors.log" 2>&1
-            fi
-            make -s -C "ngcc-harness/$id" clean
-            python3 scripts/build-ngcc-expanded.py ngcc-harness "$id" --seconds 90
-            cp work/ngcc-wasm-rebuild/results.json "work/ngcc-wasm-rebuild/$id.results.json"
-          done
-      - name: Preserve individual build and runtime logs
+      - name: Test and compile each parameter from source
+        run: bash scripts/run-ngcc-batch.sh "$NGCC_IDS" ngcc-harness
+      - name: Package verified modules and per-parameter logs
         if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ngcc-kem-sign-pilot-logs
-          path: work/ngcc-wasm-rebuild/
-          if-no-files-found: ignore
-      - name: Commit verified browser modules to feature branch
+        shell: bash
         run: |
+          mkdir -p work/ngcc-package/public/pqc-practice/wasm work/ngcc-package/work
+          for id in $NGCC_IDS; do
+            for path in public/pqc-practice/wasm/ngcc-"$id"-*.mjs public/pqc-practice/wasm/ngcc-"$id"-*.wasm; do
+              if [[ -f $path ]]; then cp "$path" work/ngcc-package/public/pqc-practice/wasm/; fi
+            done
+          done
+          if [[ -d work/ngcc-wasm-rebuild ]]; then cp -a work/ngcc-wasm-rebuild work/ngcc-package/work/; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ngcc-batch-${{ matrix.name }}
+          path: work/ngcc-package/
+          if-no-files-found: ignore
+
+  publish:
+    needs: build
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/ngcc-more-wasm
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: 'ngcc-batch-*'
+          merge-multiple: true
+          path: .
+      - name: Publish only verified paired modules with an audit record
+        run: |
+          python3 scripts/aggregate-ngcc-rebuild.py
+          node --test tests/ngcc-catalog.test.mjs
+          node --check public/pqc-practice/ngcc-runtime.js
+          node --check public/pqc-practice/ngcc-hash-runtime.js
+          node --check public/pqc-practice/ngcc-kex-runtime.js
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A public/pqc-practice/wasm/
+          git add -A public/pqc-practice/wasm/ public/pqc-practice/ngcc-runtime.js public/pqc-practice/ngcc-hash-runtime.js public/pqc-practice/ngcc-kex-runtime.js public/pqc-practice/ngcc-build-status.json
           if ! git diff --cached --quiet; then
-            git commit -m 'Build verified NGCC KEM and signature reference WASM'
+            git commit -m 'Publish verified NGCC source rebuilds and per-parameter audit'
             git push origin HEAD:feat/ngcc-more-wasm
           fi

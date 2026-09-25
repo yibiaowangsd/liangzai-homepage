@@ -49,6 +49,19 @@ try {
       digests.push(sha);
     }
     assert.equal(new Set(digests).size, 3, 'distinct messages should have distinct digests');
+  } else if (candidate.type === 'kex') {
+    assert.deepEqual([mod._lab_public_bytes(), mod._lab_private_bytes(), mod._lab_shared_bytes(),
+      mod._lab_state_a_bytes(), mod._lab_state_b_bytes(), mod._lab_total_bytes(), mod._lab_passes()],
+    [sizes.PublicKeyBytes, sizes.SecretKeyBytes, sizes.SharedSecretBytes, sizes.InitiatorStateBytes,
+      sizes.ResponderStateBytes, sizes.TotalMessageBytes, sizes.Passes], 'protocol metadata differs from catalog');
+    const secret = alloc(sizes.SharedSecretBytes);
+    seed(31);
+    assert.equal(mod._lab_exchange(secret), 0, 'full reference protocol failed to agree on a secret');
+    const first = mod.HEAPU8.slice(secret, secret + sizes.SharedSecretBytes);
+    seed(72);
+    assert.equal(mod._lab_exchange(secret), 0, 'second reference protocol failed to agree on a secret');
+    assert.notDeepEqual(first, mod.HEAPU8.slice(secret, secret + sizes.SharedSecretBytes),
+      'independent seeds generated the same shared secret');
   } else {
     const pkSize = mod._lab_public_bytes(), skSize = mod._lab_private_bytes(),
       outSize = mod._lab_output_bytes();
@@ -78,7 +91,7 @@ try {
       assert.equal(mod._lab_verify(sig, length, msg, bytes.length, pk), 0, 'verify failed');
       mod.HEAPU8[msg] ^= 1;
       assert.notEqual(mod._lab_verify(sig, length, msg, bytes.length, pk), 0, 'changed message accepted');
-    } else throw new Error('KEX bridge requires its own protocol transcript test');
+    } else throw new Error('unknown candidate type');
   }
   console.log(`VERIFIED ${id} ${parameter.label}`);
 } finally {

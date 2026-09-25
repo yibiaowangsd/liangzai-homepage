@@ -27,6 +27,9 @@ EXPORTS = {
             "lab_output_bytes", "lab_shared_bytes", "lab_keypair", "lab_enc", "lab_dec"],
     "sig": ["malloc", "free", "lab_seed", "lab_public_bytes", "lab_private_bytes",
             "lab_output_bytes", "lab_keypair", "lab_sign", "lab_verify"],
+    "kex": ["malloc", "free", "lab_seed", "lab_public_bytes", "lab_private_bytes",
+            "lab_state_a_bytes", "lab_state_b_bytes", "lab_shared_bytes", "lab_total_bytes",
+            "lab_passes", "lab_exchange"],
 }
 
 
@@ -71,13 +74,14 @@ def metadata(candidate_dir, label, name):
     return dict(zip(("id", "type", "label", "source", "objects", "defines", "libraries", "cxx"), lines))
 
 
-def build_one(harness, candidate, parameter, index, label, limit):
+def build_one(harness, candidate, parameter, index, label, limit, native_status="passed"):
     name = f"ngcc-{candidate['id']}-{index}"
     cd = harness / candidate["id"]
     logfile = LOGS / f"{name}.log"
     target = WASM / (name + ".mjs")
     record = dict(id=candidate["id"], parameter=index, label=parameter["label"],
                   source=parameter["source"], log=str(logfile.relative_to(REPO)))
+    native_ok = native_status == "passed"
     try:
         meta = metadata(cd, label, name)
         if Path(meta["source"]).as_posix().rstrip("/") != parameter["source"].rstrip("/"):
@@ -97,8 +101,10 @@ def build_one(harness, candidate, parameter, index, label, limit):
                  "-sSTACK_SIZE=16777216", "-sEXPORTED_RUNTIME_METHODS=HEAPU8",
                  "-sEXPORTED_FUNCTIONS=" + json.dumps(["_" + item for item in EXPORTS[candidate["type"]]], separators=(",", ":"))]
         bridge_flags = ["-DNGCC_BUILD_" + candidate["type"].upper()]
-        if candidate["type"] == "hash":
+        if candidate["type"] == "hash" and native_ok:
             bridge_flags.append("-DNGCC_DIGEST_BITS=" + str(parameter["sizes"]["DigestBits"]))
+        if candidate["type"] == "kex":
+            bridge_flags.append("-DNGCC_KEX_PASSES=" + str(parameter["sizes"]["Passes"]))
         compiler = "em++" if meta["cxx"].strip() else "emcc"
         link = [compiler, *flags, *bridge_flags, "-I" + str(harness / "api"),
                 str(REPO / "scripts/ngcc-wasm-bridge.c"),
@@ -126,8 +132,13 @@ def build_one(harness, candidate, parameter, index, label, limit):
             record.update(status="timeout" if status == "timeout" else "runtime_failed",
                           log=str(check_log.relative_to(REPO)))
             return record
-        record["status"] = "verified"
-        record["module"] = target.relative_to(REPO).as_posix()
+        if native_ok:
+            record["status"] = "verified"
+            record["module"] = target.relative_to(REPO).as_posix()
+        else:
+            target.unlink(missing_ok=True)
+            target.with_suffix(".wasm").unlink(missing_ok=True)
+            record["status"] = "native_timeout" if native_status == "timeout" else "native_failed"
         return record
     except (ValueError, FileNotFoundError, KeyError, subprocess.TimeoutExpired) as error:
         target.unlink(missing_ok=True)
@@ -142,6 +153,10 @@ def main():
     parser.add_argument("harness", type=Path)
     parser.add_argument("candidate", nargs="?", help="candidate ID; omit for all")
     parser.add_argument("--seconds", type=int, default=90, help="per compile/link step timeout")
+    parser.add_argument("--native-unverified", action="store_true",
+                        help="still attempt WASM compile after a native KAT failure, but never publish it")
+    parser.add_argument("--native-status-file", type=Path,
+                        help="per-parameter native KAT result JSON, retaining timeout vs failure")
     args = parser.parse_args()
     harness = args.harness.resolve()
     if not shutil.which("emcc") or not shutil.which("em++"):
@@ -154,6 +169,9 @@ def main():
     if not candidates:
         parser.error("unknown candidate ID")
     records = []
+    native_results = json.loads(args.native_status_file.read_text()) if args.native_status_file else {}
+    destination = LOGS / "results.json"
+    destination.write_text("[]\n")
     for candidate in candidates:
         cd = harness / candidate["id"]
         try:
@@ -171,10 +189,11 @@ def main():
                     record = dict(id=candidate["id"], parameter=index, label=parameter["label"],
                                   source=parameter["source"], status="source_missing")
                 else:
-                    record = build_one(harness, candidate, parameter, index, match, args.seconds)
+                    native_status = native_results.get(str(index), "failed" if args.native_unverified else "passed")
+                    record = build_one(harness, candidate, parameter, index, match, args.seconds, native_status)
             records.append(record)
             print(json.dumps(record, ensure_ascii=False), flush=True)
-    (LOGS / "results.json").write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n")
+            destination.write_text(json.dumps(records, ensure_ascii=False, indent=2) + "\n")
 
 
 if __name__ == "__main__":
