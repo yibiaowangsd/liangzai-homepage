@@ -1,4 +1,5 @@
 import { NGCC_WASM } from './ngcc-runtime.js';
+import { NGCC_HASH_WASM } from './ngcc-hash-runtime.js';
 import { NGCC_REPORTS } from './ngcc-reports.js';
 
 const $ = id => document.getElementById(id);
@@ -13,11 +14,17 @@ const node = (tag, value, className) => {
   if (className) element.className = className;
   return element;
 };
-const ready = (candidate, index) => Boolean(NGCC_WASM[candidate.id]?.[index]);
+const ready = (candidate, index) => Boolean((candidate.type === 'hash' ? NGCC_HASH_WASM : NGCC_WASM)[candidate.id]?.[index]);
 
 function hashPage(candidates) {
   const hashes = candidates.filter(candidate => candidate.type === 'hash');
   let current = hashes[0];
+  let active = null, timer = null;
+  const stop = () => {
+    active?.terminate(); active = null;
+    if (timer) clearTimeout(timer);
+    timer = null; $('hash-run').disabled = false;
+  };
   const render = () => {
     $('hash-name').textContent = current.name;
     $('hash-id').textContent = current.id;
@@ -34,8 +41,16 @@ function hashPage(candidates) {
     renderList();
   };
   const renderParameter = () => {
+    stop();
     const parameter = current.parameters[Number($('hash-variant').value)];
     if (!parameter) return;
+    const module = NGCC_HASH_WASM[current.id]?.[Number($('hash-variant').value)];
+    $('hash-workbench').classList.toggle('hidden', !module);
+    $('hash-notice').textContent = module
+      ? '该参数已从提交参考源码编译为浏览器 WASM，并通过功能对照测试；在下方输入消息可本地计算摘要。测试通过不等于安全认证。'
+      : '当前发布版本尚未接入该参数的浏览器 WASM。下方仅展示官方资料，不会用其他哈希函数冒充计算结果。';
+    $('hash-status').textContent = '等待输入';
+    $('hash-digest').textContent = '等待计算';
     $('hash-source').textContent = parameter.source;
     $('hash-facts').replaceChildren(...Object.entries(parameter.sizes).map(([key, value]) => {
       const box = node('div'), label = node('dt', SIZES[key] || key);
@@ -58,6 +73,36 @@ function hashPage(candidates) {
   };
   $('hash-search').addEventListener('input', renderList);
   $('hash-variant').addEventListener('change', renderParameter);
+  $('hash-run').addEventListener('click', () => {
+    stop();
+    const bytes = new TextEncoder().encode($('hash-message').value);
+    if (bytes.length > 1048576) {
+      $('hash-status').textContent = '消息不得超过 1 MiB'; return;
+    }
+    const index = Number($('hash-variant').value);
+    $('hash-run').disabled = true;
+    $('hash-status').textContent = '正在计算…';
+    $('hash-digest').textContent = '计算中';
+    const worker = new Worker('./hash-worker.js', { type: 'module' });
+    active = worker;
+    timer = setTimeout(() => {
+      if (active !== worker) return;
+      stop(); $('hash-status').textContent = '该实现运行超过 30 秒，已停止';
+      $('hash-digest').textContent = '未生成摘要';
+    }, 30000);
+    worker.onmessage = ({ data }) => {
+      if (active !== worker) return;
+      stop();
+      $('hash-status').textContent = data.error || `完成 · ${data.bytes} B · ${data.ms.toFixed(2)} ms`;
+      $('hash-digest').textContent = data.error ? '未生成摘要' : data.digest;
+    };
+    worker.onerror = () => {
+      if (active !== worker) return;
+      stop(); $('hash-status').textContent = 'WASM 加载或执行失败';
+      $('hash-digest').textContent = '未生成摘要';
+    };
+    worker.postMessage({ id: current.id, index, message: bytes }, [bytes.buffer]);
+  });
   render();
 }
 
@@ -68,6 +113,8 @@ const csv = value => `"${String(value).replaceAll('"', '""')}"`;
 function auditPage(candidates) {
   const entries = candidates.flatMap(candidate => candidate.parameters.map((parameter, index) =>
     ({ candidate, parameter, index, state: ready(candidate, index) ? 'ready' : 'pending' })));
+  const verified = entries.filter(entry => entry.state === 'ready');
+  $('audit-summary').textContent = `当前发布版本已接入 ${new Set(verified.map(entry => entry.candidate.id)).size} 个候选的 ${verified.length} 组参数；其余条目可追溯官方资料、压缩包及参考实现目录。编译失败、运行失败与超时需要独立构建日志，不能按“未接入”反推。`;
   let visible = entries;
   const update = () => {
     const query = $('audit-query').value.trim().toLocaleLowerCase();

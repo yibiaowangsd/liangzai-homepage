@@ -4,6 +4,8 @@
 
 独立的哈希候选目录是 `/pqc-practice/hash.html`；`/pqc-practice/audit.html` 按参数列出全部 586 个实例的提交团队、参考实现目录和**当前发布版本**的接入状态，并可导出筛选后的 CSV。目录不把通用 SHA 计算冒充为征集算法，也不把“未接入”写成“源码不存在”或“编译失败”。两个页面均面向桌面浏览器。
 
+哈希候选 AFS-TrEDM（`hash-01`）的 512/768/1024 三组参数已从同一 ngcc-harness 快照源码编译成 WASM，原生提交实现的三组 KAT 均通过；浏览器 WASM 的空消息、`abc`、`abc!` 摘要逐一与同源码原生结果比对。哈希页仅在 `ngcc-hash-runtime.js` 已登记该参数时显示输入框，在 Web Worker 中计算并设置 30 秒上限。`scripts/build-ngcc-expanded.py` 按候选/参数限时编译，失败产物会删除，逐项日志保存在工作流产物中；构建工具链和源码版本固定在 `.github/workflows/ngcc-wasm-rebuild.yml`。成功编译仅证明所测输入的功能一致，不代表算法安全认证。
+
 这份页面以 ChatGPT Sites 的“PQC 会话实验室”源码提交 `6397843359f3b1273e1f430abf7aac69e369489e` 为基础，保留 40 组 PQMagic WASM 模块及其本地密钥生成、封装、解封装、签名和验签流程，并添加了算法库选择和征集候选目录。原页面底部的快速自检已移除。可运行流程在浏览器的 Web Worker 中执行，数据无需发送到后端。浏览器需支持 WebAssembly 与 Web Crypto。
 
 `ngcc-catalog.json` 快照取自 [ngcc-harness](https://github.com/ngcc-dev/ngcc-harness) 提交 `c5261784ef27e7363b1bbace3d687932fda35ccd` 的 `downloads.csv`、`data/parameters.csv` 和 `data/{kem,sign,kex,hash}.csv`，按官方候选编号列出 41 个 KEM、34 个签名、9 个密钥交换及 35 个哈希候选，合计 119 个候选、586 个实现参数实例。每项提供官方候选页、提交源码包、提交团队成员、实例参数与参考实现目录。数据可用 `python3 scripts/generate-ngcc-catalog.py /path/to/ngcc-harness` 重新生成；候选数量改变时生成脚本会要求人工核对。

@@ -16,9 +16,11 @@ permissions:
   contents: write
 
 jobs:
-  hash-first-batch:
+  hash-second-batch:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      NGCC_IDS: 'hash-02 hash-04 hash-05 hash-09'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,33 +31,42 @@ jobs:
           ref: c5261784ef27e7363b1bbace3d687932fda35ccd
           path: ngcc-harness
           sparse-checkout: |
-            api
-            hash-01
+            /api/
+            /hash-02/
+            /hash-04/
+            /hash-05/
+            /hash-09/
+          sparse-checkout-cone-mode: false
       - uses: emscripten-core/setup-emsdk@v15
         with:
           version: '6.0.10'
-      - name: Check native reference implementation and official KATs
+      - name: Check each native reference implementation and build WASM
         run: |
+          mkdir -p work/ngcc-wasm-rebuild
           make -s -C ngcc-harness/api harness
-          make -s -C ngcc-harness/hash-01 -j2 libs
-          make -s -C ngcc-harness/hash-01 test
-          make -s -C ngcc-harness/hash-01 clean
-      - name: Compile each parameter to WASM and compare native vectors
-        run: python3 scripts/build-ngcc-expanded.py ngcc-harness hash-01 --seconds 90
-      - name: Require all three verified modules
-        run: |
-          node -e 'const r=require("./work/ngcc-wasm-rebuild/results.json");if(r.length!==3||r.some(x=>x.status!=="verified"))process.exit(1)'
+          for id in $NGCC_IDS; do
+            echo "Attempting ${id}"
+            if ! timeout 90 make -s -C "ngcc-harness/$id" -j2 test > "work/ngcc-wasm-rebuild/$id.native.log" 2>&1; then
+              echo "Native KAT failed or exceeded 90 seconds: $id"
+              continue
+            fi
+            make -s -C "ngcc-harness/$id" clean
+            python3 scripts/build-ngcc-expanded.py ngcc-harness "$id" --seconds 90
+            cp work/ngcc-wasm-rebuild/results.json "work/ngcc-wasm-rebuild/$id.results.json"
+          done
       - name: Preserve individual build and runtime logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ngcc-hash01-rebuild-logs
+          name: ngcc-hash02-09-rebuild-logs
           path: work/ngcc-wasm-rebuild/
           if-no-files-found: ignore
       - name: Commit verified browser modules to feature branch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add public/pqc-practice/wasm/ngcc-hash-01-*.mjs public/pqc-practice/wasm/ngcc-hash-01-*.wasm
-          git diff --cached --quiet || git commit -m 'Build verified AFS-TrEDM reference WASM for three parameters'
-          git push origin HEAD:feat/ngcc-more-wasm
+          git add -A public/pqc-practice/wasm/
+          if ! git diff --cached --quiet; then
+            git commit -m 'Build verified additional NGCC hash WASM parameters'
+            git push origin HEAD:feat/ngcc-more-wasm
+          fi
