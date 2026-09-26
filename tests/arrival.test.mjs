@@ -11,7 +11,7 @@ test('starts as a nebula; an incomplete hold reverses fully on release',()=>{
 });
 test('silhouette locks after four seconds and materializes even after release',()=>{
  const s=createArrivalState();s.hold(true);advance(s,4.05);assert.equal(s.phase,'revealing');
- s.hold(false);advance(s,1.4);assert.equal(s.phase,'formed');assert.equal(s.active,false);
+ s.hold(false);advance(s,1.4);assert.equal(s.phase,'formed');assert.ok(s.afterglow>.9);advance(s,3.1);assert.equal(s.active,false);assert.equal(s.afterglow,0);
  s.hold(true);advance(s,1);assert.equal(s.progress,1);
  s.reset();assert.equal(s.phase,'nebula');assert.equal(s.active,false);
 });
@@ -76,4 +76,29 @@ test('cursor wake cannot rewrite silhouette targets and all nebula layers disapp
  nebula.update(2,.7,800,true);assert.equal(nebula.points.children[0].visible,false);
  nebula.update(3,1,800,true);assert.equal(nebula.points.visible,false);
  nebula.dispose();
+});
+
+
+test('switching between exhibits preserves formed models and a settling particle tail',async()=>{
+ const {createArrivalMemory}=await import('../app/experience/three/arrival-state.ts');const memory=createArrivalMemory();
+ const single=memory.select('liangzai');single.hold(true);advance(single,5.4);assert.equal(single.phase,'formed');
+ const a=single.afterglow;assert.ok(a>0);advance(single,1);assert.ok(single.afterglow<a);
+ assert.equal(memory.select('nailong').phase,'nebula');assert.equal(memory.select('liangzai'),single);assert.equal(single.phase,'formed');
+ const duo=memory.select('duo');duo.hold(true);advance(duo,5.4);memory.select('nailong');assert.equal(memory.select('duo').phase,'formed');
+ single.hold(false);advance(single,30);assert.equal(single.phase,'formed');assert.equal(single.afterglow,0);
+});
+test('quantum orbital ribbons and dragon nursery clouds have distinct geometry with the same random input',async()=>{
+ const {createNebulaField,localWakeWeight,LOCAL_WAKE_RADIUS,createNebula}=await import('../app/experience/three/nebula.ts');
+ const rng=()=>{let seed=319;return ()=>((seed=(seed*1664525+1013904223)>>>0)/4294967296);};
+ const a=createNebulaField(4000,rng(),'liangzai'),b=createNebulaField(4000,rng(),'nailong');
+ let different=0;for(let i=0;i<a.positions.length;i++)if(Math.abs(a.positions[i]-b.positions[i])>.3)different++;
+ assert.ok(different>7000);assert.equal(localWakeWeight(LOCAL_WAKE_RADIUS),0);assert.equal(localWakeWeight(5),0);assert.ok(localWakeWeight(.4)>.5);
+ const cloud=createNebula(null,'liangzai',200);cloud.update(5,1,800,true,.7);assert.equal(cloud.points.visible,true);cloud.update(9,1,800,true,0);assert.equal(cloud.points.visible,false);cloud.dispose();
+});
+
+
+test('afterglow crosses the materialization boundary continuously, without a bright single-frame reappearance',async()=>{
+ const {createNebula}=await import('../app/experience/three/nebula.ts');const cloud=createNebula(null,'liangzai',200);
+ cloud.update(5,.9999,800,true,0);const before=cloud.points.material.uniforms.uAfterglow.value;
+ cloud.update(5.01,1,800,true,1);assert.ok(Math.abs(before-cloud.points.material.uniforms.uAfterglow.value)<.001);cloud.dispose();
 });

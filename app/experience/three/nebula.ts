@@ -2,22 +2,39 @@ import * as THREE from "three";
 import { MeshSurfaceSampler } from "three/addons/math/MeshSurfaceSampler.js";
 import type { CharacterId } from "./character-assets";
 
-/** Uneven spiral filaments embedded in a broad, inclined star field. */
-export function createNebulaField(count: number, random = Math.random) {
+export type NebulaIdentity = CharacterId | "fusion";
+/** Hard support: outside this radius the cursor contributes exactly zero force. */
+export const LOCAL_WAKE_RADIUS = 1.25;
+export function localWakeWeight(distance:number) {
+  const t=Math.max(0,Math.min(1,(distance-.12)/(LOCAL_WAKE_RADIUS-.12)));
+  return 1-t*t*(3-2*t);
+}
+
+/** Quantum: crossed orbital ribbons. Dragon: billowing asymmetric nursery clouds. */
+export function createNebulaField(count: number, random = Math.random, id:NebulaIdentity="liangzai") {
   const positions = new Float32Array(count * 3), seeds = new Float32Array(count);
   for (let i = 0; i < count; i++) {
-    const layer = random(), radius = Math.sqrt(random()) * (layer < .2 ? 7.2 : 6.2);
-    const filament = layer > .38;
-    const angle = filament
-      ? (i % 4) * Math.PI / 2 + radius * .88 + (random() - .5) * (.25 + radius * .07)
-      : random() * Math.PI * 2;
-    const spread = filament ? .25 : 1.2;
-    const x = Math.cos(angle) * radius;
-    const y = Math.sin(angle) * radius * .48;
-    positions[i * 3] = x + (random() - .5) * spread;
-    positions[i * 3 + 1] = 2.6 + y + x * .17 + (random() - .5) * spread;
-    positions[i * 3 + 2] = Math.sin(angle) * radius * .27 + (random() - .5) * (filament ? .9 : 3.6);
-    seeds[i] = random();
+    const layer=random(),a=random()*Math.PI*2;
+    let x:number,y:number,z:number;
+    if(layer<.22){
+      const r=Math.sqrt(random())*7.6;
+      x=Math.cos(a)*r;y=Math.sin(a)*r*.55;z=(random()-.5)*4.8;
+    } else if(id==="nailong") {
+      // A broad curved, clumpy plume with a hollow scalloped edge, not a spiral disc.
+      const t=random()*2-1, r=Math.pow(random(),.6),theta=random()*Math.PI*2;
+      const width=.65+1.25*(.5+.5*Math.sin(t*8.5+1.2));
+      x=t*6.1+Math.cos(theta)*r*width*.55;
+      y=Math.sin(t*2.8)*1.45+Math.cos(t*6.2)*.5+Math.sin(theta)*r*width;
+      z=Math.cos(t*3.5)*.9+(random()-.5)*width*1.8;
+    } else {
+      // Three different planes of elliptical orbits, with a negative-space centre.
+      const band=i%3,r=2.2+random()*3.9,tilt=[.22,-.57,.86][band];
+      const px=Math.cos(a)*r,py=Math.sin(a)*r*(band===0?.43:.29);
+      x=px*Math.cos(tilt)-py*Math.sin(tilt)+(random()-.5)*.22;
+      y=px*Math.sin(tilt)+py*Math.cos(tilt)+(random()-.5)*.24;
+      z=Math.sin(a)*(.5+band*.38)+(random()-.5)*.7;
+    }
+    positions[i*3]=x;positions[i*3+1]=2.6+y;positions[i*3+2]=z;seeds[i]=random();
   }
   return { positions, seeds };
 }
@@ -67,9 +84,9 @@ export function sampleCharacterSurface(actor: THREE.Group, count: number) {
   return { positions, colors };
 }
 
-export function createNebula(actor: THREE.Group | null, id: CharacterId | "fusion" = "liangzai", count = 18000) {
+export function createNebula(actor: THREE.Group | null, id: NebulaIdentity = "liangzai", count = 18000) {
   const sampled = actor ? sampleCharacterSurface(actor, count) : { positions: new Float32Array(count * 3), colors: new Float32Array(count * 3).fill(1) };
-  const { positions: scatter, seeds } = createNebulaField(count);
+  const { positions: scatter, seeds } = createNebulaField(count,Math.random,id);
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.BufferAttribute(sampled.positions, 3));
   geometry.setAttribute("aColor", new THREE.BufferAttribute(sampled.colors, 3));
@@ -78,39 +95,38 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId | "fusio
   const uniforms = {
     uTrail: { value: Array.from({length:6},()=>new THREE.Vector4(0,0,-100,0)) },
     uPointer: { value: new THREE.Vector3() }, uRipple: { value: new THREE.Vector3(0,0,-100) },
-    uMotion: { value: 1 }, uTime: { value: 0 }, uProgress: { value: 0 }, uResolution: { value: 700 },
+    uWakeRadius:{value:LOCAL_WAKE_RADIUS}, uKind: {value:id==="nailong"?1:0}, uAfterglow:{value:0}, uMotion: { value: 1 }, uTime: { value: 0 }, uProgress: { value: 0 }, uResolution: { value: 700 },
     uColor: { value: new THREE.Color(id === "nailong" ? "#ffca67" : "#65cfff") },
     uAccent: { value: new THREE.Color(id === "nailong" ? "#ff9954" : id === "fusion" ? "#ffcb65" : "#9678ef") },
   };
   // Shared by stars and cloud wisps. All displacement stays on the GPU.
   const fieldShader = `
-    uniform float uTime, uProgress, uResolution, uMotion;
+    uniform float uTime, uProgress, uResolution, uMotion, uKind, uAfterglow, uWakeRadius;
     uniform vec4 uTrail[6]; uniform vec3 uPointer, uRipple;
     uniform vec3 uColor, uAccent;
     vec3 nebulaPosition(vec3 start, vec3 target, float seed) {
       float gather = smoothstep(.05,.72,uProgress);
       vec3 cloud = start - vec3(0.,2.6,0.);
       float radius = length(cloud.xy);
-      float angle = (uTime * (.025 + .045 / (1. + radius)) + uProgress * 3.5) * uMotion * (1.-gather);
+      float angle = (uTime * (.018 + .025 / (1. + radius)) * (1.-uKind) + uProgress * 3.5) * uMotion * (1.-gather);
       cloud.xy = mat2(cos(angle),-sin(angle),sin(angle),cos(angle)) * cloud.xy;
       // Slow coherent bends create stream-like filaments instead of a rigid pinwheel.
-      cloud.xy += vec2(sin(cloud.y*.85+uTime*.16),cos(cloud.x*.6-uTime*.12)) * .18 * uMotion;
+      cloud.xy += vec2(sin(cloud.y*.85+uTime*.16),cos(cloud.x*.6-uTime*.12)) * mix(.055,.20,uKind) * uMotion;
       cloud.z += sin(radius*.9-uTime*.22+seed*6.28) * .26 * uMotion;
       cloud += vec3(0.,2.6,0.);
       vec3 p = mix(cloud,target,gather);
       vec3 world = (modelMatrix*vec4(p,1.)).xyz;
       float free = (1.-gather)*(1.-gather)*uMotion;
-      world.xy += uPointer.xy * (.025 + clamp(start.z+3.,0.,6.)*.01) * free;
       float rippleAge = max(0.,uTime-uRipple.z);
       vec2 waveDelta = world.xy-uRipple.xy;
       float waveDistance = length(waveDelta);
-      float wave = exp(-pow((waveDistance-rippleAge*4.)*2.3,2.)) * exp(-rippleAge*2.);
+      float wave = exp(-pow((waveDistance-rippleAge*2.)*3.,2.)) * exp(-rippleAge*3.) * (1.-smoothstep(.15,uWakeRadius,waveDistance));
       world.xy += waveDelta / max(.2,waveDistance) * wave * .48 * free;
       vec2 wake = vec2(0.); float lift = 0.;
       for(int i=0;i<6;i++) {
         vec2 delta = world.xy-uTrail[i].xy;
         float d = length(delta), age = max(0.,uTime-uTrail[i].z);
-        float force = exp(-d*d*.7) * exp(-age*2.8) * uTrail[i].w * free;
+        float force = (1.-smoothstep(.12,uWakeRadius,d)) * exp(-age*2.8) * uTrail[i].w * free;
         vec2 tangent = vec2(-delta.y,delta.x)/max(.3,d);
         wake += (delta/max(.3,d)*.3 + tangent*.45) * force;
         lift += force*.16;
@@ -127,6 +143,9 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId | "fusio
       void main() {
         float gather = smoothstep(.05,.72,uProgress);
         vec3 world = nebulaPosition(aScatter,position,aSeed);
+        // A small subset lingers outside the materialized surface for a gentle settling tail.
+        float remnant=step(.88,aSeed)*uAfterglow;
+        world += vec3(sin(aSeed*91.+uTime*.3),cos(aSeed*63.+uTime*.22),sin(aSeed*47.))*.10*remnant;
         vec4 mv = viewMatrix*vec4(world,1.);
         gl_Position = projectionMatrix*mv;
         vSpark = step(.986,aSeed)*(1.-gather);
@@ -136,11 +155,11 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId | "fusio
         float tint = clamp(.35 + sin(aScatter.x*.6+aScatter.y*.9)*.3,0.,1.);
         vColor = mix(uColor,uAccent,tint*(1.-gather));
         vColor = mix(vColor,vec3(.85,.94,1.),vSpark*.7) * (1.1+gather*.8);
-        float nearPointer=exp(-length(world.xy-uPointer.xy)*1.4)*uPointer.z*(1.-gather)*uMotion;
+        float nearPointer=(1.-smoothstep(.12,uWakeRadius,length(world.xy-uPointer.xy)))*uPointer.z*(1.-gather)*uMotion;
         vColor *= 1.+nearPointer*.5;
         vColor = mix(vColor,aColor*1.5+uColor*.3,smoothstep(.65,.83,uProgress)*.5);
         float shimmer = 1. + sin(uTime*(.6+aSeed)+aSeed*90.)*.18*uMotion;
-        vAlpha = mix(.13+depth*.45+pow(aSeed,5.)*.3,.8,gather)*shimmer*(1.-smoothstep(.81,1.,uProgress));
+        vAlpha = mix(.13+depth*.45+pow(aSeed,5.)*.3,.8,gather)*shimmer*(1.-smoothstep(.81,1.,uProgress)) + remnant*.28;
       }`,
     fragmentShader: `
       varying vec3 vColor; varying float vAlpha, vSpark;
@@ -154,7 +173,7 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId | "fusio
         #include <colorspace_fragment>
       }`,
   });
-  const mistCount = 36, mistPositions = new Float32Array(mistCount*3), mistSeeds = new Float32Array(mistCount);
+  const mistCount = id==="nailong"?44:24, mistPositions = new Float32Array(mistCount*3), mistSeeds = new Float32Array(mistCount);
   for(let i=0;i<mistCount;i++) {
     const source = Math.floor(i*count/mistCount)*3;
     mistPositions.set(scatter.subarray(source,source+3),i*3); mistSeeds[i]=seeds[source/3];
@@ -179,7 +198,7 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId | "fusio
         vSeed=aSeed;
         vec3 world=nebulaPosition(position,vec3(0.,2.6,0.),aSeed);
         vec4 mv=viewMatrix*vec4(world,1.);gl_Position=projectionMatrix*mv;
-        gl_PointSize=clamp((75.+aSeed*100.)*uResolution/700.*10./max(1.,-mv.z),20.,180.);
+        gl_PointSize=clamp((mix(60.,100.,uKind)+aSeed*100.)*uResolution/700.*10./max(1.,-mv.z),20.,180.);
         vOpacity=(1.-smoothstep(.12,.65,uProgress))*.11;
         vColor=mix(uColor,uAccent,.25+aSeed*.65);
       }`,
@@ -209,9 +228,9 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId | "fusio
       trail.forEach((value,i)=>uniforms.uTrail.value[i].copy(value));
       uniforms.uPointer.value.copy(pointer);uniforms.uRipple.value.copy(ripple);
     },
-    update(time: number, progress: number, height: number, motion = true) {
+    update(time: number, progress: number, height: number, motion = true, afterglow = 0) {
       uniforms.uMotion.value=motion?1:0;uniforms.uTime.value=time;uniforms.uProgress.value=progress;uniforms.uResolution.value=height;
-      points.visible=progress<1;mist.visible=progress<.65;
+      uniforms.uAfterglow.value=progress<1?THREE.MathUtils.smoothstep(progress,.90,1):afterglow;points.visible=progress<1||afterglow>0;mist.visible=progress<.65;
     },
     dispose() { geometry.dispose();material.dispose();mistGeometry.dispose();mistMaterial.dispose();mistNoise.dispose();points.removeFromParent(); },
   };

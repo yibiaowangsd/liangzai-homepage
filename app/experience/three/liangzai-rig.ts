@@ -44,9 +44,8 @@ export function createLiangzaiRig(source: Group) {
     leftLeg.rotation.x=pose.leftLeg;rightLeg.rotation.x=pose.rightLeg;
     leftFoot.rotation.x=pose.leftFoot;rightFoot.rotation.x=pose.rightFoot;
     antenna.rotation.z=pose.antenna+(enabled?Math.sin(time*2.1)*.025:0);
-    const blinkPhase=time%5.2;
-    const automatic=enabled&&blinkPhase>4.8&&blinkPhase<5.06?Math.max(.07,Math.abs(blinkPhase-4.93)/.13):1;
-    leftEye.scale.y=rightEye.scale.y=Math.min(pose.blink,automatic);
+    // LED eyes change only on an explicit eye click; no periodic blue luminance pulse.
+    leftEye.scale.y=rightEye.scale.y=pose.blink;
   }
   function reset(){Object.assign(pose,rest);look.x=look.y=0;apply(0,false);}
   return {pose,look,apply,reset,joints:{head,antenna,leftEye,rightEye,leftArm,rightArm,leftHand,rightHand,leftLeg,rightLeg,leftFoot,rightFoot}};

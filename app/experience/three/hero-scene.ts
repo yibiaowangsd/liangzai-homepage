@@ -9,7 +9,7 @@ import { loadCharacter, disposeObject, VIEW_ANGLES, type CharacterId, type Model
 import { createLiangzaiRig, type LiangzaiRig, type GuardianAction } from "./liangzai-rig";
 import { applyInspection, rotateInspection } from "./inspection";
 import { createObservatory, createStudioEnvironment } from "./observatory";
-import { createArrivalState, type ArrivalPhase } from "./arrival-state";
+import { createArrivalMemory, type ArrivalPhase } from "./arrival-state";
 import { createNebula, prepareMaterialization, type Nebula } from "./nebula";
 import { createCelestialSystem } from "./celestial";
 import { createFusionState, type FusionPhase } from "./fusion-state";
@@ -48,7 +48,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const key=new THREE.DirectionalLight(0xfff6e9,1.65);key.position.set(-3,7,5);key.castShadow=true;
   key.shadow.mapSize.set(1024,1024);key.shadow.camera.left=-4;key.shadow.camera.right=4;key.shadow.camera.top=6;key.shadow.camera.bottom=-3;key.shadow.camera.far=24;
   key.shadow.normalBias=.025;key.shadow.bias=-.00008;key.shadow.radius=4;key.target.position.set(0,2,0);scene.add(key,key.target);
-  const rim=new THREE.DirectionalLight(0xb8dcff,2.4);rim.position.set(2,5,-4);scene.add(rim);
+  const rim=new THREE.DirectionalLight(0xd3e3f5,1.35);rim.position.set(2,5,-4);scene.add(rim);
   scene.add(new THREE.HemisphereLight(0xd3deed,0x182036,.55));
   const observatory=createObservatory();scene.add(observatory.stage);
   const composer=new EffectComposer(renderer), renderPass=new RenderPass(scene,camera);
@@ -64,7 +64,8 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     const positions=Array.from({length:180},(_,i)=>{const t=i/179,a=t*Math.PI*6+index*Math.PI;return new THREE.Vector3(Math.cos(a)*1.65,t*5.1,Math.sin(a)*1.65);});
     helix.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(positions),new THREE.LineBasicMaterial({color,transparent:true,opacity:.7,blending:THREE.AdditiveBlending,depthWrite:false})));
   }
-  const arrival=createArrivalState(), materializations=new Map<CharacterId,{value:number}>();
+  const arrivalMemory=createArrivalMemory();let arrival=arrivalMemory.select("liangzai");
+  const materializations=new Map<CharacterId,{value:number}>();
   let lastProgress=-1;
   let nebulas:Nebula[]=[createNebula(null)], modelLoaded=false, currentPhase:ArrivalPhase="nebula";
   scene.add(nebulas[0].points);
@@ -147,7 +148,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
       actor.visible=modelLoaded&&(mode==="duo"||mode===id)&&p>.78&&(!merging||f<.46);
       const material=materializations.get(id);if(material)material.value=merging?1-THREE.MathUtils.smoothstep(f,.12,.46):THREE.MathUtils.smoothstep(p,.78,1);
     }
-    for(const nebula of nebulas){nebula.interact(trail,nebulaPointer,ripple);nebula.update(time,p,height,enabled);}
+    for(const nebula of nebulas){nebula.interact(trail,nebulaPointer,ripple);nebula.update(time,p,height,enabled,merging?0:arrival.afterglow);}
     if(merging){
       for(const [id,actor] of actors){const t=THREE.MathUtils.smoothstep(f,0,.48),side=id==="liangzai"?-1:1;
         actor.position.set(side*Math.cos(t*Math.PI*2)*1.24*(1-t),.092+Math.sin(t*Math.PI)*.6,side*Math.sin(t*Math.PI*2)*1.1*(1-t));
@@ -155,16 +156,16 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     }
     if(fusionModel){fusionModel.actor.visible=merging&&f>.64;fusionModel.update(time,pose.energy,enabled);}
     if(fusionMaterial)fusionMaterial.value=THREE.MathUtils.smoothstep(f,.64,.97);
-    if(fusionNebula){fusionNebula.update(time,THREE.MathUtils.smoothstep(f,.18,.99),height,enabled);fusionNebula.points.visible=merging&&f>.16&&f<1;}
+    if(fusionNebula){fusionNebula.update(time,THREE.MathUtils.smoothstep(f,.18,1),height,enabled,fusion.afterglow);fusionNebula.points.visible=merging&&f>.16&&(f<1||fusion.afterglow>0);}
     helix.visible=merging&&f<.98;helix.rotation.y=enabled?time*1.8:0;helix.scale.set(1-f*.7,1,1-f*.7);
     helix.children.forEach(line=>{((line as THREE.Line).material as THREE.LineBasicMaterial).opacity=Math.sin(f*Math.PI)*.85;});
-    const climax=merging?Math.sin(f*Math.PI):Math.sin(THREE.MathUtils.clamp((p-.78)/.22,0,1)*Math.PI);
+    const climax=merging?(f<1?Math.sin(f*Math.PI):0):(p>.78&&p<1?Math.sin((p-.78)/.22*Math.PI):0);
     shock.visible=enabled&&(merging?f>.45&&f<1:p>.78&&p<1);
     shock.scale.setScalar(.5+(merging?f:THREE.MathUtils.clamp((p-.78)/.22,0,1))*6);
     shockMaterial.opacity=climax*.55;
     bloom.enabled=width>=600&&(p>.6||merging);
-    bloom.strength=.13+(enabled?climax*.6:0);
-    renderer.toneMappingExposure=.96+(enabled?climax*.16:0);
+    bloom.strength=.10+(enabled?climax*.34:0);
+    renderer.toneMappingExposure=.96;
     camera.zoom=(merging?1.06:mode==="duo"?.94:1)*(1+(enabled?(merging?Math.sin(f*Math.PI)*.12:Math.sin(p*Math.PI)*.065):0));camera.updateProjectionMatrix();
     observatory.orbit.visible=p>.45;
     observatory.glow.emissive.set(mode==="nailong"?0xffbc62:0x6fbee7);
@@ -224,7 +225,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
       else if(action==="look")timeline.to(p,{headYaw:-.5,antenna:.12,duration:.5}).to(p,{headYaw:.5,antenna:-.12,duration:1});
       else if(action==="stretch")timeline.to(p,{leftArm:-1.45,rightArm:1.45,leftWrist:.3,rightWrist:-.3,headPitch:-.1,duration:.7}).to(p,{headPitch:0,duration:.35});
       else if(action==="march")timeline.to(p,{leftLeg:.25,rightLeg:-.2,leftFoot:-.17,rightFoot:.1,leftArmX:-.18,rightArmX:.18,duration:.3}).to(p,{leftLeg:-.2,rightLeg:.25,leftFoot:.1,rightFoot:-.17,leftArmX:.18,rightArmX:-.18,duration:.35,repeat:3,yoyo:true});
-      else if(action==="antenna")timeline.to(p,{antenna:.19,headPitch:-.08,duration:.22}).to(p,{antenna:-.19,duration:.2,repeat:5,yoyo:true}).to(pose,{energy:.85,duration:.5},0);
+      else if(action==="antenna")timeline.to(p,{antenna:.19,headPitch:-.08,duration:.22}).to(p,{antenna:-.19,duration:.2,repeat:5,yoyo:true});
       else timeline.to(p,{blink:.06,duration:.1,repeat:3,yoyo:true});
       timeline.to(p,{...neutral,duration:.45}).to(pose,{energy:0,duration:.35},"<");
     });
@@ -333,7 +334,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     async setModel(next){
       if(disposed||lostContext)throw new Error("3D unavailable");
       const request=++modelRequest,ids:CharacterId[]=next==="duo"?["liangzai","nailong"]:[next];
-      exitFusion();modelLoaded=false;arrival.reset();publishArrival();
+      exitFusion();modelLoaded=false;arrival=arrivalMemory.select(next);lastProgress=-1;publishArrival();
       pointerTarget.set(0,0,0);nebulaPointer.set(0,0,0);ripple.set(0,0,-100);pointerUntil=0;
       for(const point of trail)point.set(0,0,-100,0);
       coast?.kill();viewTween?.kill();pulseTimeline?.kill();rig?.reset();cancel();
@@ -363,6 +364,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
           fusionNebula=createNebula(fusionModel.actor,"fusion",16000);fusionNebula.points.visible=false;scene.add(fusionNebula.points);
         }
         if(fusionModel)fusionModel.actor.visible=next==="duo";
+        ready=false;frames.sync();
         camera.zoom=next==="duo"?.94:1;camera.updateProjectionMatrix();
         if(ids.some(id=>!compiledActors.has(id))||(next==="duo"&&!fusionCompiled)){
           // Compile the same linear/HDR variant that RenderPass will actually use.

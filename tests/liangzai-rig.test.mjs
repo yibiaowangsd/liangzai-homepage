@@ -32,3 +32,10 @@ test('head, arm, antenna and eye actions move their own components without movin
  assert.equal(actor.rotation.x,0);assert.equal(actor.rotation.y,0);assert.equal(actor.position.y,0);
  rig.reset();actor.updateMatrixWorld(true);assert.ok(arm.getWorldPosition(new Vector3()).distanceTo(handRest)<1e-6);
 });
+
+
+test('idle LED eyes retain their brightness geometry across former automatic blink boundaries',async()=>{
+ const actor=await load(),rig=createLiangzaiRig(actor);
+ for(let time=0;time<30;time+=.02){rig.apply(time,true);assert.equal(rig.joints.leftEye.scale.y,1);assert.equal(rig.joints.rightEye.scale.y,1);}
+ rig.pose.blink=.07;rig.apply(4.93,true);assert.equal(rig.joints.leftEye.scale.y,.07,'explicit click blink remains supported');
+});

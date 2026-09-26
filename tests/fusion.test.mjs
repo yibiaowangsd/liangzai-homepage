@@ -13,7 +13,7 @@ test('short holds and cancelled drags never enter fusion',()=>{
 });
 test('two-second second hold commits fusion; completion and exit are independent of release',()=>{
  const s=createFusionState();s.hold(true);advance(s,2.1);assert.equal(s.phase,'merging');
- s.hold(false);advance(s,4.3);assert.equal(s.phase,'fused');assert.equal(s.active,false);
+ s.hold(false);advance(s,4.3);assert.equal(s.phase,'fused');assert.ok(s.afterglow>.9);advance(s,3.1);assert.equal(s.active,false);assert.equal(s.afterglow,0);s.hold(false);advance(s,15);assert.equal(s.phase,'fused');
  s.reset();assert.equal(s.phase,'idle');assert.equal(s.progress,0);assert.equal(s.charge,0);
  s.hold(true);s.step(300);assert.equal(s.phase,'charging');assert.ok(s.charge<.04);
 });
@@ -28,4 +28,17 @@ test('fusion model is a separate complete shaded mesh with a surface matching it
 test('celestial system contains all requested bodies and retreats during model formation',()=>{
  const c=createCelestialSystem();for(const name of ['恒星','环状行星','蓝色行星','天然卫星','量子通信卫星','彗星'])assert.ok(c.group.getObjectByName(name),name);
  c.update(1,0);assert.equal(c.group.visible,true);c.update(2,1);assert.equal(c.group.visible,false);disposeObject(c.group);
+});
+
+
+test('celestial surfaces have seam-safe detail maps and remain inside a bounded geometry budget',()=>{
+ const c=createCelestialSystem();let triangles=0;
+ for(const name of ['恒星','环状行星','蓝色行星','天然卫星']){
+   const map=c.group.getObjectByName(name).material.map;assert.ok(map);assert.equal(map.image.width,256);
+   const pixels=map.image.data;assert.ok(new Set(pixels.filter((_,i)=>i%4===0)).size>35);
+   for(let y=0;y<128;y++)for(let k=0;k<4;k++)assert.ok(Math.abs(pixels[y*256*4+k]-pixels[(y*256+255)*4+k])<=1,'seam is continuous');
+ }
+ assert.ok(c.group.getObjectByName('分层冰尘环'));assert.ok(c.group.getObjectByName('云层'));
+ c.group.traverse(o=>{if(o.geometry)triangles+=(o.geometry.index?.count??o.geometry.getAttribute('position').count)/3;});
+ assert.ok(triangles<45000);disposeObject(c.group);
 });

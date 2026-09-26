@@ -40,7 +40,7 @@ export default function InteractiveGuardian() {
   },[]);
   async function selectModel(next:ModelMode){
     if(next===selection.current&&status!=="fallback")return;
-    selection.current=next;setMode(next);setPhase("nebula");setView("reset");
+    selection.current=next;setMode(next);setView("reset");
     const instance=runtime.current,version=++request.current;
     if(!instance)return;
     setStatus("loading");
