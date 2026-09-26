@@ -1,6 +1,5 @@
 import { renderDialogue, animateTransfer, resetTransfers } from './dialogue.js';
 import { ngccModule } from './ngcc-runtime.js';
-import { NGCC_REPORTS } from './ngcc-reports.js';
 import { candidateModule, setCandidateProvider, showCandidateWork, stopCandidateWork } from './candidate-workbench.js';
 const $ = selector => document.querySelector(selector);
 const VARIANTS = {
@@ -340,10 +339,10 @@ async function loadCatalog() {
   catalog = await catalogPromise;
   if (!reportIndex) {
     try {
-      const response = await fetch('./ngcc-report-index.json');
+      const response = await fetch('./ngcc-reports-zh.json');
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const index = await response.json();
-      if (index.findings?.length !== 166 || index.active_findings !== 164) throw new Error('报告快照数据不完整');
+      if (index.findings?.length !== 166 || index.active_findings !== 164 || index.findings.some(item => !item.title || !item.summary || !item.source_url)) throw new Error('报告快照数据不完整');
       reportIndex = index;
     } catch { reportIndex = { unavailable: true }; }
   }
@@ -355,13 +354,12 @@ function configureCatalogParameters() {
 function showReports(candidate) {
   const list = $('#report-list');
   const reports = reportIndex?.findings?.filter(item => item.candidateId === candidate.id) || [];
-  const notes = new Map((NGCC_REPORTS[candidate.id] || []).map(item => [item.id, item]));
-  $('#report-title').textContent = '安全报告 · 逐项索引';
-  $('#report-index-link').href = 'https://ngcc.dev/reports/index.html';
+  $('#report-title').textContent = `${candidate.name} · 中文安全报告摘要`;
+  $('#report-index-link').href = reports.length ? `https://ngcc.dev/reports/${candidate.id}.html` : 'https://ngcc.dev/reports/index.html';
   $('#report-index-link').textContent = '查看 ngcc.dev 报告原文 ↗';
   $('#report-intro').textContent = reportIndex?.unavailable
     ? '报告目录暂时无法读取，请访问原站核对最新信息。浏览器功能验证不构成安全认证。'
-    : `索引更新于 ${reportIndex.source_updated_utc} UTC：${reportIndex.reported_candidates} 份候选报告、${reportIndex.active_findings} 项有效发现、${reportIndex.withdrawn_records} 条已撤回记录。以下按所选候选展示；未发布报告不代表安全。发现针对提交版本，本站 WASM 可能包含修补。`;
+    : `下方为 ngcc.dev 原报告的中文摘要（非全文翻译），核对日期 ${reportIndex.reviewed_utc}；原站更新 ${reportIndex.source_updated_utc} UTC。发现针对报告注明的提交版本，不等于本站二进制复测结论。点击每项标题可查看作者署名、完整论证和复现步骤。`;
   if (reportIndex?.unavailable) {
     list.replaceChildren(document.createElement('p'));
     list.firstChild.className = 'report-empty';
@@ -377,22 +375,17 @@ function showReports(candidate) {
   }
   const ul = document.createElement('ul'); ul.className = 'report-items';
   for (const finding of reports) {
-    const item = notes.get(finding.id);
     const li = document.createElement('li'), id = document.createElement('b'), link = document.createElement('a');
     id.textContent = finding.id;
-    link.textContent = item?.zh || (finding.status === 'Withdrawn' ? '已撤回的评估记录 · 查看原文' : '查看该项发现的原文与复现步骤');
-    link.href = `https://ngcc.dev/reports/${candidate.id}.html`;
+    link.textContent = finding.title;
+    link.href = finding.source_url;
     link.target = '_blank'; link.rel = 'noopener noreferrer';
     const note = document.createElement('span'); note.className = 'report-note';
-    note.textContent = `${REPORT_SEVERITY[finding.severity]} · ${REPORT_STATUS[finding.status]} · ${REPORT_SCOPE[finding.scope]} · 更新 ${finding.updated}${item ? ` · 影响：${item.affected}` : ''}`;
+    note.textContent = `${REPORT_SEVERITY[finding.severity]} · ${REPORT_STATUS[finding.status]} · ${REPORT_SCOPE[finding.scope]} · 更新 ${finding.updated}`;
     li.append(id, link, note);
-    for (const [label, value] of [['证据', item?.evidence], ['影响边界', item?.impact], ['修复方向', item?.repair]]) {
-      if (!value) continue;
-      const detail = document.createElement('p');
-      detail.className = 'report-detail';
-      const strong = document.createElement('strong'); strong.textContent = `${label}：`;
-      detail.append(strong, document.createTextNode(value)); li.append(detail);
-    }
+    const detail = document.createElement('p');
+    detail.className = 'report-detail';detail.textContent = finding.summary;li.append(detail);
+    if (finding.status === 'Withdrawn') li.classList.add('report-withdrawn');
     ul.append(li);
   }
   list.replaceChildren(ul);
