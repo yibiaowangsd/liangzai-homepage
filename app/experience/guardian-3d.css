@@ -350,3 +350,7 @@
 .guardian-models small { font-size: 6px; }
 .guardian-stage .guardian-fallback img { width: auto; height: 100%; max-width: 100%; max-height: 100%; }
 .guardian-stage .guardian-fallback img { object-position: center bottom; }
+
+.guardian-stage[data-status="preview"] .guardian-canvas { pointer-events: none; }
+.guardian-actions { flex-wrap: wrap; justify-content: center; }
+.guardian-actions button { padding-inline: 10px; }
