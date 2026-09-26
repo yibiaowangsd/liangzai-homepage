@@ -33,7 +33,7 @@ function auditPage(candidates, build) {
   }, {});
   const breakdown = build ? Object.entries(counts).map(([status, rows]) =>
     `${BUILD_LABELS[status] || status} ${rows.length} 组`).join('；') : '';
-  $('audit-summary').textContent = `当前发布版本已接入 ${new Set(verified.map(entry => entry.candidate.id)).size} 个候选的 ${verified.length} 组参数。${breakdown || '其余条目等待逐参数构建记录。'}`;
+  $('audit-summary').textContent = `当前发布版本已接入 ${new Set(verified.map(entry => entry.candidate.id)).size} 个候选的 ${verified.length} 组参数。${breakdown || '其余条目等待逐参数构建记录。'}${build?.last_retry ? ` 最近重编译：${build.last_retry.date}，尝试 ${build.last_retry.attempted} 组，新增通过 ${build.last_retry.recovered} 组。` : ''}`;
   const availability = candidates.map(candidate => {
     const rows = entries.filter(entry => entry.candidate.id === candidate.id);
     return { candidate, total: rows.length, working: rows.filter(entry => entry.state === 'ready').length,
@@ -61,7 +61,11 @@ function auditPage(candidates, build) {
     }
     group.append(list); return group;
   }));
-  if (build?.run_url && !build.run_url.endsWith('/0')) {
+  if (build?.last_retry) {
+    $('audit-build-link').href = build.last_retry.log_url;
+    $('audit-build-link').textContent = '查看本次重编译日志 ↗';
+    $('audit-build-link').classList.remove('hidden');
+  } else if (build?.run_url && !build.run_url.endsWith('/0')) {
     $('audit-build-link').href = build.run_url;
     $('audit-build-link').classList.remove('hidden');
   }
@@ -90,6 +94,10 @@ function auditPage(candidates, build) {
         link.href = href; link.target = '_blank'; link.rel = 'noopener noreferrer';
         links.append(link, document.createTextNode('  '));
       }
+      if (buildRecord.retry_date) {
+        const note = node('p', `${buildRecord.retry_date} 重试：${buildRecord.retry_reason}`);
+        links.append(note);
+      }
       if (buildRecord.source_sha256) links.append(node('code', `SHA-256 ${buildRecord.source_sha256}`));
       tr.append(links);
       return tr;
@@ -99,12 +107,12 @@ function auditPage(candidates, build) {
     $(id).addEventListener(id === 'audit-query' ? 'input' : 'change', update);
   }
   $('audit-export').addEventListener('click', () => {
-    const headings = ['候选编号', '类别', '算法', '参数', '团队成员', '参考实现目录', '本站接入', '构建结果', '官方页面', '提交源码包', '源码SHA256'];
+    const headings = ['候选编号', '类别', '算法', '参数', '团队成员', '参考实现目录', '本站接入', '构建结果', '官方页面', '提交源码包', '源码SHA256', '重试日期', '重试结果说明'];
     const rows = visible.map(({ candidate, parameter, state, buildStatus, buildRecord }) =>
       [candidate.id, TYPES[candidate.type], candidate.name, parameter.label,
         candidate.team.join('、'), parameter.source, state === 'ready' ? '已接入' : '未接入',
         BUILD_LABELS[buildStatus] || buildStatus, candidate.page,
-        buildRecord.source_url || candidate.archive, buildRecord.source_sha256 || '']);
+        buildRecord.source_url || candidate.archive, buildRecord.source_sha256 || '', buildRecord.retry_date || '', buildRecord.retry_reason || '']);
     const blob = new Blob(['\uFEFF', [headings, ...rows].map(row => row.map(csv).join(',')).join('\r\n')],
       { type: 'text/csv;charset=utf-8' });
     const url = URL.createObjectURL(blob), link = node('a');

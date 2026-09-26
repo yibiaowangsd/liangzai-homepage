@@ -7,6 +7,7 @@ import re
 import subprocess
 import sys
 from pathlib import Path
+from ngcc_instance import select_instance
 
 repo = Path(__file__).resolve().parents[1]
 harness = Path(sys.argv[1]).resolve()
@@ -16,12 +17,12 @@ candidate = next(c for c in json.loads((repo / 'public/pqc-practice/ngcc-catalog
 if candidate['type'] != 'hash':
     raise ValueError('native vectors only apply to hashes')
 listing = subprocess.check_output(['make', '-s', 'list'], cwd=harness / candidate_id, text=True, timeout=10)
-labels = dict((source.strip().rstrip('/'), label.strip()) for label, source in
+labels = list((label.strip(), source.strip().rstrip('/')) for label, source in
               (re.match(r'^(.+?)\s+->\s+(.+)$', line).groups() for line in listing.splitlines()
                if re.match(r'^(.+?)\s+->\s+(.+)$', line)))
 results = {}
 for index, parameter in enumerate(candidate['parameters']):
-    label = labels.get(parameter['source'].rstrip('/'))
+    label = select_instance(labels, parameter)
     if not label:
         continue
     library = harness / candidate_id / 'lib' / ('lib' + label + '.so')

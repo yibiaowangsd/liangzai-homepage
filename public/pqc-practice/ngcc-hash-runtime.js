@@ -1,5 +1,6 @@
 // Generated from source build results; only verified paired modules are selectable.
 export const NGCC_HASH_WASM = Object.freeze({
+  'hash-11': ['ngcc-hash-11-0', null, 'ngcc-hash-11-2', 'ngcc-hash-11-3', 'ngcc-hash-11-4', 'ngcc-hash-11-5', 'ngcc-hash-11-6', 'ngcc-hash-11-7'],
   'hash-01': ['ngcc-hash-01-0', 'ngcc-hash-01-1', 'ngcc-hash-01-2'],
   'hash-02': ['ngcc-hash-02-0', 'ngcc-hash-02-1', 'ngcc-hash-02-2'],
   'hash-03': ['ngcc-hash-03-0', 'ngcc-hash-03-1'],

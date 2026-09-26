@@ -15,6 +15,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from ngcc_instance import select_instance
 
 REPO = Path(__file__).resolve().parents[1]
 CATALOG = json.loads((REPO / "public/pqc-practice/ngcc-catalog.json").read_text())
@@ -189,7 +190,7 @@ def main():
                 record = dict(id=candidate["id"], parameter=index, label=parameter["label"],
                               status="existing_verified")
             else:
-                match = next((label for label, source in labels if source.rstrip("/") == parameter["source"].rstrip("/")), None)
+                match = select_instance(labels, parameter)
                 if match is None:
                     record = dict(id=candidate["id"], parameter=index, label=parameter["label"],
                                   source=parameter["source"], status="source_missing")

@@ -8,6 +8,7 @@ import signal
 import subprocess
 import time
 from pathlib import Path
+from ngcc_instance import select_instance
 
 parser = argparse.ArgumentParser()
 parser.add_argument('harness', type=Path)
@@ -27,21 +28,21 @@ logs.mkdir(parents=True, exist_ok=True)
 try:
     result = subprocess.run(['make', '-s', 'list'], cwd=directory, capture_output=True, text=True, timeout=10)
     result.check_returncode()
-    labels = {}
+    labels = []
     for line in result.stdout.splitlines():
         match = re.match(r'^(.+?)\s+->\s+(.+)$', line)
         if match:
             label, source = match.groups()
-            labels[source.rstrip('/')] = label
+            labels.append((label, source))
 except (FileNotFoundError, subprocess.SubprocessError) as error:
-    labels = {}
+    labels = []
     (logs / (args.candidate + '.native.log')).write_text(f'Makefile list unavailable: {error}\n')
 results = {}
 start = time.monotonic()
 for index, parameter in enumerate(candidate['parameters']):
     if not args.from_index <= index < args.to_index:
         continue
-    label = labels.get(parameter['source'].rstrip('/'))
+    label = select_instance(labels, parameter)
     if not label:
         results[str(index)] = 'source_missing'
         continue

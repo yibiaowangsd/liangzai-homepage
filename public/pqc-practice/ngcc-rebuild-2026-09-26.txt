@@ -1,0 +1,2934 @@
+NGCC 重编译记录 · 2026-09-26
+固定源版本：c5261784ef27e7363b1bbace3d687932fda35ccd
+工具链：Emscripten 6.0.10
+范围：78 个 compile_failed + 10 个 timeout；源码缺失项未尝试。
+摘要和日志仅反映本地构建与功能检查，不是安全认证。
+
+=== hash-11 / Garnet_1024 ===
+compile_failed → verified
+原生官方 KAT 通过，WASM 三条摘要与原生输出一致。
+ngcc-hash-11-0.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-0.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-0.check.log
+$ （完整命令可用仓库构建脚本重现）
+VERIFIED hash-11 Garnet_1024
+hash-11.0.native.log
+src/Garnet_1024/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MC4_st’:
+src/Garnet_1024/Garnet_768.c:326:38: warning: missing braces around initializer [-Wmissing-braces]
+  326 |     struct  garnet_u128_t mask_low = { 0x0, 0xFFFFFFFFFFFFFFFF };//高64位全为1
+      |                                      ^
+      |                                        {                       }
+src/Garnet_1024/Garnet_768.c:327:36: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                    ^
+      |                                     {  }
+src/Garnet_1024/Garnet_768.c:327:53: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                     ^
+      |                                                       {   }
+src/Garnet_1024/Garnet_768.c:327:70: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                                      ^
+      |                                                                        {   }
+src/Garnet_1024/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MD4_st’:
+…（中间编译输出省略）…
+  642 |     struct  garnet_u128_t c0 = {Fibonacci_4x4[round][0], 0 };
+      |                                ^
+      |                                 {                          }
+src/Garnet_1024/Garnet_1024.c:643:32: warning: missing braces around initializer [-Wmissing-braces]
+  643 |     struct  garnet_u128_t c1 = { Fibonacci_4x4[round][1], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_1024/Garnet_1024.c:644:32: warning: missing braces around initializer [-Wmissing-braces]
+  644 |     struct  garnet_u128_t c2 = { Fibonacci_4x4[round][2], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_1024/Garnet_1024.c: In function ‘Garnet_1024’:
+src/Garnet_1024/Garnet_1024.c:786:39: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                       ^
+      |                                         {    }
+src/Garnet_1024/Garnet_1024.c:786:59: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                           ^
+      |                                                             {   }
+src/Garnet_1024/Garnet_1024.c:786:78: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                                              ^
+      |                                                                                {   }
+RESULT hash-11 Garnet_1024 PASS
+
+=== hash-11 / Garnet_1024_DM4x4 ===
+compile_failed → native_failed
+已按参数标签正确编译；Garnet_1024_DM4x4 原生 KAT 与提交清单不一致，暂不发布。
+ngcc-hash-11-1.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-1.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-1.check.log
+$ （完整命令可用仓库构建脚本重现）
+VERIFIED hash-11 Garnet_1024_DM4x4
+hash-11.1.native.log
+src/Garnet_1024_DM4x4/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MC4_st’:
+src/Garnet_1024_DM4x4/Garnet_768.c:326:38: warning: missing braces around initializer [-Wmissing-braces]
+  326 |     struct  garnet_u128_t mask_low = { 0x0, 0xFFFFFFFFFFFFFFFF };//高64位全为1
+      |                                      ^
+      |                                        {                       }
+src/Garnet_1024_DM4x4/Garnet_768.c:327:36: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                    ^
+      |                                     {  }
+src/Garnet_1024_DM4x4/Garnet_768.c:327:53: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                     ^
+      |                                                       {   }
+src/Garnet_1024_DM4x4/Garnet_768.c:327:70: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                                      ^
+      |                                                                        {   }
+src/Garnet_1024_DM4x4/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MD4_st’:
+…（中间编译输出省略）…
+      |                                ^
+      |                                 {                          }
+src/Garnet_1024_DM4x4/Garnet_1024.c:643:32: warning: missing braces around initializer [-Wmissing-braces]
+  643 |     struct  garnet_u128_t c1 = { Fibonacci_4x4[round][1], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_1024_DM4x4/Garnet_1024.c:644:32: warning: missing braces around initializer [-Wmissing-braces]
+  644 |     struct  garnet_u128_t c2 = { Fibonacci_4x4[round][2], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_1024_DM4x4/Garnet_1024.c: In function ‘Garnet_1024’:
+src/Garnet_1024_DM4x4/Garnet_1024.c:786:39: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                       ^
+      |                                         {    }
+src/Garnet_1024_DM4x4/Garnet_1024.c:786:59: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                           ^
+      |                                                             {   }
+src/Garnet_1024_DM4x4/Garnet_1024.c:786:78: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                                              ^
+      |                                                                                {   }
+RESULT hash-11 Garnet_1024_DM4x4 MISMATCH KAT_2_12_Garnet_1024_DM4x4.txt: sha256 28edb59f70f1e8c694943b4eb27968105797822a67c973725adc6375a1f4481f != manifest 7320069366d79f6a165d4148fe24f37619aa420bf491ccfe16b5d2c0c4383696
+make: *** [Makefile:38: test-Garnet_1024_DM4x4] Error 1
+
+=== hash-11 / Garnet_512_Cap1024 ===
+compile_failed → verified
+原生官方 KAT 通过，WASM 三条摘要与原生输出一致。
+ngcc-hash-11-2.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-2.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-2.check.log
+$ （完整命令可用仓库构建脚本重现）
+VERIFIED hash-11 Garnet_512_Cap1024
+hash-11.2.native.log
+src/Garnet_512_Cap1024/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MC4_st’:
+src/Garnet_512_Cap1024/Garnet_768.c:326:38: warning: missing braces around initializer [-Wmissing-braces]
+  326 |     struct  garnet_u128_t mask_low = { 0x0, 0xFFFFFFFFFFFFFFFF };//高64位全为1
+      |                                      ^
+      |                                        {                       }
+src/Garnet_512_Cap1024/Garnet_768.c:327:36: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                    ^
+      |                                     {  }
+src/Garnet_512_Cap1024/Garnet_768.c:327:53: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                     ^
+      |                                                       {   }
+src/Garnet_512_Cap1024/Garnet_768.c:327:70: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                                      ^
+      |                                                                        {   }
+src/Garnet_512_Cap1024/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MD4_st’:
+…（中间编译输出省略）…
+  642 |     struct  garnet_u128_t c0 = {Fibonacci_4x4[round][0], 0 };
+      |                                ^
+      |                                 {                          }
+src/Garnet_512_Cap1024/Garnet_1024.c:643:32: warning: missing braces around initializer [-Wmissing-braces]
+  643 |     struct  garnet_u128_t c1 = { Fibonacci_4x4[round][1], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_512_Cap1024/Garnet_1024.c:644:32: warning: missing braces around initializer [-Wmissing-braces]
+  644 |     struct  garnet_u128_t c2 = { Fibonacci_4x4[round][2], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_512_Cap1024/Garnet_1024.c: In function ‘Garnet_1024’:
+src/Garnet_512_Cap1024/Garnet_1024.c:786:39: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                       ^
+      |                                         {    }
+src/Garnet_512_Cap1024/Garnet_1024.c:786:59: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                           ^
+      |                                                             {   }
+src/Garnet_512_Cap1024/Garnet_1024.c:786:78: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                                              ^
+      |                                                                                {   }
+RESULT hash-11 Garnet_512_Cap1024 PASS
+
+=== hash-11 / Garnet_512_Cap512 ===
+compile_failed → verified
+原生官方 KAT 通过，WASM 三条摘要与原生输出一致。
+ngcc-hash-11-3.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-3.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-3.check.log
+$ （完整命令可用仓库构建脚本重现）
+VERIFIED hash-11 Garnet_512_Cap512
+hash-11.3.native.log
+src/Garnet_512_Cap512/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MC4_st’:
+src/Garnet_512_Cap512/Garnet_768.c:326:38: warning: missing braces around initializer [-Wmissing-braces]
+  326 |     struct  garnet_u128_t mask_low = { 0x0, 0xFFFFFFFFFFFFFFFF };//高64位全为1
+      |                                      ^
+      |                                        {                       }
+src/Garnet_512_Cap512/Garnet_768.c:327:36: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                    ^
+      |                                     {  }
+src/Garnet_512_Cap512/Garnet_768.c:327:53: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                     ^
+      |                                                       {   }
+src/Garnet_512_Cap512/Garnet_768.c:327:70: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                                      ^
+      |                                                                        {   }
+src/Garnet_512_Cap512/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MD4_st’:
+…（中间编译输出省略）…
+  642 |     struct  garnet_u128_t c0 = {Fibonacci_4x4[round][0], 0 };
+      |                                ^
+      |                                 {                          }
+src/Garnet_512_Cap512/Garnet_1024.c:643:32: warning: missing braces around initializer [-Wmissing-braces]
+  643 |     struct  garnet_u128_t c1 = { Fibonacci_4x4[round][1], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_512_Cap512/Garnet_1024.c:644:32: warning: missing braces around initializer [-Wmissing-braces]
+  644 |     struct  garnet_u128_t c2 = { Fibonacci_4x4[round][2], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_512_Cap512/Garnet_1024.c: In function ‘Garnet_1024’:
+src/Garnet_512_Cap512/Garnet_1024.c:786:39: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                       ^
+      |                                         {    }
+src/Garnet_512_Cap512/Garnet_1024.c:786:59: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                           ^
+      |                                                             {   }
+src/Garnet_512_Cap512/Garnet_1024.c:786:78: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                                              ^
+      |                                                                                {   }
+RESULT hash-11 Garnet_512_Cap512 PASS
+
+=== hash-11 / Garnet_512_Cap640 ===
+compile_failed → verified
+原生官方 KAT 通过，WASM 三条摘要与原生输出一致。
+ngcc-hash-11-4.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-4.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-4.check.log
+$ （完整命令可用仓库构建脚本重现）
+VERIFIED hash-11 Garnet_512_Cap640
+hash-11.4.native.log
+src/Garnet_512_Cap640/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MC4_st’:
+src/Garnet_512_Cap640/Garnet_768.c:326:38: warning: missing braces around initializer [-Wmissing-braces]
+  326 |     struct  garnet_u128_t mask_low = { 0x0, 0xFFFFFFFFFFFFFFFF };//高64位全为1
+      |                                      ^
+      |                                        {                       }
+src/Garnet_512_Cap640/Garnet_768.c:327:36: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                    ^
+      |                                     {  }
+src/Garnet_512_Cap640/Garnet_768.c:327:53: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                     ^
+      |                                                       {   }
+src/Garnet_512_Cap640/Garnet_768.c:327:70: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                                      ^
+      |                                                                        {   }
+src/Garnet_512_Cap640/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MD4_st’:
+…（中间编译输出省略）…
+  642 |     struct  garnet_u128_t c0 = {Fibonacci_4x4[round][0], 0 };
+      |                                ^
+      |                                 {                          }
+src/Garnet_512_Cap640/Garnet_1024.c:643:32: warning: missing braces around initializer [-Wmissing-braces]
+  643 |     struct  garnet_u128_t c1 = { Fibonacci_4x4[round][1], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_512_Cap640/Garnet_1024.c:644:32: warning: missing braces around initializer [-Wmissing-braces]
+  644 |     struct  garnet_u128_t c2 = { Fibonacci_4x4[round][2], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_512_Cap640/Garnet_1024.c: In function ‘Garnet_1024’:
+src/Garnet_512_Cap640/Garnet_1024.c:786:39: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                       ^
+      |                                         {    }
+src/Garnet_512_Cap640/Garnet_1024.c:786:59: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                           ^
+      |                                                             {   }
+src/Garnet_512_Cap640/Garnet_1024.c:786:78: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                                              ^
+      |                                                                                {   }
+RESULT hash-11 Garnet_512_Cap640 PASS
+
+=== hash-11 / Garnet_512_Cap768 ===
+compile_failed → verified
+原生官方 KAT 通过，WASM 三条摘要与原生输出一致。
+ngcc-hash-11-5.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-5.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-5.check.log
+$ （完整命令可用仓库构建脚本重现）
+VERIFIED hash-11 Garnet_512_Cap768
+hash-11.5.native.log
+src/Garnet_512_Cap768/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MC4_st’:
+src/Garnet_512_Cap768/Garnet_768.c:326:38: warning: missing braces around initializer [-Wmissing-braces]
+  326 |     struct  garnet_u128_t mask_low = { 0x0, 0xFFFFFFFFFFFFFFFF };//高64位全为1
+      |                                      ^
+      |                                        {                       }
+src/Garnet_512_Cap768/Garnet_768.c:327:36: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                    ^
+      |                                     {  }
+src/Garnet_512_Cap768/Garnet_768.c:327:53: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                     ^
+      |                                                       {   }
+src/Garnet_512_Cap768/Garnet_768.c:327:70: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                                      ^
+      |                                                                        {   }
+src/Garnet_512_Cap768/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MD4_st’:
+…（中间编译输出省略）…
+  642 |     struct  garnet_u128_t c0 = {Fibonacci_4x4[round][0], 0 };
+      |                                ^
+      |                                 {                          }
+src/Garnet_512_Cap768/Garnet_1024.c:643:32: warning: missing braces around initializer [-Wmissing-braces]
+  643 |     struct  garnet_u128_t c1 = { Fibonacci_4x4[round][1], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_512_Cap768/Garnet_1024.c:644:32: warning: missing braces around initializer [-Wmissing-braces]
+  644 |     struct  garnet_u128_t c2 = { Fibonacci_4x4[round][2], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_512_Cap768/Garnet_1024.c: In function ‘Garnet_1024’:
+src/Garnet_512_Cap768/Garnet_1024.c:786:39: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                       ^
+      |                                         {    }
+src/Garnet_512_Cap768/Garnet_1024.c:786:59: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                           ^
+      |                                                             {   }
+src/Garnet_512_Cap768/Garnet_1024.c:786:78: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                                              ^
+      |                                                                                {   }
+RESULT hash-11 Garnet_512_Cap768 PASS
+
+=== hash-11 / Garnet_512_Cap896 ===
+compile_failed → verified
+原生官方 KAT 通过，WASM 三条摘要与原生输出一致。
+ngcc-hash-11-6.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-6.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-6.check.log
+$ （完整命令可用仓库构建脚本重现）
+VERIFIED hash-11 Garnet_512_Cap896
+hash-11.6.native.log
+src/Garnet_512_Cap896/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MC4_st’:
+src/Garnet_512_Cap896/Garnet_768.c:326:38: warning: missing braces around initializer [-Wmissing-braces]
+  326 |     struct  garnet_u128_t mask_low = { 0x0, 0xFFFFFFFFFFFFFFFF };//高64位全为1
+      |                                      ^
+      |                                        {                       }
+src/Garnet_512_Cap896/Garnet_768.c:327:36: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                    ^
+      |                                     {  }
+src/Garnet_512_Cap896/Garnet_768.c:327:53: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                     ^
+      |                                                       {   }
+src/Garnet_512_Cap896/Garnet_768.c:327:70: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                                      ^
+      |                                                                        {   }
+src/Garnet_512_Cap896/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MD4_st’:
+…（中间编译输出省略）…
+  642 |     struct  garnet_u128_t c0 = {Fibonacci_4x4[round][0], 0 };
+      |                                ^
+      |                                 {                          }
+src/Garnet_512_Cap896/Garnet_1024.c:643:32: warning: missing braces around initializer [-Wmissing-braces]
+  643 |     struct  garnet_u128_t c1 = { Fibonacci_4x4[round][1], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_512_Cap896/Garnet_1024.c:644:32: warning: missing braces around initializer [-Wmissing-braces]
+  644 |     struct  garnet_u128_t c2 = { Fibonacci_4x4[round][2], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_512_Cap896/Garnet_1024.c: In function ‘Garnet_1024’:
+src/Garnet_512_Cap896/Garnet_1024.c:786:39: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                       ^
+      |                                         {    }
+src/Garnet_512_Cap896/Garnet_1024.c:786:59: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                           ^
+      |                                                             {   }
+src/Garnet_512_Cap896/Garnet_1024.c:786:78: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                                              ^
+      |                                                                                {   }
+RESULT hash-11 Garnet_512_Cap896 PASS
+
+=== hash-11 / Garnet_768 ===
+compile_failed → verified
+原生官方 KAT 通过，WASM 三条摘要与原生输出一致。
+ngcc-hash-11-7.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-7.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-hash-11-7.check.log
+$ （完整命令可用仓库构建脚本重现）
+VERIFIED hash-11 Garnet_768
+hash-11.7.native.log
+src/Garnet_768/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MC4_st’:
+src/Garnet_768/Garnet_768.c:326:38: warning: missing braces around initializer [-Wmissing-braces]
+  326 |     struct  garnet_u128_t mask_low = { 0x0, 0xFFFFFFFFFFFFFFFF };//高64位全为1
+      |                                      ^
+      |                                        {                       }
+src/Garnet_768/Garnet_768.c:327:36: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                    ^
+      |                                     {  }
+src/Garnet_768/Garnet_768.c:327:53: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                     ^
+      |                                                       {   }
+src/Garnet_768/Garnet_768.c:327:70: warning: missing braces around initializer [-Wmissing-braces]
+  327 |     struct  garnet_u128_t result = {0,0}, reducer = { 0,0 }, carry = { 0,0 };
+      |                                                                      ^
+      |                                                                        {   }
+src/Garnet_768/Garnet_768.c: In function ‘gf128_mul_alpha_aa_MD4_st’:
+…（中间编译输出省略）…
+  642 |     struct  garnet_u128_t c0 = {Fibonacci_4x4[round][0], 0 };
+      |                                ^
+      |                                 {                          }
+src/Garnet_768/Garnet_1024.c:643:32: warning: missing braces around initializer [-Wmissing-braces]
+  643 |     struct  garnet_u128_t c1 = { Fibonacci_4x4[round][1], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_768/Garnet_1024.c:644:32: warning: missing braces around initializer [-Wmissing-braces]
+  644 |     struct  garnet_u128_t c2 = { Fibonacci_4x4[round][2], 0 };
+      |                                ^
+      |                                  {                          }
+src/Garnet_768/Garnet_1024.c: In function ‘Garnet_1024’:
+src/Garnet_768/Garnet_1024.c:786:39: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                       ^
+      |                                         {    }
+src/Garnet_768/Garnet_1024.c:786:59: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                           ^
+      |                                                             {   }
+src/Garnet_768/Garnet_1024.c:786:78: warning: missing braces around initializer [-Wmissing-braces]
+  786 |      struct  garnet_u128_t zero_key = { 0, 0 }, one_key = { 7,0 }, two_key = { 8,0 };
+      |                                                                              ^
+      |                                                                                {   }
+RESULT hash-11 Garnet_768 PASS
+
+=== kem-06 / BRA-128 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-kem-06-0.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/BRA-128/src/augmented_gabidulin.c:9:
+In file included from src/BRA-128/src/rbc-67/rbc_elt.h:9:
+In file included from src/BRA-128/src/rbc-67/rbc_67.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+   14 | #error "This header is only meant to be used on x86 and x64 architecture"
+      |  ^
+In file included from src/BRA-128/src/augmented_gabidulin.c:9:
+In file included from src/BRA-128/src/rbc-67/rbc_elt.h:9:
+In file included from src/BRA-128/src/rbc-67/rbc_67.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:17:
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/compat/pmmintrin.h:11:2: error: "SSE3 instruction set not enabled"
+   11 | #error "SSE3 instruction set not enabled"
+      |  ^
+In file included from src/BRA-128/src/augmented_gabidulin.c:9:
+In file included from src/BRA-128/src/rbc-67/rbc_elt.h:9:
+…（中间编译输出省略）…
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:34:45: error: use of undeclared identifier '__v4sf'
+   34 |                                            (__v4sf)__C);
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:46: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:59: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                                           ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:40:46: error: use of undeclared identifier '__v2df'
+   40 |                                             (__v2df)__C);
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:45: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:58: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:56:46: error: use of undeclared identifier '__v4sf'
+   56 |                                            -(__v4sf)__C);
+      |                                              ^~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:35: build/BRA-128/src__BRA-128__src__augmented_gabidulin.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kem-06 / BRA-256 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-kem-06-1.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/BRA-256/src/augmented_gabidulin.c:9:
+In file included from src/BRA-256/src/rbc-83/rbc_elt.h:9:
+In file included from src/BRA-256/src/rbc-83/rbc_83.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+   14 | #error "This header is only meant to be used on x86 and x64 architecture"
+      |  ^
+In file included from src/BRA-256/src/augmented_gabidulin.c:9:
+In file included from src/BRA-256/src/rbc-83/rbc_elt.h:9:
+In file included from src/BRA-256/src/rbc-83/rbc_83.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:17:
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/compat/pmmintrin.h:11:2: error: "SSE3 instruction set not enabled"
+   11 | #error "SSE3 instruction set not enabled"
+      |  ^
+In file included from src/BRA-256/src/augmented_gabidulin.c:9:
+In file included from src/BRA-256/src/rbc-83/rbc_elt.h:9:
+…（中间编译输出省略）…
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:34:45: error: use of undeclared identifier '__v4sf'
+   34 |                                            (__v4sf)__C);
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:46: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:59: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                                           ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:40:46: error: use of undeclared identifier '__v2df'
+   40 |                                             (__v2df)__C);
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:45: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:58: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:56:46: error: use of undeclared identifier '__v4sf'
+   56 |                                            -(__v4sf)__C);
+      |                                              ^~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:36: build/BRA-256/src__BRA-256__src__bra.c.o] Error 1
+
+=== kem-06 / BRA-512 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-kem-06-2.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/BRA-512/src/augmented_gabidulin.c:9:
+In file included from src/BRA-512/src/rbc-127/rbc_elt.h:9:
+In file included from src/BRA-512/src/rbc-127/rbc_127.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+   14 | #error "This header is only meant to be used on x86 and x64 architecture"
+      |  ^
+In file included from src/BRA-512/src/augmented_gabidulin.c:9:
+In file included from src/BRA-512/src/rbc-127/rbc_elt.h:9:
+In file included from src/BRA-512/src/rbc-127/rbc_127.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:17:
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/compat/pmmintrin.h:11:2: error: "SSE3 instruction set not enabled"
+   11 | #error "SSE3 instruction set not enabled"
+      |  ^
+In file included from src/BRA-512/src/augmented_gabidulin.c:9:
+In file included from src/BRA-512/src/rbc-127/rbc_elt.h:9:
+…（中间编译输出省略）…
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:34:45: error: use of undeclared identifier '__v4sf'
+   34 |                                            (__v4sf)__C);
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:46: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:59: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                                           ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:40:46: error: use of undeclared identifier '__v2df'
+   40 |                                             (__v2df)__C);
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:45: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:58: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:56:46: error: use of undeclared identifier '__v4sf'
+   56 |                                            -(__v4sf)__C);
+      |                                              ^~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:37: build/BRA-512/src__BRA-512__src__bra.c.o] Error 1
+
+=== kem-07 / BRQC-128 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-kem-07-0.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/BRQC-128/src/brqc.c:13:
+In file included from src/BRQC-128/src/brqc.h:14:
+In file included from src/BRQC-128/src/rbc-127/rbc_vec.h:9:
+In file included from src/BRQC-128/src/rbc-127/rbc_127.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+   14 | #error "This header is only meant to be used on x86 and x64 architecture"
+      |  ^
+In file included from src/BRQC-128/src/brqc.c:13:
+In file included from src/BRQC-128/src/brqc.h:14:
+In file included from src/BRQC-128/src/rbc-127/rbc_vec.h:9:
+In file included from src/BRQC-128/src/rbc-127/rbc_127.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:17:
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/compat/pmmintrin.h:11:2: error: "SSE3 instruction set not enabled"
+   11 | #error "SSE3 instruction set not enabled"
+      |  ^
+…（中间编译输出省略）…
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:34:45: error: use of undeclared identifier '__v4sf'
+   34 |                                            (__v4sf)__C);
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:46: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:59: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                                           ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:40:46: error: use of undeclared identifier '__v2df'
+   40 |                                             (__v2df)__C);
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:45: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:58: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:56:46: error: use of undeclared identifier '__v4sf'
+   56 |                                            -(__v4sf)__C);
+      |                                              ^~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:35: build/BRQC-128/src__BRQC-128__src__gabidulin.c.o] Error 1
+
+=== kem-07 / BRQC-256 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-kem-07-1.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/BRQC-256/src/brqc.c:13:
+In file included from src/BRQC-256/src/brqc.h:14:
+In file included from src/BRQC-256/src/rbc-163/rbc_vec.h:9:
+In file included from src/BRQC-256/src/rbc-163/rbc_163.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+   14 | #error "This header is only meant to be used on x86 and x64 architecture"
+      |  ^
+In file included from src/BRQC-256/src/brqc.c:13:
+In file included from src/BRQC-256/src/brqc.h:14:
+In file included from src/BRQC-256/src/rbc-163/rbc_vec.h:9:
+In file included from src/BRQC-256/src/rbc-163/rbc_163.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:17:
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/compat/pmmintrin.h:11:2: error: "SSE3 instruction set not enabled"
+   11 | #error "SSE3 instruction set not enabled"
+      |  ^
+…（中间编译输出省略）…
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:34:45: error: use of undeclared identifier '__v4sf'
+   34 |                                            (__v4sf)__C);
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:46: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:59: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                                           ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:40:46: error: use of undeclared identifier '__v2df'
+   40 |                                             (__v2df)__C);
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:45: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:58: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:56:46: error: use of undeclared identifier '__v4sf'
+   56 |                                            -(__v4sf)__C);
+      |                                              ^~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:36: build/BRQC-256/src__BRQC-256__src__gabidulin.c.o] Error 1
+
+=== kem-07 / BRQC-512 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-kem-07-2.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/BRQC-512/src/brqc.c:13:
+In file included from src/BRQC-512/src/brqc.h:14:
+In file included from src/BRQC-512/src/rbc-229/rbc_vec.h:9:
+In file included from src/BRQC-512/src/rbc-229/rbc_229.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+   14 | #error "This header is only meant to be used on x86 and x64 architecture"
+      |  ^
+In file included from src/BRQC-512/src/brqc.c:13:
+In file included from src/BRQC-512/src/brqc.h:14:
+In file included from src/BRQC-512/src/rbc-229/rbc_vec.h:9:
+In file included from src/BRQC-512/src/rbc-229/rbc_229.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:17:
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/compat/pmmintrin.h:11:2: error: "SSE3 instruction set not enabled"
+   11 | #error "SSE3 instruction set not enabled"
+      |  ^
+…（中间编译输出省略）…
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:34:45: error: use of undeclared identifier '__v4sf'
+   34 |                                            (__v4sf)__C);
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:46: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:59: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                                           ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:40:46: error: use of undeclared identifier '__v2df'
+   40 |                                             (__v2df)__C);
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:45: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:58: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:56:46: error: use of undeclared identifier '__v4sf'
+   56 |                                            -(__v4sf)__C);
+      |                                              ^~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:37: build/BRQC-512/src__BRQC-512__src__gabidulin.c.o] Error 1
+
+=== kem-10 / CMultiURAG-128 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-kem-10-0.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/CMultiURAG-128/KEM_CMultiURAG-128.c:7:
+In file included from src/CMultiURAG-128/src/cmultiurag.h:9:
+In file included from src/CMultiURAG-128/src/rbc-79/rbc_vec.h:9:
+In file included from src/CMultiURAG-128/src/rbc-79/rbc_79.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+   14 | #error "This header is only meant to be used on x86 and x64 architecture"
+      |  ^
+In file included from src/CMultiURAG-128/KEM_CMultiURAG-128.c:7:
+In file included from src/CMultiURAG-128/src/cmultiurag.h:9:
+In file included from src/CMultiURAG-128/src/rbc-79/rbc_vec.h:9:
+In file included from src/CMultiURAG-128/src/rbc-79/rbc_79.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:17:
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/compat/pmmintrin.h:11:2: error: "SSE3 instruction set not enabled"
+   11 | #error "SSE3 instruction set not enabled"
+      |  ^
+…（中间编译输出省略）…
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:34:45: error: use of undeclared identifier '__v4sf'
+   34 |                                            (__v4sf)__C);
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:46: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:59: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                                           ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:40:46: error: use of undeclared identifier '__v2df'
+   40 |                                             (__v2df)__C);
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:45: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:58: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:56:46: error: use of undeclared identifier '__v4sf'
+   56 |                                            -(__v4sf)__C);
+      |                                              ^~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:34: build/CMultiURAG-128/src__CMultiURAG-128__KEM_CMultiURAG-128.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kem-10 / CMultiURAG-256 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-kem-10-1.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/CMultiURAG-256/KEM_CMultiURAG-256.c:7:
+In file included from src/CMultiURAG-256/src/cmultiurag.h:9:
+In file included from src/CMultiURAG-256/src/rbc-127/rbc_vec.h:9:
+In file included from src/CMultiURAG-256/src/rbc-127/rbc_127.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+   14 | #error "This header is only meant to be used on x86 and x64 architecture"
+      |  ^
+In file included from src/CMultiURAG-256/KEM_CMultiURAG-256.c:7:
+In file included from src/CMultiURAG-256/src/cmultiurag.h:9:
+In file included from src/CMultiURAG-256/src/rbc-127/rbc_vec.h:9:
+In file included from src/CMultiURAG-256/src/rbc-127/rbc_127.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:17:
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/compat/pmmintrin.h:11:2: error: "SSE3 instruction set not enabled"
+   11 | #error "SSE3 instruction set not enabled"
+      |  ^
+…（中间编译输出省略）…
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:34:45: error: use of undeclared identifier '__v4sf'
+   34 |                                            (__v4sf)__C);
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:46: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:59: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                                           ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:40:46: error: use of undeclared identifier '__v2df'
+   40 |                                             (__v2df)__C);
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:45: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:58: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:56:46: error: use of undeclared identifier '__v4sf'
+   56 |                                            -(__v4sf)__C);
+      |                                              ^~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:35: build/CMultiURAG-256/src__CMultiURAG-256__KEM_CMultiURAG-256.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kem-10 / CMultiURAG-512 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-kem-10-2.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/CMultiURAG-512/KEM_CMultiURAG-512.c:7:
+In file included from src/CMultiURAG-512/src/cmultiurag.h:9:
+In file included from src/CMultiURAG-512/src/rbc-181/rbc_vec.h:9:
+In file included from src/CMultiURAG-512/src/rbc-181/rbc_181.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:14:2: error: "This header is only meant to be used on x86 and x64 architecture"
+   14 | #error "This header is only meant to be used on x86 and x64 architecture"
+      |  ^
+In file included from src/CMultiURAG-512/KEM_CMultiURAG-512.c:7:
+In file included from src/CMultiURAG-512/src/cmultiurag.h:9:
+In file included from src/CMultiURAG-512/src/rbc-181/rbc_vec.h:9:
+In file included from src/CMultiURAG-512/src/rbc-181/rbc_181.h:10:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/x86intrin.h:19:
+In file included from /tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/ammintrin.h:17:
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/compat/pmmintrin.h:11:2: error: "SSE3 instruction set not enabled"
+   11 | #error "SSE3 instruction set not enabled"
+      |  ^
+…（中间编译输出省略）…
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:34:45: error: use of undeclared identifier '__v4sf'
+   34 |                                            (__v4sf)__C);
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:46: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:39:59: error: use of undeclared identifier '__v2df'
+   39 |   return (__m128d)__builtin_elementwise_fma((__v2df)__A, (__v2df)__B,
+      |                                                           ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:40:46: error: use of undeclared identifier '__v2df'
+   40 |                                             (__v2df)__C);
+      |                                              ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:45: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                             ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:55:58: error: use of undeclared identifier '__v4sf'
+   55 |   return (__m128)__builtin_elementwise_fma((__v4sf)__A, (__v4sf)__B,
+      |                                                          ^~~~~~
+/tmp/liangzai-build/emsdk-main/upstream/lib/clang/24/include/fma4intrin.h:56:46: error: use of undeclared identifier '__v4sf'
+   56 |                                            -(__v4sf)__C);
+      |                                              ^~~~~~
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:36: build/CMultiURAG-512/src__CMultiURAG-512__KEM_CMultiURAG-512.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kem-12 / CTL-257-512 ===
+compile_failed → compile_failed
+构建列表把内部模板源文件作为独立编译单元，出现未实例化类型或宏。
+ngcc-kem-12-0.log
+$ （完整命令可用仓库构建脚本重现）
+src/CTL-257-512/KEM_AlgorithmInstance.c:27:50: warning: variable 'sk' is uninitialized when passed as a const pointer argument here [-Wuninitialized-const-pointer]
+   27 |         return ctl_257_512_encode_private_key(NULL, 0, &sk, 0);
+      |                                                         ^~
+1 warning generated.
+src/CTL-257-512/api.c:11:2: error: This module must not be compiled separately.
+   11 | #error This module must not be compiled separately.
+      |  ^
+src/CTL-257-512/api.c:94:9: error: unknown type name 'ctl_Q_N_private_key'; did you mean 'ctl_257_512_private_key'?
+   94 | make_rr(Zn(private_key) *sk)
+      |         ^~~~~~~~~~~~~~~
+      |         ctl_257_512_private_key
+src/CTL-257-512/api.c:37:20: note: expanded from macro 'Zn'
+   37 | #define Zn(name)   XCAT(XCAT(XCAT(ctl_, Q), XCAT(_, N)), XCAT(_, name))
+      |                    ^
+src/CTL-257-512/api.c:32:23: note: expanded from macro 'XCAT'
+   32 | #define XCAT(x, y)    XCAT_(x, y)
+      |                       ^
+…（中间编译输出省略）…
+<scratch space>:20:1: note: expanded from here
+   20 | ctl_257_512_private_key
+      | ^
+src/CTL-257-512/api.c:187:32: error: use of undeclared identifier 'CTL_Q_N_TMP_KEYGEN'
+  187 |         tmp = tmp_align(tmp, tmp_len, ZN(TMP_KEYGEN) - 31);
+      |                                       ^~~~~~~~~~~~~~
+src/CTL-257-512/api.c:38:20: note: expanded from macro 'ZN'
+   38 | #define ZN(name)   XCAT(XCAT(XCAT(CTL_, Q), XCAT(_, N)), XCAT(_, name))
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/CTL-257-512/api.c:32:23: note: expanded from macro 'XCAT'
+   32 | #define XCAT(x, y)    XCAT_(x, y)
+      |                       ^~~~~~~~~~~
+src/CTL-257-512/api.c:33:23: note: expanded from macro 'XCAT_'
+   33 | #define XCAT_(x, y)   x ## y
+      |                       ^~~~~~
+<scratch space>:113:1: note: expanded from here
+  113 | CTL_Q_N_TMP_KEYGEN
+      | ^~~~~~~~~~~~~~~~~~
+src/CTL-257-512/api.c:198:23: error: use of undeclared identifier 'Q'
+  198 |                         (uint16_t *)sk->h, Q, LOGN,
+      |                                            ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:6: build/CTL-257-512/src__CTL-257-512__api.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kem-12 / CTL-3329-2048 ===
+compile_failed → compile_failed
+构建列表把内部模板源文件作为独立编译单元，出现未实例化类型或宏。
+ngcc-kem-12-1.log
+$ （完整命令可用仓库构建脚本重现）
+src/CTL-3329-2048/KEM_AlgorithmInstance.c:16:52: warning: variable 'sk' is uninitialized when passed as a const pointer argument here [-Wuninitialized-const-pointer]
+   16 |         return ctl_3329_2048_encode_private_key(NULL, 0, &sk, 0);
+      |                                                           ^~
+1 warning generated.
+src/CTL-3329-2048/api.c:11:2: error: This module must not be compiled separately.
+   11 | #error This module must not be compiled separately.
+      |  ^
+src/CTL-3329-2048/api.c:94:9: error: unknown type name 'ctl_Q_N_private_key'; did you mean 'ctl_257_512_private_key'?
+   94 | make_rr(Zn(private_key) *sk)
+      |         ^~~~~~~~~~~~~~~
+      |         ctl_257_512_private_key
+src/CTL-3329-2048/api.c:37:20: note: expanded from macro 'Zn'
+   37 | #define Zn(name)   XCAT(XCAT(XCAT(ctl_, Q), XCAT(_, N)), XCAT(_, name))
+      |                    ^
+src/CTL-3329-2048/api.c:32:23: note: expanded from macro 'XCAT'
+   32 | #define XCAT(x, y)    XCAT_(x, y)
+      |                       ^
+…（中间编译输出省略）…
+<scratch space>:20:1: note: expanded from here
+   20 | ctl_257_512_private_key
+      | ^
+src/CTL-3329-2048/api.c:187:32: error: use of undeclared identifier 'CTL_Q_N_TMP_KEYGEN'
+  187 |         tmp = tmp_align(tmp, tmp_len, ZN(TMP_KEYGEN) - 31);
+      |                                       ^~~~~~~~~~~~~~
+src/CTL-3329-2048/api.c:38:20: note: expanded from macro 'ZN'
+   38 | #define ZN(name)   XCAT(XCAT(XCAT(CTL_, Q), XCAT(_, N)), XCAT(_, name))
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/CTL-3329-2048/api.c:32:23: note: expanded from macro 'XCAT'
+   32 | #define XCAT(x, y)    XCAT_(x, y)
+      |                       ^~~~~~~~~~~
+src/CTL-3329-2048/api.c:33:23: note: expanded from macro 'XCAT_'
+   33 | #define XCAT_(x, y)   x ## y
+      |                       ^~~~~~
+<scratch space>:113:1: note: expanded from here
+  113 | CTL_Q_N_TMP_KEYGEN
+      | ^~~~~~~~~~~~~~~~~~
+src/CTL-3329-2048/api.c:198:23: error: use of undeclared identifier 'Q'
+  198 |                         (uint16_t *)sk->h, Q, LOGN,
+      |                                            ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:7: build/CTL-3329-2048/src__CTL-3329-2048__api.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kem-12 / CTL-769-1024 ===
+compile_failed → compile_failed
+构建列表把内部模板源文件作为独立编译单元，出现未实例化类型或宏。
+ngcc-kem-12-2.log
+$ （完整命令可用仓库构建脚本重现）
+src/CTL-769-1024/KEM_AlgorithmInstance.c:16:51: warning: variable 'sk' is uninitialized when passed as a const pointer argument here [-Wuninitialized-const-pointer]
+   16 |         return ctl_769_1024_encode_private_key(NULL, 0, &sk, 0);
+      |                                                          ^~
+1 warning generated.
+src/CTL-769-1024/api.c:11:2: error: This module must not be compiled separately.
+   11 | #error This module must not be compiled separately.
+      |  ^
+src/CTL-769-1024/api.c:94:9: error: unknown type name 'ctl_Q_N_private_key'; did you mean 'ctl_257_512_private_key'?
+   94 | make_rr(Zn(private_key) *sk)
+      |         ^~~~~~~~~~~~~~~
+      |         ctl_257_512_private_key
+src/CTL-769-1024/api.c:37:20: note: expanded from macro 'Zn'
+   37 | #define Zn(name)   XCAT(XCAT(XCAT(ctl_, Q), XCAT(_, N)), XCAT(_, name))
+      |                    ^
+src/CTL-769-1024/api.c:32:23: note: expanded from macro 'XCAT'
+   32 | #define XCAT(x, y)    XCAT_(x, y)
+      |                       ^
+…（中间编译输出省略）…
+<scratch space>:20:1: note: expanded from here
+   20 | ctl_257_512_private_key
+      | ^
+src/CTL-769-1024/api.c:187:32: error: use of undeclared identifier 'CTL_Q_N_TMP_KEYGEN'
+  187 |         tmp = tmp_align(tmp, tmp_len, ZN(TMP_KEYGEN) - 31);
+      |                                       ^~~~~~~~~~~~~~
+src/CTL-769-1024/api.c:38:20: note: expanded from macro 'ZN'
+   38 | #define ZN(name)   XCAT(XCAT(XCAT(CTL_, Q), XCAT(_, N)), XCAT(_, name))
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+src/CTL-769-1024/api.c:32:23: note: expanded from macro 'XCAT'
+   32 | #define XCAT(x, y)    XCAT_(x, y)
+      |                       ^~~~~~~~~~~
+src/CTL-769-1024/api.c:33:23: note: expanded from macro 'XCAT_'
+   33 | #define XCAT_(x, y)   x ## y
+      |                       ^~~~~~
+<scratch space>:113:1: note: expanded from here
+  113 | CTL_Q_N_TMP_KEYGEN
+      | ^~~~~~~~~~~~~~~~~~
+src/CTL-769-1024/api.c:198:23: error: use of undeclared identifier 'Q'
+  198 |                         (uint16_t *)sk->h, Q, LOGN,
+      |                                            ^
+fatal error: too many errors emitted, stopping now [-ferror-limit=]
+20 errors generated.
+make: *** [Makefile:8: build/CTL-769-1024/src__CTL-769-1024__api.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kem-13 / DKEM-128 ===
+compile_failed → runtime_failed
+编译成功，但密钥生成返回失败。
+ngcc-kem-13-0.log
+$ （完整命令可用仓库构建脚本重现）
+src/DKEM-128/packing.c:21:50: warning: argument 'bytes' of type 'const uint8_t[1600]' (aka 'const unsigned char[1600]') with mismatched bound [-Warray-parameter]
+   21 | void DKE_CPA_unpacksk(polyvec *sk, const uint8_t bytes[DKE_SKBYTES]) {
+      |                                                  ^
+src/DKEM-128/packing.h:17:50: note: previously declared as 'const uint8_t[768]' (aka 'const unsigned char[768]') here
+   17 | void DKE_CPA_unpacksk(polyvec *sk, const uint8_t bytes[DKE_CPA_SKABYTES]);
+      |                                                  ^
+1 warning generated.
+ngcc-kem-13-0.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-13-0.check.log
+$ （完整命令可用仓库构建脚本重现）
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: key generation failed
+
+-1 !== 0
+
+    at file:///workspace/scratch/0f12e3237ca5/liangzai-homepage/scripts/check-ngcc-module.mjs:94:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: -1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+
+=== kem-13 / DKEM-256 ===
+compile_failed → runtime_failed
+编译成功，但 WASM 功能、输出长度或一致性检查失败。
+ngcc-kem-13-1.log
+$ （完整命令可用仓库构建脚本重现）
+src/DKEM-256/packing.c:21:50: warning: argument 'bytes' of type 'const uint8_t[1600]' (aka 'const unsigned char[1600]') with mismatched bound [-Warray-parameter]
+   21 | void DKE_CPA_unpacksk(polyvec *sk, const uint8_t bytes[DKE_SKBYTES]) {
+      |                                                  ^
+src/DKEM-256/packing.h:17:50: note: previously declared as 'const uint8_t[768]' (aka 'const unsigned char[768]') here
+   17 | void DKE_CPA_unpacksk(polyvec *sk, const uint8_t bytes[DKE_CPA_SKABYTES]);
+      |                                                  ^
+1 warning generated.
+ngcc-kem-13-1.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-13-1.check.log
+$ （完整命令可用仓库构建脚本重现）
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: metadata differs from catalog
++ actual - expected
+
+  [
++   800,
+-   1568,
+-   3136,
+    1600,
++   800
+  ]
+
+    at file:///workspace/scratch/0f12e3237ca5/liangzai-homepage/scripts/check-ngcc-module.mjs:90:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [ 800, 1600, 800 ],
+  expected: [ 1568, 3136, 1600 ],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+
+=== kem-13 / DKEM-512 ===
+compile_failed → runtime_failed
+编译成功，但 WASM 功能、输出长度或一致性检查失败。
+ngcc-kem-13-2.log
+$ （完整命令可用仓库构建脚本重现）
+src/DKEM-512/packing.c:21:50: warning: argument 'bytes' of type 'const uint8_t[1600]' (aka 'const unsigned char[1600]') with mismatched bound [-Warray-parameter]
+   21 | void DKE_CPA_unpacksk(polyvec *sk, const uint8_t bytes[DKE_SKBYTES]) {
+      |                                                  ^
+src/DKEM-512/packing.h:17:50: note: previously declared as 'const uint8_t[768]' (aka 'const unsigned char[768]') here
+   17 | void DKE_CPA_unpacksk(polyvec *sk, const uint8_t bytes[DKE_CPA_SKABYTES]);
+      |                                                  ^
+1 warning generated.
+ngcc-kem-13-2.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-13-2.check.log
+$ （完整命令可用仓库构建脚本重现）
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: metadata differs from catalog
++ actual - expected
+
+  [
++   800,
++   1600,
++   800
+-   3392,
+-   6784,
+-   3136
+  ]
+
+    at file:///workspace/scratch/0f12e3237ca5/liangzai-homepage/scripts/check-ngcc-module.mjs:90:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [ 800, 1600, 800 ],
+  expected: [ 3392, 6784, 3136 ],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+
+=== kem-17 / hep-qc-1 ===
+compile_failed → runtime_failed
+编译成功，但密钥生成返回失败。
+ngcc-kem-17-0.log
+$ （完整命令可用仓库构建脚本重现）
+src/hep-qc-1/../KEM_HEP_QC.c:68:23: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   68 |     uint8_t *ek_pke = calloc(PUBLIC_KEY_BYTES, sizeof(uint8_t));
+      |                       ^
+src/hep-qc-1/../KEM_HEP_QC.c:68:23: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-1/../KEM_HEP_QC.c:105:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  105 |     free(ek_pke);
+      |     ^
+src/hep-qc-1/../KEM_HEP_QC.c:105:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+src/hep-qc-1/../PKE_HEP_QC.c:59:54: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   59 |     uint64_t (*intermediate_matrix)[VEC_N_SIZE_64] = calloc(MSG_BIT, sizeof(*intermediate_matrix));
+      |                                                      ^
+src/hep-qc-1/../PKE_HEP_QC.c:59:54: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-1/../PKE_HEP_QC.c:95:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   95 |     free(intermediate_matrix);
+      |     ^
+src/hep-qc-1/../PKE_HEP_QC.c:95:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+src/hep-qc-1/../../common/code.c:157:38: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  157 |     uint64_t (*tmp)[VEC_N_SIZE_64] = calloc(MSG_BIT, sizeof(*tmp));
+      |                                      ^
+src/hep-qc-1/../../common/code.c:157:38: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-1/../../common/code.c:171:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  171 |     free(tmp);
+      |     ^
+src/hep-qc-1/../../common/code.c:171:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+2 warnings generated.
+ngcc-kem-17-0.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-17-0.check.log
+$ （完整命令可用仓库构建脚本重现）
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: key generation failed
+
+-1 !== 0
+
+    at file:///workspace/scratch/0f12e3237ca5/liangzai-homepage/scripts/check-ngcc-module.mjs:94:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: -1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+
+=== kem-17 / hep-qc-3 ===
+compile_failed → runtime_failed
+编译成功，但密钥生成返回失败。
+ngcc-kem-17-1.log
+$ （完整命令可用仓库构建脚本重现）
+src/hep-qc-3/../KEM_HEP_QC.c:68:23: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   68 |     uint8_t *ek_pke = calloc(PUBLIC_KEY_BYTES, sizeof(uint8_t));
+      |                       ^
+src/hep-qc-3/../KEM_HEP_QC.c:68:23: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-3/../KEM_HEP_QC.c:105:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  105 |     free(ek_pke);
+      |     ^
+src/hep-qc-3/../KEM_HEP_QC.c:105:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+src/hep-qc-3/../PKE_HEP_QC.c:59:54: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   59 |     uint64_t (*intermediate_matrix)[VEC_N_SIZE_64] = calloc(MSG_BIT, sizeof(*intermediate_matrix));
+      |                                                      ^
+src/hep-qc-3/../PKE_HEP_QC.c:59:54: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-3/../PKE_HEP_QC.c:95:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   95 |     free(intermediate_matrix);
+      |     ^
+src/hep-qc-3/../PKE_HEP_QC.c:95:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+src/hep-qc-3/../../common/code.c:157:38: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  157 |     uint64_t (*tmp)[VEC_N_SIZE_64] = calloc(MSG_BIT, sizeof(*tmp));
+      |                                      ^
+src/hep-qc-3/../../common/code.c:157:38: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-3/../../common/code.c:171:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  171 |     free(tmp);
+      |     ^
+src/hep-qc-3/../../common/code.c:171:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+ngcc-kem-17-1.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-17-1.check.log
+$ （完整命令可用仓库构建脚本重现）
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: key generation failed
+
+-1 !== 0
+
+    at file:///workspace/scratch/0f12e3237ca5/liangzai-homepage/scripts/check-ngcc-module.mjs:94:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: -1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+
+=== kem-17 / hep-qc-5 ===
+compile_failed → runtime_failed
+编译成功，但密钥生成返回失败。
+ngcc-kem-17-2.log
+$ （完整命令可用仓库构建脚本重现）
+src/hep-qc-5/../KEM_HEP_QC.c:68:23: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   68 |     uint8_t *ek_pke = calloc(PUBLIC_KEY_BYTES, sizeof(uint8_t));
+      |                       ^
+src/hep-qc-5/../KEM_HEP_QC.c:68:23: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-5/../KEM_HEP_QC.c:105:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  105 |     free(ek_pke);
+      |     ^
+src/hep-qc-5/../KEM_HEP_QC.c:105:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+src/hep-qc-5/../PKE_HEP_QC.c:59:54: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   59 |     uint64_t (*intermediate_matrix)[VEC_N_SIZE_64] = calloc(MSG_BIT, sizeof(*intermediate_matrix));
+      |                                                      ^
+src/hep-qc-5/../PKE_HEP_QC.c:59:54: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-5/../PKE_HEP_QC.c:95:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   95 |     free(intermediate_matrix);
+      |     ^
+src/hep-qc-5/../PKE_HEP_QC.c:95:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+src/hep-qc-5/../../common/code.c:157:38: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  157 |     uint64_t (*tmp)[VEC_N_SIZE_64] = calloc(MSG_BIT, sizeof(*tmp));
+      |                                      ^
+src/hep-qc-5/../../common/code.c:157:38: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-5/../../common/code.c:171:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  171 |     free(tmp);
+      |     ^
+src/hep-qc-5/../../common/code.c:171:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+src/hep-qc-5/../../common/gf2x.c:139:29: warning: shift count >= width of type [-Wshift-count-overflow]
+  139 |     o[VEC_N_SIZE_64 - 1] &= BITMASK(PARAM_N, 64);
+      |                             ^~~~~~~~~~~~~~~~~~~~
+src/hep-qc-5/parameters.h:12:33: note: expanded from macro 'BITMASK'
+   12 | #define BITMASK(a, size)  ((1UL << (a % size)) - 1)                /*!< Create a mask*/
+      |                                 ^  ~~~~~~~~~~
+1 warning generated.
+src/hep-qc-5/../../common/vector.c:207:29: warning: shift count >= width of type [-Wshift-count-overflow]
+  207 |     v[VEC_N_SIZE_64 - 1] &= BITMASK(PARAM_N, 64);
+      |                             ^~~~~~~~~~~~~~~~~~~~
+src/hep-qc-5/parameters.h:12:33: note: expanded from macro 'BITMASK'
+   12 | #define BITMASK(a, size)  ((1UL << (a % size)) - 1)                /*!< Create a mask*/
+      |                                 ^  ~~~~~~~~~~
+1 warning generated.
+ngcc-kem-17-2.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-17-2.check.log
+$ （完整命令可用仓库构建脚本重现）
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: key generation failed
+
+-1 !== 0
+
+    at file:///workspace/scratch/0f12e3237ca5/liangzai-homepage/scripts/check-ngcc-module.mjs:94:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: -1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+
+=== kem-17 / hep-qc-7 ===
+compile_failed → runtime_failed
+编译成功，但密钥生成返回失败。
+ngcc-kem-17-3.log
+$ （完整命令可用仓库构建脚本重现）
+src/hep-qc-7/../KEM_HEP_QC.c:68:23: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   68 |     uint8_t *ek_pke = calloc(PUBLIC_KEY_BYTES, sizeof(uint8_t));
+      |                       ^
+src/hep-qc-7/../KEM_HEP_QC.c:68:23: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-7/../KEM_HEP_QC.c:105:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  105 |     free(ek_pke);
+      |     ^
+src/hep-qc-7/../KEM_HEP_QC.c:105:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+src/hep-qc-7/../PKE_HEP_QC.c:59:54: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   59 |     uint64_t (*intermediate_matrix)[VEC_N_SIZE_64] = calloc(MSG_BIT, sizeof(*intermediate_matrix));
+      |                                                      ^
+src/hep-qc-7/../PKE_HEP_QC.c:59:54: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-7/../PKE_HEP_QC.c:95:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   95 |     free(intermediate_matrix);
+      |     ^
+src/hep-qc-7/../PKE_HEP_QC.c:95:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+src/hep-qc-7/../../common/code.c:157:38: warning: call to undeclared library function 'calloc' with type 'void *(__size_t, __size_t)' (aka 'void *(unsigned long, unsigned long)'); ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  157 |     uint64_t (*tmp)[VEC_N_SIZE_64] = calloc(MSG_BIT, sizeof(*tmp));
+      |                                      ^
+src/hep-qc-7/../../common/code.c:157:38: note: include the header <stdlib.h> or explicitly provide a declaration for 'calloc'
+src/hep-qc-7/../../common/code.c:171:5: warning: call to undeclared library function 'free' with type 'void (void *)'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  171 |     free(tmp);
+      |     ^
+src/hep-qc-7/../../common/code.c:171:5: note: include the header <stdlib.h> or explicitly provide a declaration for 'free'
+2 warnings generated.
+ngcc-kem-17-3.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-17-3.check.log
+$ （完整命令可用仓库构建脚本重现）
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: key generation failed
+
+-1 !== 0
+
+    at file:///workspace/scratch/0f12e3237ca5/liangzai-homepage/scripts/check-ngcc-module.mjs:94:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: -1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+
+=== kem-31 / NGCC-1 ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-kem-31-0.log
+$ （完整命令可用仓库构建脚本重现）
+src/NGCC-1/src/common/generic/tools.c:50:31: warning: format specifies type 'long' but the argument has type 'clock_t' (aka 'int') [-Wformat]
+   50 |     printf("%s [%ld]\n", str, clock() - t);
+      |                 ~~~           ^~~~~~~~~~~
+      |                 %d
+src/NGCC-1/src/common/generic/tools.c:73:31: warning: format specifies type 'long' but the argument has type 'clock_t' (aka 'int') [-Wformat]
+   73 |     printf("%s [%ld]\n", str, t);
+      |                 ~~~           ^
+      |                 %d
+2 warnings generated.
+In file included from src/NGCC-1/src/quaternion/ref/generic/algebra.c:1:
+In file included from src/NGCC-1/src/quaternion/ref/generic/include/quaternion.h:12:
+src/NGCC-1/src/intbig/ref/generic/include/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+In file included from src/NGCC-1/src/intbig/ref/generic/intbig.c:1:
+src/NGCC-1/src/intbig/ref/generic/include/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:65: build/NGCC-1/src__NGCC-1__src__quaternion__ref__generic__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+1 error generated.
+make: *** [Makefile:65: build/NGCC-1/src__NGCC-1__src__intbig__ref__generic__intbig.c.o] Error 1
+
+=== kem-31 / NGCC-2 ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-kem-31-1.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NGCC-1/src/intbig/ref/generic/intbig.c:1:
+src/NGCC-1/src/intbig/ref/generic/include/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:65: build/NGCC-1/src__NGCC-1__src__intbig__ref__generic__intbig.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/NGCC-1/src/quaternion/ref/generic/algebra.c:1:
+In file included from src/NGCC-1/src/quaternion/ref/generic/include/quaternion.h:12:
+src/NGCC-1/src/intbig/ref/generic/include/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:65: build/NGCC-1/src__NGCC-1__src__quaternion__ref__generic__algebra.c.o] Error 1
+
+=== kem-31 / NGCC-3 ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-kem-31-2.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NGCC-1/src/intbig/ref/generic/intbig.c:1:
+src/NGCC-1/src/intbig/ref/generic/include/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+In file included from src/NGCC-1/src/quaternion/ref/generic/algebra.c:1:
+In file included from src/NGCC-1/src/quaternion/ref/generic/include/quaternion.h:12:
+src/NGCC-1/src/intbig/ref/generic/include/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+1 error generated.
+make: *** [Makefile:65: build/NGCC-1/src__NGCC-1__src__quaternion__ref__generic__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+make: *** [Makefile:65: build/NGCC-1/src__NGCC-1__src__intbig__ref__generic__intbig.c.o] Error 1
+
+=== kem-32 / QCTM128 ===
+compile_failed → compile_failed
+依赖 OpenSSL，当前 WASM 工具链没有对应头文件和库。
+ngcc-kem-32-0.log
+$ （完整命令可用仓库构建脚本重现）
+src/QCTM128/keccak.c:158:3: warning: misleading indentation; statement is not part of the previous 'if' [-Wmisleading-indentation]
+  158 |                 memset(state, 0, sizeof(state));
+      |                 ^
+src/QCTM128/keccak.c:155:2: note: previous statement is here
+  155 |         if (((rate + capacity) != 1600) || ((rate % 8) != 0))
+      |         ^
+1 warning generated.
+src/QCTM128/rng.c:3:10: fatal error: 'openssl/conf.h' file not found
+    3 | #include <openssl/conf.h>
+      |          ^~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:39: build/QCTM128/src__QCTM128__rng.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kem-32 / QCTM256 ===
+compile_failed → compile_failed
+依赖 OpenSSL，当前 WASM 工具链没有对应头文件和库。
+ngcc-kem-32-1.log
+$ （完整命令可用仓库构建脚本重现）
+src/QCTM256/keccak.c:158:3: warning: misleading indentation; statement is not part of the previous 'if' [-Wmisleading-indentation]
+  158 |                 memset(state, 0, sizeof(state));
+      |                 ^
+src/QCTM256/keccak.c:155:2: note: previous statement is here
+  155 |         if (((rate + capacity) != 1600) || ((rate % 8) != 0))
+      |         ^
+1 warning generated.
+src/QCTM256/rng.c:3:10: fatal error: 'openssl/conf.h' file not found
+    3 | #include <openssl/conf.h>
+      |          ^~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:40: build/QCTM256/src__QCTM256__rng.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kem-32 / QCTM512 ===
+compile_failed → compile_failed
+依赖 OpenSSL，当前 WASM 工具链没有对应头文件和库。
+ngcc-kem-32-2.log
+$ （完整命令可用仓库构建脚本重现）
+src/QCTM512/keccak.c:158:3: warning: misleading indentation; statement is not part of the previous 'if' [-Wmisleading-indentation]
+  158 |                 memset(state, 0, sizeof(state));
+      |                 ^
+src/QCTM512/keccak.c:155:2: note: previous statement is here
+  155 |         if (((rate + capacity) != 1600) || ((rate % 8) != 0))
+      |         ^
+1 warning generated.
+src/QCTM512/rng.c:3:10: fatal error: 'openssl/conf.h' file not found
+    3 | #include <openssl/conf.h>
+      |          ^~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:41: build/QCTM512/src__QCTM512__rng.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kem-38 / UVW_KEM_128 ===
+timeout → timeout
+在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。
+ngcc-kem-38-0.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-38-0.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-38-0.check.log
+$ （完整命令可用仓库构建脚本重现）
+
+TIMEOUT
+
+=== kem-38 / UVW_KEM_256 ===
+timeout → timeout
+在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。
+ngcc-kem-38-1.log
+$ （完整命令可用仓库构建脚本重现）
+src/UVW-KEM-256/src/KEM_AlgorithmInstance.c:1315:18: warning: attempt to call free on non-heap object 'I1' [-Wfree-nonheap-object]
+ 1315 |             free(I1);
+      |                  ^
+1 warning generated.
+ngcc-kem-38-1.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-38-1.check.log
+$ （完整命令可用仓库构建脚本重现）
+
+TIMEOUT
+
+=== kem-38 / UVW_KEM_512 ===
+timeout → timeout
+在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。
+ngcc-kem-38-2.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-38-2.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kem-38-2.check.log
+$ （完整命令可用仓库构建脚本重现）
+
+TIMEOUT
+
+=== kex-04 / DKEX-128 ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-04-0.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/DKEX-128/KEX_AlgorithmInstance.c:14:
+src/DKEX-128/KEX_AlgorithmInstance.h:27:9: warning: 'ALGORITHM_INSTANCE' macro redefined [-Wmacro-redefined]
+   27 | #define ALGORITHM_INSTANCE "DKEX-128"
+      |         ^
+src/DKEX-128/parameters.h:90:9: note: previous definition is here
+   90 | #define ALGORITHM_INSTANCE "DKE-128"
+      |         ^
+In file included from ../api/link_shim.c:51:
+src/DKEX-128/KEX_AlgorithmInstance.h:27:9: warning: 'ALGORITHM_INSTANCE' macro redefined [-Wmacro-redefined]
+   27 | #define ALGORITHM_INSTANCE "DKEX-128"
+      |         ^
+src/DKEX-128/parameters.h:90:9: note: previous definition is here
+   90 | #define ALGORITHM_INSTANCE "DKE-128"
+      |         ^
+1 warning generated.
+1 warning generated.
+In file included from src/DKEX-128/adkex_sig_mldsa.c:19:
+…（中间编译输出省略）…
+      |                         ^~~~~~~~~~~~~~~~~~
+src/DKEX-128/adkex_sig_mldsa.c:66:25: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   66 |     uint8_t       sigma[ADKEX_SIG_SNBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-128/adkex_sig_mldsa.c:67:25: error: use of undeclared identifier 'ADKEX_SIG_SKBITS'
+   67 |     const uint8_t sk   [ADKEX_SIG_SKBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-128/adkex_sig_mldsa.c:87:19: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   87 |     if (siglen < (ADKEX_SIG_SNBITS / 8)) {
+      |                   ^~~~~~~~~~~~~~~~
+src/DKEX-128/adkex_sig_mldsa.c:88:36: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   88 |         memset(sigma + siglen, 0, (ADKEX_SIG_SNBITS / 8) - siglen);
+      |                                    ^~~~~~~~~~~~~~~~
+src/DKEX-128/adkex_sig_mldsa.c:93:25: error: use of undeclared identifier 'ADKEX_SIG_PKBITS'
+   93 |     const uint8_t pk   [ADKEX_SIG_PKBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-128/adkex_sig_mldsa.c:94:25: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   94 |     const uint8_t sigma[ADKEX_SIG_SNBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-128/adkex_sig_mldsa.c:99:25: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   99 |         sigma, (size_t)(ADKEX_SIG_SNBITS / 8),
+      |                         ^~~~~~~~~~~~~~~~
+19 errors generated.
+make: *** [Makefile:6: build/DKEX-128/src__DKEX-128__adkex_sig_mldsa.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kex-04 / DKEX-256 ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-04-1.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/DKEX-256/KEX_AlgorithmInstance.c:14:
+src/DKEX-256/KEX_AlgorithmInstance.h:27:9: warning: 'ALGORITHM_INSTANCE' macro redefined [-Wmacro-redefined]
+   27 | #define ALGORITHM_INSTANCE "DKEX-128"
+      |         ^
+src/DKEX-256/parameters.h:90:9: note: previous definition is here
+   90 | #define ALGORITHM_INSTANCE "DKE-128"
+      |         ^
+1 warning generated.
+In file included from ../api/link_shim.c:51:
+src/DKEX-256/KEX_AlgorithmInstance.h:27:9: warning: 'ALGORITHM_INSTANCE' macro redefined [-Wmacro-redefined]
+   27 | #define ALGORITHM_INSTANCE "DKEX-128"
+      |         ^
+src/DKEX-256/parameters.h:90:9: note: previous definition is here
+   90 | #define ALGORITHM_INSTANCE "DKE-128"
+      |         ^
+1 warning generated.
+In file included from src/DKEX-256/adkex_sig_mldsa.c:19:
+…（中间编译输出省略）…
+      |                         ^~~~~~~~~~~~~~~~~~
+src/DKEX-256/adkex_sig_mldsa.c:66:25: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   66 |     uint8_t       sigma[ADKEX_SIG_SNBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-256/adkex_sig_mldsa.c:67:25: error: use of undeclared identifier 'ADKEX_SIG_SKBITS'
+   67 |     const uint8_t sk   [ADKEX_SIG_SKBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-256/adkex_sig_mldsa.c:87:19: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   87 |     if (siglen < (ADKEX_SIG_SNBITS / 8)) {
+      |                   ^~~~~~~~~~~~~~~~
+src/DKEX-256/adkex_sig_mldsa.c:88:36: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   88 |         memset(sigma + siglen, 0, (ADKEX_SIG_SNBITS / 8) - siglen);
+      |                                    ^~~~~~~~~~~~~~~~
+src/DKEX-256/adkex_sig_mldsa.c:93:25: error: use of undeclared identifier 'ADKEX_SIG_PKBITS'
+   93 |     const uint8_t pk   [ADKEX_SIG_PKBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-256/adkex_sig_mldsa.c:94:25: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   94 |     const uint8_t sigma[ADKEX_SIG_SNBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-256/adkex_sig_mldsa.c:99:25: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   99 |         sigma, (size_t)(ADKEX_SIG_SNBITS / 8),
+      |                         ^~~~~~~~~~~~~~~~
+19 errors generated.
+make: *** [Makefile:7: build/DKEX-256/src__DKEX-256__adkex_sig_mldsa.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kex-04 / DKEX-512 ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-04-2.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/DKEX-512/KEX_AlgorithmInstance.c:14:
+src/DKEX-512/KEX_AlgorithmInstance.h:27:9: warning: 'ALGORITHM_INSTANCE' macro redefined [-Wmacro-redefined]
+   27 | #define ALGORITHM_INSTANCE "DKEX-128"
+      |         ^
+src/DKEX-512/parameters.h:90:9: note: previous definition is here
+   90 | #define ALGORITHM_INSTANCE "DKE-128"
+      |         ^
+1 warning generated.
+In file included from ../api/link_shim.c:51:
+src/DKEX-512/KEX_AlgorithmInstance.h:27:9: warning: 'ALGORITHM_INSTANCE' macro redefined [-Wmacro-redefined]
+   27 | #define ALGORITHM_INSTANCE "DKEX-128"
+      |         ^
+src/DKEX-512/parameters.h:90:9: note: previous definition is here
+   90 | #define ALGORITHM_INSTANCE "DKE-128"
+      |         ^
+1 warning generated.
+In file included from src/DKEX-512/adkex_sig_mldsa.c:19:
+…（中间编译输出省略）…
+      |                         ^~~~~~~~~~~~~~~~~~
+src/DKEX-512/adkex_sig_mldsa.c:66:25: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   66 |     uint8_t       sigma[ADKEX_SIG_SNBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-512/adkex_sig_mldsa.c:67:25: error: use of undeclared identifier 'ADKEX_SIG_SKBITS'
+   67 |     const uint8_t sk   [ADKEX_SIG_SKBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-512/adkex_sig_mldsa.c:87:19: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   87 |     if (siglen < (ADKEX_SIG_SNBITS / 8)) {
+      |                   ^~~~~~~~~~~~~~~~
+src/DKEX-512/adkex_sig_mldsa.c:88:36: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   88 |         memset(sigma + siglen, 0, (ADKEX_SIG_SNBITS / 8) - siglen);
+      |                                    ^~~~~~~~~~~~~~~~
+src/DKEX-512/adkex_sig_mldsa.c:93:25: error: use of undeclared identifier 'ADKEX_SIG_PKBITS'
+   93 |     const uint8_t pk   [ADKEX_SIG_PKBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-512/adkex_sig_mldsa.c:94:25: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   94 |     const uint8_t sigma[ADKEX_SIG_SNBITS / 8],
+      |                         ^~~~~~~~~~~~~~~~
+src/DKEX-512/adkex_sig_mldsa.c:99:25: error: use of undeclared identifier 'ADKEX_SIG_SNBITS'
+   99 |         sigma, (size_t)(ADKEX_SIG_SNBITS / 8),
+      |                         ^~~~~~~~~~~~~~~~
+19 errors generated.
+make: *** [Makefile:8: build/DKEX-512/src__DKEX-512__adkex_sig_mldsa.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== kex-07 / NEV_AKE_1024_1409_ICCS ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-07-0.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NEV_AKE_1024_1409/owpke.c:7:
+src/NEV_AKE_1024_1409/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+src/NEV_AKE_1024_1409/owpke.c:136:20: warning: passing 'const uint8_t *' (aka 'const unsigned char *') to parameter of type 'uint8_t *' (aka 'unsigned char *') discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+  136 |         poly_sample_r(&r, rho, 0);
+      |                           ^~~
+src/NEV_AKE_1024_1409/sample.h:13:38: note: passing argument to parameter 'coins' here
+   13 | void poly_sample_r(poly *r, uint8_t *coins, uint8_t nonce);
+      |                                      ^
+2 warnings generated.
+In file included from src/NEV_AKE_1024_1409/owkem.c:10:
+src/NEV_AKE_1024_1409/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+…（中间编译输出省略）…
+      |                                      ^~~~~~~~~~~~~~~~~~
+src/NEV_AKE_1024_1409/pack.c:94:58: note: passing argument to parameter 'x' here
+   94 | static inline void encode16(uint8_t* buf, const uint16_t x[16]) {
+      |                                                          ^
+src/NEV_AKE_1024_1409/pack.c:157:12: warning: passing 'int16_t *' (aka 'short *') to parameter of type 'uint16_t *' (aka 'unsigned short *') converts between pointers to integer types with different sign [-Wpointer-sign]
+  157 |                 decode16(&r->coeffs[16 * i], &a[21 * i]);
+      |                          ^~~~~~~~~~~~~~~~~~
+src/NEV_AKE_1024_1409/pack.c:125:39: note: passing argument to parameter 'x' here
+  125 | static inline void decode16(uint16_t* x, const uint8_t* buf) {
+      |                                       ^
+2 warnings generated.
+src/NEV_AKE_1024_1409/cca.c:7:10: fatal error: 'asm-generic/errno.h' file not found
+    7 | #include <asm-generic/errno.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:31: build/NEV_AKE_1024_1409/src__NEV_AKE_1024_1409__cca.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/NEV_AKE_1024_1409/cpa.c:5:
+src/NEV_AKE_1024_1409/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+
+=== kex-07 / NEV_AKE_1024_769_C_ICCS ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-07-1.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NEV_AKE_1024_769_C/owpke.c:7:
+src/NEV_AKE_1024_769_C/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+In file included from src/NEV_AKE_1024_769_C/owkem.c:10:
+src/NEV_AKE_1024_769_C/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+src/NEV_AKE_1024_769_C/owkem.c:50:24: warning: passing 'const uint8_t *' (aka 'const unsigned char *') to parameter of type 'uint8_t *' (aka 'unsigned char *') discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+   50 |      poly_sample_r(&r, rho, 0);
+…（中间编译输出省略）…
+      |                                    ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_1024_769_C/pack.c:194:43: note: passing argument to parameter 'x' here
+  194 | void encode5(uint8_t *buf, const uint16_t x[5])
+      |                                           ^
+src/NEV_AKE_1024_769_C/pack.c:327:11: warning: passing 'int16_t *' (aka 'short *') to parameter of type 'uint16_t *' (aka 'unsigned short *') converts between pointers to integer types with different sign [-Wpointer-sign]
+  327 |                 decode5(&r->coeffs[5 * i], &a[6 * i]);
+      |                         ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_1024_769_C/pack.c:226:24: note: passing argument to parameter 'x' here
+  226 | void decode5(uint16_t *x, const uint8_t *buf)
+      |                        ^
+2 warnings generated.
+src/NEV_AKE_1024_769_C/cca.c:7:10: fatal error: 'asm-generic/errno.h' file not found
+    7 | #include <asm-generic/errno.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:28: build/NEV_AKE_1024_769_C/src__NEV_AKE_1024_769_C__cca.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/NEV_AKE_1024_769_C/cpa.c:5:
+src/NEV_AKE_1024_769_C/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+
+=== kex-07 / NEV_AKE_1024_769_ICCS ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-07-2.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NEV_AKE_1024_769/owkem.c:10:
+src/NEV_AKE_1024_769/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+src/NEV_AKE_1024_769/owkem.c:50:24: warning: passing 'const uint8_t *' (aka 'const unsigned char *') to parameter of type 'uint8_t *' (aka 'unsigned char *') discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+   50 |      poly_sample_r(&r, rho, 0);
+      |                        ^~~
+src/NEV_AKE_1024_769/sample.h:13:38: note: passing argument to parameter 'coins' here
+   13 | void poly_sample_r(poly *r, uint8_t *coins, uint8_t nonce);
+      |                                      ^
+src/NEV_AKE_1024_769/owkem.c:51:24: warning: passing 'const uint8_t *' (aka 'const unsigned char *') to parameter of type 'uint8_t *' (aka 'unsigned char *') discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+   51 |      poly_sample_m(&m, rho, 1);
+      |                        ^~~
+src/NEV_AKE_1024_769/poly.h:37:38: note: passing argument to parameter 'coins' here
+…（中间编译输出省略）…
+      |                                    ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_1024_769/pack.c:194:43: note: passing argument to parameter 'x' here
+  194 | void encode5(uint8_t *buf, const uint16_t x[5])
+      |                                           ^
+src/NEV_AKE_1024_769/pack.c:327:11: warning: passing 'int16_t *' (aka 'short *') to parameter of type 'uint16_t *' (aka 'unsigned short *') converts between pointers to integer types with different sign [-Wpointer-sign]
+  327 |                 decode5(&r->coeffs[5 * i], &a[6 * i]);
+      |                         ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_1024_769/pack.c:226:24: note: passing argument to parameter 'x' here
+  226 | void decode5(uint16_t *x, const uint8_t *buf)
+      |                        ^
+2 warnings generated.
+src/NEV_AKE_1024_769/cca.c:7:10: fatal error: 'asm-generic/errno.h' file not found
+    7 | #include <asm-generic/errno.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:34: build/NEV_AKE_1024_769/src__NEV_AKE_1024_769__cca.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/NEV_AKE_1024_769/cpa.c:5:
+src/NEV_AKE_1024_769/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+
+=== kex-07 / NEV_AKE_2048_1409_ICCS ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-07-3.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NEV_AKE_2048_1409/owpke.c:7:
+src/NEV_AKE_2048_1409/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+src/NEV_AKE_2048_1409/owpke.c:136:20: warning: passing 'const uint8_t *' (aka 'const unsigned char *') to parameter of type 'uint8_t *' (aka 'unsigned char *') discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+  136 |         poly_sample_r(&r, rho, 0);
+      |                           ^~~
+src/NEV_AKE_2048_1409/sample.h:13:38: note: passing argument to parameter 'coins' here
+   13 | void poly_sample_r(poly *r, uint8_t *coins, uint8_t nonce);
+      |                                      ^
+2 warnings generated.
+In file included from src/NEV_AKE_2048_1409/owkem.c:10:
+src/NEV_AKE_2048_1409/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+…（中间编译输出省略）…
+      |                                      ^~~~~~~~~~~~~~~~~~
+src/NEV_AKE_2048_1409/pack.c:94:58: note: passing argument to parameter 'x' here
+   94 | static inline void encode16(uint8_t* buf, const uint16_t x[16]) {
+      |                                                          ^
+src/NEV_AKE_2048_1409/pack.c:157:12: warning: passing 'int16_t *' (aka 'short *') to parameter of type 'uint16_t *' (aka 'unsigned short *') converts between pointers to integer types with different sign [-Wpointer-sign]
+  157 |                 decode16(&r->coeffs[16 * i], &a[21 * i]);
+      |                          ^~~~~~~~~~~~~~~~~~
+src/NEV_AKE_2048_1409/pack.c:125:39: note: passing argument to parameter 'x' here
+  125 | static inline void decode16(uint16_t* x, const uint8_t* buf) {
+      |                                       ^
+2 warnings generated.
+src/NEV_AKE_2048_1409/cca.c:7:10: fatal error: 'asm-generic/errno.h' file not found
+    7 | #include <asm-generic/errno.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:32: build/NEV_AKE_2048_1409/src__NEV_AKE_2048_1409__cca.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/NEV_AKE_2048_1409/cpa.c:5:
+src/NEV_AKE_2048_1409/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+
+=== kex-07 / NEV_AKE_2048_769_C_ICCS ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-07-4.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NEV_AKE_2048_769_C/owpke.c:7:
+src/NEV_AKE_2048_769_C/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+In file included from src/NEV_AKE_2048_769_C/owkem.c:10:
+src/NEV_AKE_2048_769_C/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+src/NEV_AKE_2048_769_C/owkem.c:50:24: warning: passing 'const uint8_t *' (aka 'const unsigned char *') to parameter of type 'uint8_t *' (aka 'unsigned char *') discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+   50 |      poly_sample_r(&r, rho, 0);
+…（中间编译输出省略）…
+      |                                    ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_2048_769_C/pack.c:194:43: note: passing argument to parameter 'x' here
+  194 | void encode5(uint8_t *buf, const uint16_t x[5])
+      |                                           ^
+src/NEV_AKE_2048_769_C/pack.c:327:11: warning: passing 'int16_t *' (aka 'short *') to parameter of type 'uint16_t *' (aka 'unsigned short *') converts between pointers to integer types with different sign [-Wpointer-sign]
+  327 |                 decode5(&r->coeffs[5 * i], &a[6 * i]);
+      |                         ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_2048_769_C/pack.c:226:24: note: passing argument to parameter 'x' here
+  226 | void decode5(uint16_t *x, const uint8_t *buf)
+      |                        ^
+2 warnings generated.
+src/NEV_AKE_2048_769_C/cca.c:7:10: fatal error: 'asm-generic/errno.h' file not found
+    7 | #include <asm-generic/errno.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:29: build/NEV_AKE_2048_769_C/src__NEV_AKE_2048_769_C__cca.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/NEV_AKE_2048_769_C/cpa.c:5:
+src/NEV_AKE_2048_769_C/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+
+=== kex-07 / NEV_AKE_2048_769_ICCS ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-07-5.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NEV_AKE_2048_769/owpke.c:7:
+src/NEV_AKE_2048_769/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+src/NEV_AKE_2048_769/owpke.c:136:20: warning: passing 'const uint8_t *' (aka 'const unsigned char *') to parameter of type 'uint8_t *' (aka 'unsigned char *') discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+  136 |         poly_sample_r(&r, rho, 0);
+      |                           ^~~
+src/NEV_AKE_2048_769/sample.h:13:38: note: passing argument to parameter 'coins' here
+   13 | void poly_sample_r(poly *r, uint8_t *coins, uint8_t nonce);
+      |                                      ^
+2 warnings generated.
+In file included from src/NEV_AKE_2048_769/owkem.c:10:
+src/NEV_AKE_2048_769/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+…（中间编译输出省略）…
+      |                                    ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_2048_769/pack.c:194:43: note: passing argument to parameter 'x' here
+  194 | void encode5(uint8_t *buf, const uint16_t x[5])
+      |                                           ^
+src/NEV_AKE_2048_769/pack.c:327:11: warning: passing 'int16_t *' (aka 'short *') to parameter of type 'uint16_t *' (aka 'unsigned short *') converts between pointers to integer types with different sign [-Wpointer-sign]
+  327 |                 decode5(&r->coeffs[5 * i], &a[6 * i]);
+      |                         ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_2048_769/pack.c:226:24: note: passing argument to parameter 'x' here
+  226 | void decode5(uint16_t *x, const uint8_t *buf)
+      |                        ^
+2 warnings generated.
+src/NEV_AKE_2048_769/cca.c:7:10: fatal error: 'asm-generic/errno.h' file not found
+    7 | #include <asm-generic/errno.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:35: build/NEV_AKE_2048_769/src__NEV_AKE_2048_769__cca.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/NEV_AKE_2048_769/cpa.c:5:
+src/NEV_AKE_2048_769/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+
+=== kex-07 / NEV_AKE_512_1409_ICCS ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-07-6.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NEV_AKE_512_1409/owpke.c:7:
+src/NEV_AKE_512_1409/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+src/NEV_AKE_512_1409/owpke.c:136:20: warning: passing 'const uint8_t *' (aka 'const unsigned char *') to parameter of type 'uint8_t *' (aka 'unsigned char *') discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+  136 |         poly_sample_r(&r, rho, 0);
+      |                           ^~~
+src/NEV_AKE_512_1409/sample.h:13:38: note: passing argument to parameter 'coins' here
+   13 | void poly_sample_r(poly *r, uint8_t *coins, uint8_t nonce);
+      |                                      ^
+2 warnings generated.
+In file included from src/NEV_AKE_512_1409/owkem.c:10:
+src/NEV_AKE_512_1409/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+…（中间编译输出省略）…
+      |                                      ^~~~~~~~~~~~~~~~~~
+src/NEV_AKE_512_1409/pack.c:94:58: note: passing argument to parameter 'x' here
+   94 | static inline void encode16(uint8_t* buf, const uint16_t x[16]) {
+      |                                                          ^
+src/NEV_AKE_512_1409/pack.c:157:12: warning: passing 'int16_t *' (aka 'short *') to parameter of type 'uint16_t *' (aka 'unsigned short *') converts between pointers to integer types with different sign [-Wpointer-sign]
+  157 |                 decode16(&r->coeffs[16 * i], &a[21 * i]);
+      |                          ^~~~~~~~~~~~~~~~~~
+src/NEV_AKE_512_1409/pack.c:125:39: note: passing argument to parameter 'x' here
+  125 | static inline void decode16(uint16_t* x, const uint8_t* buf) {
+      |                                       ^
+2 warnings generated.
+src/NEV_AKE_512_1409/cca.c:7:10: fatal error: 'asm-generic/errno.h' file not found
+    7 | #include <asm-generic/errno.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:30: build/NEV_AKE_512_1409/src__NEV_AKE_512_1409__cca.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/NEV_AKE_512_1409/cpa.c:5:
+src/NEV_AKE_512_1409/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+
+=== kex-07 / NEV_AKE_512_769_C_ICCS ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-07-7.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NEV_AKE_512_769_C/owkem.c:10:
+src/NEV_AKE_512_769_C/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+In file included from src/NEV_AKE_512_769_C/owpke.c:7:
+src/NEV_AKE_512_769_C/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+src/NEV_AKE_512_769_C/owkem.c:50:24: warning: passing 'const uint8_t *' (aka 'const unsigned char *') to parameter of type 'uint8_t *' (aka 'unsigned char *') discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+   50 |      poly_sample_r(&r, rho, 0);
+      |                        ^~~
+…（中间编译输出省略）…
+      |                                    ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_512_769_C/pack.c:194:43: note: passing argument to parameter 'x' here
+  194 | void encode5(uint8_t *buf, const uint16_t x[5])
+      |                                           ^
+src/NEV_AKE_512_769_C/pack.c:327:11: warning: passing 'int16_t *' (aka 'short *') to parameter of type 'uint16_t *' (aka 'unsigned short *') converts between pointers to integer types with different sign [-Wpointer-sign]
+  327 |                 decode5(&r->coeffs[5 * i], &a[6 * i]);
+      |                         ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_512_769_C/pack.c:226:24: note: passing argument to parameter 'x' here
+  226 | void decode5(uint16_t *x, const uint8_t *buf)
+      |                        ^
+2 warnings generated.
+src/NEV_AKE_512_769_C/cca.c:7:10: fatal error: 'asm-generic/errno.h' file not found
+    7 | #include <asm-generic/errno.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:27: build/NEV_AKE_512_769_C/src__NEV_AKE_512_769_C__cca.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/NEV_AKE_512_769_C/cpa.c:5:
+src/NEV_AKE_512_769_C/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+
+=== kex-07 / NEV_AKE_512_769_ICCS ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-kex-07-8.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/NEV_AKE_512_769/owpke.c:7:
+src/NEV_AKE_512_769/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+src/NEV_AKE_512_769/owpke.c:136:20: warning: passing 'const uint8_t *' (aka 'const unsigned char *') to parameter of type 'uint8_t *' (aka 'unsigned char *') discards qualifiers [-Wincompatible-pointer-types-discards-qualifiers]
+  136 |         poly_sample_r(&r, rho, 0);
+      |                           ^~~
+src/NEV_AKE_512_769/sample.h:13:38: note: passing argument to parameter 'coins' here
+   13 | void poly_sample_r(poly *r, uint8_t *coins, uint8_t nonce);
+      |                                      ^
+In file included from src/NEV_AKE_512_769/owkem.c:10:
+src/NEV_AKE_512_769/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+…（中间编译输出省略）…
+      |                                    ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_512_769/pack.c:194:43: note: passing argument to parameter 'x' here
+  194 | void encode5(uint8_t *buf, const uint16_t x[5])
+      |                                           ^
+src/NEV_AKE_512_769/pack.c:327:11: warning: passing 'int16_t *' (aka 'short *') to parameter of type 'uint16_t *' (aka 'unsigned short *') converts between pointers to integer types with different sign [-Wpointer-sign]
+  327 |                 decode5(&r->coeffs[5 * i], &a[6 * i]);
+      |                         ^~~~~~~~~~~~~~~~~
+src/NEV_AKE_512_769/pack.c:226:24: note: passing argument to parameter 'x' here
+  226 | void decode5(uint16_t *x, const uint8_t *buf)
+      |                        ^
+2 warnings generated.
+src/NEV_AKE_512_769/cca.c:7:10: fatal error: 'asm-generic/errno.h' file not found
+    7 | #include <asm-generic/errno.h>
+      |          ^~~~~~~~~~~~~~~~~~~~~
+1 error generated.
+make: *** [Makefile:33: build/NEV_AKE_512_769/src__NEV_AKE_512_769__cca.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/NEV_AKE_512_769/cpa.c:5:
+src/NEV_AKE_512_769/randombytes.h:4:9: warning: '_GNU_SOURCE' macro redefined [-Wmacro-redefined]
+    4 | #define _GNU_SOURCE
+      |         ^
+<command line>:1:9: note: previous definition is here
+    1 | #define _GNU_SOURCE 1
+      |         ^
+1 warning generated.
+
+=== kex-08 / NIIKE-lv128 ===
+timeout → runtime_failed
+编译成功，但完整交换未生成一致共享密钥。
+ngcc-kex-08-0.log
+$ （完整命令可用仓库构建脚本重现）
+src/NIIKE-lv128/gf/bundle_fp2.c:90:24: warning: incompatible pointer types passing 'fp_t' (aka 'unsigned long long[5]') to parameter of type 'fp_t *' (aka 'unsigned long long (*)[5]'); take the address with & [-Wincompatible-pointer-types]
+   90 |         fp_mont_setone(out->list[i].re);
+      |                        ^~~~~~~~~~~~~~~
+      |                        &
+src/NIIKE-lv128/gf/include/fp.h:42:27: note: passing argument to parameter 'out' here
+   42 | void fp_mont_setone(fp_t* out);
+      |                           ^
+src/NIIKE-lv128/gf/bundle_fp2.c:91:16: warning: incompatible pointer types passing 'fp_t' (aka 'unsigned long long[5]') to parameter of type 'fp_t *' (aka 'unsigned long long (*)[5]'); take the address with & [-Wincompatible-pointer-types]
+   91 |         fp_set(out->list[i].im, 0);
+      |                ^~~~~~~~~~~~~~~
+      |                &
+src/NIIKE-lv128/gf/include/fp.h:26:19: note: passing argument to parameter 'x' here
+   26 | void fp_set(fp_t* x, const digit_t val);
+      |                   ^
+src/NIIKE-lv128/gf/bundle_fp2.c:99:16: warning: incompatible pointer types passing 'fp_t' (aka 'unsigned long long[5]') to parameter of type 'fp_t *' (aka 'unsigned long long (*)[5]'); take the address with & [-Wincompatible-pointer-types]
+   99 |         fp_set(out->list[i].re, 0);
+      |                ^~~~~~~~~~~~~~~
+…（中间编译输出省略）…
+In file included from src/NIIKE-lv128/NIIKE-lv128/protocols/bundleprotocols_internal.c:4:
+In file included from src/NIIKE-lv128/NIIKE-lv128/protocols/include/bundleprotocols_internal.h:7:
+src/NIIKE-lv128/protocols/include/protocols_helper.h:95:5: warning: call to undeclared function 'ec_normalize'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   95 |     ec_normalize(&B);
+      |     ^
+src/NIIKE-lv128/protocols/include/protocols_helper.h:103:5: warning: call to undeclared function 'ec_normalize'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+  103 |     ec_normalize(&C);
+      |     ^
+src/NIIKE-lv128/protocols/include/protocols_helper.h:208:20: warning: incompatible pointer types passing 'fp_t' (aka 'unsigned long long[5]') to parameter of type 'fp_t *' (aka 'unsigned long long (*)[5]'); take the address with & [-Wincompatible-pointer-types]
+  208 |     fp_mont_setone(t0.re);
+      |                    ^~~~~
+      |                    &
+src/NIIKE-lv128/gf/include/fp.h:42:27: note: passing argument to parameter 'out' here
+   42 | void fp_mont_setone(fp_t* out);
+      |                           ^
+In file included from src/NIIKE-lv128/NIIKE-lv128/protocols/bundleprotocols_internal.c:4:
+In file included from src/NIIKE-lv128/NIIKE-lv128/protocols/include/bundleprotocols_internal.h:7:
+src/NIIKE-lv128/protocols/include/protocols_helper.h:209:12: warning: incompatible pointer types passing 'fp_t' (aka 'unsigned long long[5]') to parameter of type 'fp_t *' (aka 'unsigned long long (*)[5]'); take the address with & [-Wincompatible-pointer-types]
+  209 |     fp_set(t0.im, 0);
+      |            ^~~~~
+      |            &
+src/NIIKE-lv128/gf/include/fp.h:26:19: note: passing argument to parameter 'x' here
+   26 | void fp_set(fp_t* x, const digit_t val);
+      |                   ^
+4 warnings generated.
+ngcc-kex-08-0.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-kex-08-0.check.log
+$ （完整命令可用仓库构建脚本重现）
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: full reference protocol failed to agree on a secret
+
+-1 !== 0
+
+    at file:///workspace/scratch/0f12e3237ca5/liangzai-homepage/scripts/check-ngcc-module.mjs:59:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: -1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+
+=== sign-05 / sm4th_d3_128f_tight ===
+compile_failed → compile_failed
+提交代码使用未声明的 lambda 标识符，编译失败。
+ngcc-sign-05-1.log
+$ （完整命令可用仓库构建脚本重现）
+src/sm4th_d3_128f_tight/vole.c:223:10: error: use of undeclared identifier 'lambda'; did you mean 'lambda_f'?
+  223 |   assert(lambda == 128u);
+      |          ^~~~~~
+      |          lambda_f
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/assert.h:8:28: note: expanded from macro 'assert'
+    8 | #define assert(x) ((void)((x) || (__assert_fail(#x, __FILE__, __LINE__, __func__),0)))
+      |                            ^
+src/sm4th_d3_128f_tight/vole.c:219:22: note: 'lambda_f' declared here
+  219 |   const unsigned int lambda_f     = params->lambda_f;
+      |                      ^
+1 error generated.
+make: *** [Makefile:15: build/sm4th_d3_128f_tight/src__sm4th_d3_128f_tight__vole.c.o] Error 1
+
+=== sign-05 / sm4th_d3_128s_tight ===
+compile_failed → compile_failed
+提交代码使用未声明的 lambda 标识符，编译失败。
+ngcc-sign-05-3.log
+$ （完整命令可用仓库构建脚本重现）
+src/sm4th_d3_128s_tight/vole.c:223:10: error: use of undeclared identifier 'lambda'; did you mean 'lambda_f'?
+  223 |   assert(lambda == 128u);
+      |          ^~~~~~
+      |          lambda_f
+/tmp/liangzai-build/emsdk-main/upstream/emscripten/cache/sysroot/include/assert.h:8:28: note: expanded from macro 'assert'
+    8 | #define assert(x) ((void)((x) || (__assert_fail(#x, __FILE__, __LINE__, __func__),0)))
+      |                            ^
+src/sm4th_d3_128s_tight/vole.c:219:22: note: 'lambda_f' declared here
+  219 |   const unsigned int lambda_f     = params->lambda_f;
+      |                      ^
+1 error generated.
+make: *** [Makefile:25: build/sm4th_d3_128s_tight/src__sm4th_d3_128s_tight__vole.c.o] Error 1
+
+=== sign-05 / ublockith_d3_256f ===
+compile_failed → compile_failed
+提交构建列表缺少实现函数或依赖，链接存在未定义符号。
+ngcc-sign-05-8.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-05-8.link.log
+$ （完整命令可用仓库构建脚本重现）
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_d3_256f/src__ublockith_d3_256f__owf.c.o: undefined symbol: ublock256_set_key
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_d3_256f/src__ublockith_d3_256f__owf.c.o: undefined symbol: ublock256_256_encrypt
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_d3_256f/src__ublockith_d3_256f__ublockith_d3_256f.c.o: undefined symbol: ublock_extend_witness
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_d3_256f/src__ublockith_d3_256f__ublockith_d3_256f.c.o: undefined symbol: ublockith_sign
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_d3_256f/src__ublockith_d3_256f__ublockith_d3_256f.c.o: undefined symbol: ublockith_verify
+emcc: error: '/tmp/liangzai-build/emsdk-main/upstream/bin/wasm-ld -o /workspace/scratch/0f12e3237ca5/liangzai-homepage/work/retry-20260926/wasm/ngcc-sign-05-8.wasm /tmp/tmp9vp_t1dplibemscripten_js_symbols.so -Bstatic --strip-debug --export=malloc --export=free --export=lab_seed --export=lab_public_bytes --export=lab_private_bytes --export=lab_output_bytes --export=lab_keypair --export=lab_sign --export=lab_verify --export=_emscripten_stack_alloc  …（长行省略）
+
+=== sign-05 / ublockith_d3_256s ===
+compile_failed → compile_failed
+提交构建列表缺少实现函数或依赖，链接存在未定义符号。
+ngcc-sign-05-9.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-05-9.link.log
+$ （完整命令可用仓库构建脚本重现）
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_d3_256s/src__ublockith_d3_256s__owf.c.o: undefined symbol: ublock256_set_key
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_d3_256s/src__ublockith_d3_256s__owf.c.o: undefined symbol: ublock256_256_encrypt
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_d3_256s/src__ublockith_d3_256s__ublockith_d3_256s.c.o: undefined symbol: ublock_extend_witness
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_d3_256s/src__ublockith_d3_256s__ublockith_d3_256s.c.o: undefined symbol: ublockith_sign
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_d3_256s/src__ublockith_d3_256s__ublockith_d3_256s.c.o: undefined symbol: ublockith_verify
+emcc: error: '/tmp/liangzai-build/emsdk-main/upstream/bin/wasm-ld -o /workspace/scratch/0f12e3237ca5/liangzai-homepage/work/retry-20260926/wasm/ngcc-sign-05-9.wasm /tmp/tmpa5c3cg9ulibemscripten_js_symbols.so -Bstatic --strip-debug --export=malloc --export=free --export=lab_seed --export=lab_public_bytes --export=lab_private_bytes --export=lab_output_bytes --export=lab_keypair --export=lab_sign --export=lab_verify --export=_emscripten_stack_alloc  …（长行省略）
+
+=== sign-05 / ublockith_em_d3_256f ===
+compile_failed → compile_failed
+提交构建列表缺少实现函数或依赖，链接存在未定义符号。
+ngcc-sign-05-10.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-05-10.link.log
+$ （完整命令可用仓库构建脚本重现）
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_em_d3_256f/src__ublockith_em_d3_256f__owf.c.o: undefined symbol: ublock256_set_key
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_em_d3_256f/src__ublockith_em_d3_256f__owf.c.o: undefined symbol: ublock256_256_encrypt
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_em_d3_256f/src__ublockith_em_d3_256f__ublockith_em_d3_256f.c.o: undefined symbol: ublock_extend_witness
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_em_d3_256f/src__ublockith_em_d3_256f__ublockith_em_d3_256f.c.o: undefined symbol: ublockith_sign
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_em_d3_256f/src__ublockith_em_d3_256f__ublockith_em_d3_256f.c.o: undefined symbol: ublockith_verify
+emcc: error: '/tmp/liangzai-build/emsdk-main/upstream/bin/wasm-ld -o /workspace/scratch/0f12e3237ca5/liangzai-homepage/work/retry-20260926/wasm/ngcc-sign-05-10.wasm /tmp/tmp2su0q7rxlibemscripten_js_symbols.so -Bstatic --strip-debug --export=malloc --export=free --export=lab_seed --export=lab_public_bytes --export=lab_private_bytes --export=lab_output_bytes --export=lab_keypair --export=lab_sign --export=lab_verify --export=_emscripten_stack_alloc …（长行省略）
+
+=== sign-05 / ublockith_em_d3_256s ===
+compile_failed → compile_failed
+提交构建列表缺少实现函数或依赖，链接存在未定义符号。
+ngcc-sign-05-11.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-05-11.link.log
+$ （完整命令可用仓库构建脚本重现）
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_em_d3_256s/src__ublockith_em_d3_256s__owf.c.o: undefined symbol: ublock256_set_key
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_em_d3_256s/src__ublockith_em_d3_256s__owf.c.o: undefined symbol: ublock256_256_encrypt
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_em_d3_256s/src__ublockith_em_d3_256s__ublockith_em_d3_256s.c.o: undefined symbol: ublock_extend_witness
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_em_d3_256s/src__ublockith_em_d3_256s__ublockith_em_d3_256s.c.o: undefined symbol: ublockith_sign
+wasm-ld: error: /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/ublockith_em_d3_256s/src__ublockith_em_d3_256s__ublockith_em_d3_256s.c.o: undefined symbol: ublockith_verify
+emcc: error: '/tmp/liangzai-build/emsdk-main/upstream/bin/wasm-ld -o /workspace/scratch/0f12e3237ca5/liangzai-homepage/work/retry-20260926/wasm/ngcc-sign-05-11.wasm /tmp/tmpz1bqhmuzlibemscripten_js_symbols.so -Bstatic --strip-debug --export=malloc --export=free --export=lab_seed --export=lab_public_bytes --export=lab_private_bytes --export=lab_output_bytes --export=lab_keypair --export=lab_sign --export=lab_verify --export=_emscripten_stack_alloc …（长行省略）
+
+=== sign-05 / vistrutith_d3_512f ===
+compile_failed → compile_failed
+提交实现与适配层存在重复全局符号，链接失败。
+ngcc-sign-05-12.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-05-12.link.log
+$ （完整命令可用仓库构建脚本重现）
+wasm-ld: error: duplicate symbol: drng_algorithm
+>>> defined in /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/vistrutith_d3_512f/shim.o
+>>> defined in /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/vistrutith_d3_512f/src__vistrutith_d3_512f__vistrutith_d3_512f_test.c.o
+emcc: error: '/tmp/liangzai-build/emsdk-main/upstream/bin/wasm-ld -o /workspace/scratch/0f12e3237ca5/liangzai-homepage/work/retry-20260926/wasm/ngcc-sign-05-12.wasm /tmp/tmph5i_tlhqlibemscripten_js_symbols.so -Bstatic --strip-debug --export=malloc --export=free --export=lab_seed --export=lab_public_bytes --export=lab_private_bytes --export=lab_output_bytes --export=lab_keypair --export=lab_sign --export=lab_verify --export=_emscripten_stack_alloc …（长行省略）
+
+=== sign-05 / vistrutith_d3_512s ===
+compile_failed → compile_failed
+提交实现与适配层存在重复全局符号，链接失败。
+ngcc-sign-05-13.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-05-13.link.log
+$ （完整命令可用仓库构建脚本重现）
+wasm-ld: error: duplicate symbol: drng_algorithm
+>>> defined in /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/vistrutith_d3_512s/shim.o
+>>> defined in /tmp/liangzai-build/ngcc-harness-c5261784ef27e7363b1bbace3d687932fda35ccd/sign-05/build/vistrutith_d3_512s/src__vistrutith_d3_512s__vistrutith_d3_512s_test.c.o
+emcc: error: '/tmp/liangzai-build/emsdk-main/upstream/bin/wasm-ld -o /workspace/scratch/0f12e3237ca5/liangzai-homepage/work/retry-20260926/wasm/ngcc-sign-05-13.wasm /tmp/tmp5fzn1n5xlibemscripten_js_symbols.so -Bstatic --strip-debug --export=malloc --export=free --export=lab_seed --export=lab_public_bytes --export=lab_private_bytes --export=lab_output_bytes --export=lab_keypair --export=lab_sign --export=lab_verify --export=_emscripten_stack_alloc …（长行省略）
+
+=== sign-12 / Galas-384S ===
+timeout → timeout
+在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。
+ngcc-sign-12-5.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-12-5.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-12-5.check.log
+$ （完整命令可用仓库构建脚本重现）
+
+TIMEOUT
+
+=== sign-12 / Galas-512F ===
+timeout → timeout
+在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。
+ngcc-sign-12-6.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-12-6.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-12-6.check.log
+$ （完整命令可用仓库构建脚本重现）
+
+TIMEOUT
+
+=== sign-12 / Galas-512S ===
+timeout → timeout
+在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。
+ngcc-sign-12-7.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-12-7.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-12-7.check.log
+$ （完整命令可用仓库构建脚本重现）
+
+TIMEOUT
+
+=== sign-18 / Origami-512 ===
+timeout → timeout
+在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。
+ngcc-sign-18-3.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-18-3.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-18-3.check.log
+$ （完整命令可用仓库构建脚本重现）
+
+TIMEOUT
+
+=== sign-21 / ReSolveD-alpha-384s ===
+timeout → native_timeout
+WASM 功能检查通过，但原生 KAT 在 120 秒限额内未完成。
+ngcc-sign-21-5.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-21-5.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-21-5.check.log
+$ （完整命令可用仓库构建脚本重现）
+VERIFIED sign-21 ReSolveD-alpha-384s
+sign-21.5.native.log
+In file included from src/ReSolveD-alpha-384s/enc.c:16:
+src/ReSolveD-alpha-384s/fields.h: In function ‘bf160_load’:
+src/ReSolveD-alpha-384s/fields.h:305:1: warning: AVX vector return without AVX enabled changes the ABI [-Wpsabi]
+  305 | ATTR_PURE ATTR_ALWAYS_INLINE static inline bf160_t bf160_load(const uint8_t* src) {
+      | ^~~~~~~~~
+src/ReSolveD-alpha-384s/fields.h: In function ‘bf512_load’:
+src/ReSolveD-alpha-384s/fields.h:630:1: warning: AVX512F vector return without AVX512F enabled changes the ABI [-Wpsabi]
+  630 | ATTR_PURE ATTR_ALWAYS_INLINE static inline bf512_t bf512_load(const uint8_t* src) {
+      | ^~~~~~~~~
+In file included from src/ReSolveD-alpha-384s/fields.c:5:
+src/ReSolveD-alpha-384s/fields.h: In function ‘bf160_load’:
+src/ReSolveD-alpha-384s/fields.h:305:1: warning: AVX vector return without AVX enabled changes the ABI [-Wpsabi]
+  305 | ATTR_PURE ATTR_ALWAYS_INLINE static inline bf160_t bf160_load(const uint8_t* src) {
+      | ^~~~~~~~~
+src/ReSolveD-alpha-384s/fields.h: In function ‘bf512_load’:
+src/ReSolveD-alpha-384s/fields.h:630:1: warning: AVX512F vector return without AVX512F enabled changes the ABI [-Wpsabi]
+  630 | ATTR_PURE ATTR_ALWAYS_INLINE static inline bf512_t bf512_load(const uint8_t* src) {
+      | ^~~~~~~~~
+…（中间编译输出省略）…
+      |                                       ^~~~~~~~~~~
+src/ReSolveD-alpha-384s/universal_hashing.c: In function ‘vole_hash_256_with_degree’:
+src/ReSolveD-alpha-384s/universal_hashing.c:182:24: warning: AVX vector argument without AVX enabled changes the ABI [-Wpsabi]
+  182 |     h0 = bf256_add(h0, bf256_mul(running_s, bf256_load(x + (length_lambda - 1 - i) * BF256_NUM_BYTES)));
+src/ReSolveD-alpha-384s/fields.h:534:39: note: in definition of macro ‘bf256_add’
+  534 | #define bf256_add(lhs, rhs) ((lhs) ^ (rhs))
+      |                                       ^~~
+src/ReSolveD-alpha-384s/universal_hashing.c: In function ‘vole_hash_512_with_degree’:
+src/ReSolveD-alpha-384s/universal_hashing.c:256:24: warning: AVX512F vector argument without AVX512F enabled changes the ABI [-Wpsabi]
+  256 |     h0 = bf512_add(h0, bf512_mul(running_s, bf512_load(x + (length_lambda - 1 - i) * BF512_NUM_BYTES)));
+src/ReSolveD-alpha-384s/fields.h:681:39: note: in definition of macro ‘bf512_add’
+  681 | #define bf512_add(lhs, rhs) ((lhs) ^ (rhs))
+      |                                       ^~~
+In file included from src/ReSolveD-alpha-384s/universal_hashing.h:11,
+                 from src/ReSolveD-alpha-384s/voleith_impl.c:9:
+src/ReSolveD-alpha-384s/fields.h: In function ‘bf160_load’:
+src/ReSolveD-alpha-384s/fields.h:305:1: warning: AVX vector return without AVX enabled changes the ABI [-Wpsabi]
+  305 | ATTR_PURE ATTR_ALWAYS_INLINE static inline bf160_t bf160_load(const uint8_t* src) {
+      | ^~~~~~~~~
+src/ReSolveD-alpha-384s/fields.h: In function ‘bf512_load’:
+src/ReSolveD-alpha-384s/fields.h:630:1: warning: AVX512F vector return without AVX512F enabled changes the ABI [-Wpsabi]
+  630 | ATTR_PURE ATTR_ALWAYS_INLINE static inline bf512_t bf512_load(const uint8_t* src) {
+      | ^~~~~~~~~
+
+TIMEOUT
+
+=== sign-23 / SHUTTLE-256 ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-sign-23-1.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SHUTTLE-256/poly_ntt.c:22:
+src/SHUTTLE-256/poly_ntt.h:73:16: error: static assertion failed due to requirement '512 == 256': vendored NTT degree must match params.h N
+   73 | _Static_assert(NTT_N == N, "vendored NTT degree must match params.h N");
+      |                ^~~~~~~~~~
+src/SHUTTLE-256/ntt/q61441n512/ntt_ref.h:22:15: note: expanded from macro 'NTT_N'
+   22 | #define NTT_N 512
+      |               ^
+In file included from src/SHUTTLE-256/poly_ntt.c:22:
+src/SHUTTLE-256/poly_ntt.h:74:16: error: static assertion failed due to requirement '61441 == 15361': vendored NTT modulus must match params.h Q
+   74 | _Static_assert(NTT_Q == Q, "vendored NTT modulus must match params.h Q");
+      |                ^~~~~~~~~~
+src/SHUTTLE-256/ntt/q61441n512/ntt_ref.h:21:15: note: expanded from macro 'NTT_Q'
+   21 | #define NTT_Q 61441
+      |               ^
+2 errors generated.
+make: *** [Makefile:9: build/SHUTTLE-256/src__SHUTTLE-256__poly_ntt.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-23 / SHUTTLE-512 ===
+compile_failed → compile_failed
+源码编译未通过；具体编译器诊断见本次日志摘录。
+ngcc-sign-23-2.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SHUTTLE-512/poly_ntt.c:22:
+src/SHUTTLE-512/poly_ntt.h:73:16: error: static assertion failed due to requirement '1024 == 256': vendored NTT degree must match params.h N
+   73 | _Static_assert(NTT_N == N, "vendored NTT degree must match params.h N");
+      |                ^~~~~~~~~~
+src/SHUTTLE-512/ntt/q59393n1024/ntt_ref.h:22:15: note: expanded from macro 'NTT_N'
+   22 | #define NTT_N 1024
+      |               ^
+In file included from src/SHUTTLE-512/poly_ntt.c:22:
+src/SHUTTLE-512/poly_ntt.h:74:16: error: static assertion failed due to requirement '59393 == 15361': vendored NTT modulus must match params.h Q
+   74 | _Static_assert(NTT_Q == Q, "vendored NTT modulus must match params.h Q");
+      |                ^~~~~~~~~~
+src/SHUTTLE-512/ntt/q59393n1024/ntt_ref.h:21:15: note: expanded from macro 'NTT_Q'
+   21 | #define NTT_Q 59393
+      |               ^
+2 errors generated.
+make: *** [Makefile:11: build/SHUTTLE-512/src__SHUTTLE-512__poly_ntt.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level1-eff_compressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-0.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level1-eff_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level1-eff_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level1-eff_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:45: build/SQISign2Dsquare-Level1-eff_uncompressed/src__SQISign2Dsquare-Level1-eff_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level1-eff_uncompressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-1.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level1-eff_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level1-eff_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level1-eff_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:45: build/SQISign2Dsquare-Level1-eff_uncompressed/src__SQISign2Dsquare-Level1-eff_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level1-sec_compressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-2.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level1-sec_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level1-sec_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level1-sec_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:46: build/SQISign2Dsquare-Level1-sec_uncompressed/src__SQISign2Dsquare-Level1-sec_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level1-sec_uncompressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-3.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level1-sec_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level1-sec_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level1-sec_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:46: build/SQISign2Dsquare-Level1-sec_uncompressed/src__SQISign2Dsquare-Level1-sec_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level2-eff_compressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-4.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level2-eff_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level2-eff_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level2-eff_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:47: build/SQISign2Dsquare-Level2-eff_uncompressed/src__SQISign2Dsquare-Level2-eff_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level2-eff_uncompressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-5.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level2-eff_uncompressed/basis.c:3:
+In file included from src/SQISign2Dsquare-Level2-eff_uncompressed/isog.h:5:
+In file included from src/SQISign2Dsquare-Level2-eff_uncompressed/curve_extras.h:5:
+In file included from src/SQISign2Dsquare-Level2-eff_uncompressed/ec_arithmetic/include/torsion_constants.h:1:
+src/SQISign2Dsquare-Level2-eff_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:47: build/SQISign2Dsquare-Level2-eff_uncompressed/src__SQISign2Dsquare-Level2-eff_uncompressed__basis.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+In file included from src/SQISign2Dsquare-Level2-eff_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level2-eff_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level2-eff_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:47: build/SQISign2Dsquare-Level2-eff_uncompressed/src__SQISign2Dsquare-Level2-eff_uncompressed__algebra.c.o] Error 1
+
+=== sign-25 / SQISign2Dsquare-Level2-sec_compressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-6.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level2-sec_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level2-sec_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level2-sec_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:48: build/SQISign2Dsquare-Level2-sec_uncompressed/src__SQISign2Dsquare-Level2-sec_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level2-sec_uncompressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-7.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level2-sec_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level2-sec_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level2-sec_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:48: build/SQISign2Dsquare-Level2-sec_uncompressed/src__SQISign2Dsquare-Level2-sec_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level3-eff_compressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-8.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level3-eff_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level3-eff_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level3-eff_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:49: build/SQISign2Dsquare-Level3-eff_uncompressed/src__SQISign2Dsquare-Level3-eff_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level3-eff_uncompressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-9.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level3-eff_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level3-eff_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level3-eff_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:49: build/SQISign2Dsquare-Level3-eff_uncompressed/src__SQISign2Dsquare-Level3-eff_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level3-sec_compressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-10.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level3-sec_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level3-sec_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level3-sec_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:50: build/SQISign2Dsquare-Level3-sec_uncompressed/src__SQISign2Dsquare-Level3-sec_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level3-sec_uncompressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-11.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level3-sec_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level3-sec_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level3-sec_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:50: build/SQISign2Dsquare-Level3-sec_uncompressed/src__SQISign2Dsquare-Level3-sec_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level5-eff_compressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-12.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level5-eff_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level5-eff_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level5-eff_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:51: build/SQISign2Dsquare-Level5-eff_uncompressed/src__SQISign2Dsquare-Level5-eff_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level5-eff_uncompressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-13.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level5-eff_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level5-eff_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level5-eff_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:51: build/SQISign2Dsquare-Level5-eff_uncompressed/src__SQISign2Dsquare-Level5-eff_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level5-sec_compressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-14.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level5-sec_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level5-sec_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level5-sec_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:52: build/SQISign2Dsquare-Level5-sec_uncompressed/src__SQISign2Dsquare-Level5-sec_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-25 / SQISign2Dsquare-Level5-sec_uncompressed ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-25-15.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQISign2Dsquare-Level5-sec_uncompressed/algebra.c:1:
+In file included from src/SQISign2Dsquare-Level5-sec_uncompressed/quaternion.h:12:
+src/SQISign2Dsquare-Level5-sec_uncompressed/intbig.h:11:10: fatal error: 'gmp.h' file not found
+   11 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:52: build/SQISign2Dsquare-Level5-sec_uncompressed/src__SQISign2Dsquare-Level5-sec_uncompressed__algebra.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-27 / SQIsignTriangle_lvl1 ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-27-0.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQIsignTriangle_lvl1/sqisigntriangle/src/sqisign.c:4:
+In file included from src/SQIsignTriangle_lvl1/sqisigntriangle/src/verification/ref/include/verification.h:11:
+src/SQIsignTriangle_lvl1/sqisigntriangle/src/quaternion/ref/generic/include/intbig.h:16:10: fatal error: 'gmp.h' file not found
+   16 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:70: build/SQIsignTriangle_lvl1/src__SQIsignTriangle_lvl1__sqisigntriangle__src__sqisign.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-27 / SQIsignTriangle_lvl2 ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-27-1.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQIsignTriangle_lvl2/sqisigntriangle/src/sqisign.c:4:
+In file included from src/SQIsignTriangle_lvl2/sqisigntriangle/src/verification/ref/include/verification.h:11:
+src/SQIsignTriangle_lvl2/sqisigntriangle/src/quaternion/ref/generic/include/intbig.h:16:10: fatal error: 'gmp.h' file not found
+   16 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:71: build/SQIsignTriangle_lvl2/src__SQIsignTriangle_lvl2__sqisigntriangle__src__sqisign.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-27 / SQIsignTriangle_lvl5 ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-27-2.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQIsignTriangle_lvl5/sqisigntriangle/src/sqisign.c:4:
+In file included from src/SQIsignTriangle_lvl5/sqisigntriangle/src/verification/ref/include/verification.h:11:
+src/SQIsignTriangle_lvl5/sqisigntriangle/src/quaternion/ref/generic/include/intbig.h:16:10: fatal error: 'gmp.h' file not found
+   16 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:72: build/SQIsignTriangle_lvl5/src__SQIsignTriangle_lvl5__sqisigntriangle__src__sqisign.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-27 / SQIsignTriangle_lvl6 ===
+compile_failed → compile_failed
+依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。
+ngcc-sign-27-3.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/SQIsignTriangle_lvl6/sqisigntriangle/src/sqisign.c:4:
+In file included from src/SQIsignTriangle_lvl6/sqisigntriangle/src/verification/ref/include/verification.h:11:
+src/SQIsignTriangle_lvl6/sqisigntriangle/src/quaternion/ref/generic/include/intbig.h:16:10: fatal error: 'gmp.h' file not found
+   16 | #include <gmp.h>
+      |          ^~~~~~~
+1 error generated.
+make: *** [Makefile:73: build/SQIsignTriangle_lvl6/src__SQIsignTriangle_lvl6__sqisigntriangle__src__sqisign.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-32 / UVW-128 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-sign-32-0.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/UVW-128/uvw.c:4:
+src/UVW-128/macros.h:60:23: error: invalid output constraint '=a' in asm
+   60 |             "rdtsc" : "=a"(lo), "=d"(hi)
+      |                       ^
+src/UVW-128/uvw.c:360:33: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  360 |             return (uvw_param){ lambda: 8, n: 20, k: 10, k1: 7, k2: 3, w: 18 };
+      |                                 ^~~~~~~
+      |                                 .lambda =
+src/UVW-128/uvw.c:360:44: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  360 |             return (uvw_param){ lambda: 8, n: 20, k: 10, k1: 7, k2: 3, w: 18 };
+      |                                            ^~
+      |                                            .n =
+src/UVW-128/uvw.c:360:51: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  360 |             return (uvw_param){ lambda: 8, n: 20, k: 10, k1: 7, k2: 3, w: 18 };
+      |                                                   ^~
+      |                                                   .k =
+src/UVW-128/uvw.c:360:58: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+…（中间编译输出省略）…
+      |                                 ^~~~~~~
+      |                                 .lambda =
+src/UVW-128/uvw.c:366:46: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                              ^~
+      |                                              .n =
+src/UVW-128/uvw.c:366:56: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                        ^~
+      |                                                        .k =
+src/UVW-128/uvw.c:366:66: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                                  ^~~
+      |                                                                  .k1 =
+src/UVW-128/uvw.c:366:77: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                                             ^~~
+      |                                                                             .k2 =
+src/UVW-128/uvw.c:366:87: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                                                       ^~
+      |                                                                                       .w =
+24 warnings and 1 error generated.
+make: *** [Makefile:38: build/UVW-128/src__UVW-128__uvw.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-32 / UVW-256 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-sign-32-1.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/UVW-256/uvw.c:4:
+src/UVW-256/macros.h:60:23: error: invalid output constraint '=a' in asm
+   60 |             "rdtsc" : "=a"(lo), "=d"(hi)
+      |                       ^
+src/UVW-256/uvw.c:360:33: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  360 |             return (uvw_param){ lambda: 8, n: 20, k: 10, k1: 7, k2: 3, w: 18 };
+      |                                 ^~~~~~~
+      |                                 .lambda =
+src/UVW-256/uvw.c:360:44: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  360 |             return (uvw_param){ lambda: 8, n: 20, k: 10, k1: 7, k2: 3, w: 18 };
+      |                                            ^~
+      |                                            .n =
+src/UVW-256/uvw.c:360:51: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  360 |             return (uvw_param){ lambda: 8, n: 20, k: 10, k1: 7, k2: 3, w: 18 };
+      |                                                   ^~
+      |                                                   .k =
+src/UVW-256/uvw.c:360:58: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+…（中间编译输出省略）…
+      |                                 ^~~~~~~
+      |                                 .lambda =
+src/UVW-256/uvw.c:366:46: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                              ^~
+      |                                              .n =
+src/UVW-256/uvw.c:366:56: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                        ^~
+      |                                                        .k =
+src/UVW-256/uvw.c:366:66: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                                  ^~~
+      |                                                                  .k1 =
+src/UVW-256/uvw.c:366:77: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                                             ^~~
+      |                                                                             .k2 =
+src/UVW-256/uvw.c:366:87: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                                                       ^~
+      |                                                                                       .w =
+24 warnings and 1 error generated.
+make: *** [Makefile:39: build/UVW-256/src__UVW-256__uvw.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-32 / UVW-512 ===
+compile_failed → compile_failed
+参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。
+ngcc-sign-32-2.log
+$ （完整命令可用仓库构建脚本重现）
+In file included from src/UVW-512/uvw.c:4:
+src/UVW-512/macros.h:60:23: error: invalid output constraint '=a' in asm
+   60 |             "rdtsc" : "=a"(lo), "=d"(hi)
+      |                       ^
+src/UVW-512/uvw.c:360:33: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  360 |             return (uvw_param){ lambda: 8, n: 20, k: 10, k1: 7, k2: 3, w: 18 };
+      |                                 ^~~~~~~
+      |                                 .lambda =
+src/UVW-512/uvw.c:360:44: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  360 |             return (uvw_param){ lambda: 8, n: 20, k: 10, k1: 7, k2: 3, w: 18 };
+      |                                            ^~
+      |                                            .n =
+src/UVW-512/uvw.c:360:51: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  360 |             return (uvw_param){ lambda: 8, n: 20, k: 10, k1: 7, k2: 3, w: 18 };
+      |                                                   ^~
+      |                                                   .k =
+src/UVW-512/uvw.c:360:58: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+…（中间编译输出省略）…
+      |                                 ^~~~~~~
+      |                                 .lambda =
+src/UVW-512/uvw.c:366:46: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                              ^~
+      |                                              .n =
+src/UVW-512/uvw.c:366:56: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                        ^~
+      |                                                        .k =
+src/UVW-512/uvw.c:366:66: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                                  ^~~
+      |                                                                  .k1 =
+src/UVW-512/uvw.c:366:77: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                                             ^~~
+      |                                                                             .k2 =
+src/UVW-512/uvw.c:366:87: warning: use of GNU old-style field designator extension [-Wgnu-designator]
+  366 |             return (uvw_param){ lambda: 512, n: 39000, k: 19500, k1: 13066, k2: 6434, w: 34710 };
+      |                                                                                       ^~
+      |                                                                                       .w =
+24 warnings and 1 error generated.
+make: *** [Makefile:40: build/UVW-512/src__UVW-512__uvw.c.o] Error 1
+make: *** Waiting for unfinished jobs....
+
+=== sign-33 / VDOO-512 ===
+timeout → timeout
+在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。
+ngcc-sign-33-2.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-33-2.link.log
+$ （完整命令可用仓库构建脚本重现）
+ngcc-sign-33-2.check.log
+$ （完整命令可用仓库构建脚本重现）
+
+TIMEOUT

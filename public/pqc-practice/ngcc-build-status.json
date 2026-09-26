@@ -132,8 +132,12 @@
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-05-1.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "提交代码使用未声明的 lambda 标识符，编译失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
       },
       {
         "status": "runtime_failed",
@@ -142,8 +146,12 @@
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-05-3.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "提交代码使用未声明的 lambda 标识符，编译失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
       },
       {
         "status": "runtime_failed",
@@ -167,33 +175,57 @@
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-05-8.link.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "提交构建列表缺少实现函数或依赖，链接存在未定义符号。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-05-9.link.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "提交构建列表缺少实现函数或依赖，链接存在未定义符号。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-05-10.link.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "提交构建列表缺少实现函数或依赖，链接存在未定义符号。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-05-11.link.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "提交构建列表缺少实现函数或依赖，链接存在未定义符号。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-05-12.link.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "提交实现与适配层存在重复全局符号，链接失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-05-13.link.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "提交实现与适配层存在重复全局符号，链接失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547"
       }
     ],
     "sign-06": [
@@ -361,15 +393,27 @@
       },
       {
         "status": "timeout",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-5.check.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "timeout",
+        "retry_reason": "在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "timeout",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-6.check.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "timeout",
+        "retry_reason": "在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "timeout",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-12-7.check.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "timeout",
+        "retry_reason": "在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "sign-13": [
@@ -550,7 +594,11 @@
       },
       {
         "status": "timeout",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-18-3.check.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "timeout",
+        "retry_reason": "在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "sign-19": [
@@ -716,9 +764,13 @@
         "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
-        "status": "timeout",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-21-5.check.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
+        "status": "native_timeout",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "timeout",
+        "retry_reason": "WASM 功能检查通过，但原生 KAT 在 120 秒限额内未完成。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126110025"
       },
       {
         "status": "native_failed",
@@ -808,13 +860,21 @@
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-23-1.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-23-2.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36126986905"
       }
     ],
     "sign-24": [
@@ -846,67 +906,131 @@
     "sign-25": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-0.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-1.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-2.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-3.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-4.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-5.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-6.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-7.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-8.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-9.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-10.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-11.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-12.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-13.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-14.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-25-15.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "sign-26": [
@@ -926,19 +1050,35 @@
     "sign-27": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-27-0.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-27-1.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-27-2.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-27-3.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "sign-28": [
@@ -1024,15 +1164,27 @@
     "sign-32": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-32-0.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-32-1.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-32-2.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "sign-33": [
@@ -1048,8 +1200,12 @@
       },
       {
         "status": "timeout",
-        "log": "work/ngcc-wasm-rebuild/ngcc-sign-33-2.check.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36101603015"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "timeout",
+        "retry_reason": "在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36101603015"
       }
     ],
     "sign-34": [
@@ -1144,29 +1300,53 @@
     "kem-06": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-06-0.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-06-1.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-06-2.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "kem-07": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-07-0.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-07-1.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-07-2.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "kem-08": [
@@ -1201,15 +1381,27 @@
     "kem-10": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-10-0.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-10-1.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-10-2.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "kem-11": [
@@ -1240,35 +1432,59 @@
     "kem-12": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-12-0.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124737151"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "构建列表把内部模板源文件作为独立编译单元，出现未实例化类型或宏。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124737151"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-12-1.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124737151"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "构建列表把内部模板源文件作为独立编译单元，出现未实例化类型或宏。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124737151"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-12-2.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124737151"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "构建列表把内部模板源文件作为独立编译单元，出现未实例化类型或宏。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124737151"
       }
     ],
     "kem-13": [
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-13-0.link.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36108119724"
+        "status": "runtime_failed",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "编译成功，但密钥生成返回失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36108119724"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-13-1.link.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36108119724"
+        "status": "runtime_failed",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "编译成功，但 WASM 功能、输出长度或一致性检查失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36108119724"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-13-2.link.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36108119724"
+        "status": "runtime_failed",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "编译成功，但 WASM 功能、输出长度或一致性检查失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36108119724"
       }
     ],
     "kem-14": [
@@ -1363,20 +1579,36 @@
     ],
     "kem-17": [
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-17-0.log"
+        "status": "runtime_failed",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "编译成功，但密钥生成返回失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-17-1.log"
+        "status": "runtime_failed",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "编译成功，但密钥生成返回失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-17-2.log"
+        "status": "runtime_failed",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "编译成功，但密钥生成返回失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-17-3.log"
+        "status": "runtime_failed",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "编译成功，但密钥生成返回失败。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "kem-18": [
@@ -1705,29 +1937,53 @@
     "kem-31": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-31-0.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-31-1.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-31-2.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 GMP 多精度库，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "kem-32": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-32-0.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 OpenSSL，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-32-1.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 OpenSSL，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-32-2.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "依赖 OpenSSL，当前 WASM 工具链没有对应头文件和库。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "kem-33": [
@@ -1855,15 +2111,27 @@
     "kem-38": [
       {
         "status": "timeout",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-38-0.check.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "timeout",
+        "retry_reason": "在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "timeout",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-38-1.check.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "timeout",
+        "retry_reason": "在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "timeout",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kem-38-2.check.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "timeout",
+        "retry_reason": "在单步编译 90 秒或 WASM 检查 30 秒限额内未完成。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "kem-39": [
@@ -2056,18 +2324,30 @@
     "kex-04": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-04-0.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124235462"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124235462"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-04-1.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124235462"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124235462"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-04-2.log",
-        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124235462"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "previous_run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36124235462"
       }
     ],
     "kex-05": [
@@ -2114,45 +2394,85 @@
     "kex-07": [
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-0.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-1.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-2.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-3.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-4.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-5.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-6.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-7.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-07-8.log"
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       }
     ],
     "kex-08": [
       {
-        "status": "timeout",
-        "log": "work/ngcc-wasm-rebuild/ngcc-kex-08-0.check.log"
+        "status": "runtime_failed",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "timeout",
+        "retry_reason": "编译成功，但完整交换未生成一致共享密钥。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
         "status": "runtime_failed",
@@ -2369,36 +2689,82 @@
     ],
     "hash-11": [
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-0.link.log"
+        "status": "verified",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "原生官方 KAT 通过，WASM 三条摘要与原生输出一致。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "validation": "official_kat_native_wasm",
+        "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-1.link.log"
+        "status": "native_failed",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "已按参数标签正确编译；Garnet_1024_DM4x4 原生 KAT 与提交清单不一致，暂不发布。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-2.link.log"
+        "status": "verified",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "原生官方 KAT 通过，WASM 三条摘要与原生输出一致。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "validation": "official_kat_native_wasm",
+        "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-3.link.log"
+        "status": "verified",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "原生官方 KAT 通过，WASM 三条摘要与原生输出一致。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "validation": "official_kat_native_wasm",
+        "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-4.link.log"
+        "status": "verified",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "原生官方 KAT 通过，WASM 三条摘要与原生输出一致。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "validation": "official_kat_native_wasm",
+        "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-5.link.log"
+        "status": "verified",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "原生官方 KAT 通过，WASM 三条摘要与原生输出一致。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "validation": "official_kat_native_wasm",
+        "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-6.link.log"
+        "status": "verified",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "原生官方 KAT 通过，WASM 三条摘要与原生输出一致。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "validation": "official_kat_native_wasm",
+        "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd"
       },
       {
-        "status": "compile_failed",
-        "log": "work/ngcc-wasm-rebuild/ngcc-hash-11-7.link.log"
+        "status": "verified",
+        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
+        "retry_date": "2026-09-26",
+        "retry_previous_status": "compile_failed",
+        "retry_reason": "原生官方 KAT 通过，WASM 三条摘要与原生输出一致。",
+        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt",
+        "validation": "official_kat_native_wasm",
+        "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd"
       }
     ],
     "hash-12": [
@@ -2991,5 +3357,19 @@
         "log": "work/ngcc-wasm-rebuild/ngcc-hash-35-1.log"
       }
     ]
+  },
+  "last_retry": {
+    "date": "2026-09-26",
+    "attempted": 88,
+    "recovered": 7,
+    "results": {
+      "verified": 7,
+      "native_failed": 1,
+      "compile_failed": 63,
+      "runtime_failed": 8,
+      "timeout": 8,
+      "native_timeout": 1
+    },
+    "log_url": "./ngcc-rebuild-2026-09-26.txt"
   }
 }

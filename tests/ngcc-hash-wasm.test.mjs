@@ -10,7 +10,8 @@ for (const [id, modules] of Object.entries(NGCC_HASH_WASM)) {
     if (!module) continue;
     test(`${id} parameter ${index} passes its WASM runtime check`, () => {
       const wasm = fileURLToPath(new URL(`../public/pqc-practice/wasm/${module}.mjs`, import.meta.url));
-      const output = execFileSync(process.execPath, [check, wasm, id, String(index)],
+      const vector = id === 'hash-11' ? [fileURLToPath(new URL('./fixtures/ngcc-hash11.json', import.meta.url))] : [];
+      const output = execFileSync(process.execPath, [check, wasm, id, String(index), ...vector],
         { encoding: 'utf8', timeout: 30000 });
       assert.match(output, /^VERIFIED /);
     });
