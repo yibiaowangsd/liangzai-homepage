@@ -13,6 +13,8 @@
 
 技术栈：Next.js App Router、React 19、TypeScript、Vinext/Vite、Cloudflare Worker、Three.js 与 GSAP。武器库的教学交互是概念演示；武器实战页面在浏览器中使用保留来源说明的 WASM 执行真实算法运算。NIST 标准算法模块源自 PQMagic 项目，页面不宣称该实现经过 FIPS 验证。
 
+当前不可运行的候选、参数与原因见 [逐项清单](./docs/pqc-unavailable.md)；[安全报告索引](./docs/pqc-security-index.md)覆盖全部 119 个征集候选，页面保留已核对发现的中文详细说明。
+
 ## 本地运行
 
 需要 Node.js ≥ 22.13。仓库根目录执行：

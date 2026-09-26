@@ -13,6 +13,12 @@ const DEFAULT_HASH = { mlkem: 'shake', mldsa: 'shake', slhdsa: 'sha2' };
 const DEFAULT_VARIANT = { mlkem: '768', mldsa: '65', slhdsa: '128f' };
 const NAMES = { mlkem: 'ML-KEM', mldsa: 'ML-DSA', slhdsa: 'SLH-DSA' };
 const CATEGORIES = { kem: '密钥封装 · 41 项', sig: '数字签名 · 34 项', kex: '密钥交换 · 9 项', hash: '哈希算法 · 35 项' };
+const REPORT_SEVERITY = { Critical: '严重', High: '高', Medium: '中', Low: '低', Info: '提示' };
+const REPORT_STATUS = { Confirmed: '已确认', Probable: '缺陷已确认，攻击待推导', Lead: '线索待验证', 'Proof gap': '证明不足，非攻击', Withdrawn: '已撤回' };
+const REPORT_SCOPE = { implementation: '实现', design: '设计', 'side-channel': '侧信道', evaluation: '评估' };
+const FIPS = { mlkem: ['FIPS 203', 'https://csrc.nist.gov/pubs/fips/203/final'],
+  mldsa: ['FIPS 204', 'https://csrc.nist.gov/pubs/fips/204/final'],
+  slhdsa: ['FIPS 205', 'https://csrc.nist.gov/pubs/fips/205/final'] };
 const FACTS = {
   PublicKeyBytes: '公钥', SecretKeyBytes: '私钥', CiphertextBytes: '密文', SharedSecretBytes: '共享密钥',
   SignatureBytes: '签名', Passes: '交互轮数', InitiatorStateBytes: '发起方状态',
@@ -34,7 +40,7 @@ const hex = bytes => Array.from(bytes, value => value.toString(16).padStart(2, '
 const equal = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
 const elapsed = value => value == null ? '—' : `${value.toFixed(2)} ms`;
 let worker, ready = false, busy = false, active = null, serial = 0, resetSerial = 0, sizes = null;
-let catalog = null, catalogPromise = null, nistFamily = 'mlkem';
+let catalog = null, catalogPromise = null, reportIndex = null, nistFamily = 'mlkem';
 let aliceSecret = null, keyTime = null, actionTime = null;
 let flowOutcome = null;
 let expandedLibrary = 'nist';
@@ -332,6 +338,15 @@ async function loadCatalog() {
     return data.candidates;
   }).catch(error => { catalogPromise = null; throw error; });
   catalog = await catalogPromise;
+  if (!reportIndex) {
+    try {
+      const response = await fetch('./ngcc-report-index.json');
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const index = await response.json();
+      if (index.findings?.length !== 166 || index.active_findings !== 164) throw new Error('报告快照数据不完整');
+      reportIndex = index;
+    } catch { reportIndex = { unavailable: true }; }
+  }
 }
 function configureCatalogParameters() {
   const candidate = catalog.find(item => item.id === $('#family').value);
@@ -339,24 +354,39 @@ function configureCatalogParameters() {
 }
 function showReports(candidate) {
   const list = $('#report-list');
-  const reports = NGCC_REPORTS[candidate.id] || [];
+  const reports = reportIndex?.findings?.filter(item => item.candidateId === candidate.id) || [];
+  const notes = new Map((NGCC_REPORTS[candidate.id] || []).map(item => [item.id, item]));
+  $('#report-title').textContent = '安全报告 · 逐项索引';
+  $('#report-index-link').href = 'https://ngcc.dev/reports/index.html';
+  $('#report-index-link').textContent = '查看 ngcc.dev 报告原文 ↗';
+  $('#report-intro').textContent = reportIndex?.unavailable
+    ? '报告目录暂时无法读取，请访问原站核对最新信息。浏览器功能验证不构成安全认证。'
+    : `索引更新于 ${reportIndex.source_updated_utc} UTC：${reportIndex.reported_candidates} 份候选报告、${reportIndex.active_findings} 项有效发现、${reportIndex.withdrawn_records} 条已撤回记录。以下按所选候选展示；未发布报告不代表安全。发现针对提交版本，本站 WASM 可能包含修补。`;
+  if (reportIndex?.unavailable) {
+    list.replaceChildren(document.createElement('p'));
+    list.firstChild.className = 'report-empty';
+    list.firstChild.textContent = '可前往报告原站查看全部候选。';
+    return;
+  }
   if (!reports.length) {
     const empty = document.createElement('p');
     empty.className = 'report-empty';
-    empty.textContent = '当前页尚未整理此候选的中文摘要。可查阅 ngcc.dev 报告索引；未列出条目不代表通过安全评估。';
+    empty.textContent = '该报告源目前未列出此候选的主动发现；这不表示通过安全评估。可从上方查看报告索引与源码审查。';
     list.replaceChildren(empty);
     return;
   }
   const ul = document.createElement('ul'); ul.className = 'report-items';
-  for (const item of reports) {
+  for (const finding of reports) {
+    const item = notes.get(finding.id);
     const li = document.createElement('li'), id = document.createElement('b'), link = document.createElement('a');
-    id.textContent = item.id;
-    link.textContent = item.zh; link.href = `https://ngcc.dev/reports/${candidate.id}.html`;
+    id.textContent = finding.id;
+    link.textContent = item?.zh || (finding.status === 'Withdrawn' ? '已撤回的评估记录 · 查看原文' : '查看该项发现的原文与复现步骤');
+    link.href = `https://ngcc.dev/reports/${candidate.id}.html`;
     link.target = '_blank'; link.rel = 'noopener noreferrer';
     const note = document.createElement('span'); note.className = 'report-note';
-    note.textContent = `${item.severity} · ${item.status} · 影响：${item.affected}`;
+    note.textContent = `${REPORT_SEVERITY[finding.severity]} · ${REPORT_STATUS[finding.status]} · ${REPORT_SCOPE[finding.scope]} · 更新 ${finding.updated}${item ? ` · 影响：${item.affected}` : ''}`;
     li.append(id, link, note);
-    for (const [label, value] of [['证据', item.evidence], ['影响边界', item.impact], ['修复方向', item.repair]]) {
+    for (const [label, value] of [['证据', item?.evidence], ['影响边界', item?.impact], ['修复方向', item?.repair]]) {
       if (!value) continue;
       const detail = document.createElement('p');
       detail.className = 'report-detail';
@@ -366,6 +396,18 @@ function showReports(candidate) {
     ul.append(li);
   }
   list.replaceChildren(ul);
+}
+function showNistReports() {
+  const [label, url] = FIPS[$('#family').value];
+  $('#report-panel').classList.remove('hidden');
+  $('#report-title').textContent = '标准与实现评估';
+  $('#report-index-link').href = url;
+  $('#report-index-link').textContent = `查看 NIST ${label} ↗`;
+  $('#report-intro').textContent = '所选算法属于 NIST 标准算法。本站 WASM 由 PQMagic 源码构建；目前没有针对本站二进制的独立安全报告或 FIPS 实现认证。算法符合标准的名称不等于此实现已获认证。';
+  const link = document.createElement('a');
+  link.href = 'https://github.com/pqcrypto-cn/PQMagic'; link.target = '_blank'; link.rel = 'noopener noreferrer';
+  link.textContent = '查看当前模块实现来源 ↗';
+  $('#report-list').replaceChildren(link);
 }
 function showCatalog() {
   const candidate = catalog?.find(item => item.id === $('#family').value);
@@ -461,6 +503,7 @@ $('#family').addEventListener('change', () => {
   }));
   configureVariants(true);
   configureVariant();
+  showNistReports();
   renderSidebar();
 });
 $('#hash').addEventListener('change', () => { if (!isNgcc()) { configureVariants(); configureVariant(); } });
@@ -623,3 +666,4 @@ if (!supportedOrigin || !globalThis.crypto?.getRandomValues || !globalThis.WebAs
   status('需要 HTTPS 或 localhost，以及 WebAssembly、Web Worker 和 Web Crypto。', 'error');
 } else startWorker();
 renderSidebar();
+showNistReports();

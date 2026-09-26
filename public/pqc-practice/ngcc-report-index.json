@@ -1,0 +1,1338 @@
+{
+  "source": "https://ngcc.dev/reports/index.html",
+  "source_updated_utc": "2026-09-25 16:35:53",
+  "retrieved_utc": "2026-09-26",
+  "active_findings": 164,
+  "reported_candidates": 86,
+  "withdrawn_records": 2,
+  "findings": [
+    {
+      "id": "sign-01-1",
+      "candidateId": "sign-01",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-01-2",
+      "candidateId": "sign-01",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-01-3",
+      "candidateId": "sign-01",
+      "severity": "Low",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-01-4",
+      "candidateId": "sign-01",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-02-1",
+      "candidateId": "sign-02",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-02-2",
+      "candidateId": "sign-02",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-25",
+      "status": "Probable"
+    },
+    {
+      "id": "sign-03-1",
+      "candidateId": "sign-03",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-04-1",
+      "candidateId": "sign-04",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-04-2",
+      "candidateId": "sign-04",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-04-3",
+      "candidateId": "sign-04",
+      "severity": "Low",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-05-1",
+      "candidateId": "sign-05",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-06-1",
+      "candidateId": "sign-06",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-06-2",
+      "candidateId": "sign-06",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-07-1",
+      "candidateId": "sign-07",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-07-2",
+      "candidateId": "sign-07",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-07-3",
+      "candidateId": "sign-07",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-24",
+      "status": "Lead"
+    },
+    {
+      "id": "sign-08-1",
+      "candidateId": "sign-08",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-09-1",
+      "candidateId": "sign-09",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-10-1",
+      "candidateId": "sign-10",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Lead"
+    },
+    {
+      "id": "sign-10-2",
+      "candidateId": "sign-10",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-11-1",
+      "candidateId": "sign-11",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-11-2",
+      "candidateId": "sign-11",
+      "severity": "Info",
+      "scope": "evaluation",
+      "updated": "2026-09-22",
+      "status": "Withdrawn"
+    },
+    {
+      "id": "sign-11-3",
+      "candidateId": "sign-11",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-11-4",
+      "candidateId": "sign-11",
+      "severity": "Info",
+      "scope": "evaluation",
+      "updated": "2026-09-22",
+      "status": "Withdrawn"
+    },
+    {
+      "id": "sign-11-5",
+      "candidateId": "sign-11",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-11-6",
+      "candidateId": "sign-11",
+      "severity": "Low",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-11-7",
+      "candidateId": "sign-11",
+      "severity": "Low",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-11-8",
+      "candidateId": "sign-11",
+      "severity": "Low",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-12-1",
+      "candidateId": "sign-12",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-15-1",
+      "candidateId": "sign-15",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-15-2",
+      "candidateId": "sign-15",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-15-3",
+      "candidateId": "sign-15",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-15-4",
+      "candidateId": "sign-15",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-16-1",
+      "candidateId": "sign-16",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-23",
+      "status": "Proof gap"
+    },
+    {
+      "id": "sign-16-2",
+      "candidateId": "sign-16",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-23",
+      "status": "Proof gap"
+    },
+    {
+      "id": "sign-18-1",
+      "candidateId": "sign-18",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-18-2",
+      "candidateId": "sign-18",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-18-3",
+      "candidateId": "sign-18",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Probable"
+    },
+    {
+      "id": "sign-18-4",
+      "candidateId": "sign-18",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Probable"
+    },
+    {
+      "id": "sign-18-5",
+      "candidateId": "sign-18",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-24",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-22-1",
+      "candidateId": "sign-22",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-22-2",
+      "candidateId": "sign-22",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-23-1",
+      "candidateId": "sign-23",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-24-1",
+      "candidateId": "sign-24",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-25-1",
+      "candidateId": "sign-25",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-25-2",
+      "candidateId": "sign-25",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-23",
+      "status": "Lead"
+    },
+    {
+      "id": "sign-26-1",
+      "candidateId": "sign-26",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-23",
+      "status": "Lead"
+    },
+    {
+      "id": "sign-27-1",
+      "candidateId": "sign-27",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-27-2",
+      "candidateId": "sign-27",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-23",
+      "status": "Lead"
+    },
+    {
+      "id": "sign-29-1",
+      "candidateId": "sign-29",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-31-1",
+      "candidateId": "sign-31",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-31-2",
+      "candidateId": "sign-31",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Probable"
+    },
+    {
+      "id": "sign-32-1",
+      "candidateId": "sign-32",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-32-2",
+      "candidateId": "sign-32",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-33-1",
+      "candidateId": "sign-33",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-33-2",
+      "candidateId": "sign-33",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-33-3",
+      "candidateId": "sign-33",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Proof gap"
+    },
+    {
+      "id": "sign-33-4",
+      "candidateId": "sign-33",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-33-5",
+      "candidateId": "sign-33",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Probable"
+    },
+    {
+      "id": "sign-33-6",
+      "candidateId": "sign-33",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Probable"
+    },
+    {
+      "id": "sign-34-1",
+      "candidateId": "sign-34",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "sign-34-2",
+      "candidateId": "sign-34",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-01-1",
+      "candidateId": "kem-01",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-01-2",
+      "candidateId": "kem-01",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-02-1",
+      "candidateId": "kem-02",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-02-2",
+      "candidateId": "kem-02",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-02-3",
+      "candidateId": "kem-02",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-02-4",
+      "candidateId": "kem-02",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-03-1",
+      "candidateId": "kem-03",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-03-2",
+      "candidateId": "kem-03",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-04-1",
+      "candidateId": "kem-04",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-04-2",
+      "candidateId": "kem-04",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-06-1",
+      "candidateId": "kem-06",
+      "severity": "Low",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-06-2",
+      "candidateId": "kem-06",
+      "severity": "Low",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-06-3",
+      "candidateId": "kem-06",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-06-4",
+      "candidateId": "kem-06",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-07-1",
+      "candidateId": "kem-07",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-07-2",
+      "candidateId": "kem-07",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-08-1",
+      "candidateId": "kem-08",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-09-1",
+      "candidateId": "kem-09",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-09-2",
+      "candidateId": "kem-09",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Lead"
+    },
+    {
+      "id": "kem-09-3",
+      "candidateId": "kem-09",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-24",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-10-1",
+      "candidateId": "kem-10",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-10-2",
+      "candidateId": "kem-10",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-10-3",
+      "candidateId": "kem-10",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-11-1",
+      "candidateId": "kem-11",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-12-1",
+      "candidateId": "kem-12",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-12-2",
+      "candidateId": "kem-12",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-13-1",
+      "candidateId": "kem-13",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-13-2",
+      "candidateId": "kem-13",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-14-1",
+      "candidateId": "kem-14",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-17-1",
+      "candidateId": "kem-17",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-17-2",
+      "candidateId": "kem-17",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-17-3",
+      "candidateId": "kem-17",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-17-4",
+      "candidateId": "kem-17",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-17-5",
+      "candidateId": "kem-17",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-18-1",
+      "candidateId": "kem-18",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-19-1",
+      "candidateId": "kem-19",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-23",
+      "status": "Lead"
+    },
+    {
+      "id": "kem-21-1",
+      "candidateId": "kem-21",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-22-1",
+      "candidateId": "kem-22",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-23-1",
+      "candidateId": "kem-23",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-24-1",
+      "candidateId": "kem-24",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Probable"
+    },
+    {
+      "id": "kem-27-1",
+      "candidateId": "kem-27",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-28-1",
+      "candidateId": "kem-28",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-29-1",
+      "candidateId": "kem-29",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-31-1",
+      "candidateId": "kem-31",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-31-2",
+      "candidateId": "kem-31",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-31-3",
+      "candidateId": "kem-31",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-32-1",
+      "candidateId": "kem-32",
+      "severity": "Low",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-33-1",
+      "candidateId": "kem-33",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-33-2",
+      "candidateId": "kem-33",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Probable"
+    },
+    {
+      "id": "kem-36-1",
+      "candidateId": "kem-36",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-37-1",
+      "candidateId": "kem-37",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-38-1",
+      "candidateId": "kem-38",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-38-2",
+      "candidateId": "kem-38",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-38-3",
+      "candidateId": "kem-38",
+      "severity": "High",
+      "scope": "side-channel",
+      "updated": "2026-09-24",
+      "status": "Lead"
+    },
+    {
+      "id": "kem-38-4",
+      "candidateId": "kem-38",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-39-1",
+      "candidateId": "kem-39",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Probable"
+    },
+    {
+      "id": "kem-39-2",
+      "candidateId": "kem-39",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-24",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-40-1",
+      "candidateId": "kem-40",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kem-40-2",
+      "candidateId": "kem-40",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Probable"
+    },
+    {
+      "id": "kex-02-1",
+      "candidateId": "kex-02",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-02-2",
+      "candidateId": "kex-02",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-03-1",
+      "candidateId": "kex-03",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-05-1",
+      "candidateId": "kex-05",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-05-2",
+      "candidateId": "kex-05",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-06-1",
+      "candidateId": "kex-06",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-07-1",
+      "candidateId": "kex-07",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-08-1",
+      "candidateId": "kex-08",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-08-2",
+      "candidateId": "kex-08",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-08-3",
+      "candidateId": "kex-08",
+      "severity": "Low",
+      "scope": "design",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-08-4",
+      "candidateId": "kex-08",
+      "severity": "Medium",
+      "scope": "implementation",
+      "updated": "2026-09-25",
+      "status": "Confirmed"
+    },
+    {
+      "id": "kex-09-1",
+      "candidateId": "kex-09",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-01-1",
+      "candidateId": "hash-01",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-02-1",
+      "candidateId": "hash-02",
+      "severity": "Low",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-02-2",
+      "candidateId": "hash-02",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-04-1",
+      "candidateId": "hash-04",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-04-2",
+      "candidateId": "hash-04",
+      "severity": "Low",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Lead"
+    },
+    {
+      "id": "hash-04-3",
+      "candidateId": "hash-04",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-04-4",
+      "candidateId": "hash-04",
+      "severity": "High",
+      "scope": "implementation",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-04-5",
+      "candidateId": "hash-04",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-05-1",
+      "candidateId": "hash-05",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-09-1",
+      "candidateId": "hash-09",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-09-2",
+      "candidateId": "hash-09",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-10-1",
+      "candidateId": "hash-10",
+      "severity": "Low",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-11-1",
+      "candidateId": "hash-11",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-12-1",
+      "candidateId": "hash-12",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-14-1",
+      "candidateId": "hash-14",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-17-1",
+      "candidateId": "hash-17",
+      "severity": "Critical",
+      "scope": "implementation",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-17-2",
+      "candidateId": "hash-17",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-18-1",
+      "candidateId": "hash-18",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-18-2",
+      "candidateId": "hash-18",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-19-1",
+      "candidateId": "hash-19",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-20-1",
+      "candidateId": "hash-20",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-21",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-20-2",
+      "candidateId": "hash-20",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-21-1",
+      "candidateId": "hash-21",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-21-2",
+      "candidateId": "hash-21",
+      "severity": "Critical",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-21-3",
+      "candidateId": "hash-21",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-22-1",
+      "candidateId": "hash-22",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-24-1",
+      "candidateId": "hash-24",
+      "severity": "Low",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-25-1",
+      "candidateId": "hash-25",
+      "severity": "Low",
+      "scope": "implementation",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-26-1",
+      "candidateId": "hash-26",
+      "severity": "High",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-27-1",
+      "candidateId": "hash-27",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-31-1",
+      "candidateId": "hash-31",
+      "severity": "Medium",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-32-1",
+      "candidateId": "hash-32",
+      "severity": "Low",
+      "scope": "design",
+      "updated": "2026-09-22",
+      "status": "Confirmed"
+    },
+    {
+      "id": "hash-35-1",
+      "candidateId": "hash-35",
+      "severity": "Medium",
+      "scope": "side-channel",
+      "updated": "2026-09-23",
+      "status": "Confirmed"
+    }
+  ]
+}

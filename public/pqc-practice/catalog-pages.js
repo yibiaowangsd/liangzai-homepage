@@ -34,6 +34,33 @@ function auditPage(candidates, build) {
   const breakdown = build ? Object.entries(counts).map(([status, rows]) =>
     `${BUILD_LABELS[status] || status} ${rows.length} 组`).join('；') : '';
   $('audit-summary').textContent = `当前发布版本已接入 ${new Set(verified.map(entry => entry.candidate.id)).size} 个候选的 ${verified.length} 组参数。${breakdown || '其余条目等待逐参数构建记录。'}`;
+  const availability = candidates.map(candidate => {
+    const rows = entries.filter(entry => entry.candidate.id === candidate.id);
+    return { candidate, total: rows.length, working: rows.filter(entry => entry.state === 'ready').length,
+      reasons: [...new Set(rows.filter(entry => entry.state !== 'ready').map(entry => BUILD_LABELS[entry.buildStatus] || entry.buildStatus))] };
+  });
+  const missing = availability.filter(item => item.working === 0);
+  const partial = availability.filter(item => item.working > 0 && item.working < item.total);
+  $('availability-intro').textContent = `完全无法运行 ${missing.length} 个候选；另有 ${partial.length} 个候选仅部分参数可运行。未接入 ${entries.length - verified.length} / ${entries.length} 组参数；逐项原因见下表。`;
+  $('availability-groups').replaceChildren(...Object.entries(TYPES).map(([type, label]) => {
+    const group = node('details', null, 'availability-group');
+    const affected = availability.filter(item => item.candidate.type === type && item.working < item.total);
+    group.append(node('summary', `${label} · 完全未接入 ${affected.filter(item => !item.working).length}，部分接入 ${affected.filter(item => item.working).length}`));
+    const list = node('div', null, 'availability-list');
+    for (const item of affected) {
+      const button = node('button', `${item.candidate.id} · ${item.candidate.name} · ${item.working}/${item.total} 组可运行`, 'availability-item');
+      button.type = 'button';
+      button.title = `缺失原因：${item.reasons.join('、')}`;
+      button.addEventListener('click', () => {
+        $('audit-query').value = item.candidate.id;
+        $('audit-state').value = 'pending';
+        update();
+        $('audit-rows').scrollIntoView({ block: 'center', behavior: 'smooth' });
+      });
+      list.append(button);
+    }
+    group.append(list); return group;
+  }));
   if (build?.run_url && !build.run_url.endsWith('/0')) {
     $('audit-build-link').href = build.run_url;
     $('audit-build-link').classList.remove('hidden');
