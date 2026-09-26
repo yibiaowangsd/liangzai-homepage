@@ -1,7 +1,7 @@
 {
   "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd",
   "toolchain": "Emscripten 6.0.10",
-  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130038547",
+  "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36131356381",
   "results": {
     "sign-01": [
       {
@@ -1083,22 +1083,34 @@
     ],
     "sign-28": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "runtime_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-28-0.check.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36131074028"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-28-1.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-28-2.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-28-3.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-28-4.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-28-5.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       }
     ],
     "sign-29": [
@@ -1117,7 +1129,9 @@
     ],
     "sign-30": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-sign-30-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36131356381"
       },
       {
         "status": "source_not_in_snapshot"
@@ -1657,34 +1671,54 @@
     ],
     "kem-20": [
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-20-0.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36131356381"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-20-1.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-20-2.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-20-3.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-20-4.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-20-5.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-20-6.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-20-7.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-20-8.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       },
       {
-        "status": "source_not_in_snapshot"
+        "status": "compile_failed",
+        "log": "work/ngcc-wasm-rebuild/ngcc-kem-20-9.link.log",
+        "run_url": "https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/36130419158"
       }
     ],
     "kem-21": [
