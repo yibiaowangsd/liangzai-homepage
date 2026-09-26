@@ -6,6 +6,7 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 import { gsap } from "gsap";
 import { loadCharacter, disposeObject, VIEW_ANGLES, type CharacterId, type ModelMode, type ModelView } from "./character-assets";
+import { createLiangzaiRig, type LiangzaiRig, type GuardianAction } from "./liangzai-rig";
 import { applyInspection, rotateInspection } from "./inspection";
 import { createObservatory, createStudioEnvironment } from "./observatory";
 import { createFrameScheduler, createShadowBudget } from "./render-scheduler";
@@ -15,7 +16,7 @@ export type HeroScene = {
   setView(view: ModelView): void;
   setModel(mode: ModelMode): Promise<void>;
   resonate(): void;
-  perform(action:"greet"|"spin"|"jump"): void;
+  perform(action:GuardianAction): void;
   dispose(): void;
 };
 
@@ -53,7 +54,8 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   let width=1,height=1,time=0,resizeFrame=0,modelRequest=0;
   let mode:ModelMode="liangzai",activeView:ModelView="reset";
   const orientation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),VIEW_ANGLES.reset);
-  const pose={yaw:0,pitch:0,gaze:0,lift:0,energy:0,bow:0,roll:0};
+  const pose={energy:0},look={x:0,y:0};
+  let rig:LiangzaiRig|null=null;
   const ctx=gsap.context(()=>{});
   let pulseTimeline:gsap.core.Timeline | null=null;
   const shadows=createShadowBudget();
@@ -76,14 +78,15 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   };
   const applyPose=()=>{
     for(const [id,actor] of actors){
-      applyInspection(actor,orientation,pose.pitch+pose.bow,pose.yaw+(mode==="duo"?(id==="liangzai"?.055:-.055):0),pose.gaze+pose.roll);
+      applyInspection(actor,orientation,0,mode==="duo"?(id==="liangzai"?.055:-.055):0,0);
     }
     invalidate(true);
   };
-  const gazeTo=gsap.quickTo(pose,"gaze",{duration:.8,ease:"power3.out",onUpdate:applyPose});
+  const lookXTo=gsap.quickTo(look,"x",{duration:.22,ease:"power2.out",onUpdate:()=>invalidate(true)});
+  const lookYTo=gsap.quickTo(look,"y",{duration:.22,ease:"power2.out",onUpdate:()=>invalidate(true)});
   function updateScene(){
-
-    for(const [id,actor] of actors)if(actor.visible)actor.position.y=.092+pose.lift+(enabled?Math.sin(time*1.05+(id==="nailong"?.7:0))*.012:0);
+    if(rig){rig.look.x=look.x;rig.look.y=look.y;rig.apply(time,enabled);}
+    for(const actor of actors.values())if(actor.visible)actor.position.y=.092;
     observatory.stars.rotation.y=time*.018;
     observatory.glow.emissiveIntensity=1.05+pose.energy*.45;
     (observatory.pulse.material as THREE.MeshBasicMaterial).opacity=pose.energy*.4;
@@ -110,7 +113,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const observer=new ResizeObserver(()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(resize);});observer.observe(canvas);
   const visibility=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;sync();},{threshold:.025});visibility.observe(canvas);
   const ensure=(id:CharacterId)=>{
-    if(!pending.has(id))pending.set(id,loadCharacter(id,signal).then(actor=>{if(disposed){disposeObject(actor);throw new DOMException("Scene disposed","AbortError");}actors.set(id,actor);actor.visible=false;scene.add(actor);return actor;}).catch(error=>{pending.delete(id);throw error;}));
+    if(!pending.has(id))pending.set(id,loadCharacter(id,signal).then(actor=>{if(disposed){disposeObject(actor);throw new DOMException("Scene disposed","AbortError");}if(id==="liangzai")rig=createLiangzaiRig(actor);actors.set(id,actor);actor.visible=false;scene.add(actor);return actor;}).catch(error=>{pending.delete(id);throw error;}));
     return pending.get(id)!;
   };
   let viewTween:gsap.core.Tween|null=null;
@@ -120,40 +123,41 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   }
   function setView(view:ModelView){
     coast?.kill();viewTween?.kill();pulseTimeline?.kill();activeView=view;
-    pose.yaw=pose.pitch=pose.gaze=pose.bow=pose.roll=pose.lift=pose.energy=0;gazeTo.tween.pause();
+    pose.energy=0;rig?.reset();look.x=look.y=0;lookXTo.tween.pause();lookYTo.tween.pause();
     const target=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),VIEW_ANGLES[view]);
     if(enabled)viewTween=tweenOrientation(target,.32);
     else{orientation.copy(target);applyPose();}
   }
-  function perform(action:"greet"|"spin"|"jump"){
-    if(!enabled||disposed||lostContext)return;
-    coast?.kill();viewTween?.kill();pulseTimeline?.kill();pose.lift=pose.energy=pose.bow=pose.roll=0;
-    gazeTo.tween.pause();
+  function perform(action:GuardianAction){
+    if(!enabled||disposed||lostContext||!rig||!actors.get("liangzai")?.visible)return;
+    coast?.kill();viewTween?.kill();pulseTimeline?.kill();rig.reset();pose.energy=0;
+    const p=rig.pose,neutral={...p};
     ctx.add(()=>{
-      const timeline=gsap.timeline({onUpdate:()=>{applyPose();invalidate(true);}});
+      const timeline=gsap.timeline({onUpdate:()=>invalidate(true),defaults:{ease:"sine.inOut"}});
       pulseTimeline=timeline;
-      if(action==="spin")timeline.to(pose,{yaw:pose.yaw+Math.PI*2,energy:1,duration:1.6,ease:"power2.inOut"}).to(pose,{energy:0,duration:.5});
-      else if(action==="greet")timeline.to(pose,{bow:.28,energy:.6,duration:.4}).to(pose,{bow:0,roll:.1,duration:.35}).to(pose,{roll:-.1,duration:.3,repeat:2,yoyo:true}).to(pose,{roll:0,energy:0,duration:.4});
-      else timeline.to(pose,{bow:-.08,lift:.7,energy:1,duration:.45,ease:"power2.out"}).to(pose,{bow:.12,lift:0,duration:.5,ease:"bounce.out"}).to(pose,{bow:0,energy:0,duration:.4});
+      if(action==="wave")timeline.to(p,{leftArm:-1.35,headRoll:-.05,duration:.45}).to(p,{leftWrist:-.7,duration:.18,repeat:5,yoyo:true});
+      else if(action==="nod")timeline.to(p,{headPitch:.2,duration:.3}).to(p,{headPitch:-.08,duration:.25,repeat:3,yoyo:true});
+      else if(action==="look")timeline.to(p,{headYaw:-.5,antenna:.12,duration:.5}).to(p,{headYaw:.5,antenna:-.12,duration:1});
+      else if(action==="stretch")timeline.to(p,{leftArm:-1.45,rightArm:1.45,leftWrist:.3,rightWrist:-.3,headPitch:-.1,duration:.7}).to(p,{headPitch:0,duration:.35});
+      else if(action==="march")timeline.to(p,{leftLeg:.25,rightLeg:-.2,leftFoot:-.17,rightFoot:.1,leftArmX:-.18,rightArmX:.18,duration:.3}).to(p,{leftLeg:-.2,rightLeg:.25,leftFoot:.1,rightFoot:-.17,leftArmX:.18,rightArmX:-.18,duration:.35,repeat:3,yoyo:true});
+      else if(action==="antenna")timeline.to(p,{antenna:.19,headPitch:-.08,duration:.22}).to(p,{antenna:-.19,duration:.2,repeat:5,yoyo:true}).to(pose,{energy:.85,duration:.5},0);
+      else timeline.to(p,{blink:.06,duration:.1,repeat:3,yoyo:true});
+      timeline.to(p,{...neutral,duration:.45}).to(pose,{energy:0,duration:.35},"<");
     });
   }
   function resonate(){
-    if(disposed||lostContext)return;
-    pulseTimeline?.kill();pose.lift=pose.energy=0;
-    if(!enabled){invalidate();return;}
-    ctx.add(()=>{
-      pulseTimeline=gsap.timeline({onUpdate:()=>invalidate(true)})
-        .to(pose,{lift:.11,energy:1,duration:.55,ease:"sine.out"})
-        .to(pose,{lift:0,energy:0,bow:0,roll:0,duration:1.2,ease:"sine.inOut"});
-    });
+    if(disposed||lostContext||!enabled)return;
+    if(rig&&actors.get("liangzai")?.visible){perform("antenna");return;}
+    pulseTimeline?.kill();
+    ctx.add(()=>{pulseTimeline=gsap.timeline({onUpdate:()=>invalidate(true)}).to(pose,{energy:1,duration:.5}).to(pose,{energy:0,duration:1});});
   }
   let dragging=false,distance=0,lastX=0,lastY=0,lastMove=0,velocityX=0,velocityY=0;
   let coast:gsap.core.Tween|null=null;
   const down=(e:PointerEvent)=>{
     if(e.button!==0)return;
     coast?.kill();viewTween?.kill();pulseTimeline?.kill();
-    gazeTo.tween.pause();
-    pose.lift=pose.energy=pose.bow=pose.roll=pose.gaze=0;
+    lookXTo.tween.pause();lookYTo.tween.pause();
+    look.x=look.y=0;rig?.reset();pose.energy=0;
     dragging=true;distance=0;velocityX=velocityY=0;lastMove=performance.now();lastX=e.clientX;lastY=e.clientY;
     canvas.setPointerCapture(e.pointerId);canvas.classList.add("is-dragging");applyPose();
   };
@@ -165,7 +169,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
       // Direct manipulation: no tween may lag behind or fight the pointer.
       rotateInspection(orientation,dx,dy,width,height,camera.quaternion);applyPose();
     }else if(enabled&&e.pointerType==="mouse"){
-      const r=canvas.getBoundingClientRect();gazeTo(((e.clientX-r.left)/r.width-.5)*-.07);
+      const r=canvas.getBoundingClientRect();lookXTo(((e.clientX-r.left)/r.width-.5)*2);lookYTo(((e.clientY-r.top)/r.height-.5)*2);
     }
   };
   const raycaster=new THREE.Raycaster();
@@ -176,11 +180,23 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
       rotateInspection(target,THREE.MathUtils.clamp(velocityX*55,-width*.04,width*.04),THREE.MathUtils.clamp(velocityY*55,-height*.04,height*.04),width,height,camera.quaternion);
       coast=tweenOrientation(target,.22);
     }
-    if(distance<8){const r=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
-      if([...actors.values()].some(actor=>actor.visible&&raycaster.intersectObject(actor,true).length))perform("jump");}
+    if(distance<8){scene.updateMatrixWorld(true);const r=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
+      const actor=actors.get("liangzai"),hit=actor?.visible?raycaster.intersectObject(actor,true)[0]:null;
+      if(hit){
+        let node:THREE.Object3D|null=hit.object,action:GuardianAction="stretch";
+        while(node){
+          if(node.name==="joint_antenna"){action="antenna";break;}
+          if(/joint_.*Eye/.test(node.name)){action="blink";break;}
+          if(/joint_.*(Arm|Hand)/.test(node.name)){action="wave";break;}
+          if(/joint_.*(Leg|Foot)/.test(node.name)){action="march";break;}
+          if(node.name==="joint_head"){action="nod";break;}
+          node=node.parent;
+        }
+        perform(action);
+      }}
   };
   const cancel=()=>{coast?.kill();dragging=false;canvas.classList.remove("is-dragging");};
-  const leave=()=>{if(enabled&&!dragging){gazeTo(0);}};
+  const leave=()=>{if(enabled&&!dragging){lookXTo(0);lookYTo(0);}};
   const keyboard=(e:KeyboardEvent)=>{
     if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","Enter"," "].includes(e.key))return;e.preventDefault();
     if(e.key==="Enter"||e.key===" ")resonate();else if(e.key==="Home")setView("reset");
@@ -191,7 +207,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   for(const [type,listener] of Object.entries(listeners))canvas.addEventListener(type,listener as EventListener);
   document.addEventListener("visibilitychange",sync);
   function dispose(){
-    if(disposed)return;disposed=true;modelRequest++;coast?.kill();viewTween?.kill();frames.dispose();ctx.revert();gazeTo.tween.kill();
+    if(disposed)return;disposed=true;modelRequest++;coast?.kill();viewTween?.kill();frames.dispose();ctx.revert();lookXTo.tween.kill();lookYTo.tween.kill();rig=null;
     observer.disconnect();visibility.disconnect();cancelAnimationFrame(resizeFrame);document.removeEventListener("visibilitychange",sync);signal.removeEventListener("abort",dispose);
     for(const [type,listener] of Object.entries(listeners))canvas.removeEventListener(type,listener as EventListener);
     disposeObject(scene);actors.clear();pending.clear();compiledActors.clear();environment.dispose();key.shadow.dispose();bloom.dispose();output.dispose();renderPass.dispose();composer.dispose();renderer.dispose();renderer.forceContextLoss();
@@ -199,7 +215,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   signal.addEventListener("abort",dispose,{once:true});
   resize();
   return {
-    setMotion(value){enabled=value;if(!value){coast?.kill();viewTween?.kill();pulseTimeline?.progress(1).kill();gazeTo.tween.pause();pose.pitch=pose.gaze=pose.lift=pose.energy=pose.bow=pose.roll=0;applyPose();}sync();},
+    setMotion(value){enabled=value;if(!value){coast?.kill();viewTween?.kill();pulseTimeline?.kill();lookXTo.tween.pause();lookYTo.tween.pause();look.x=look.y=0;rig?.reset();pose.energy=0;applyPose();}sync();},
     setView,resonate,perform,dispose,
     async setModel(next){
       if(disposed||lostContext)throw new Error("3D unavailable");

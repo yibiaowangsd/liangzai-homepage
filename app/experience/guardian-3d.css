@@ -354,3 +354,8 @@
 .guardian-stage[data-status="preview"] .guardian-canvas { pointer-events: none; }
 .guardian-actions { flex-wrap: wrap; justify-content: center; }
 .guardian-actions button { padding-inline: 10px; }
+
+.guardian-gestures { display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin:8px auto 0; max-width:440px; }
+.guardian-gestures button { border:1px solid #a6d8ff35; border-radius:6px; background:#0c1b29da; color:#a7c7dc; padding:7px 11px; font-size:10px; transition:background .2s,border-color .2s; }
+.guardian-gestures button:hover:not(:disabled) { background:#223f54; border-color:#b6ddf2; color:#edf7ff; }
+.guardian-gestures button:disabled { opacity:.35; }

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useExperience } from "./Motion";
+import type { GuardianAction } from "./three/liangzai-rig";
 import type { HeroScene } from "./three/hero-scene";
 import type { ModelMode, ModelView } from "./three/character-assets";
 import "./guardian-3d.css";
@@ -43,7 +44,7 @@ export default function InteractiveGuardian() {
     try{await instance.setModel(next);if(version===request.current){instance.setView(viewRef.current);instance.setMotion(motion.current);setStatus("ready");}}
     catch{if(version===request.current){instance.dispose();if(runtime.current===instance)runtime.current=null;setStatus("fallback");}}
   }
-  function performAction(action:"greet"|"spin"|"jump"){runtime.current?.perform(action);}
+  function performAction(action:GuardianAction){runtime.current?.perform(action);}
   function selectView(next:ModelView){viewRef.current=next;setView(next);runtime.current?.setView(next);}
   return (
     <div className="guardian-stage" data-status={status} data-model={mode} aria-busy={status==="loading"}>
@@ -62,20 +63,24 @@ export default function InteractiveGuardian() {
       </div>
       <div className="guardian-controls">
         <div className="guardian-instruction" role="status" aria-live="polite">
-          {status==="ready"?"横向 / 纵向拖动 360° 翻转 · 四方向键调整 · 复位回正":status==="preview"?"点击上方模型选项，开启 3D 互动":status==="fallback"?"3D 暂不可用，可继续切换图片视角":"正在点亮星空展台"}
+          {status==="ready"?"横向 / 纵向拖动 360° 翻转 · 点击头部、手臂或天线互动":status==="preview"?"点击上方模型选项，开启 3D 互动":status==="fallback"?"3D 暂不可用，可继续切换图片视角":"正在点亮星空展台"}
         </div>
         <div className="guardian-actions" role="group" aria-label="选择模型视角">
           {([["front","正面"],["side","侧面"],["back","背面"]] as const).map(([id,label])=>(
             <button key={id} aria-pressed={view===id} onClick={()=>selectView(id)}>{label}</button>
           ))}
           <button onClick={()=>selectView("reset")} aria-label="重置模型视角">复位</button>
-          {status==="ready"&&<>
-            <button disabled={!enabled} onClick={()=>performAction("greet")}>致意</button>
-            <button disabled={!enabled} onClick={()=>performAction("spin")}>转一圈</button>
-            <button disabled={!enabled} onClick={()=>performAction("jump")}>跃起</button>
-          </>}
           {status==="ready"&&<button className="guardian-hello" disabled={!enabled} title={!enabled?"开启动效后可唤起星光":undefined} onClick={()=>runtime.current?.resonate()}>唤起星光<span aria-hidden="true">✳</span></button>}
         </div>
+        {status==="ready"&&mode!=="nailong"&&<div className="guardian-gestures" role="group" aria-label="量仔局部动作">
+          <button disabled={!enabled} onClick={()=>performAction("wave")}>挥手</button>
+          <button disabled={!enabled} onClick={()=>performAction("nod")}>点头</button>
+          <button disabled={!enabled} onClick={()=>performAction("look")}>左右观察</button>
+          <button disabled={!enabled} onClick={()=>performAction("stretch")}>伸展</button>
+          <button disabled={!enabled} onClick={()=>performAction("march")}>踏步</button>
+          <button disabled={!enabled} onClick={()=>performAction("antenna")}>天线感应</button>
+          <button disabled={!enabled} onClick={()=>performAction("blink")}>眨眼</button>
+        </div>}
       </div>
     </div>
   );
