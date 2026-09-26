@@ -1,5 +1,5 @@
 import { NGCC_KEX_WASM } from './ngcc-kex-runtime.js';
-let mod=null, busy=false, nextPass=1, publicShared=false;
+let mod=null, busy=false, nextPass=1, publicShared=[false,false], pending=null;
 const hex=bytes=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
 async function material(slot,label){
   const bytes=mod._lab_session_bytes(slot),ptr=mod._lab_session_data(slot);
@@ -23,23 +23,28 @@ self.onmessage=async({data})=>{
       try{mod.HEAPU8.set(crypto.getRandomValues(new Uint8Array(48)),seed);if(mod._lab_seed(seed,48))throw new Error('随机数初始化失败');}
       finally{mod.HEAPU8.fill(0,seed,seed+48);mod._free(seed);}
       if(mod._lab_session_start())throw new Error('双方初始化失败');
-      nextPass=1;publicShared=false;
+      nextPass=1;publicShared=[false,false];pending=null;
       result={materials:await Promise.all(['Alice 公钥','Alice 私钥（不发送）','Alice 本地状态','Bob 公钥','Bob 私钥（不发送）','Bob 本地状态'].map((label,slot)=>material(slot,label))),passes:mod._lab_passes()};
     }else{
       if(!mod)throw new Error('请先初始化会话');
       if(data.action==='public'){
-        if(publicShared)throw new Error('公钥已交换');publicShared=true;
-        result={messages:await Promise.all([material(0,'Alice → Bob：公钥'),material(3,'Bob → Alice：公钥')])};
+        if(![0,1].includes(data.side)||publicShared[data.side])throw new Error('该方公钥不能重复发送');
+        result={side:data.side,message:await material(data.side?3:0,data.side?'Bob 公钥':'Alice 公钥')};
+        publicShared[data.side]=true;
       }else if(data.action==='pass'){
-        if(!publicShared||data.pass!==nextPass)throw new Error('请按顺序交换消息');
+        if(!publicShared.every(Boolean)||pending||data.pass!==nextPass)throw new Error('先发送上一条消息，再进行本地计算');
         if(mod._lab_session_pass(data.pass))throw new Error(`第 ${data.pass} 轮失败`);
-        result={pass:data.pass,message:await material(5+data.pass,`msg${data.pass}`),state:await material(data.pass%2?2:5,'更新后的本地状态')};nextPass++;
+        pending={pass:data.pass,message:await material(5+data.pass,`msg${data.pass}`)};
+        result={...pending,state:await material(data.pass%2?2:5,'更新后的本地状态')};
+      }else if(data.action==='send'){
+        if(!pending||data.pass!==pending.pass)throw new Error('没有这条待发送消息');
+        result=pending;pending=null;nextPass++;
       }else if(data.action==='derive'){
-        if(!publicShared||mod._lab_session_derive(data.side))throw new Error('当前阶段无法派生共享密钥');
+        if(![0,1].includes(data.side)||!publicShared.every(Boolean)||pending||nextPass<=mod._lab_passes()||mod._lab_session_derive(data.side))throw new Error('请先完成全部收发，再派生共享密钥');
         result={side:data.side,secret:await material(10+data.side,data.side?'Bob 共享密钥':'Alice 共享密钥'),match:data.side===1?Boolean(mod._lab_session_match()):null};
       }else throw new Error('未知操作');
     }
     postMessage({action:data.action,...result,ms:performance.now()-start});
-  }catch(error){mod?._lab_session_reset();postMessage({error:error?.message||'协议运行失败'});}
+  }catch(error){mod?._lab_session_reset();mod=null;pending=null;postMessage({error:error?.message||'协议运行失败'});}
   finally{busy=false;}
 };
