@@ -9,7 +9,6 @@ import {
 } from "./experience/Motion";
 import QuantumAtmosphere from "./experience/QuantumAtmosphere";
 import QuantumSculpture from "./experience/QuantumSculpture";
-import FilmDialog from "./experience/FilmDialog";
 import InteractiveGuardian from "./experience/InteractiveGuardian";
 
 const paths = [
@@ -116,7 +115,6 @@ export default function QuantumHome() {
               <span>开启探索</span>
               <i aria-hidden="true" />
             </Link>
-            <FilmDialog />
           </div>
         </div>
         <div className="hero-baseline">

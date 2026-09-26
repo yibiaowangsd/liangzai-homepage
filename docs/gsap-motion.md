@@ -20,13 +20,12 @@
 ## 素材与播放
 
 - `public/assets/cinematic/quantum-portal-v1.webp`：本次生成的金属量子门场景，约 124 KB。原量仔透明素材独立叠放，未生成替代角色。
-- `public/assets/cinematic/quantum-prologue-v1.mp4`：以现有故事图制作的 12 秒无声视觉序章，平移、缩放与淡入淡出，H.264，约 534 KB（960 × 540）。
-- 视频仅在用户打开弹窗后挂载，手动播放，无循环、无自动播放。关闭弹窗或进入后台暂停。原故事旁白同样无初始自动播放；用户开始收听后，当前章结束才连续下一章。
+- 故事旁白无初始自动播放；用户开始收听后，当前章结束才连续下一章。
 - 粒子场为交互艺术，不表示真实量子态。DPR 限制为 1.6，离屏与后台移除 ticker；减少动效时只在尺寸/形态变化时重绘。
 
 ## 验证
 
-执行 `npm run build`、`node --test tests/rendered-html.test.mjs`、`npm run lint`。五条渲染用例检查页面标题、主要入口、故事数据、算法内容与人物页；浏览器检查桌面和 390px 手机宽度、菜单、翻页/旁白、算法/参数、短片、粒子形态及动效开关。
+执行 `npm run build`、`node --test tests/rendered-html.test.mjs`、`npm run lint`。五条渲染用例检查页面标题、主要入口、故事数据、算法内容与人物页；浏览器检查桌面和 390px 手机宽度、菜单、翻页/旁白、算法/参数、粒子形态及动效开关。
 
 现有 `<img>` lint 提示保留；全仓 tsc 仍有既有 Cloudflare ambient types 缺口，构建和服务器渲染检查单独验证。
 

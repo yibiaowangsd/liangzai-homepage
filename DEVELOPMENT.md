@@ -6,7 +6,7 @@
 
 | 页面 | 入口 | 关键实现 |
 | --- | --- | --- |
-| `/` | `app/page.tsx` | `app/QuantumHome.tsx`、`app/experience/InteractiveGuardian.tsx`、`QuantumSculpture.tsx`、`FilmDialog.tsx` |
+| `/` | `app/page.tsx` | `app/QuantumHome.tsx`、`app/experience/InteractiveGuardian.tsx`、`QuantumSculpture.tsx` |
 | `/storybook` | `app/storybook/page.tsx` | `StoryBook.tsx` 负责翻页与旁白，`storyData.ts` 负责页面和音轨路径 |
 | `/archive` | `app/archive/page.tsx` | 角色档案和战后内容 |
 | `/pqc-arsenal` | `app/pqc-arsenal/page.tsx` | `ArsenalLab.tsx` 的算法数据与交互；`cinematic-arsenal.css` 调整暗色视觉 |
@@ -46,11 +46,11 @@ npm run dev
 | `public/assets/narration-v3/` | `storyData.ts` 中 11 个逐页音轨 |
 | `public/assets/characters-v2/` | 首页、角色档案、武器库和简介页图片 |
 | `public/assets/pqc/` | 武器库的四张算法配图 |
-| `public/assets/cinematic/` | 首页量子门及按需打开的序章视频 |
+| `public/assets/cinematic/` | 首页量子门场景 |
 
 模型清单既记录原始 GLB 的来源校验值，也记录部署分片的哈希、长度与贴图规格。编辑模型时，重新生成 `model-catalog.json` 与分片并运行 `tests/character-assets.test.mjs`；不要仅改文件名或删掉仍在清单中的分片。WebP 回退图的路径由 `${mode}-${view}.webp` 动态拼接，`mode` 为 `liangzai`、`nailong`、`duo`，`view` 为 `front`、`side`、`back`、`reset`，因此不能只凭全文搜索判断它们无用。
 
-新增或更换故事素材时，更新 `app/storybook/storyData.ts`、对应页面和测试。资源清理时先检查 JSX/CSS/JSON 中的完整 `/assets/...` 路径，再检查动态模板、模型清单和测试。不要把当前版本的资源重新改成无哈希的旧路径。视频只在打开弹窗后挂载；故事旁白从用户触发的播放动作开始。
+新增或更换故事素材时，更新 `app/storybook/storyData.ts`、对应页面和测试。资源清理时先检查 JSX/CSS/JSON 中的完整 `/assets/...` 路径，再检查动态模板、模型清单和测试。不要把当前版本的资源重新改成无哈希的旧路径。故事旁白从用户触发的播放动作开始。
 
 2026-09-24 清理记录：删除不再挂载的旧 `app/home/` 与其 CSS Module、未启用的 D1/Drizzle 与认证示例，以及 41 个无现用路由引用的旧图片、旁白和上一版模型分片；公开素材目录减少约 22.4 MiB。Git 历史仍可找回这些版本。旧版本已打开的浏览器页如果继续请求刚删除的哈希分片，可能需要刷新页面以加载新清单。
 

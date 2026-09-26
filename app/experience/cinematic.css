@@ -437,94 +437,6 @@ button:disabled {
     transform: translateY(100%);
   }
 }
-.film-launch {
-  background: none;
-  border: 0;
-  padding: 8px 0;
-  display: flex;
-  gap: 13px;
-  align-items: center;
-  text-align: left;
-  font-size: 12px;
-}
-.film-launch small {
-  display: block;
-  color: #8f9eac;
-  font: 7px var(--font-mono-en);
-  letter-spacing: 0.08em;
-  margin-top: 6px;
-}
-.play-symbol {
-  height: 32px;
-  width: 32px;
-  border: 1px solid #a5bad14d;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  transition: background 0.3s;
-}
-.play-symbol:after {
-  content: "";
-  border-left: 6px solid #dfeaf4;
-  border-top: 4px solid transparent;
-  border-bottom: 4px solid transparent;
-  margin-left: 2px;
-}
-.film-launch:hover .play-symbol {
-  background: #9bbada26;
-}
-.film-dialog {
-  position: fixed;
-  margin: auto;
-  width: min(1000px, 92vw);
-  max-height: 90svh;
-  padding: 0;
-  border: 1px solid #718599;
-  border-radius: 10px;
-  background: #0c1119;
-  color: #f1f4f8;
-  overflow: auto;
-}
-.film-dialog::backdrop {
-  background: #000d;
-  backdrop-filter: blur(12px);
-}
-.film-titlebar,
-.film-caption {
-  padding: 18px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 15px;
-}
-.film-titlebar h2 {
-  font-size: 14px;
-  margin: 0;
-}
-.film-titlebar button {
-  border: 0;
-  background: transparent;
-  font-size: 12px;
-  padding: 10px;
-}
-.film-dialog video {
-  width: 100%;
-  aspect-ratio: 16/9;
-  background: black;
-  display: block;
-}
-.film-caption p {
-  font-size: 13px;
-  margin: 0;
-}
-.film-caption small {
-  color: #8394a6;
-}
-.film-caption a {
-  font-size: 13px;
-  border-bottom: 1px solid #75879a;
-  white-space: nowrap;
-}
 .manifesto {
   padding-top: 140px;
   padding-bottom: 110px;
@@ -1584,17 +1496,6 @@ button:disabled {
     font-size: 12px;
     gap: 20px;
   }
-  .film-launch {
-    font-size: 10px;
-    gap: 10px;
-  }
-  .film-launch small {
-    font-size: 6px;
-  }
-  .play-symbol {
-    width: 27px;
-    height: 27px;
-  }
   .portal-image {
     height: 68%;
     top: 32%;
@@ -1786,19 +1687,6 @@ button:disabled {
   }
   .footer-bottom > span:last-child {
     display: none;
-  }
-  .film-titlebar,
-  .film-caption {
-    padding: 13px 16px;
-  }
-  .film-titlebar h2 {
-    font-size: 12px;
-  }
-  .film-caption p {
-    font-size: 10px;
-  }
-  .film-caption a {
-    font-size: 10px;
   }
   .profile-hero {
     padding: 60px 6vw 30px;
@@ -2048,9 +1936,6 @@ button:disabled {
   }
   .mobile-menu a {
     min-height: 90px;
-  }
-  .film-caption p {
-    font-size: 12px;
   }
 }
 .portal-image {

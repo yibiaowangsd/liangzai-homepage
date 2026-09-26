@@ -38,7 +38,7 @@ test("renders the homepage with the integrated practice destination", async () =
   assert.match(html, /进入 PQC 武器实战/);
   assert.match(html, /开启动效|暂停动效/);
   assert.match(html, /让想象/);
-  assert.match(html, /观看宇宙序章/);
+  assert.doesNotMatch(html, /宇宙序章|film-launch|film-dialog/);
   assert.doesNotMatch(html, /<video\b/);
   assert.doesNotMatch(html, /<audio\b/);
 });
