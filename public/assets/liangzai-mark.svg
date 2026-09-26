@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs><linearGradient id="shell" x1="16" y1="14" x2="48" y2="58" gradientUnits="userSpaceOnUse"><stop stop-color="#fff"/><stop offset=".55" stop-color="#dceaf5"/><stop offset="1" stop-color="#8ca9c1"/></linearGradient><linearGradient id="blue" x1="28" y1="1" x2="35" y2="13" gradientUnits="userSpaceOnUse"><stop stop-color="#b6f2ff"/><stop offset="1" stop-color="#258ae8"/></linearGradient></defs>
+  <path d="M32 10v8" stroke="#8fbee0" stroke-width="3"/><circle cx="32" cy="6" r="4.5" fill="url(#blue)"/>
+  <path d="m10 31 1-16q1-5 5-3l11 9m27 10-1-16q-1-5-5-3l-11 9" fill="url(#shell)" stroke="#bad5e8" stroke-width="1.5"/>
+  <path d="m15 25 1-9 8 7m25 2-1-9-8 7" fill="#edbd5a"/>
+  <rect x="4" y="32" width="8" height="17" rx="4" fill="#268fea"/><rect x="52" y="32" width="8" height="17" rx="4" fill="#268fea"/>
+  <path d="M9 37c0-12 9-18 23-18s23 6 23 18v7c0 11-9 15-23 15S9 55 9 44Z" fill="url(#shell)" stroke="#d4e9fa"/>
+  <path d="M14 37c0-7 4-11 10-10 3 1 4 5 8 5s5-4 8-5c6-1 10 3 10 10v7c0 7-6 9-18 9s-18-2-18-9Z" fill="#061b35"/>
+  <ellipse cx="24" cy="40" rx="4" ry="6" fill="#57ddff"/><ellipse cx="40" cy="40" rx="4" ry="6" fill="#57ddff"/>
+  <path d="M22 36v7m16-7v7" stroke="#d5faff" stroke-width="1.2" stroke-linecap="round" opacity=".8"/>
+  <path d="M28 48q4 2 8 0" stroke="#2f8bab" stroke-linecap="round"/>
+</svg>

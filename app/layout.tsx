@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "量子星守护者 · 量仔动画书",
   description: "翻开量仔与奶龙共同守护量子星、迎战 Shor 大魔王的互动动画书。",
   other: { "codex-preview": "development" },
-  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
+  icons: { icon: "/assets/liangzai-mark.svg", shortcut: "/assets/liangzai-mark.svg" },
 };
 
 export default function RootLayout({

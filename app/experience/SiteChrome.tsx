@@ -83,7 +83,7 @@ export function SiteHeader() {
           onClick={() => setOpen(false)}
         >
           <span className="brand-mark" aria-hidden="true">
-            Q
+            <img src="/assets/liangzai-mark.svg" width="40" height="40" alt="" />
           </span>
           <strong>
             量仔<span>LIANGZAI</span>
