@@ -50,3 +50,30 @@ for(const id of ['liangzai','nailong'])test(`${id}: actual asset produces a comp
  assert.ok(min<.03,'feet captured');assert.ok(max>height-.08,'crown captured');
  assert.ok(max<=height+.001);disposeObject(actor);
 });
+
+
+test('initial field covers a broad volume with sparse outer stars and dense filaments',async()=>{
+ const {createNebulaField}=await import('../app/experience/three/nebula.ts');
+ let seed=7123;const random=()=>((seed=(seed*1664525+1013904223)>>>0)/4294967296);
+ const {positions,seeds}=createNebulaField(18000,random);
+ assert.ok(positions.every(Number.isFinite));assert.ok(seeds.every(x=>x>=0&&x<1));
+ let left=Infinity,right=-Infinity,bottom=Infinity,top=-Infinity,far=0;
+ for(let i=0;i<positions.length;i+=3){left=Math.min(left,positions[i]);right=Math.max(right,positions[i]);bottom=Math.min(bottom,positions[i+1]);top=Math.max(top,positions[i+1]);if(Math.abs(positions[i])>4)far++;}
+ assert.ok(right-left>14,'wider than the previous 7.4-unit field');
+ assert.ok(top-bottom>7,'cloud has vertical breadth');
+ assert.ok(far>2000,'outer field contains meaningful star coverage');
+});
+
+test('cursor wake cannot rewrite silhouette targets and all nebula layers disappear when formed',async()=>{
+ const {createNebula}=await import('../app/experience/three/nebula.ts');
+ const {Vector4}=await import('three');
+ const nebula=createNebula(null,'nailong',1000),target=nebula.points.geometry.getAttribute('position').array.slice();
+ const wake=Array.from({length:6},(_,i)=>new Vector4(i,2,1,2));
+ nebula.interact(wake,new Vector3(1,2,1),new Vector3(1,2,1));
+ nebula.update(1.2,.4,800,true);
+ assert.deepEqual(nebula.points.geometry.getAttribute('position').array,target);
+ assert.equal(nebula.points.visible,true);assert.ok(nebula.points.children[0].visible);
+ nebula.update(2,.7,800,true);assert.equal(nebula.points.children[0].visible,false);
+ nebula.update(3,1,800,true);assert.equal(nebula.points.visible,false);
+ nebula.dispose();
+});

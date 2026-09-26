@@ -365,3 +365,13 @@
 [data-motion="paused"] .guardian-arrival-flare,
 [data-motion="paused"] .guardian-actions { animation:none!important; }
 @media(prefers-reduced-motion:reduce) { .guardian-arrival-flare,.guardian-actions { animation:none!important; } }
+
+/* Broader desktop canvas keeps the actor centred at the same screen position. */
+@media(min-width:1101px) {
+  .guardian-stage { width:85%; right:-13%; }
+  .guardian-stage .guardian-canvas { mask-image:linear-gradient(90deg,transparent,#000 9%,#000 96%,transparent),linear-gradient(0deg,transparent,#000 8%,#000 95%,transparent); }
+  .guardian-nebula-backdrop { inset:12% 2% 13%; }
+  .guardian-nebula-backdrop i { inset:17% -8%; background:radial-gradient(ellipse at 58% 45%,rgba(var(--nebula-rgb),.11),rgba(var(--nebula-rgb),.035) 38%,transparent 69%); transform:rotate(-17deg); filter:blur(24px); }
+  .guardian-nebula-backdrop i:nth-child(2) { inset:10% 9%; transform:rotate(32deg); }
+  .guardian-nebula-backdrop i:nth-child(3) { inset:29% 4%; transform:rotate(-24deg); }
+}

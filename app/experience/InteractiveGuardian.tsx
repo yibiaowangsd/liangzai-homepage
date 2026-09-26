@@ -44,7 +44,7 @@ export default function InteractiveGuardian() {
   }
   function selectView(next:ModelView){setView(next);runtime.current?.setView(next);}
   const formed=phase==="formed",fallback=status==="fallback";
-  const instruction=fallback?"3D 暂不可用，可切换图片视角":status==="loading"?"星云正在苏醒":formed?"拖动旋转 · 点击角色，发现回应":phase==="revealing"?"星光凝实，伙伴降临":phase==="gathering"?"继续长按，让星光凝聚成形":"长按星云，唤醒"+labels[mode];
+  const instruction=fallback?"3D 暂不可用，可切换图片视角":status==="loading"?"星云正在苏醒":formed?"拖动旋转 · 点击角色，发现回应":phase==="revealing"?"星光凝实，伙伴降临":phase==="gathering"?"继续长按，让星光凝聚成形":"划过星云，拨动星尘 · 长按唤醒"+labels[mode];
   return (
     <div className="guardian-stage" data-status={status} data-model={mode} data-arrival={phase} aria-busy={status==="loading"}>
       <div className="guardian-atmosphere" aria-hidden="true" />

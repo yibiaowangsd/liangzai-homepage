@@ -37,3 +37,15 @@ P0 验证：构建和 15 项测试通过；改动范围 TypeScript 检查通过�
 粒子直接采样原始模型三角形表面，按面积分配；Meshopt 的归一化整数位置先展开为 Float32 再变换，避免量化属性截断导致轮廓变形。单角色 18,000 个粒子，双角色共 24,000 个，由 GPU 插值旋转星云与真实角色表面位置。原模型 PBR 材质通过高度扫描和抖动溶解凝实，伴随扩散光环、克制的 Bloom 增强和镜头推进。WebP 仅作为失败回退，初始不显示实体预览图。
 
 新增 `arrival.test.mjs` 验证未完成长按回散、完成阈值、切换重置、超长时间步限制、坐标变换，以及量仔和奶龙实际资源的粒子高度和完整性。浏览器预览在当前环境不可访问，未宣称实际画面或设备 FPS 已验证。
+
+### 星云外观与鼠标反馈改进
+
+参考设计（仅借鉴交互与视觉组织，着色器为本项目实现）：
+
+- [Codrops — Interactive Particles with Three.js](https://tympanus.net/codrops/2019/01/17/interactive-particles-with-three-js/)：鼠标轨迹的延迟消散、局部扰动与着色器计算。
+- [Codrops — Crafting a Dreamy Particle Effect](https://tympanus.net/codrops/2024/12/19/crafting-a-dreamy-particle-effect-with-three-js-and-gpgpu/)：柔光粒子、连续流动与鼠标响应。
+- [Three.js 社区作者展示 — GPGPU Galaxy Particles](https://discourse.threejs.org/t/gpgpu-galaxy-particles/88937)：星系旋流与深度层次。
+
+初始粒子由窄幅三臂盘改为半径 6.2–7.2 的倾斜宽星场：稀疏远星、非均匀四条星尘带、64 个程序化柔雾点精灵和少量带光芒的亮星。桌面画布从首页 65% 增至 85%，保持角色屏幕中心基本不变。原模型采样目标和长按时序保持不变。
+
+鼠标位置由射线投影到星云平面，最多六个历史点在 GPU 上生成局部排斥、切向涡流和逐渐消散的尾迹；移动速度影响扰动强度。按下时添加扩散波纹。星云有平滑跟随和远近不同的视差；接近凝聚轮廓时将扰动归零。切换角色、关闭动效会清理反馈；离开鼠标区域时跟随平滑回正。粒子数不增加，柔雾限制 64 个精灵、最大 180 px、两层噪声，避免全屏多遍流体模拟。

@@ -57,6 +57,25 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   let nebulas:Nebula[]=[createNebula(null)], modelLoaded=false, currentPhase:ArrivalPhase="nebula";
   scene.add(nebulas[0].points);
   const stageElement=canvas.parentElement!;
+  const trail=Array.from({length:6},()=>new THREE.Vector4(0,0,-100,0));
+  const nebulaPointer=new THREE.Vector3(),pointerTarget=new THREE.Vector3(),ripple=new THREE.Vector3(0,0,-100);
+  const inputRay=new THREE.Raycaster(),inputPlane=new THREE.Plane(new THREE.Vector3(0,0,1),0),inputPoint=new THREE.Vector3();
+  let lastTrailTime=-100;
+  function trackNebula(e:PointerEvent,tap=false){
+    if(!enabled||arrival.phase==="formed")return;
+    const r=canvas.getBoundingClientRect();
+    inputRay.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
+    if(!inputRay.ray.intersectPlane(inputPlane,inputPoint))return;
+    pointerTarget.set(inputPoint.x,inputPoint.y,1);
+    if(tap)ripple.set(inputPoint.x,inputPoint.y,time);
+    if(tap||time-lastTrailTime>.065){
+      const previous=trail[0];
+      const speed=THREE.MathUtils.clamp(Math.hypot(inputPoint.x-previous.x,inputPoint.y-previous.y)*2,.65,2.4);
+      for(let i=trail.length-1;i>0;i--)trail[i].copy(trail[i-1]);
+      trail[0].set(inputPoint.x,inputPoint.y,time,tap?2.5:speed);lastTrailTime=time;
+    }
+    invalidate();
+  }
   const shockMaterial=new THREE.MeshBasicMaterial({color:0xb9eaff,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending});
   const shock=new THREE.Mesh(new THREE.RingGeometry(.98,1,128),shockMaterial);
   shock.position.set(0,2.5,0);shock.quaternion.copy(camera.quaternion);scene.add(shock);
@@ -82,6 +101,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     fps:()=>dragging||arrival.active?60:width<600?30:45,
     render(now,delta){
       if(enabled||arrival.active)time+=delta;
+      nebulaPointer.lerp(pointerTarget,1-Math.exp(-delta*6));
       arrival.step(delta);publishArrival();
       updateScene();
       renderer.shadowMap.needsUpdate=shadows.shouldUpdate(now,enabled||arrival.active);
@@ -107,7 +127,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
       actor.visible=modelLoaded&&(mode==="duo"||mode===id)&&p>.78;
       const material=materializations.get(id);if(material)material.value=THREE.MathUtils.smoothstep(p,.78,1);
     }
-    for(const nebula of nebulas)nebula.update(time,p,height,enabled);
+    for(const nebula of nebulas){nebula.interact(trail,nebulaPointer,ripple);nebula.update(time,p,height,enabled);}
     const climax=Math.sin(THREE.MathUtils.clamp((p-.78)/.22,0,1)*Math.PI);
     shock.visible=enabled&&p>.78&&p<1;
     shock.scale.setScalar(.5+THREE.MathUtils.clamp((p-.78)/.22,0,1)*6);
@@ -125,7 +145,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     observatory.pulse.scale.setScalar(1+pose.energy*.075);
   }
   const sync=()=>{
-    if(document.hidden||!visible){arrival.hold(false);dragging=false;canvas.classList.remove("is-dragging");}
+    if(document.hidden||!visible){pointerTarget.set(0,0,0);arrival.hold(false);dragging=false;canvas.classList.remove("is-dragging");}
     frames.sync();
     invalidate();
   };
@@ -189,6 +209,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const down=(e:PointerEvent)=>{
     if(e.button!==0||!e.isPrimary)return;
     if(arrival.phase!=="formed"){
+      trackNebula(e,true);
       if(!modelLoaded)return;
       e.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);
       arrival.hold(true);sync();return;
@@ -201,7 +222,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   };
   const move=(e:PointerEvent)=>{
     if(!e.isPrimary)return;
-    if(arrival.phase!=="formed")return;
+    if(arrival.phase!=="formed"){trackNebula(e);return;}
     if(dragging){
       const now=performance.now(),dx=e.clientX-lastX,dy=e.clientY-lastY;
       velocityX=dx/Math.max(8,now-lastMove);velocityY=dy/Math.max(8,now-lastMove);
@@ -239,7 +260,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
       }else{const dragon=actors.get("nailong");if(dragon?.visible&&raycaster.intersectObject(dragon,true).length)resonate("nailong");}}
   };
   const cancel=()=>{arrival.hold(false);sync();coast?.kill();dragging=false;canvas.classList.remove("is-dragging");};
-  const leave=()=>{if(enabled&&!dragging&&arrival.phase==="formed"){lookXTo(0);lookYTo(0);}};
+  const leave=()=>{pointerTarget.set(0,0,0);if(enabled&&!dragging&&arrival.phase==="formed"){lookXTo(0);lookYTo(0);}};
   const keyboard=(e:KeyboardEvent)=>{
     if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","Enter"," "].includes(e.key))return;e.preventDefault();
     if(arrival.phase!=="formed"){
@@ -251,7 +272,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   };
   const lost=(e:Event)=>{e.preventDefault();lostContext=true;sync();onFallback();};
   const keyup=(e:KeyboardEvent)=>{if(e.key==="Enter"||e.key===" "){arrival.hold(false);sync();}};
-  const blur=()=>{cancel();};
+  const blur=()=>{pointerTarget.set(0,0,0);cancel();};
   const lostCapture=()=>{if(dragging||arrival.phase!=="formed")cancel();};
   const listeners={keyup,blur,lostpointercapture:lostCapture,pointerdown:down,pointermove:move,pointerup:up,pointercancel:cancel,pointerleave:leave,keydown:keyboard,webglcontextlost:lost};
   for(const [type,listener] of Object.entries(listeners))canvas.addEventListener(type,listener as EventListener);
@@ -266,12 +287,14 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   signal.addEventListener("abort",dispose,{once:true});
   resize();
   return {
-    setMotion(value){enabled=value;if(!value){coast?.kill();viewTween?.kill();pulseTimeline?.kill();lookXTo.tween.pause();lookYTo.tween.pause();look.x=look.y=0;rig?.reset();pose.energy=0;applyPose();}sync();},
+    setMotion(value){enabled=value;if(!value){pointerTarget.set(0,0,0);nebulaPointer.set(0,0,0);ripple.z=-100;for(const point of trail)point.w=0;coast?.kill();viewTween?.kill();pulseTimeline?.kill();lookXTo.tween.pause();lookYTo.tween.pause();look.x=look.y=0;rig?.reset();pose.energy=0;applyPose();}sync();},
     setView,resonate,perform,dispose,
     async setModel(next){
       if(disposed||lostContext)throw new Error("3D unavailable");
       const request=++modelRequest,ids:CharacterId[]=next==="duo"?["liangzai","nailong"]:[next];
       modelLoaded=false;arrival.reset();publishArrival();
+      pointerTarget.set(0,0,0);nebulaPointer.set(0,0,0);ripple.set(0,0,-100);lastTrailTime=-100;
+      for(const point of trail)point.set(0,0,-100,0);
       coast?.kill();viewTween?.kill();pulseTimeline?.kill();rig?.reset();cancel();
       lookXTo.tween.pause();lookYTo.tween.pause();look.x=look.y=0;pose.energy=0;
       mode=next;
