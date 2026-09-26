@@ -62,7 +62,7 @@ export default function InteractiveGuardian() {
       </div>
       <div className="guardian-controls">
         <div className="guardian-instruction" role="status" aria-live="polite">
-          {status==="ready"?"拖动 360° 旋转 · 移动鼠标互动 · 点击角色跃起":status==="preview"?"点击上方模型选项，开启 3D 互动":status==="fallback"?"3D 暂不可用，可继续切换图片视角":"正在点亮星空展台"}
+          {status==="ready"?"轻拨 360° 旋转 · 移动鼠标互动 · 点击角色跃起":status==="preview"?"点击上方模型选项，开启 3D 互动":status==="fallback"?"3D 暂不可用，可继续切换图片视角":"正在点亮星空展台"}
         </div>
         <div className="guardian-actions" role="group" aria-label="选择模型视角">
           {([["front","正面"],["side","侧面"],["back","背面"]] as const).map(([id,label])=>(
