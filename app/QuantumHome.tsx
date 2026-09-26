@@ -15,7 +15,7 @@ const paths = [
   {
     no: "01",
     en: "THE STORY",
-    name: "一场关于守护的\n宇宙冒险。",
+    name: "星际漫游",
     body: "量仔 × 奶龙。11 页故事，一次穿越未知的旅程。",
     href: "/storybook",
     image: "/assets/book-v2/08-fusion.webp",
@@ -24,7 +24,7 @@ const paths = [
   {
     no: "02",
     en: "THE ARSENAL",
-    name: "面向未来的\n安全感。",
+    name: "密码图鉴",
     body: "从数学直觉，到后量子密码的四种守护之力。",
     href: "/pqc-arsenal",
     image: "/assets/cinematic/quantum-portal-v1.webp",
@@ -33,7 +33,7 @@ const paths = [
   {
     no: "03",
     en: "THE GUARDIAN",
-    name: "小小量仔。\n大有可为。",
+    name: "量仔小传",
     body: "一根接收星光的天线，一颗始终在线的好奇心。",
     href: "/archive",
     image: "/assets/characters-v2/arsenal-liangzai-cutout.webp",
@@ -101,9 +101,9 @@ export default function QuantumHome() {
             UNIVERSE.
           </p>
           <h1 id="home-title" data-title>
-            让想象，
+            让想象
             <br />
-            <em>穿越边界。</em>
+            <em>穿越边界</em>
           </h1>
           <p className="hero-summary" data-intro>
             走近量子世界。
@@ -123,7 +123,7 @@ export default function QuantumHome() {
             向下，发现更多
           </a>
           <span>EST. IN CURIOSITY</span>
-          <span>01 — 05 / EXPLORE THE UNKNOWN</span>
+          <span>01 — 06 / EXPLORE THE UNKNOWN</span>
         </div>
       </section>
       <section
@@ -134,16 +134,16 @@ export default function QuantumHome() {
           BEYOND WHAT YOU KNOW
         </p>
         <h2 id="manifesto-title" data-reveal>
-          世界很大。
+          世界很大
           <br />
-          好奇心，<span className="silver-text">可以更大。</span>
+          好奇心<span className="silver-text">可以更大</span>
         </h2>
         <div className="manifesto-bottom" data-reveal>
           <span className="orbital-symbol" aria-hidden="true">
             ✳
           </span>
           <p>
-            这里是量仔的探索宇宙。
+            这里是我的数字空间，也是量仔的探索宇宙。
             <br />
             让深奥的科学有温度，让看不见的技术被看见。
             <br />
@@ -161,7 +161,7 @@ export default function QuantumHome() {
           <div>
             <p className="eyebrow">01 / ENTER THE UNIVERSE</p>
             <h2 id="worlds-title">
-              三个世界。<em>无限可能。</em>
+              探索我的<em>数字世界</em>
             </h2>
           </div>
           <span className="micro-label">滚动探索 · 点击进入</span>
@@ -199,11 +199,11 @@ export default function QuantumHome() {
         <div className="field-copy" data-reveal>
           <p className="eyebrow">02 / MAKE THE INVISIBLE VISIBLE</p>
           <h2 id="field-title">
-            触碰。
+            触碰
             <br />
-            改变。
+            改变
             <br />
-            <em>感受共振。</em>
+            <em>感受共振</em>
           </h2>
           <p>
             有些世界，需要亲手探索。
@@ -222,10 +222,10 @@ export default function QuantumHome() {
       <section className="practice-portal section-wrap" aria-labelledby="practice-portal-title">
         <div className="practice-portal-copy" data-reveal>
           <p className="eyebrow">03 / THE PRACTICE LAB</p>
-          <h2 id="practice-portal-title">理解之后，<em>亲手验证。</em></h2>
-          <p>从 PQC 武器库走进实战。选择算法与参数，在浏览器中运行密钥封装、签名、密钥交换与哈希的真实 WASM 实现。</p>
+          <h2 id="practice-portal-title">密码<em>实验室</em></h2>
+          <p>从密码图鉴走进实战。选择算法与参数，在浏览器中运行密钥封装、签名、密钥交换与哈希的真实 WASM 实现。</p>
           <a className="silver-button" href="/pqc-practice">
-            进入 PQC 武器实战<i aria-hidden="true" />
+            进入密码实验室<i aria-hidden="true" />
           </a>
         </div>
         <div className="practice-portal-visual" aria-hidden="true">
@@ -244,36 +244,36 @@ export default function QuantumHome() {
         />
         <div className="cinema-vignette" />
         <div className="cinema-copy" data-reveal>
-          <p className="eyebrow">03 / COURAGE IS A SHARED SECRET</p>
+          <p className="eyebrow">04 / COURAGE IS A SHARED SECRET</p>
           <h2 id="cinema-title">
-            所有伟大的冒险，
+            所有伟大的冒险
             <br />
-            都始于<span>并肩。</span>
+            都始于<span>并肩</span>
           </h2>
           <p>精确与勇气相遇。新的力量，从此诞生。</p>
           <Link className="silver-button" data-magnetic href="/storybook">
-            进入量子星守护者
+            开启星际漫游
             <i aria-hidden="true" />
           </Link>
         </div>
       </section>
       <section className="human-teaser section-wrap">
         <div data-reveal>
-          <p className="eyebrow">04 / THE HUMAN BEHIND THE SIGNAL</p>
+          <p className="eyebrow">05 / ABOUT ME</p>
           <h2>
-            量仔背后，
+            关于我
             <br />
-            是一个<span className="silver-text">认真探索的人。</span>
+            <span className="silver-text">从山大到量子安全</span>
           </h2>
         </div>
         <div className="human-teaser-copy" data-reveal>
           <p>
-            在算法与协议之间，寻找安全的答案。
+            我是 Yibiao，毕业于山东大学网络空间安全专业。
             <br />
-            在技术与表达之间，让复杂的事变得易懂。
+            现在中电信量子集团，从事抗量子密码与安全协议相关研发。
           </p>
           <Link className="line-link" href="/about">
-            认识量仔背后的人
+            了解我的经历
           </Link>
           <span>CRYPTOGRAPHY / ENGINEERING / CURIOSITY</span>
         </div>

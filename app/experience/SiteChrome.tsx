@@ -5,12 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { gsap, useGSAP, useExperience } from "./Motion";
 
 const links = [
-  ["/", "探索", "EXPLORE"],
-  ["/storybook", "量仔故事", "STORY"],
-  ["/archive", "角色档案", "CHARACTER"],
-  ["/pqc-arsenal", "PQC 武器库", "ARSENAL"],
-  ["/pqc-practice", "PQC 武器实战", "PRACTICE"],
-  ["/about", "量仔背后的人", "THE HUMAN"],
+  ["/", "探索首页", "EXPLORE"],
+  ["/storybook", "星际漫游", "STORY"],
+  ["/archive", "量仔小传", "CHARACTER"],
+  ["/pqc-arsenal", "密码图鉴", "ARSENAL"],
+  ["/pqc-practice", "密码实验室", "PRACTICE"],
+  ["/about", "关于我", "ABOUT ME"],
 ];
 export function SiteHeader() {
   const path = usePathname();

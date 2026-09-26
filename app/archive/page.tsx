@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { MotionSurface } from "../experience/Motion";
 export const metadata: Metadata = {
-  title: "量仔 · 角色档案",
+  title: "量仔小传",
   description:
     "测量、连接、守护。认识来自量子星的小小探索者，与奶龙共同守护秘密的旅程。",
 };
@@ -43,7 +43,7 @@ export default function Archive() {
               ONLINE
             </p>
             <h1 data-title>
-              量仔<span>LIANGZAI.</span>
+              量仔<span>LIANGZAI</span>
             </h1>
             <p className="lead" data-intro>
               一根寻找答案的天线。
@@ -88,7 +88,7 @@ export default function Archive() {
               <br />
               测量世界的
               <br />
-              <span className="silver-text">小小机器人。</span>
+              <span className="silver-text">小小机器人</span>
             </h2>
           </div>
           <div data-reveal>
@@ -119,9 +119,9 @@ export default function Archive() {
             02 / THE MILK × MEASURE ALLIANCE
           </p>
           <h2 data-reveal>
-            让勇气，
+            让勇气
             <br />
-            <span className="silver-text">比恐惧更难分解。</span>
+            <span className="silver-text">比恐惧更难分解</span>
           </h2>
           {chapters.map((c) => (
             <article className="chronicle-entry" key={c.no}>
@@ -164,11 +164,11 @@ export default function Archive() {
           <div data-reveal>
             <p className="eyebrow">03 / AFTER THE ALGORITHM</p>
             <h2>
-              英雄的日常，
+              英雄的日常
               <br />
               是守护每一个
               <br />
-              <span className="silver-text">普通清晨。</span>
+              <span className="silver-text">普通清晨</span>
             </h2>
             <p>
               清晨校准天线，测量第一束光。
@@ -178,7 +178,7 @@ export default function Archive() {
               夜里保存所有人的晚安，不让任何一条丢失。
             </p>
             <Link className="line-link" href="/pqc-arsenal">
-              探索量仔的 PQC 武器库
+              探索量仔的密码图鉴
             </Link>
           </div>
           <img
