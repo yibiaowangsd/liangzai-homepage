@@ -7,6 +7,7 @@ import {
   usePageMotion,
   useExperience,
 } from "./experience/Motion";
+import QuantumAtmosphere from "./experience/QuantumAtmosphere";
 import QuantumSculpture from "./experience/QuantumSculpture";
 import FilmDialog from "./experience/FilmDialog";
 import InteractiveGuardian from "./experience/InteractiveGuardian";
@@ -92,6 +93,7 @@ export default function QuantumHome() {
   );
   return (
     <main ref={root} id="main-content" className="cinematic-home">
+      <QuantumAtmosphere />
       <section ref={hero} className="portal-hero" aria-labelledby="home-title">
         <InteractiveGuardian />
         <div className="portal-copy">

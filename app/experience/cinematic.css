@@ -2063,3 +2063,14 @@ button:disabled {
 .practice-portal-visual{position:relative;min-height:310px;display:grid;place-items:center;background:radial-gradient(ellipse at center,#28435d55,transparent 60%)}.practice-orbit{position:absolute;border:1px solid #a8d9ff50;border-radius:50%;transform:rotate(-22deg)}.practice-orbit-one{width:290px;height:290px;box-shadow:inset 0 0 50px #8cb9dd12,0 0 60px #8cb9dd12}.practice-orbit-two{width:390px;height:175px;transform:rotate(28deg);border-color:#c2d7e335}.practice-portal-glyph{font:200px/1 Arial,sans-serif;letter-spacing:-.1em;color:#d2ecfa;text-shadow:0 0 45px #8dc8ed65}.practice-portal-label{position:absolute;bottom:8px;font:10px/1.4 var(--font-mono-en);letter-spacing:.2em;color:#8fa6b9}
 @media(max-width:1100px){.practice-portal{min-height:350px}.practice-portal-visual{transform:scale(.82)}}
 @media(max-width:750px){.practice-portal{grid-template-columns:1fr;margin-bottom:60px}.practice-portal-visual{min-height:230px;transform:scale(.7);margin:-30px 0}}
+
+/* Liangzai's antenna light travels with the visitor across the home page. */
+.quantum-atmosphere { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:6; }
+.liangzai-home-active .experience { background:radial-gradient(ellipse at 85% 25%,#10243a66,transparent 60%),#060a11; }
+.liangzai-home-active .portal-hero:has(.guardian-stage) { background:radial-gradient(ellipse at 77% 44%,#173c59 0,#0b1d30 29%,#060a11 66%); }
+.liangzai-home-active .portal-hero::after { content:""; position:absolute; inset:0; pointer-events:none; z-index:0; opacity:.18; background-image:linear-gradient(#7ab9e51c 1px,transparent 1px),linear-gradient(90deg,#7ab9e51c 1px,transparent 1px); background-size:90px 90px; mask-image:radial-gradient(ellipse at 75% 42%,#000,transparent 67%); }
+@media (hover:hover) and (pointer:fine) {
+  .liangzai-home-active .experience { cursor:url('/assets/liangzai-cursor.svg') 3 2,auto; }
+  .liangzai-home-active .experience a,.liangzai-home-active .experience button:not(:disabled),.liangzai-home-active .experience summary { cursor:url('/assets/liangzai-cursor.svg') 3 2,pointer; }
+}
+@media(prefers-reduced-motion:reduce) { .brand:hover .brand-mark { transform:none; } }
