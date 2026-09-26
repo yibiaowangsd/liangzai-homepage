@@ -29,7 +29,8 @@ EXPORTS = {
             "lab_output_bytes", "lab_keypair", "lab_sign", "lab_verify"],
     "kex": ["malloc", "free", "lab_seed", "lab_public_bytes", "lab_private_bytes",
             "lab_state_a_bytes", "lab_state_b_bytes", "lab_shared_bytes", "lab_total_bytes",
-            "lab_passes", "lab_exchange"],
+            "lab_passes", "lab_exchange", "lab_session_reset", "lab_session_start",
+            "lab_session_pass", "lab_session_derive", "lab_session_data", "lab_session_bytes", "lab_session_match"],
 }
 
 

@@ -62,6 +62,28 @@ try {
     assert.equal(mod._lab_exchange(secret), 0, 'second reference protocol failed to agree on a secret');
     assert.notDeepEqual(first, mod.HEAPU8.slice(secret, secret + sizes.SharedSecretBytes),
       'independent seeds generated the same shared secret');
+    seed(31);
+    assert.equal(mod._lab_session_start(),0,'session initialization failed');
+    assert.equal(mod._lab_session_pass(2),-1,'out-of-order pass accepted');
+    assert.equal(mod._lab_session_derive(0),-1,'premature derivation accepted');
+    for(let slot=0;slot<6;slot++)assert.ok(mod._lab_session_bytes(slot)>=0,'initial material missing');
+    let traffic=0;
+    for(let pass=1;pass<=sizes.Passes;pass++){
+      assert.equal(mod._lab_session_pass(pass),0,`pass ${pass} failed`);
+      const bytes=mod._lab_session_bytes(5+pass);
+      assert.ok(bytes>=0&&bytes<=sizes.TotalMessageBytes,'invalid message size');
+      assert.ok(mod._lab_session_data(5+pass),'message pointer missing');traffic+=bytes;
+      assert.equal(mod._lab_session_pass(pass),-1,'replayed step accepted');
+    }
+    assert.equal(traffic,sizes.TotalMessageBytes,'actual transcript size differs');
+    assert.equal(mod._lab_session_derive(0),0);assert.equal(mod._lab_session_match(),0);
+    assert.equal(mod._lab_session_derive(1),0);assert.equal(mod._lab_session_match(),1);
+    for(const slot of [10,11]){
+      const ptr=mod._lab_session_data(slot),len=mod._lab_session_bytes(slot);
+      assert.deepEqual(mod.HEAPU8.slice(ptr,ptr+len),first,'stepwise output differs from same-seed complete protocol');
+    }
+    mod._lab_session_reset();assert.equal(mod._lab_session_bytes(0),-1);assert.equal(mod._lab_session_data(0),0);
+    assert.equal(mod._lab_session_pass(1),-1,'closed session accepted a pass');
   } else {
     const pkSize = mod._lab_public_bytes(), skSize = mod._lab_private_bytes(),
       outSize = mod._lab_output_bytes();

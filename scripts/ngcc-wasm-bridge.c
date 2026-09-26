@@ -107,52 +107,74 @@ int lab_state_b_bytes(void) { return (int)kex_get_stb_len_bytes(); }
 int lab_shared_bytes(void) { return (int)kex_get_ss_len_bytes(); }
 int lab_total_bytes(void) { return (int)kex_get_total_msg_len_bytes(); }
 static uint8_t *kexbuf(unsigned long long n) { return n <= 16 * 1024 * 1024 ? (uint8_t *)calloc((size_t)(n ? n : 1), 1) : NULL; }
-int lab_exchange(uint8_t *output) {
-  const unsigned long long pk = kex_get_pk_len_bytes(), sk = kex_get_sk_len_bytes();
-  const unsigned long long sa = kex_get_sta_len_bytes(), sb = kex_get_stb_len_bytes();
-  const unsigned long long ss = kex_get_ss_len_bytes(), total = kex_get_total_msg_len_bytes();
-  if (!output || kex_get_passes_num() != NGCC_KEX_PASSES || NGCC_KEX_PASSES > 4 || !ss) return -1;
-  uint8_t *pka = kexbuf(pk), *ska = kexbuf(sk), *pkb = kexbuf(pk), *skb = kexbuf(sk);
-  uint8_t *sta = kexbuf(sa), *stb = kexbuf(sb), *ssa = kexbuf(ss), *ssb = kexbuf(ss);
-  uint8_t *msg[5] = { NULL, kexbuf(total), kexbuf(total), kexbuf(total), kexbuf(total) };
-  unsigned long long alen = sa, blen = sb, pka_len = pk, ska_len = sk, pkb_len = pk, skb_len = sk;
-  unsigned long long mlen[5] = {0}, ssa_len = ss, ssb_len = ss;
-  uint8_t *ma = NULL, *mb = NULL;
-  unsigned long long ma_len = 0, mb_len = 0;
-  int ok = -1, rc;
-  if (!pka || !ska || !pkb || !skb || !sta || !stb || !ssa || !ssb || !msg[1] || !msg[2] || !msg[3] || !msg[4]) goto done;
-  if (kex_init_a(pka, &pka_len, ska, &ska_len, sta, &alen) < 0 ||
-      kex_init_b(pkb, &pkb_len, skb, &skb_len, stb, &blen) < 0 ||
-      pka_len > pk || ska_len > sk || pkb_len > pk || skb_len > sk || alen > sa || blen > sb) goto done;
-  rc = kex_generate_pass1_msg_a(ska, ska_len, pkb, pkb_len, sta, &alen, msg[1], &mlen[1]);
-  if (rc < 0 || alen > sa || mlen[1] > total) goto done;
-  ma = msg[1]; ma_len = mlen[1];
+/* One session per isolated worker. Slots expose actual reference API outputs. */
+static uint8_t *session_buf[12];
+static unsigned long long session_len[12], session_cap[12];
+static int session_step = -1, session_derived = 0;
+void lab_session_reset(void) {
+  for (int i=0;i<12;i++) {
+    if (session_buf[i]) { memset(session_buf[i],0,(size_t)session_cap[i]); free(session_buf[i]); }
+    session_buf[i]=NULL;session_len[i]=session_cap[i]=0;
+  }
+  session_step=-1;session_derived=0;
+}
+int lab_session_start(void) {
+  lab_session_reset();
+  if (kex_get_passes_num()!=NGCC_KEX_PASSES || NGCC_KEX_PASSES<1 || NGCC_KEX_PASSES>4 || !kex_get_ss_len_bytes()) return -1;
+  unsigned long long caps[12]={kex_get_pk_len_bytes(),kex_get_sk_len_bytes(),kex_get_sta_len_bytes(),
+    kex_get_pk_len_bytes(),kex_get_sk_len_bytes(),kex_get_stb_len_bytes(),
+    kex_get_total_msg_len_bytes(),kex_get_total_msg_len_bytes(),kex_get_total_msg_len_bytes(),kex_get_total_msg_len_bytes(),
+    kex_get_ss_len_bytes(),kex_get_ss_len_bytes()};
+  for(int i=0;i<12;i++) {
+    session_cap[i]=caps[i];session_buf[i]=kexbuf(caps[i]);
+    if(!session_buf[i]){lab_session_reset();return -1;}
+    session_len[i]=i<6?caps[i]:0;
+  }
+  if(kex_init_a(session_buf[0],&session_len[0],session_buf[1],&session_len[1],session_buf[2],&session_len[2])<0 ||
+     kex_init_b(session_buf[3],&session_len[3],session_buf[4],&session_len[4],session_buf[5],&session_len[5])<0) {
+    lab_session_reset();return -1;
+  }
+  for(int i=0;i<6;i++)if(session_len[i]>session_cap[i]){lab_session_reset();return -1;}
+  session_step=0;return 0;
+}
+int lab_session_pass(int pass) {
+  if(session_step<0 || pass!=session_step+1 || pass>NGCC_KEX_PASSES)return -1;
+  int rc=-1, slot=5+pass, state=pass%2?2:5;
+  if(pass==1)rc=kex_generate_pass1_msg_a(session_buf[1],session_len[1],session_buf[3],session_len[3],session_buf[2],&session_len[2],session_buf[6],&session_len[6]);
 #if NGCC_KEX_PASSES >= 2
-  rc = kex_generate_pass2_msg_b(skb, skb_len, pka, pka_len, msg[1], mlen[1], stb, &blen, msg[2], &mlen[2]);
-  if (rc < 0 || blen > sb || mlen[2] > total) goto done;
-  mb = msg[2]; mb_len = mlen[2];
+  if(pass==2)rc=kex_generate_pass2_msg_b(session_buf[4],session_len[4],session_buf[0],session_len[0],session_buf[6],session_len[6],session_buf[5],&session_len[5],session_buf[7],&session_len[7]);
 #endif
 #if NGCC_KEX_PASSES >= 3
-  rc = kex_generate_pass3_msg_a(ska, ska_len, pkb, pkb_len, msg[2], mlen[2], sta, &alen, msg[3], &mlen[3]);
-  if (rc < 0 || alen > sa || mlen[3] > total) goto done;
-  ma = msg[3]; ma_len = mlen[3];
+  if(pass==3)rc=kex_generate_pass3_msg_a(session_buf[1],session_len[1],session_buf[3],session_len[3],session_buf[7],session_len[7],session_buf[2],&session_len[2],session_buf[8],&session_len[8]);
 #endif
 #if NGCC_KEX_PASSES >= 4
-  rc = kex_generate_pass4_msg_b(skb, skb_len, pka, pka_len, msg[3], mlen[3], stb, &blen, msg[4], &mlen[4]);
-  if (rc < 0 || blen > sb || mlen[4] > total) goto done;
-  mb = msg[4]; mb_len = mlen[4];
+  if(pass==4)rc=kex_generate_pass4_msg_b(session_buf[4],session_len[4],session_buf[0],session_len[0],session_buf[8],session_len[8],session_buf[5],&session_len[5],session_buf[9],&session_len[9]);
 #endif
-  if (kex_derive_ss_a(ska, ska_len, pkb, pkb_len, mb, mb_len, sta, alen, ssa, &ssa_len) < 0 ||
-      kex_derive_ss_b(skb, skb_len, pka, pka_len, ma, ma_len, stb, blen, ssb, &ssb_len) < 0 ||
-      ssa_len != ss || ssb_len != ss || memcmp(ssa, ssb, ss)) goto done;
-  memcpy(output, ssa, ss);
-  ok = 0;
-done:
-  free(pka); free(ska); free(pkb); free(skb); free(sta); free(stb);
-  free(ssa); free(ssb);
-  for (int i = 1; i <= 4; i++) free(msg[i]);
-  return ok;
+  if(rc<0 || session_len[slot]>session_cap[slot] || session_len[state]>session_cap[state]){lab_session_reset();return -1;}
+  session_step=pass;return 0;
 }
+int lab_session_derive(int side) {
+  if(session_step!=NGCC_KEX_PASSES || side<0 || side>1 || (session_derived&(1<<side)))return -1;
+  const int own=side?3:0,peer=side?0:3,out=10+side;
+  const int pass=side?(NGCC_KEX_PASSES%2?NGCC_KEX_PASSES:NGCC_KEX_PASSES-1):(NGCC_KEX_PASSES%2?NGCC_KEX_PASSES-1:NGCC_KEX_PASSES);
+  session_len[out]=session_cap[out];
+  int (*derive)(uint8_t*,unsigned long long,uint8_t*,unsigned long long,uint8_t*,unsigned long long,uint8_t*,unsigned long long,uint8_t*,unsigned long long*)=side?kex_derive_ss_b:kex_derive_ss_a;
+  int rc=derive(session_buf[own+1],session_len[own+1],session_buf[peer],session_len[peer],pass?session_buf[5+pass]:NULL,pass?session_len[5+pass]:0,session_buf[own+2],session_len[own+2],session_buf[out],&session_len[out]);
+  if(rc<0 || session_len[out]!=session_cap[out]){lab_session_reset();return -1;}
+  session_derived|=1<<side;return 0;
+}
+uint8_t *lab_session_data(int slot) {return session_step>=0&&slot>=0&&slot<12?session_buf[slot]:NULL;}
+int lab_session_bytes(int slot) {return session_step>=0&&slot>=0&&slot<12?(int)session_len[slot]:-1;}
+int lab_session_match(void) {return session_derived==3&&session_len[10]==session_len[11]&&!memcmp(session_buf[10],session_buf[11],session_len[10]);}
+int lab_exchange(uint8_t *output) {
+  if(!output || lab_session_start())return -1;
+  int ok=-1;
+  for(int pass=1;pass<=NGCC_KEX_PASSES;pass++)if(lab_session_pass(pass))goto done;
+  if(lab_session_derive(0)||lab_session_derive(1)||!lab_session_match())goto done;
+  memcpy(output,session_buf[10],session_len[10]);ok=0;
+done: lab_session_reset();return ok;
+}
+
 #else
 #error Unsupported candidate type
 #endif
