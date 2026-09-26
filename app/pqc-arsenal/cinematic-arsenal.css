@@ -105,7 +105,7 @@
   border: 1px solid #7795ae4d;
   border-radius: 4px;
   overflow: hidden;
-  background: #121e2a;
+  background: #0b1118;
   box-shadow: 0 10px 30px #0004;
   transition:
     transform 0.5s,
@@ -117,10 +117,11 @@
 }
 .cinematic-arsenal .algorithm-photo img {
   aspect-ratio: 1;
-  filter: grayscale(0.3) brightness(0.75);
+  filter: none;
   height: auto;
-  max-height: 170px;
-  object-fit: cover;
+  max-height: 200px;
+  object-fit: contain;
+  background: #07090c;
 }
 .cinematic-arsenal .algorithm-photo > div {
   padding: 12px 10px 0;

@@ -461,22 +461,22 @@ const weapons: Weapon[] = [
 const heroWeapons = [
   {
     name: "ML-KEM",
-    image: "/assets/pqc/ml-kem-zine-030d4365.webp",
+    image: "/assets/pqc/ml-kem-studio-v2.webp",
     note: "晶格护盾",
   },
   {
     name: "ML-DSA",
-    image: "/assets/pqc/ml-dsa-zine-be7db444.webp",
+    image: "/assets/pqc/ml-dsa-studio-v2.webp",
     note: "晶格印章",
   },
   {
     name: "SLH-DSA",
-    image: "/assets/pqc/slh-dsa-zine-eb6100ca.webp",
+    image: "/assets/pqc/slh-dsa-studio-v2.webp",
     note: "哈希树杖",
   },
   {
     name: "FN-DSA",
-    image: "/assets/pqc/fn-dsa-zine-97a2ab35.webp",
+    image: "/assets/pqc/fn-dsa-studio-v2.webp",
     note: "猎隼轻刃",
   },
 ];
@@ -603,7 +603,8 @@ export default function ArsenalLab() {
               <article className="algorithm-photo" key={item.name}>
                 <img
                   src={item.image}
-                  alt={`${item.name} 的${item.note}概念插图`}
+                  width="768" height="768" decoding="async"
+                  alt={`${item.name} 的${item.note}：银白陶瓷、黑钛与冰蓝能量光的科幻装备`}
                 />
                 <div>
                   <span>{String(index + 1).padStart(2, "0")}</span>
