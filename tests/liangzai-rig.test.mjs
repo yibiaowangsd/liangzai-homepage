@@ -34,8 +34,12 @@ test('head, arm, antenna and eye actions move their own components without movin
 });
 
 
-test('idle LED eyes retain their brightness geometry across former automatic blink boundaries',async()=>{
- const actor=await load(),rig=createLiangzaiRig(actor);
- for(let time=0;time<30;time+=.02){rig.apply(time,true);assert.equal(rig.joints.leftEye.scale.y,1);assert.equal(rig.joints.rightEye.scale.y,1);}
- rig.pose.blink=.07;rig.apply(4.93,true);assert.equal(rig.joints.leftEye.scale.y,.07,'explicit click blink remains supported');
+test('automatic blink closes and reopens only the eyes; paused motion and explicit blink still work',async()=>{
+ const actor=await load(),rig=createLiangzaiRig(actor);const materials=[];
+ actor.traverse(o=>{if(o.isMesh)for(const m of Array.isArray(o.material)?o.material:[o.material])materials.push([m,m.emissiveIntensity]);});
+ rig.apply(4.7,true);assert.equal(rig.joints.leftEye.scale.y,1);
+ rig.apply(4.93,true);assert.ok(rig.joints.leftEye.scale.y<.1);assert.equal(rig.joints.leftEye.scale.y,rig.joints.rightEye.scale.y);
+ rig.apply(5.1,true);assert.equal(rig.joints.leftEye.scale.y,1);rig.apply(4.93,false);assert.equal(rig.joints.leftEye.scale.y,1);
+ rig.pose.blink=.07;rig.apply(1,true);assert.equal(rig.joints.leftEye.scale.y,.07);
+ for(const [material,intensity] of materials)assert.equal(material.emissiveIntensity,intensity);
 });
