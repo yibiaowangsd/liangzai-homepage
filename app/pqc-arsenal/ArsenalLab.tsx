@@ -571,9 +571,9 @@ export default function ArsenalLab() {
             <span>Q–∞ / ARMORY 004</span> 面向未来的密码学
           </p>
           <h1 data-title>
-            PQC.
+            密码
             <br />
-            <em>守护下一程。</em>
+            <em>图鉴</em>
           </h1>
           <p className="arsenal-lead" data-intro>
             从 Shor 如何拆掉 RSA / ECC，
@@ -585,7 +585,7 @@ export default function ArsenalLab() {
             <i aria-hidden="true" />
           </a>
           <a className="arsenal-practice-link" data-intro href="/pqc-practice">
-            已了解原理？进入 PQC 武器实战 <span aria-hidden="true">↗</span>
+            已了解原理？进入密码实验室 <span aria-hidden="true">↗</span>
           </a>
         </div>
         <figure className="arsenal-hero-visual" data-intro>
@@ -633,11 +633,11 @@ export default function ArsenalLab() {
           <div className="big-question">
             <p className="marker-note">真正被击中的是困难问题</p>
             <h2>
-              RSA 与 ECC 没有突然变弱。
+              RSA 与 ECC 没有突然变弱
               <br />
               量子计算改变了
               <br />
-              <em>攻击算法的复杂度。</em>
+              <em>攻击算法的复杂度</em>
             </h2>
           </div>
           <div className="quantum-note">
@@ -775,11 +775,11 @@ export default function ArsenalLab() {
         <div className="math-heading" data-reveal>
           <p className="marker-note">PQC 不是一种算法</p>
           <h2>
-            换掉陷门，
+            换掉陷门
             <br />
             也换掉攻击者必须解决的
             <br />
-            <em>数学问题。</em>
+            <em>数学问题</em>
           </h2>
         </div>
         <div className="lattice-lab" data-reveal>
@@ -853,7 +853,7 @@ export default function ArsenalLab() {
           </article>
           <article>
             <span>04 / NTRU LATTICE</span>
-            <h3>公开商，隐藏短基</h3>
+            <h3>公开商与隐藏短基</h3>
             <code>h=g/f mod q</code>
             <p>FN-DSA 利用短 NTRU 基高效采样近目标格点。</p>
           </article>
@@ -1017,9 +1017,9 @@ export default function ArsenalLab() {
           <div className="loadout-title">
             <p className="marker-note">没有“全属性最强”</p>
             <h2>
-              先画协议边界，
+              先画协议边界
               <br />
-              再选算法。
+              再选算法
             </h2>
             <p>
               先区分密钥建立与签名，再把公钥、密文/签名、验证成本、实现攻击面和安全基础多样性放进同一张预算表。算法标准化不等于协议自动安全。

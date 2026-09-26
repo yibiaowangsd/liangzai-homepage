@@ -94,7 +94,7 @@ export const pages: StoryPage[] = [
   },
   {
     chapter: "CHAPTER 08 / 合体",
-    title: "合体绝技：靓龙",
+    title: "合体绝技靓龙",
     body: "量仔重新握住奶龙的手。青色测量之光与金色勇气之火绕着他们旋转，旧伤化作星尘，两个身影在耀眼的双螺旋中合而为一。金色龙首、蓝白战甲、量子天线与不肯后退的心——全新的守护形态靓龙，终于在风暴中央睁开双眼。",
     quote: "一个负责精确，一个负责勇敢；合在一起，就是新的可能。",
     image: "/assets/book-v2/08-fusion.webp",
@@ -114,7 +114,7 @@ export const pages: StoryPage[] = [
   },
   {
     chapter: "EPILOGUE / 尾声",
-    title: "下一颗星，出发",
+    title: "向下一颗星出发",
     body: "晶格剑划开因子风暴，Aigis 神盾把破碎的能量送回星空。Shor 的飞船化成无害纸片，RSA 神树和 ECC 星核也被保留下来，成为历史与新密码共同守护的文明记忆。黎明时，量仔和奶龙解除合体，向量子星人挥手告别。",
     quote: "他们没有停在胜利里，而是继续去寻找宇宙中下一条需要守护的信号。",
     image: "/assets/book-v3/10-epilogue-fixed.webp",
