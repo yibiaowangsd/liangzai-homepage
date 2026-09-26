@@ -158,16 +158,6 @@
   outline: 1px solid #b0d7f2;
   outline-offset: 2px;
 }
-.guardian-actions .guardian-hello {
-  border-left: 1px solid #aac8e02c;
-  margin-left: 6px;
-  padding-left: 17px;
-  color: #dcecf8;
-}
-.guardian-hello span {
-  margin-left: 14px;
-  color: #8ccded;
-}
 .portal-hero:has(.guardian-stage) .portal-copy {
   max-width: 57%;
   pointer-events: none;
@@ -277,13 +267,6 @@
     padding: 8px 12px;
     min-height: 42px;
   }
-  .guardian-actions .guardian-hello {
-    padding-left: 12px;
-    margin-left: 3px;
-  }
-  .guardian-hello span {
-    margin-left: 8px;
-  }
   .portal-hero:has(.guardian-stage):after {
     background:
       linear-gradient(0deg, #07090c 0, transparent 12%),
@@ -351,11 +334,34 @@
 .guardian-stage .guardian-fallback img { width: auto; height: 100%; max-width: 100%; max-height: 100%; }
 .guardian-stage .guardian-fallback img { object-position: center bottom; }
 
-.guardian-stage[data-status="preview"] .guardian-canvas { pointer-events: none; }
+
 .guardian-actions { flex-wrap: wrap; justify-content: center; }
 .guardian-actions button { padding-inline: 10px; }
 
-.guardian-gestures { display:flex; flex-wrap:wrap; justify-content:center; gap:5px; margin:8px auto 0; max-width:440px; }
-.guardian-gestures button { border:1px solid #a6d8ff35; border-radius:6px; background:#0c1b29da; color:#a7c7dc; padding:7px 11px; font-size:10px; transition:background .2s,border-color .2s; }
-.guardian-gestures button:hover:not(:disabled) { background:#223f54; border-color:#b6ddf2; color:#edf7ff; }
-.guardian-gestures button:disabled { opacity:.35; }
+
+/* Arrival is a GPU particle field; the CSS glow also covers the brief module load. */
+.guardian-stage { --formation:0; --nebula-rgb:107,204,255; }
+.guardian-stage[data-model="nailong"] { --nebula-rgb:255,196,106; }
+.guardian-stage[data-status="loading"] .guardian-canvas { opacity:1; }
+.guardian-canvas { touch-action:none; user-select:none; }
+.guardian-stage:not([data-arrival="formed"]) .guardian-canvas { cursor:crosshair; }
+.guardian-nebula-backdrop { position:absolute; inset:22% 18% 21%; pointer-events:none; opacity:.8; transition:opacity 1.2s; }
+.guardian-nebula-backdrop i { position:absolute; inset:15% 0; border-radius:50%; background:radial-gradient(ellipse,rgba(var(--nebula-rgb),.10),rgba(var(--nebula-rgb),.025) 40%,transparent 70%); transform:rotate(-25deg); filter:blur(15px); }
+.guardian-nebula-backdrop i:nth-child(2) { inset:0 15%; transform:rotate(45deg); }
+.guardian-nebula-backdrop i:nth-child(3) { inset:30% 20%; background:radial-gradient(ellipse,rgba(var(--nebula-rgb),.17),transparent 66%); }
+.guardian-stage[data-arrival="formed"] .guardian-nebula-backdrop,
+.guardian-stage[data-status="fallback"] .guardian-nebula-backdrop { opacity:0; }
+.guardian-arrival-flare { position:absolute; inset:0; pointer-events:none; opacity:0; background:radial-gradient(ellipse at 51% 47%,rgba(var(--nebula-rgb),.25),rgba(var(--nebula-rgb),.04) 40%,transparent 68%); mix-blend-mode:screen; }
+.guardian-stage[data-arrival="revealing"] .guardian-arrival-flare { animation:guardian-arrival-flare 1.3s ease-out both; }
+@keyframes guardian-arrival-flare { 0% { opacity:0; transform:scale(.65); } 40% { opacity:.9; } 100% { opacity:0; transform:scale(1.3); } }
+.guardian-hold-mark { width:28px; height:36px; border:1px solid rgba(var(--nebula-rgb),.45); border-radius:18px; margin:0 auto 14px; position:relative; }
+.guardian-hold-mark span { position:absolute; left:12px; top:7px; width:2px; height:8px; border-radius:2px; background:rgb(var(--nebula-rgb)); }
+.guardian-hold-mark i { position:absolute; inset:-8px; border:1px solid rgba(var(--nebula-rgb),.13); border-radius:50%; transform:scale(calc(1 + var(--formation) * .3)); opacity:calc(.3 + var(--formation) * .7); }
+.guardian-formation-track { width:160px; height:2px; margin:0 auto 16px; background:rgba(var(--nebula-rgb),.12); overflow:hidden; }
+.guardian-formation-track span { display:block; height:100%; background:rgb(var(--nebula-rgb)); box-shadow:0 0 12px rgba(var(--nebula-rgb),.65); transform-origin:left; transform:scaleX(var(--formation)); }
+.guardian-stage[data-arrival="gathering"] .guardian-instruction { color:rgb(var(--nebula-rgb)); }
+.guardian-stage[data-arrival="formed"] .guardian-actions { animation:guardian-controls-in .6s ease-out; }
+@keyframes guardian-controls-in { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
+[data-motion="paused"] .guardian-arrival-flare,
+[data-motion="paused"] .guardian-actions { animation:none!important; }
+@media(prefers-reduced-motion:reduce) { .guardian-arrival-flare,.guardian-actions { animation:none!important; } }

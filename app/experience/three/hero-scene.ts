@@ -9,6 +9,8 @@ import { loadCharacter, disposeObject, VIEW_ANGLES, type CharacterId, type Model
 import { createLiangzaiRig, type LiangzaiRig, type GuardianAction } from "./liangzai-rig";
 import { applyInspection, rotateInspection } from "./inspection";
 import { createObservatory, createStudioEnvironment } from "./observatory";
+import { createArrivalState, type ArrivalPhase } from "./arrival-state";
+import { createNebula, prepareMaterialization, type Nebula } from "./nebula";
 import { createFrameScheduler, createShadowBudget } from "./render-scheduler";
 
 export type HeroScene = {
@@ -21,7 +23,7 @@ export type HeroScene = {
 };
 
 /** Only imported by a client effect. No timers, WebGL or loaders run during SSR. */
-export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => void, signal: AbortSignal): HeroScene {
+export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => void, signal: AbortSignal, onArrival: (phase: ArrivalPhase) => void = () => {}): HeroScene {
   const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:"high-performance"});
   renderer.setClearColor(0x050a13,0);renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.96;
@@ -50,9 +52,22 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   composer.addPass(renderPass);composer.addPass(bloom);composer.addPass(output);
   const actors=new Map<CharacterId,THREE.Group>(), pending=new Map<CharacterId,Promise<THREE.Group>>();
   const compiledActors=new Set<CharacterId>();
-  let enabled=false,visible=true,disposed=false,lostContext=false,ready=false,preparing=0;
+  const arrival=createArrivalState(), materializations=new Map<CharacterId,{value:number}>();
+  let lastProgress=-1;
+  let nebulas:Nebula[]=[createNebula(null)], modelLoaded=false, currentPhase:ArrivalPhase="nebula";
+  scene.add(nebulas[0].points);
+  const stageElement=canvas.parentElement!;
+  const shockMaterial=new THREE.MeshBasicMaterial({color:0xb9eaff,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending});
+  const shock=new THREE.Mesh(new THREE.RingGeometry(.98,1,128),shockMaterial);
+  shock.position.set(0,2.5,0);shock.quaternion.copy(camera.quaternion);scene.add(shock);
+  function publishArrival(){
+    const next=arrival.phase;
+    if(next!==currentPhase){currentPhase=next;onArrival(next);}
+    if(arrival.progress!==lastProgress){lastProgress=arrival.progress;stageElement.style.setProperty("--formation",String(Math.min(1,arrival.progress/.78)));}
+  }
+  let enabled=false,visible=true,disposed=false,lostContext=false,ready=true;
   let width=1,height=1,time=0,resizeFrame=0,modelRequest=0;
-  let mode:ModelMode="liangzai",activeView:ModelView="reset";
+  let mode:ModelMode="liangzai";
   const orientation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),VIEW_ANGLES.reset);
   const pose={energy:0},look={x:0,y:0};
   let rig:LiangzaiRig|null=null;
@@ -62,13 +77,14 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const frames=createFrameScheduler({
     requestFrame:callback=>requestAnimationFrame(callback),
     cancelFrame:handle=>cancelAnimationFrame(handle),
-    canRender:()=>ready&&!preparing&&visible&&!document.hidden&&!disposed&&!lostContext,
-    continuous:()=>enabled,
-    fps:()=>dragging?60:width<600?30:45,
+    canRender:()=>ready&&visible&&!document.hidden&&!disposed&&!lostContext,
+    continuous:()=>enabled||arrival.active,
+    fps:()=>dragging||arrival.active?60:width<600?30:45,
     render(now,delta){
-      if(enabled)time+=delta;
+      if(enabled||arrival.active)time+=delta;
+      arrival.step(delta);publishArrival();
       updateScene();
-      renderer.shadowMap.needsUpdate=shadows.shouldUpdate(now,enabled);
+      renderer.shadowMap.needsUpdate=shadows.shouldUpdate(now,enabled||arrival.active);
       composer.render();
     },
   });
@@ -85,14 +101,31 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const lookXTo=gsap.quickTo(look,"x",{duration:.22,ease:"power2.out",onUpdate:()=>invalidate(true)});
   const lookYTo=gsap.quickTo(look,"y",{duration:.22,ease:"power2.out",onUpdate:()=>invalidate(true)});
   function updateScene(){
-    if(rig){rig.look.x=look.x;rig.look.y=look.y;rig.apply(time,enabled);}
+    const p=arrival.progress, formed=arrival.phase==="formed";
+    if(rig){rig.look.x=look.x;rig.look.y=look.y;rig.apply(time,enabled&&formed);}
+    for(const [id,actor] of actors){
+      actor.visible=modelLoaded&&(mode==="duo"||mode===id)&&p>.78;
+      const material=materializations.get(id);if(material)material.value=THREE.MathUtils.smoothstep(p,.78,1);
+    }
+    for(const nebula of nebulas)nebula.update(time,p,height,enabled);
+    const climax=Math.sin(THREE.MathUtils.clamp((p-.78)/.22,0,1)*Math.PI);
+    shock.visible=enabled&&p>.78&&p<1;
+    shock.scale.setScalar(.5+THREE.MathUtils.clamp((p-.78)/.22,0,1)*6);
+    shockMaterial.opacity=climax*.55;
+    bloom.strength=.13+(enabled?climax*.6:0);
+    renderer.toneMappingExposure=.96+(enabled?climax*.16:0);
+    camera.zoom=(mode==="duo"?.94:1)*(1+(enabled?Math.sin(p*Math.PI)*.065:0));camera.updateProjectionMatrix();
+    observatory.orbit.visible=p>.45;
+    observatory.glow.emissive.set(mode==="nailong"?0xffbc62:0x6fbee7);
+    shockMaterial.color.set(mode==="nailong"?0xffd68f:0xb9eaff);
     for(const actor of actors.values())if(actor.visible)actor.position.y=.092;
     observatory.stars.rotation.y=time*.018;
-    observatory.glow.emissiveIntensity=1.05+pose.energy*.45;
-    (observatory.pulse.material as THREE.MeshBasicMaterial).opacity=pose.energy*.4;
+    observatory.glow.emissiveIntensity=1.05+pose.energy*.45+climax*2;
+    (observatory.pulse.material as THREE.MeshBasicMaterial).opacity=Math.max(pose.energy*.4,climax*.8);
     observatory.pulse.scale.setScalar(1+pose.energy*.075);
   }
   const sync=()=>{
+    if(document.hidden||!visible){arrival.hold(false);dragging=false;canvas.classList.remove("is-dragging");}
     frames.sync();
     invalidate();
   };
@@ -113,7 +146,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const observer=new ResizeObserver(()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(resize);});observer.observe(canvas);
   const visibility=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;sync();},{threshold:.025});visibility.observe(canvas);
   const ensure=(id:CharacterId)=>{
-    if(!pending.has(id))pending.set(id,loadCharacter(id,signal).then(actor=>{if(disposed){disposeObject(actor);throw new DOMException("Scene disposed","AbortError");}if(id==="liangzai")rig=createLiangzaiRig(actor);actors.set(id,actor);actor.visible=false;scene.add(actor);return actor;}).catch(error=>{pending.delete(id);throw error;}));
+    if(!pending.has(id))pending.set(id,loadCharacter(id,signal).then(actor=>{if(disposed){disposeObject(actor);throw new DOMException("Scene disposed","AbortError");}if(id==="liangzai")rig=createLiangzaiRig(actor);materializations.set(id,prepareMaterialization(actor));actors.set(id,actor);actor.visible=false;scene.add(actor);return actor;}).catch(error=>{pending.delete(id);throw error;}));
     return pending.get(id)!;
   };
   let viewTween:gsap.core.Tween|null=null;
@@ -122,14 +155,14 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     return gsap.to(progress,{value:1,duration,ease:"power2.out",onUpdate:()=>{orientation.slerpQuaternions(from,target,progress.value);applyPose();}});
   }
   function setView(view:ModelView){
-    coast?.kill();viewTween?.kill();pulseTimeline?.kill();activeView=view;
+    coast?.kill();viewTween?.kill();pulseTimeline?.kill();
     pose.energy=0;rig?.reset();look.x=look.y=0;lookXTo.tween.pause();lookYTo.tween.pause();
     const target=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),VIEW_ANGLES[view]);
     if(enabled)viewTween=tweenOrientation(target,.32);
     else{orientation.copy(target);applyPose();}
   }
   function perform(action:GuardianAction){
-    if(!enabled||disposed||lostContext||!rig||!actors.get("liangzai")?.visible)return;
+    if(arrival.phase!=="formed"||!enabled||disposed||lostContext||!rig||!actors.get("liangzai")?.visible)return;
     coast?.kill();viewTween?.kill();pulseTimeline?.kill();rig.reset();pose.energy=0;
     const p=rig.pose,neutral={...p};
     ctx.add(()=>{
@@ -145,16 +178,21 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
       timeline.to(p,{...neutral,duration:.45}).to(pose,{energy:0,duration:.35},"<");
     });
   }
-  function resonate(){
-    if(disposed||lostContext||!enabled)return;
-    if(rig&&actors.get("liangzai")?.visible){perform("antenna");return;}
+  function resonate(character?:CharacterId){
+    if(arrival.phase!=="formed"||disposed||lostContext||!enabled)return;
+    if(character!=="nailong"&&rig&&actors.get("liangzai")?.visible){perform("antenna");return;}
     pulseTimeline?.kill();
     ctx.add(()=>{pulseTimeline=gsap.timeline({onUpdate:()=>invalidate(true)}).to(pose,{energy:1,duration:.5}).to(pose,{energy:0,duration:1});});
   }
   let dragging=false,distance=0,lastX=0,lastY=0,lastMove=0,velocityX=0,velocityY=0;
   let coast:gsap.core.Tween|null=null;
   const down=(e:PointerEvent)=>{
-    if(e.button!==0)return;
+    if(e.button!==0||!e.isPrimary)return;
+    if(arrival.phase!=="formed"){
+      if(!modelLoaded)return;
+      e.preventDefault();canvas.focus({preventScroll:true});canvas.setPointerCapture(e.pointerId);
+      arrival.hold(true);sync();return;
+    }
     coast?.kill();viewTween?.kill();pulseTimeline?.kill();
     lookXTo.tween.pause();lookYTo.tween.pause();
     look.x=look.y=0;rig?.reset();pose.energy=0;
@@ -162,6 +200,8 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     canvas.setPointerCapture(e.pointerId);canvas.classList.add("is-dragging");applyPose();
   };
   const move=(e:PointerEvent)=>{
+    if(!e.isPrimary)return;
+    if(arrival.phase!=="formed")return;
     if(dragging){
       const now=performance.now(),dx=e.clientX-lastX,dy=e.clientY-lastY;
       velocityX=dx/Math.max(8,now-lastMove);velocityY=dy/Math.max(8,now-lastMove);
@@ -174,7 +214,10 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   };
   const raycaster=new THREE.Raycaster();
   const up=(e:PointerEvent)=>{
-    if(!dragging)return;dragging=false;canvas.classList.remove("is-dragging");if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
+    if(!e.isPrimary)return;
+    arrival.hold(false);sync();
+    if(!dragging){if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);return;}
+    dragging=false;canvas.classList.remove("is-dragging");if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
     if(distance>=8&&enabled&&performance.now()-lastMove<70){
       const target=orientation.clone();
       rotateInspection(target,THREE.MathUtils.clamp(velocityX*55,-width*.04,width*.04),THREE.MathUtils.clamp(velocityY*55,-height*.04,height*.04),width,height,camera.quaternion);
@@ -193,23 +236,31 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
           node=node.parent;
         }
         perform(action);
-      }}
+      }else{const dragon=actors.get("nailong");if(dragon?.visible&&raycaster.intersectObject(dragon,true).length)resonate("nailong");}}
   };
-  const cancel=()=>{coast?.kill();dragging=false;canvas.classList.remove("is-dragging");};
-  const leave=()=>{if(enabled&&!dragging){lookXTo(0);lookYTo(0);}};
+  const cancel=()=>{arrival.hold(false);sync();coast?.kill();dragging=false;canvas.classList.remove("is-dragging");};
+  const leave=()=>{if(enabled&&!dragging&&arrival.phase==="formed"){lookXTo(0);lookYTo(0);}};
   const keyboard=(e:KeyboardEvent)=>{
     if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","Enter"," "].includes(e.key))return;e.preventDefault();
-    if(e.key==="Enter"||e.key===" ")resonate();else if(e.key==="Home")setView("reset");
+    if(arrival.phase!=="formed"){
+      if(modelLoaded&&(e.key==="Enter"||e.key===" ")){arrival.hold(true);sync();}return;
+    }
+    if(e.key==="Enter"||e.key===" "){if(!e.repeat)resonate();return;}
+    if(e.key==="Home")setView("reset");
     else{coast?.kill();viewTween?.kill();rotateInspection(orientation,e.key==="ArrowLeft"?-width/24:e.key==="ArrowRight"?width/24:0,e.key==="ArrowUp"?-height/24:e.key==="ArrowDown"?height/24:0,width,height,camera.quaternion);applyPose();}
   };
   const lost=(e:Event)=>{e.preventDefault();lostContext=true;sync();onFallback();};
-  const listeners={pointerdown:down,pointermove:move,pointerup:up,pointercancel:cancel,pointerleave:leave,keydown:keyboard,webglcontextlost:lost};
+  const keyup=(e:KeyboardEvent)=>{if(e.key==="Enter"||e.key===" "){arrival.hold(false);sync();}};
+  const blur=()=>{cancel();};
+  const lostCapture=()=>{if(dragging||arrival.phase!=="formed")cancel();};
+  const listeners={keyup,blur,lostpointercapture:lostCapture,pointerdown:down,pointermove:move,pointerup:up,pointercancel:cancel,pointerleave:leave,keydown:keyboard,webglcontextlost:lost};
   for(const [type,listener] of Object.entries(listeners))canvas.addEventListener(type,listener as EventListener);
   document.addEventListener("visibilitychange",sync);
   function dispose(){
     if(disposed)return;disposed=true;modelRequest++;coast?.kill();viewTween?.kill();frames.dispose();ctx.revert();lookXTo.tween.kill();lookYTo.tween.kill();rig=null;
     observer.disconnect();visibility.disconnect();cancelAnimationFrame(resizeFrame);document.removeEventListener("visibilitychange",sync);signal.removeEventListener("abort",dispose);
     for(const [type,listener] of Object.entries(listeners))canvas.removeEventListener(type,listener as EventListener);
+    for(const nebula of nebulas)nebula.dispose();nebulas=[];materializations.clear();stageElement.style.removeProperty("--formation");
     disposeObject(scene);actors.clear();pending.clear();compiledActors.clear();environment.dispose();key.shadow.dispose();bloom.dispose();output.dispose();renderPass.dispose();composer.dispose();renderer.dispose();renderer.forceContextLoss();
   }
   signal.addEventListener("abort",dispose,{once:true});
@@ -220,7 +271,14 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     async setModel(next){
       if(disposed||lostContext)throw new Error("3D unavailable");
       const request=++modelRequest,ids:CharacterId[]=next==="duo"?["liangzai","nailong"]:[next];
-      preparing=request;frames.sync();
+      modelLoaded=false;arrival.reset();publishArrival();
+      coast?.kill();viewTween?.kill();pulseTimeline?.kill();rig?.reset();cancel();
+      lookXTo.tween.pause();lookYTo.tween.pause();look.x=look.y=0;pose.energy=0;
+      mode=next;
+      for(const actor of actors.values())actor.visible=false;
+      for(const nebula of nebulas)nebula.dispose();
+      nebulas=[createNebula(null,next==="nailong"?"nailong":"liangzai")];scene.add(nebulas[0].points);
+      invalidate(true);frames.sync();
       let timer:ReturnType<typeof setTimeout>|undefined;
       try{
         await Promise.all(ids.map(ensure));
@@ -230,7 +288,12 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
           actor.visible=ids.includes(id);actor.scale.setScalar(next==="duo"?.87:1);
           actor.position.set(next==="duo"?(id==="liangzai"?-1.24:1.22):0,.092,next==="duo"?(id==="nailong"?.12:0):0);
         }
-        camera.zoom=next==="duo"?.94:1;camera.updateProjectionMatrix();setView(activeView);updateScene();applyPose();
+        // Capture a neutral, front-facing surface before enabling direct inspection.
+        orientation.setFromAxisAngle(new THREE.Vector3(0,1,0),VIEW_ANGLES.reset);rig?.reset();applyPose();
+        for(const nebula of nebulas)nebula.dispose();
+        nebulas=ids.map(id=>createNebula(actors.get(id)!,id,next==="duo"?12000:18000));
+        for(const nebula of nebulas)scene.add(nebula.points);
+        camera.zoom=next==="duo"?.94:1;camera.updateProjectionMatrix();
         if(ids.some(id=>!compiledActors.has(id))){
           // Compile the same linear/HDR variant that RenderPass will actually use.
           // Restore the target synchronously; another selection may arrive while awaiting.
@@ -242,7 +305,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
           if(disposed||request!==modelRequest)return;
           ids.forEach(id=>compiledActors.add(id));
         }
-        ready=true;
+        modelLoaded=true;ready=true;updateScene();
         invalidate(true);
       }catch(error){
         // A failed older request must not replace a newer working selection with fallback.
@@ -251,7 +314,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
         throw error;
       }finally{
         clearTimeout(timer);
-        if(request===modelRequest){preparing=0;frames.sync();}
+        if(request===modelRequest){frames.sync();}
       }
     },
   };
