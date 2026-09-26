@@ -75,3 +75,14 @@ test('idle shadows obey 10 Hz budget while interaction and static changes refres
   shadows.invalidate(); assert.equal(shadows.shouldUpdate(1132, false), true);
   assert.equal(shadows.shouldUpdate(2000, false), false);
 });
+
+test('45 FPS budget carries deadlines instead of quantizing to 30 FPS on a 60 Hz display',()=>{
+ let callback,draws=0;const scheduler=createFrameScheduler({requestFrame:fn=>{callback=fn;return 1;},cancelFrame:()=>{},canRender:()=>true,continuous:()=>true,fps:()=>45,render:()=>draws++});
+ scheduler.sync();for(let i=0;i<60;i++){const fn=callback;callback=null;fn?.(i*1000/60);}
+ assert.ok(draws>=44&&draws<=46,`actual frames ${draws}`);scheduler.dispose();
+});
+test('60 FPS interaction tolerates normal rAF timestamp rounding',()=>{
+ let callback,draws=0;const scheduler=createFrameScheduler({requestFrame:fn=>{callback=fn;return 1;},cancelFrame:()=>{},canRender:()=>true,continuous:()=>true,fps:()=>60,render:()=>draws++});
+ scheduler.sync();for(let i=0;i<60;i++){const fn=callback;callback=null;fn?.(Math.round(i*1000/60*10)/10);}
+ assert.equal(draws,60);scheduler.dispose();
+});

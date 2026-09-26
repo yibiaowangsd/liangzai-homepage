@@ -375,3 +375,21 @@
   .guardian-nebula-backdrop i:nth-child(2) { inset:10% 9%; transform:rotate(32deg); }
   .guardian-nebula-backdrop i:nth-child(3) { inset:29% 4%; transform:rotate(-24deg); }
 }
+
+/* A nonmodal stage becomes a top-layer fusion room without recreating WebGL. */
+dialog.guardian-stage { left:auto; height:auto; margin:0; padding:0; border:0; color:inherit; background:transparent; max-width:none; max-height:none; overflow:visible; }
+dialog.guardian-stage:modal { position:fixed; inset:0; width:100vw; height:100dvh; max-height:100dvh; overflow:hidden; background:radial-gradient(ellipse at 50% 46%,#142738 0,#080e18 45%,#03060b 90%); }
+.guardian-stage::backdrop { background:#03060bf5; }
+.guardian-stage:modal .guardian-canvas { mask-image:none; }
+.guardian-stage:modal .guardian-controls { bottom:4%; }
+.guardian-stage:modal .guardian-scene-label { display:none; }
+.guardian-fusion-back { position:absolute; left:34px; top:28px; z-index:8; padding:12px 18px; color:#c4d9e8; background:#142331aa; border:1px solid #a7cfe733; border-radius:24px; font-size:12px; }
+.guardian-fusion-back:hover { background:#294455; color:white; }
+.guardian-fusion-back:focus-visible { outline:2px solid #b6e5ff; outline-offset:4px; }
+.guardian-fusion-heading { position:absolute; z-index:4; left:5%; top:35%; pointer-events:none; }
+.guardian-fusion-heading p { color:#9ab8ce; font-size:13px; letter-spacing:.2em; }
+.guardian-fusion-heading h2 { margin:16px 0; font-size:clamp(40px,6vw,88px); font-weight:400; letter-spacing:.04em; background:linear-gradient(110deg,#d4f6ff,#6bcbf5 45%,#ffd799); background-clip:text; color:transparent; }
+.guardian-fusion-heading span { color:#8d9fae; font-size:13px; }
+.guardian-fusion-track { height:2px; width:180px; background:#ffffff16; margin:12px auto; }
+.guardian-fusion-track span { display:block; height:100%; transform:scaleX(var(--fusion-charge,0)); transform-origin:left; background:linear-gradient(90deg,#6bdcff,#ffd177); }
+@media(max-width:900px) { .guardian-fusion-heading { top:12%; left:7%; } .guardian-fusion-heading h2 { font-size:36px; margin:8px 0; } .guardian-fusion-heading span { display:none; } }

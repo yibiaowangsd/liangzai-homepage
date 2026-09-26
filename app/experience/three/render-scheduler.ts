@@ -13,6 +13,7 @@ export function createFrameScheduler(options: FrameSchedulerOptions) {
   let dirty = false;
   let disposed = false;
   let lastFrame: number | null = null;
+  let nextFrameAt: number | null = null;
 
   function schedule() {
     if (!disposed && frame === null && options.canRender() && (dirty || options.continuous())) {
@@ -24,18 +25,21 @@ export function createFrameScheduler(options: FrameSchedulerOptions) {
     frame = null;
     if (disposed || !options.canRender()) {
       lastFrame = null;
+      nextFrameAt = null;
       return;
     }
     const continuous = options.continuous();
     const elapsed = lastFrame === null ? 0 : (now - lastFrame) / 1000;
-    // Preserve the existing 30/45 FPS budget, including during pose tweens.
-    if (continuous && lastFrame !== null && elapsed < 1 / options.fps()) {
+    const interval = 1000 / options.fps();
+    // Carry fractional deadlines forward; 45 Hz must not round down to 30 Hz on a 60 Hz display.
+    if (continuous && nextFrameAt !== null && now + .5 < nextFrameAt) {
       schedule();
       return;
     }
     if (!dirty && !continuous) return;
     dirty = false;
     lastFrame = now;
+    nextFrameAt = nextFrameAt === null || now - nextFrameAt > interval ? now + interval : nextFrameAt + interval;
     options.render(now, Math.min(elapsed, 0.06));
     schedule();
   }
@@ -52,6 +56,7 @@ export function createFrameScheduler(options: FrameSchedulerOptions) {
         if (frame !== null) options.cancelFrame(frame);
         frame = null;
         lastFrame = null;
+        nextFrameAt = null;
       } else {
         schedule();
       }

@@ -67,7 +67,7 @@ export function sampleCharacterSurface(actor: THREE.Group, count: number) {
   return { positions, colors };
 }
 
-export function createNebula(actor: THREE.Group | null, id: CharacterId = "liangzai", count = 18000) {
+export function createNebula(actor: THREE.Group | null, id: CharacterId | "fusion" = "liangzai", count = 18000) {
   const sampled = actor ? sampleCharacterSurface(actor, count) : { positions: new Float32Array(count * 3), colors: new Float32Array(count * 3).fill(1) };
   const { positions: scatter, seeds } = createNebulaField(count);
   const geometry = new THREE.BufferGeometry();
@@ -80,7 +80,7 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId = "liang
     uPointer: { value: new THREE.Vector3() }, uRipple: { value: new THREE.Vector3(0,0,-100) },
     uMotion: { value: 1 }, uTime: { value: 0 }, uProgress: { value: 0 }, uResolution: { value: 700 },
     uColor: { value: new THREE.Color(id === "nailong" ? "#ffca67" : "#65cfff") },
-    uAccent: { value: new THREE.Color(id === "nailong" ? "#ff9954" : "#9678ef") },
+    uAccent: { value: new THREE.Color(id === "nailong" ? "#ff9954" : id === "fusion" ? "#ffcb65" : "#9678ef") },
   };
   // Shared by stars and cloud wisps. All displacement stays on the GPU.
   const fieldShader = `
@@ -106,14 +106,16 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId = "liang
       float waveDistance = length(waveDelta);
       float wave = exp(-pow((waveDistance-rippleAge*4.)*2.3,2.)) * exp(-rippleAge*2.);
       world.xy += waveDelta / max(.2,waveDistance) * wave * .48 * free;
+      vec2 wake = vec2(0.); float lift = 0.;
       for(int i=0;i<6;i++) {
         vec2 delta = world.xy-uTrail[i].xy;
         float d = length(delta), age = max(0.,uTime-uTrail[i].z);
         float force = exp(-d*d*.7) * exp(-age*2.8) * uTrail[i].w * free;
         vec2 tangent = vec2(-delta.y,delta.x)/max(.3,d);
-        world.xy += (delta/max(.3,d)*.3 + tangent*.45) * force;
-        world.z += force*.24;
+        wake += (delta/max(.3,d)*.3 + tangent*.45) * force;
+        lift += force*.16;
       }
+      world.xy += wake; world.z += lift;
       return world;
     }
   `;
@@ -152,7 +154,7 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId = "liang
         #include <colorspace_fragment>
       }`,
   });
-  const mistCount = 64, mistPositions = new Float32Array(mistCount*3), mistSeeds = new Float32Array(mistCount);
+  const mistCount = 36, mistPositions = new Float32Array(mistCount*3), mistSeeds = new Float32Array(mistCount);
   for(let i=0;i<mistCount;i++) {
     const source = Math.floor(i*count/mistCount)*3;
     mistPositions.set(scatter.subarray(source,source+3),i*3); mistSeeds[i]=seeds[source/3];
@@ -160,8 +162,17 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId = "liang
   const mistGeometry = new THREE.BufferGeometry();
   mistGeometry.setAttribute("position",new THREE.BufferAttribute(mistPositions,3));
   mistGeometry.setAttribute("aSeed",new THREE.BufferAttribute(mistSeeds,1));
+  // Precompute cloud grain once instead of evaluating eight hashes per covered pixel.
+  const noiseSize=64,noiseBytes=new Uint8Array(noiseSize*noiseSize*4);
+  for(let y=0;y<noiseSize;y++)for(let x=0;x<noiseSize;x++){
+    const grain=.5+.20*Math.sin(x*.31+y*.17)+.15*Math.sin(y*.63-x*.23)+.10*Math.sin(x*.91+y*.77);
+    const value=Math.max(0,Math.min(255,Math.round(grain*255))),offset=(y*noiseSize+x)*4;
+    noiseBytes[offset]=noiseBytes[offset+1]=noiseBytes[offset+2]=value;noiseBytes[offset+3]=255;
+  }
+  const mistNoise=new THREE.DataTexture(noiseBytes,noiseSize,noiseSize);mistNoise.wrapS=mistNoise.wrapT=THREE.RepeatWrapping;
+  mistNoise.magFilter=mistNoise.minFilter=THREE.LinearFilter;mistNoise.needsUpdate=true;
   const mistMaterial = new THREE.ShaderMaterial({
-    uniforms,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+    uniforms:{...uniforms,uMistNoise:{value:mistNoise}},transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
     vertexShader: fieldShader + `
       attribute float aSeed; varying float vSeed, vOpacity; varying vec3 vColor;
       void main(){
@@ -174,12 +185,11 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId = "liang
       }`,
     fragmentShader: `
       uniform float uTime,uMotion; varying float vSeed,vOpacity; varying vec3 vColor;
-      float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
-      float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}
+      uniform sampler2D uMistNoise;
       void main(){
         vec2 uv=gl_PointCoord-.5;float r=length(uv)*2.;if(r>1.)discard;
         vec2 p=uv*4.+vSeed*30.+vec2(uTime*.035,-uTime*.02)*uMotion;
-        float grain=noise(p)*.65+noise(p*2.3)*.35;
+        float grain=texture2D(uMistNoise,p*.13).r*.65+texture2D(uMistNoise,p*.29).r*.35;
         float density=smoothstep(.2,.78,grain)*pow(1.-r*r,2.);
         gl_FragColor=vec4(vColor,density*vOpacity);
         #include <tonemapping_fragment>
@@ -203,7 +213,7 @@ export function createNebula(actor: THREE.Group | null, id: CharacterId = "liang
       uniforms.uMotion.value=motion?1:0;uniforms.uTime.value=time;uniforms.uProgress.value=progress;uniforms.uResolution.value=height;
       points.visible=progress<1;mist.visible=progress<.65;
     },
-    dispose() { geometry.dispose();material.dispose();mistGeometry.dispose();mistMaterial.dispose();points.removeFromParent(); },
+    dispose() { geometry.dispose();material.dispose();mistGeometry.dispose();mistMaterial.dispose();mistNoise.dispose();points.removeFromParent(); },
   };
 }
 export type Nebula = ReturnType<typeof createNebula>;
