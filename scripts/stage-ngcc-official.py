@@ -251,6 +251,60 @@ for index, item in enumerate(candidate['parameters']):
         if 'utils_ballet' in include_dirs:
             flags.extend(('-DUSE_BALLET=1', '-DHAVE_BALLET_CORE=1'))
         lines.append(f'CFLAGS_{label} := {" ".join(flags)}')
+    elif candidate_id == 'sign-28':
+        selected = ['SIG_AlgorithmInstance.c', 'lib/auxfunc.c', 'lib/drng.c',
+                    'lib/blake2/ref/blake2b-ref.c']
+        selected += sorted(p.relative_to(source_dir).as_posix()
+                           for p in (source_dir / 'src').glob('*.c'))
+        lines.append(f'SRCS_{label} := {" ".join(selected)}')
+        lines.append(f'INC_{label} := -Isrc/{label}/lib -Isrc/{label}/src '
+                     f'-Isrc/{label}/lib/blake2/ref')
+    elif candidate_id == 'kem-20':
+        family = 'Frost-CC' if '-CC-' in label else 'Frost'
+        frost_dir = source_dir / family / 'src'
+        reference = frost_dir / 'frost_macrify_reference.c'
+        if not reference.is_file():
+            raise FileNotFoundError(f'{candidate_id} {label}: missing reference macro implementation')
+        shutil.copyfile(reference, frost_dir / 'frost_macrify.c')
+        selected = ['KEM_AlgorithmInstance.c', 'auxfunc.c', 'drng.c',
+                    'randombytes_adapter.c', 'common/aes/aes_c.c',
+                    'common/sha3/fips202.c']
+        selected += sorted(p.relative_to(source_dir).as_posix()
+                           for p in frost_dir.glob('*.c')
+                           if not p.name.startswith('frost_macrify'))
+        lines.append(f'SRCS_{label} := {" ".join(selected)}')
+        lines.append(f'INC_{label} := -Isrc/{label}/{family}/src '
+                     f'-Isrc/{label}/common/aes -Isrc/{label}/common/sha3')
+    elif candidate_id == 'kem-35':
+        # The archive's directory with spaces cannot be passed verbatim in
+        # compiler flags. Link the copied source to a stable local alias.
+        alias = destination / '_ngcc_shared'
+        if not alias.exists():
+            alias.symlink_to('Implementations and Test_Vectors/Implementations/_shared',
+                            target_is_directory=True)
+        shared = source_dir / '../../../_shared'
+        if not (shared / 'scloudplus_core/include/scloudplus_param_common.h').is_file():
+            raise FileNotFoundError(f'{candidate_id} {label}: missing shared parameters')
+        selected = ['../../../_shared/api_pkc/KEM_AlgorithmInstance.c',
+                    '../../../_shared/api_pkc/drng.c']
+        family = item['label'].split('-')[2]
+        if family not in ('AES', 'SHAKE', 'SM3'):
+            raise ValueError(f'{candidate_id} {label}: unexpected family {family}')
+        selected += sorted('../../../_shared/scloudplus_core/common/' + p.name
+                           for p in (shared / 'scloudplus_core/common').glob('*.c')
+                           if (p.name == 'hash_sm3_portable.c') == (family == 'SM3'))
+        selected += sorted('../../../_shared/scloudplus_core/ref/' + p.name
+                           for p in (shared / 'scloudplus_core/ref').glob('*.c')
+                           if p.name != 'sm3_reference.c' or family == 'SM3')
+        lines.append(f'SRCS_{label} := {" ".join(selected)}')
+        lines.append(f'NOAUX_{label} := 1')
+        lines.append(f'INC_{label} := -I_ngcc_shared/api_pkc '
+                     f'-I_ngcc_shared/scloudplus_core/include '
+                     f'-I_ngcc_shared/scloudplus_core/common '
+                     f'-I_ngcc_shared/scloudplus_core/ref -Isrc/{label}')
+        lines.append(f'CFLAGS_{label} := -DSCLOUDPLUS_FAMILY_{family} '
+                     f'-DSCLOUDPLUS_REF_FAMILY_{family} '
+                     f'-DSCLOUDPLUS_TIER_REFERENCE')
     elif candidate_id == 'sign-19':
         backend = 'SHAKE' if '-SHAKE-' in label else 'SM3'
         core = ('address counter merkle octopus randombytes sign tfors utils '
@@ -264,6 +318,8 @@ for index, item in enumerate(candidate['parameters']):
         lines.append(f'CFLAGS_{label} := -DPARAMS={label.lower()} '
                      f'-DALLOW_DEEP_TREES -DSUBMISSION_DRNG '
                      f'-DPARAMNAME=\\\"{label}\\\"')
+    elif candidate_id == 'sign-30':
+        lines.append(f'CFLAGS_{label} := -DUSE_SHA3')
     instance_header = {'hash': 'CryptHash_AlgorithmInstance.h',
                        'kem': 'KEM_AlgorithmInstance.h',
                        'sig': 'SIG_AlgorithmInstance.h',
@@ -276,8 +332,14 @@ for index, item in enumerate(candidate['parameters']):
         if not alternatives:
             alternatives = [p for p in source_dir.glob('*_AlgorithmInstance.h')
                             if 'ALGORITHM_INSTANCE' in p.read_text(errors='replace')]
+        if not alternatives:
+            alternatives = list(source_dir.rglob(instance_header))
         if len(alternatives) != 1:
-            raise ValueError(f'{candidate_id} {label}: cannot select the submitted API header')
+            nearby = sorted(p.name for p in source_dir.rglob('*.h'))[:80]
+            raise ValueError(f'{candidate_id} {label}: cannot select the submitted API header; headers: {nearby}')
+        parent = alternatives[0].parent.relative_to(source_dir)
+        if parent.parts:
+            lines.append(f'INC_{label} += -Isrc/{label}/{parent.as_posix()}')
         lines.append(f'SHIMDEFS_{label} := -DNGCC_INSTANCE_HEADER=\\\"{alternatives[0].name}\\\"')
     lines.append(f'$(eval $(call ngcc_instance,{label},{item["source"]}))')
 lines.extend(['', 'include ../api/link_finish.mk', ''])
