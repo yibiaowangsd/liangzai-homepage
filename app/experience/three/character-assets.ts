@@ -32,7 +32,13 @@ export function prepareCharacter(source: THREE.Group, id: CharacterId) {
   });
   const pivot = new THREE.Group();
   pivot.name = `${id}_turntable`;
-  pivot.add(content);
+  // The outer actor stays on the pedestal; inspection rotates around its centre.
+  const inspection = new THREE.Group();
+  inspection.name = `${id}_inspection`;
+  inspection.position.y = CHARACTERS[id].height / 2;
+  content.position.y = -CHARACTERS[id].height / 2;
+  inspection.add(content);
+  pivot.add(inspection);
   return pivot;
 }
 

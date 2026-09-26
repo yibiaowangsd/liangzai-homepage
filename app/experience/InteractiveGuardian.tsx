@@ -52,8 +52,8 @@ export default function InteractiveGuardian() {
         <img src={`/assets/models/observatory/${mode}-${view}.webp`} alt="" fetchPriority="high" decoding="async" width="768" height="864" />
       </div>
       <canvas ref={canvas} className="guardian-canvas" tabIndex={status==="ready"?0:-1} role="img"
-        aria-label={status==="ready"?`${labels[mode]}三维模型。拖动旋转，左右方向键调整角度，回车唤起星光。`:`${labels[mode]}模型预览`}
-        aria-keyshortcuts="ArrowLeft ArrowRight Home Enter" />
+        aria-label={status==="ready"?`${labels[mode]}三维模型。横向和纵向拖动均可完整旋转，四个方向键调整角度，回车唤起星光。`:`${labels[mode]}模型预览`}
+        aria-keyshortcuts="ArrowLeft ArrowRight ArrowUp ArrowDown Home Enter" />
       <div className="guardian-scene-label"><span className="guardian-live-dot" /> THE EXPLORERS <span>STELLAR / 01</span></div>
       <div className="guardian-models" role="group" aria-label="选择展示模型">
         {([["liangzai","量仔","01"],["nailong","奶龙","02"],["duo","同时展示","01 + 02"]] as const).map(([id,label,code])=>(
@@ -62,7 +62,7 @@ export default function InteractiveGuardian() {
       </div>
       <div className="guardian-controls">
         <div className="guardian-instruction" role="status" aria-live="polite">
-          {status==="ready"?"轻拨 360° 旋转 · 移动鼠标互动 · 点击角色跃起":status==="preview"?"点击上方模型选项，开启 3D 互动":status==="fallback"?"3D 暂不可用，可继续切换图片视角":"正在点亮星空展台"}
+          {status==="ready"?"横向 / 纵向拖动 360° 翻转 · 四方向键调整 · 复位回正":status==="preview"?"点击上方模型选项，开启 3D 互动":status==="fallback"?"3D 暂不可用，可继续切换图片视角":"正在点亮星空展台"}
         </div>
         <div className="guardian-actions" role="group" aria-label="选择模型视角">
           {([["front","正面"],["side","侧面"],["back","背面"]] as const).map(([id,label])=>(

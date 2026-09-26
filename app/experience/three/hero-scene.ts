@@ -6,6 +6,7 @@ import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { RectAreaLightUniformsLib } from "three/addons/lights/RectAreaLightUniformsLib.js";
 import { gsap } from "gsap";
 import { loadCharacter, disposeObject, VIEW_ANGLES, type CharacterId, type ModelMode, type ModelView } from "./character-assets";
+import { applyInspection, rotateInspection } from "./inspection";
 import { createObservatory, createStudioEnvironment } from "./observatory";
 import { createFrameScheduler, createShadowBudget } from "./render-scheduler";
 
@@ -51,7 +52,8 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   let enabled=false,visible=true,disposed=false,lostContext=false,ready=false,preparing=0;
   let width=1,height=1,time=0,resizeFrame=0,modelRequest=0;
   let mode:ModelMode="liangzai",activeView:ModelView="reset";
-  const pose={yaw:VIEW_ANGLES.reset,pitch:0,gaze:0,lift:0,energy:0,bow:0,roll:0};
+  const orientation=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),VIEW_ANGLES.reset);
+  const pose={yaw:0,pitch:0,gaze:0,lift:0,energy:0,bow:0,roll:0};
   const ctx=gsap.context(()=>{});
   let pulseTimeline:gsap.core.Timeline | null=null;
   const shadows=createShadowBudget();
@@ -74,16 +76,13 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   };
   const applyPose=()=>{
     for(const [id,actor] of actors){
-      actor.rotation.y=pose.yaw+(mode==="duo"?(id==="liangzai"?.055:-.055):0);
-      actor.rotation.x=pose.pitch+pose.bow;actor.rotation.z=pose.gaze+pose.roll;
+      applyInspection(actor,orientation,pose.pitch+pose.bow,pose.yaw+(mode==="duo"?(id==="liangzai"?.055:-.055):0),pose.gaze+pose.roll);
     }
     invalidate(true);
   };
-  const yawTo=gsap.quickTo(pose,"yaw",{duration:.28,ease:"power3.out",onUpdate:applyPose});
-  const pitchTo=gsap.quickTo(pose,"pitch",{duration:.28,ease:"power3.out",onUpdate:applyPose});
   const gazeTo=gsap.quickTo(pose,"gaze",{duration:.8,ease:"power3.out",onUpdate:applyPose});
   function updateScene(){
-    for(const actor of actors.values()){actor.rotation.x=pose.pitch+pose.bow;actor.rotation.z=pose.gaze+pose.roll;}
+
     for(const [id,actor] of actors)if(actor.visible)actor.position.y=.092+pose.lift+(enabled?Math.sin(time*1.05+(id==="nailong"?.7:0))*.012:0);
     observatory.stars.rotation.y=time*.018;
     observatory.glow.emissiveIntensity=1.05+pose.energy*.45;
@@ -114,15 +113,22 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     if(!pending.has(id))pending.set(id,loadCharacter(id,signal).then(actor=>{if(disposed){disposeObject(actor);throw new DOMException("Scene disposed","AbortError");}actors.set(id,actor);actor.visible=false;scene.add(actor);return actor;}).catch(error=>{pending.delete(id);throw error;}));
     return pending.get(id)!;
   };
+  let viewTween:gsap.core.Tween|null=null;
+  function tweenOrientation(target:THREE.Quaternion,duration:number){
+    const from=orientation.clone(),progress={value:0};
+    return gsap.to(progress,{value:1,duration,ease:"power2.out",onUpdate:()=>{orientation.slerpQuaternions(from,target,progress.value);applyPose();}});
+  }
   function setView(view:ModelView){
-    coast?.kill();pulseTimeline?.kill();activeView=view;
-    if(enabled){yawTo(VIEW_ANGLES[view]);pitchTo(0);gazeTo(0);}
-    else{pose.yaw=VIEW_ANGLES[view];pose.pitch=pose.gaze=0;applyPose();}
+    coast?.kill();viewTween?.kill();pulseTimeline?.kill();activeView=view;
+    pose.yaw=pose.pitch=pose.gaze=pose.bow=pose.roll=pose.lift=pose.energy=0;gazeTo.tween.pause();
+    const target=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),VIEW_ANGLES[view]);
+    if(enabled)viewTween=tweenOrientation(target,.32);
+    else{orientation.copy(target);applyPose();}
   }
   function perform(action:"greet"|"spin"|"jump"){
     if(!enabled||disposed||lostContext)return;
-    coast?.kill();pulseTimeline?.kill();pose.lift=pose.energy=pose.bow=pose.roll=0;
-    yawTo.tween.pause();pitchTo.tween.pause();gazeTo.tween.pause();
+    coast?.kill();viewTween?.kill();pulseTimeline?.kill();pose.lift=pose.energy=pose.bow=pose.roll=0;
+    gazeTo.tween.pause();
     ctx.add(()=>{
       const timeline=gsap.timeline({onUpdate:()=>{applyPose();invalidate(true);}});
       pulseTimeline=timeline;
@@ -141,24 +147,23 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
         .to(pose,{lift:0,energy:0,bow:0,roll:0,duration:1.2,ease:"sine.inOut"});
     });
   }
-  let dragging=false,distance=0,lastX=0,lastY=0,lastMove=0,velocityYaw=0;
+  let dragging=false,distance=0,lastX=0,lastY=0,lastMove=0,velocityX=0,velocityY=0;
   let coast:gsap.core.Tween|null=null;
   const down=(e:PointerEvent)=>{
     if(e.button!==0)return;
-    coast?.kill();pulseTimeline?.kill();
-    [yawTo,pitchTo,gazeTo].forEach(t=>t.tween.pause());
+    coast?.kill();viewTween?.kill();pulseTimeline?.kill();
+    gazeTo.tween.pause();
     pose.lift=pose.energy=pose.bow=pose.roll=pose.gaze=0;
-    dragging=true;distance=0;velocityYaw=0;lastMove=performance.now();lastX=e.clientX;lastY=e.clientY;
+    dragging=true;distance=0;velocityX=velocityY=0;lastMove=performance.now();lastX=e.clientX;lastY=e.clientY;
     canvas.setPointerCapture(e.pointerId);canvas.classList.add("is-dragging");applyPose();
   };
   const move=(e:PointerEvent)=>{
     if(dragging){
       const now=performance.now(),dx=e.clientX-lastX,dy=e.clientY-lastY;
-      const turn=dx*Math.PI*2/Math.max(320,width);
-      velocityYaw=turn/Math.max(8,now-lastMove);
+      velocityX=dx/Math.max(8,now-lastMove);velocityY=dy/Math.max(8,now-lastMove);
       distance+=Math.abs(dx)+Math.abs(dy);lastX=e.clientX;lastY=e.clientY;lastMove=now;
       // Direct manipulation: no tween may lag behind or fight the pointer.
-      pose.yaw+=turn;pose.pitch=THREE.MathUtils.clamp(pose.pitch+dy*.003,-.75,.75);applyPose();
+      rotateInspection(orientation,dx,dy,width,height,camera.quaternion);applyPose();
     }else if(enabled&&e.pointerType==="mouse"){
       const r=canvas.getBoundingClientRect();gazeTo(((e.clientX-r.left)/r.width-.5)*-.07);
     }
@@ -167,7 +172,9 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const up=(e:PointerEvent)=>{
     if(!dragging)return;dragging=false;canvas.classList.remove("is-dragging");if(canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
     if(distance>=8&&enabled&&performance.now()-lastMove<70){
-      coast=gsap.to(pose,{yaw:pose.yaw+THREE.MathUtils.clamp(velocityYaw*70,-.35,.35),duration:.24,ease:"power2.out",onUpdate:applyPose});
+      const target=orientation.clone();
+      rotateInspection(target,THREE.MathUtils.clamp(velocityX*55,-width*.04,width*.04),THREE.MathUtils.clamp(velocityY*55,-height*.04,height*.04),width,height,camera.quaternion);
+      coast=tweenOrientation(target,.22);
     }
     if(distance<8){const r=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
       if([...actors.values()].some(actor=>actor.visible&&raycaster.intersectObject(actor,true).length))perform("jump");}
@@ -175,16 +182,16 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const cancel=()=>{coast?.kill();dragging=false;canvas.classList.remove("is-dragging");};
   const leave=()=>{if(enabled&&!dragging){gazeTo(0);}};
   const keyboard=(e:KeyboardEvent)=>{
-    if(!["ArrowLeft","ArrowRight","Home","Enter"," "].includes(e.key))return;e.preventDefault();
+    if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","Enter"," "].includes(e.key))return;e.preventDefault();
     if(e.key==="Enter"||e.key===" ")resonate();else if(e.key==="Home")setView("reset");
-    else{const angle=pose.yaw+(e.key==="ArrowLeft"?-.3:.3);if(enabled)yawTo(angle);else{pose.yaw=angle;applyPose();}}
+    else{coast?.kill();viewTween?.kill();rotateInspection(orientation,e.key==="ArrowLeft"?-width/24:e.key==="ArrowRight"?width/24:0,e.key==="ArrowUp"?-height/24:e.key==="ArrowDown"?height/24:0,width,height,camera.quaternion);applyPose();}
   };
   const lost=(e:Event)=>{e.preventDefault();lostContext=true;sync();onFallback();};
   const listeners={pointerdown:down,pointermove:move,pointerup:up,pointercancel:cancel,pointerleave:leave,keydown:keyboard,webglcontextlost:lost};
   for(const [type,listener] of Object.entries(listeners))canvas.addEventListener(type,listener as EventListener);
   document.addEventListener("visibilitychange",sync);
   function dispose(){
-    if(disposed)return;disposed=true;modelRequest++;coast?.kill();frames.dispose();ctx.revert();[yawTo,pitchTo,gazeTo].forEach(t=>t.tween.kill());
+    if(disposed)return;disposed=true;modelRequest++;coast?.kill();viewTween?.kill();frames.dispose();ctx.revert();gazeTo.tween.kill();
     observer.disconnect();visibility.disconnect();cancelAnimationFrame(resizeFrame);document.removeEventListener("visibilitychange",sync);signal.removeEventListener("abort",dispose);
     for(const [type,listener] of Object.entries(listeners))canvas.removeEventListener(type,listener as EventListener);
     disposeObject(scene);actors.clear();pending.clear();compiledActors.clear();environment.dispose();key.shadow.dispose();bloom.dispose();output.dispose();renderPass.dispose();composer.dispose();renderer.dispose();renderer.forceContextLoss();
@@ -192,7 +199,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   signal.addEventListener("abort",dispose,{once:true});
   resize();
   return {
-    setMotion(value){enabled=value;if(!value){coast?.kill();pulseTimeline?.progress(1).kill();[yawTo,pitchTo,gazeTo].forEach(t=>t.tween.pause());pose.pitch=pose.gaze=pose.lift=pose.energy=pose.bow=pose.roll=0;applyPose();}sync();},
+    setMotion(value){enabled=value;if(!value){coast?.kill();viewTween?.kill();pulseTimeline?.progress(1).kill();gazeTo.tween.pause();pose.pitch=pose.gaze=pose.lift=pose.energy=pose.bow=pose.roll=0;applyPose();}sync();},
     setView,resonate,perform,dispose,
     async setModel(next){
       if(disposed||lostContext)throw new Error("3D unavailable");
