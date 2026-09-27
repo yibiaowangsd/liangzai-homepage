@@ -109,7 +109,9 @@ git diff --check
 
 ### 关于我进入转场
 
-`app/experience/AboutPushTransition.tsx` 统一接管站内普通点击的 `/about` 链接，保留 Ctrl/Command 点击、新窗口和当前页链接的原有行为。`about-push.ts` 冻结离开页当前视口，等待关于我路由就绪，再用约 2.4 秒的同一时间轴驱动页面边缘、量仔位置和关节发力。首页通过 `liangzai:snapshot` 事件即时复制 WebGL 帧，不开启永久保留绘图缓冲。
+`app/experience/AboutPushTransition.tsx` 统一接管站内普通点击的 `/about` 链接，保留 Ctrl/Command 点击、新窗口和当前页链接的原有行为。`about-push.ts` 冻结离开页当前视口，等待关于我路由就绪，再用约 3 秒的同一时间轴驱动页面边缘、量仔位置和关节发力。首页通过 `liangzai:snapshot` 事件即时复制 WebGL 帧，不开启永久保留绘图缓冲。
+
+量仔脚底以屏幕下沿为地面，每帧根据鞋底包围盒校正落地高度；手掌与页面边缘动态对齐。左右手错峰接触，停稳蓄力后再推出，步态由页面位移驱动，并叠加踝关节缓冲、轻微重心变化与头部/天线跟随。
 
 角色来自现有量仔模型，`three/about-push-scene.ts` 使用短生命周期透明画布，按需加载、结束释放，没有新增常驻渲染循环。跳过按钮、Escape、返回、窗口尺寸变化、后台切换和加载超时均会清理遮罩；系统减少动态效果或站内动效关闭时直接导航。
 
