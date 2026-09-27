@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, type PointerEvent } from "react";
+import Link from "next/link";
 import { useExperience } from "../experience/Motion";
 import styles from "./FloatingIdentity.module.css";
 
@@ -87,7 +88,7 @@ export default function FloatingIdentity() {
               </dl>
             </div>
             <div className={styles.bottomline}>
-              <a href="/" aria-label="返回 Wang Yibiao 的主页">wangyibiao.com</a>
+              <Link href="/" aria-label="返回 Wang Yibiao 的主页">wangyibiao.com</Link>
               <a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer" aria-label="访问 Wang Yibiao 的 GitHub">GitHub<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 8H7a5 5 0 0 0 0 10h3a5 5 0 0 0 5-5M15 16h2a5 5 0 0 0 0-10h-3a5 5 0 0 0-5 5" /></svg></a>
             </div>
           </div>

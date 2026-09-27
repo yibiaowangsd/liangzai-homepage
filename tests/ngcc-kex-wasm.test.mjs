@@ -9,8 +9,8 @@ for (const [id, names] of Object.entries(NGCC_KEX_WASM)) {
   for (const [index, name] of names.entries()) {
     if (!name) continue;
     test(`${id} parameter ${index} runs full submitted exchange twice`, () => {
-      const module = fileURLToPath(new URL(`../public/pqc-practice/wasm/${name}.mjs`, import.meta.url));
-      const result = execFileSync(process.execPath, [verifier, module, id, String(index)],
+      const modulePath = fileURLToPath(new URL(`../public/pqc-practice/wasm/${name}.mjs`, import.meta.url));
+      const result = execFileSync(process.execPath, [verifier, modulePath, id, String(index)],
         { encoding: 'utf8', timeout: 30000 });
       assert.match(result, /^VERIFIED /);
     });

@@ -1,21 +1,21 @@
 import { NGCC_HASH_WASM } from './ngcc-hash-runtime.js';
 
 const loaded = new Map();
-async function load(module) {
-  if (!loaded.has(module)) {
-    loaded.set(module, import(`./wasm/${module}.mjs`).then(({ default: factory }) => factory({
+async function load(wasmModule) {
+  if (!loaded.has(wasmModule)) {
+    loaded.set(wasmModule, import(`./wasm/${wasmModule}.mjs`).then(({ default: factory }) => factory({
       locateFile: name => new URL(`./wasm/${name}`, import.meta.url).href,
     })));
   }
-  return loaded.get(module);
+  return loaded.get(wasmModule);
 }
 self.onmessage = async ({ data }) => {
   const { id, index, message } = data;
   try {
-    const module = NGCC_HASH_WASM[id]?.[index];
-    if (!module) throw new Error('当前参数尚无经过验证的 WASM');
+    const wasmModule = NGCC_HASH_WASM[id]?.[index];
+    if (!wasmModule) throw new Error('当前参数尚无经过验证的 WASM');
     if (!(message instanceof Uint8Array) || message.length > 1048576) throw new Error('消息超过 1 MiB');
-    const mod = await load(module);
+    const mod = await load(wasmModule);
     const length = mod._lab_digest_bytes();
     if (length < 1 || length > 4096) throw new Error('摘要长度异常');
     const input = mod._malloc(Math.max(1, message.length));

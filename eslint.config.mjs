@@ -10,7 +10,11 @@ const eslintConfig = defineConfig([
     // Default ignores of eslint-config-next:
     ".next/**",
     "out/**",
-    "build/**",
+    "dist/**",
+    ".sites-runtime/**",
+    // Generated bundles and Emscripten glue; lint their source instead.
+    "public/assets/about-push/**",
+    "public/pqc-practice/wasm/**",
     "next-env.d.ts",
   ]),
 ]);

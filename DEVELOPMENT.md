@@ -30,7 +30,8 @@ npm run dev
 | `npm run dev` | Vite/Vinext 开发服务器；默认监听 `0.0.0.0` |
 | `npm run build` | 限时 Vinext 构建，并校验 Worker 入口及 Sites 清单 |
 | `npm test` | 构建后运行 `tests/*.test.mjs` |
-| `npm run lint` | ESLint；忽略 `dist` 和 `.next` |
+| `npm run lint` | 检查手写源码（含 `build/`）；排除构建产物、转场生成包及 Emscripten 胶水代码 |
+| `npm run typecheck` | TypeScript 静态类型检查，不生成 JS |
 | `npm run validate:artifact` | 单独校验 `dist/server/index.js` 和 `dist/.openai/hosting.json` |
 | `npm run models:prepare -- <量仔.glb> <奶龙.glb>` | 从原始模型生成压缩分片与清单 |
 | `npm run models:prepare -- --refresh-textures` | 从现有分片重建 Web 贴图，不需要原始模型 |
@@ -116,3 +117,17 @@ git diff --check
 角色来自现有量仔模型，`three/about-push-scene.ts` 使用短生命周期透明画布，按需加载、结束释放，没有新增常驻渲染循环。跳过按钮、Escape、返回、窗口尺寸变化、后台切换和加载超时均会清理遮罩；系统减少动态效果或站内动效关闭时直接导航。
 
 密码实验室及接入记录页独立于 React 路由，使用 `about-push-static.ts` 和同源关于我 iframe 承接相同转场，再交回顶层页面。`build/about-push-assets.ts` 在 Vite 开发/构建时生成其 JS/CSS 到 `public/assets/about-push/`，该目录无需手工提交。修改共享转场后重新启动开发服务即可同步独立 HTML 页面所用产物。
+
+
+### 2026-09-27 代码整理与运行开销优化
+
+- 首页 2D 氛围、粒子雕塑与 3D 展台复用 `three/render-scheduler.ts` 的调度规则（各画布仍有独立调度实例）。雕塑待机为 30 FPS，指针交互、冲击波及形态切换为 60 FPS；离屏/后台暂停，关闭动效后仅按需重绘。GSAP 形态插值只标记重绘，不再绕过可见性直接绘制。
+- `sculpture-particles.ts` 集中维护粒子的固定形态、投影及深度排序。球、环、波形坐标在初始化时计算，帧内复用 780 个粒子对象；旋转三角函数提到循环外。`sculpture-particles.test.mjs` 与原公式对照所有粒子及中间变形，确保坐标、排序与交互物理状态保留。
+- 场景销毁立即中止尚未完成的模型请求；释放 `InstancedMesh` 自身缓冲，按图像源去重关闭共享 ImageBitmap。相机投影矩阵只在缩放实际变化时更新，尺寸变化仍正常更新。
+- 导航移除没有对应路由的 `.html` 重复分支，名片回首页使用路由 Link。格式化调整集中在本次修改的 2D 动画与导航文件。
+- 新增 `npm run typecheck`，补齐 Worker 静态资源接口类型，忽略 TypeScript 增量缓存。ESLint 不再扫描生成的 WASM 胶水/转场文件，并重新覆盖手写 `build/` 源码；原有三个 lint 错误已修复。
+- 原全量测试将运行清单中 24 个显式 `null` 槽错误导入为 `null.mjs`。现在这些槽明确标记 skipped，并增加独立检查：必须有非 verified 的构建记录；任何已声明可运行的模块仍执行原有真实密码运算。该调整不新增算法可用性，也不将未运行的算法计作通过。
+
+本次本地微基准：780 粒子的坐标投影与排序，预热 1,000 轮，5 组各 5,000 轮取中位数；Node.js 24.19.0 下由约 0.169 ms/轮降到 0.049 ms/轮（约 71%）。这是纯计算路径结果，不代表整页 FPS、GPU 开销或首屏时间的同比改善。
+
+验证记录见本次 PR。真实浏览器视觉检查受 Chromium 下载失败限制，发布前仍应复核形态切换、暂停/恢复、滚动离屏及返回、角色切换、融合与关于我转场。

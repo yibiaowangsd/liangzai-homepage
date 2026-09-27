@@ -67,8 +67,11 @@ export function disposeObject(root: THREE.Object3D) {
   const geometries = new Set<THREE.BufferGeometry>();
   const materials = new Set<THREE.Material>();
   const textures = new Set<THREE.Texture>();
+  const images = new Set<{ close?: () => void }>();
   root.traverse(object => {
     if (!(object instanceof THREE.Mesh || object instanceof THREE.Points || object instanceof THREE.Line || object instanceof THREE.Sprite)) return;
+    // Instance matrices/colors belong to the mesh, not its shared geometry.
+    if (object instanceof THREE.InstancedMesh) object.dispose();
     geometries.add(object.geometry);
     for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
       materials.add(material);
@@ -77,6 +80,11 @@ export function disposeObject(root: THREE.Object3D) {
     }
   });
   for (const geometry of geometries) geometry.dispose();
-  for (const texture of textures) { const image = texture.source?.data as { close?: () => void } | undefined; image?.close?.(); texture.dispose(); }
+  for (const texture of textures) {
+    const image = texture.source?.data as { close?: () => void } | undefined;
+    if (image) images.add(image);
+    texture.dispose();
+  }
+  for (const image of images) image.close?.();
   for (const material of materials) material.dispose();
 }
