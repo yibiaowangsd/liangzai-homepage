@@ -105,3 +105,12 @@ git diff --check
 - `fusion-model.ts` 现为用户选定的 A2：复用原量仔头部几何、独立材质，搭配圆肚金色龙身、浅色肚皮、短腿和渐细厚尾。
 - 自动眨眼已恢复到量仔与合体模型，只影响眼部。
 - `fusion-state.ts` 的 `docked` 表示关闭全屏后保留在首页的合体结果；不可在返回或切换模式时重置已完成融合。完成后的蓄力不能再拦截正常点击。
+
+
+### 关于我进入转场
+
+`app/experience/AboutPushTransition.tsx` 统一接管站内普通点击的 `/about` 链接，保留 Ctrl/Command 点击、新窗口和当前页链接的原有行为。`about-push.ts` 冻结离开页当前视口，等待关于我路由就绪，再用约 2.4 秒的同一时间轴驱动页面边缘、量仔位置和关节发力。首页通过 `liangzai:snapshot` 事件即时复制 WebGL 帧，不开启永久保留绘图缓冲。
+
+角色来自现有量仔模型，`three/about-push-scene.ts` 使用短生命周期透明画布，按需加载、结束释放，没有新增常驻渲染循环。跳过按钮、Escape、返回、窗口尺寸变化、后台切换和加载超时均会清理遮罩；系统减少动态效果或站内动效关闭时直接导航。
+
+密码实验室及接入记录页独立于 React 路由，使用 `about-push-static.ts` 和同源关于我 iframe 承接相同转场，再交回顶层页面。`build/about-push-assets.ts` 在 Vite 开发/构建时生成其 JS/CSS 到 `public/assets/about-push/`，该目录无需手工提交。修改共享转场后重新启动开发服务即可同步独立 HTML 页面所用产物。
