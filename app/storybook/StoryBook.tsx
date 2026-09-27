@@ -124,7 +124,7 @@ export default function StoryBook() {
       />
       <div className="reader-bar">
         <Link href="/" className="reader-back">
-          LIANGZAI / 量子星守护者
+          星际漫游
         </Link>
         <span>INTERACTIVE STORY · 约 5 分钟</span>
         <button
@@ -202,7 +202,7 @@ export default function StoryBook() {
           )}
           {current === pages.length - 1 && (
             <Link className="silver-button" href="/pqc-arsenal">
-              探索真正的 PQC 武器库
+              探索密码图鉴
               <i aria-hidden="true" />
             </Link>
           )}

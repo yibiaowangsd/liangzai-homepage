@@ -5,8 +5,8 @@ import { ExperienceProvider } from "./experience/Motion";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
 
 export const metadata: Metadata = {
-  title: "量子星守护者 · 量仔动画书",
-  description: "翻开量仔与奶龙共同守护量子星、迎战 Shor 大魔王的互动动画书。",
+  title: "量仔 Yibiao 的数字空间",
+  description: "Yibiao 的数字空间，记录个人经历、密码工程与量仔的故事和交互实验。",
   other: { "codex-preview": "development" },
   icons: { icon: "/assets/liangzai-mark.svg", shortcut: "/assets/liangzai-mark.svg" },
 };

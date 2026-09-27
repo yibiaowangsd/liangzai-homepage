@@ -30,12 +30,12 @@ test("renders the homepage with the integrated practice destination", async () =
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
   assert.match(html, developmentPreviewMeta);
-  assert.match(html, /小小量仔/);
-  assert.match(html, /大有可为/);
+  assert.match(html, /量仔小传/);
+  assert.match(html, /星际漫游/);
   for (const route of ["/storybook", "/archive", "/pqc-arsenal", "/pqc-practice", "/about"]) {
     assert.ok(html.includes(`href="${route}"`), `Homepage links to ${route}`);
   }
-  assert.match(html, /进入 PQC 武器实战/);
+  assert.match(html, /进入密码实验室/);
   assert.match(html, /开启动效|暂停动效/);
   assert.match(html, /让想象/);
   assert.match(html, /量子星云/);
@@ -76,7 +76,7 @@ test("renders the interactive storybook route", async () => {
   assert.doesNotMatch(html, /CHAPTER 07 \/ 回响/);
   assert.match(html, /共 11 页/);
   assert.match(html, /Kyber 与 Aigis/);
-  assert.match(html, /合体绝技：靓龙/);
+  assert.match(html, /合体绝技靓龙/);
 });
 
 test("renders the redesigned character archive", async () => {
@@ -93,7 +93,7 @@ test("renders the redesigned character archive", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /PERSONAL FILE 000/);
-  assert.match(html, /PQC 武器库/);
+  assert.match(html, /密码图鉴/);
 });
 
 test("renders the PQC arsenal route with all four algorithms", async () => {
@@ -118,7 +118,7 @@ test("renders the PQC arsenal route with all four algorithms", async () => {
 
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /PQC 武器库/);
+  assert.match(html, /密码图鉴/);
   assert.match(html, /旧武器为何失效/);
   assert.match(html, /Module-LWE 核心样本/);
   assert.match(html, /Implicit reject/);
@@ -140,7 +140,7 @@ test("renders the human profile without invented credentials or private contact 
   );
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /量仔背后的人/);
+  assert.match(html, /关于我/);
   assert.match(html, /WANG YIBIAO/);
   assert.match(html, /PQC 与 QKD/);
   assert.match(html, /https:\/\/github.com\/yibiaowangsd/);
