@@ -61,6 +61,11 @@ def main():
     for candidate in candidates.values():
         counts = Counter(p["name"] for p in candidate["parameters"])
         for parameter in candidate["parameters"]:
+            # NEV-AKE's getter reports max(M1, M2), not the sum of both passes.
+            # Both messages have equal length in all nine pinned instances.
+            if candidate["id"] == "kex-07":
+                parameter["reportedTotalMessageBytes"] = parameter["sizes"]["TotalMessageBytes"]
+                parameter["sizes"]["TotalMessageBytes"] *= 2
             parameter["label"] = parameter["name"]
             if counts[parameter["name"]] > 1:
                 parameter["label"] += " · " + "/".join(parameter["source"].split("/")[-2:])

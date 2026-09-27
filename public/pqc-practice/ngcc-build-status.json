@@ -1299,54 +1299,60 @@
     ],
     "kem-06": [
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       }
     ],
     "kem-07": [
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       }
     ],
     "kem-08": [
@@ -1380,28 +1386,31 @@
     ],
     "kem-10": [
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "timeout",
+        "validation": "native_kat_only",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "x86 适配已修复且原生 KAT 通过，但 WASM 检查超过 30 秒；保持未接入。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "参考源码含 x86 专用头文件或内联汇编，不能直接编译为 wasm32。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       }
     ],
     "kem-11": [
@@ -2393,76 +2402,85 @@
     ],
     "kex-07": [
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       },
       {
-        "status": "compile_failed",
-        "log": "public/pqc-practice/ngcc-rebuild-2026-09-26.txt",
-        "retry_date": "2026-09-26",
+        "status": "verified",
+        "validation": "official_kat_native_wasm_parity",
+        "retry_date": "2026-09-27",
         "retry_previous_status": "compile_failed",
-        "retry_reason": "源码编译未通过；具体编译器诊断见本次日志摘录。",
-        "retry_log_url": "./ngcc-rebuild-2026-09-26.txt"
+        "retry_reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。",
+        "log": "public/pqc-practice/ngcc-recovery-2026-09-27.json",
+        "retry_log_url": "./ngcc-recovery-2026-09-27.json"
       }
     ],
     "kex-08": [
@@ -3371,5 +3389,11 @@
       "native_timeout": 1
     },
     "log_url": "./ngcc-rebuild-2026-09-26.txt"
+  },
+  "last_recovery": {
+    "date": "2026-09-27",
+    "attempted": 18,
+    "recovered": 17,
+    "log_url": "./ngcc-recovery-2026-09-27.json"
   }
 }
