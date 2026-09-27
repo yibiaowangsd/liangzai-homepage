@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./experience/cinematic.css";
 import { ExperienceProvider } from "./experience/Motion";
+import AboutPushTransition from "./experience/AboutPushTransition";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
 
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body>
         <ExperienceProvider>
+          <AboutPushTransition />
           <SiteHeader />
           {children}
           <SiteFooter />

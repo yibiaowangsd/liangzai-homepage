@@ -309,7 +309,16 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const keyup=(e:KeyboardEvent)=>{if(e.key==="Enter"||e.key===" "){holdingInput=false;fusion.hold(false);arrival.hold(false);sync();}};
   const blur=()=>{pointerTarget.set(0,0,0);cancel();};
   const lostCapture=()=>{if(dragging||arrival.phase!=="formed")cancel();};
-  const listeners={keyup,blur,lostpointercapture:lostCapture,pointerdown:down,pointermove:move,pointerup:up,pointercancel:cancel,pointerleave:leave,keydown:keyboard,webglcontextlost:lost};
+  // A one-off redraw copies pixels before WebGL clears its non-preserved buffer.
+  const snapshot=(event:Event)=>{
+    if(disposed||lostContext)return;
+    const context=(event as CustomEvent<CanvasRenderingContext2D>).detail;
+    if(!context)return;
+    composer.render();
+    context.clearRect(0,0,canvas.width,canvas.height);
+    context.drawImage(canvas,0,0);
+  };
+  const listeners={"liangzai:snapshot":snapshot,keyup,blur,lostpointercapture:lostCapture,pointerdown:down,pointermove:move,pointerup:up,pointercancel:cancel,pointerleave:leave,keydown:keyboard,webglcontextlost:lost};
   for(const [type,listener] of Object.entries(listeners))canvas.addEventListener(type,listener as EventListener);
   document.addEventListener("visibilitychange",sync);
   function dispose(){

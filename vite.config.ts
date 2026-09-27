@@ -1,3 +1,4 @@
+import { aboutPushAssets } from "./build/about-push-assets";
 import vinext from "vinext";
 import { defineConfig } from "vite";
 import hostingConfig from "./.openai/hosting.json";
@@ -54,6 +55,7 @@ export default defineConfig(async () => {
     plugins: [
       vinext(),
       sites(),
+      aboutPushAssets(),
       cloudflare({
         viteEnvironment: { name: "rsc", childEnvironments: ["ssr"] },
         inspectorPort: false,
