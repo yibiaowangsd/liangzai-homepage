@@ -66,10 +66,10 @@ test('initial field covers a broad volume with sparse outer stars and dense fila
 
 test('cursor wake cannot rewrite silhouette targets and all nebula layers disappear when formed',async()=>{
  const {createNebula}=await import('../app/experience/three/nebula.ts');
- const {Vector4}=await import('three');
+ const {Vector4,Vector2}=await import('three');
  const nebula=createNebula(null,'nailong',1000),target=nebula.points.geometry.getAttribute('position').array.slice();
  const wake=Array.from({length:6},(_,i)=>new Vector4(i,2,1,2));
- nebula.interact(wake,new Vector3(1,2,1),new Vector3(1,2,1));
+ nebula.interact(wake,Array.from({length:6},()=>new Vector2(1,.4)),new Vector3(1,2,1),new Vector3(1,2,1),1.2);
  nebula.update(1.2,.4,800,true);
  assert.deepEqual(nebula.points.geometry.getAttribute('position').array,target);
  assert.equal(nebula.points.visible,true);assert.ok(nebula.points.children[0].visible);

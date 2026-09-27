@@ -55,15 +55,29 @@ export function createCelestialSystem() {
   const dustMaterial=new THREE.ShaderMaterial({uniforms:{uFade:{value:1}},transparent:true,depthWrite:false,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,vertexShader:"varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",fragmentShader:"uniform float uFade;varying vec2 vUv;void main(){float edge=pow(max(0.,1.-abs(vUv.y-.5)*2.),2.);gl_FragColor=vec4(.84,.75,.56,edge*pow(1.-vUv.x,1.8)*uFade*.28);}"});
   comet.add(new THREE.Mesh(dustGeometry,dustMaterial));
   const materials=new Map<THREE.Material,number>();group.traverse(object=>{if(object instanceof THREE.Mesh||object instanceof THREE.Sprite){const list=Array.isArray(object.material)?object.material:[object.material];list.forEach(m=>{materials.set(m,m.opacity);m.transparent=true;});}});
-  return {group,update(time:number,progress:number){
+  const respondingBodies = [star, saturn, azure].map((body, index) => ({
+    body, origin: body.position.clone(), side: index === 1 ? -1 : 1,
+  }));
+  return {group,update(time:number,progress:number,motion=true){
     const fade=1-THREE.MathUtils.smoothstep(progress,.12,.67);group.visible=fade>.001;
     if(!group.visible)return;
+    // Progress-driven arcs: a small coordinated response, reversible on early release.
+    // No scale squash or spring recoil; the bodies keep their rigid silhouettes.
+    const charge = motion ? THREE.MathUtils.smoothstep(progress, 0, .45) : 0;
+    for (const { body, origin, side } of respondingBodies) {
+      body.position.copy(origin);
+      body.position.x += Math.sin(charge * 1.1) * .28 * side;
+      body.position.y += Math.sin(charge * Math.PI * .8) * .20;
+    }
+    saturn.rotation.z = -.35 + charge * .12;
+    rings.rotation.z = charge * .18;
+    corona.scale.setScalar(1.7 * (1 + charge * .12));
     atmosphere.material.uniforms.uFade.value=fade;dustMaterial.uniforms.uFade.value=fade;clouds.rotation.y=time*.026;star.rotation.y=time*.038;
     materials.forEach((opacity,material)=>material.opacity=opacity*fade);tailMat.uniforms.uFade.value=fade;
-    moonOrbit.rotation.y=time*.28;azure.rotation.y=time*.07;
-    satellite.position.set(2.6+Math.cos(time*.13)*.35,.8+Math.sin(time*.2)*.18,-.4);satellite.rotation.set(.22,time*.17,-.22);
+    moonOrbit.rotation.y=time*.28+charge*.65;azure.rotation.y=time*.07+charge*.22;
+    satellite.position.set(2.6+Math.cos(time*.13)*.35,.8+Math.sin(time*.2)*.18,-.4);satellite.position.y+=charge*.22;satellite.rotation.set(.22+charge*.12,time*.17+charge*.35,-.22);
     corona.material.rotation=time*.025;
-    const phase=(time+3)%16;comet.visible=phase<6;
+    const phase=(time+3+charge*1.3)%16;comet.visible=phase<6;
     const travel=phase/6;comet.position.set(-7+travel*15,6-travel*3.8,-1.5);comet.rotation.z=Math.atan2(-3.8,15);
   }};
 }

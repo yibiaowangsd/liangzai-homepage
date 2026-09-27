@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { gsap, useGSAP, useExperience } from "./Motion";
 
 const links = [
@@ -12,6 +12,13 @@ const links = [
   ["/pqc-practice", "密码实验室", "PRACTICE"],
   ["/about", "关于我", "ABOUT ME"],
 ];
+/** The laboratory is a standalone document, not an RSC route to prefetch. */
+function NavigationLink({ href, ...props }: ComponentProps<"a"> & { href: string }) {
+  return href === "/pqc-practice"
+    ? <a href={href} {...props} />
+    : <Link href={href} {...props} />;
+}
+
 export function SiteHeader() {
   const path = usePathname();
   const [open, setOpen] = useState(false);
@@ -96,13 +103,13 @@ export function SiteHeader() {
         </Link>
         <nav className="desktop-nav" aria-label="主导航">
           {links.map(([href, text]) => (
-            <Link
+            <NavigationLink
               href={href}
               key={href}
               aria-current={path === href ? "page" : undefined}
             >
               {text}
-            </Link>
+            </NavigationLink>
           ))}
         </nav>
         <div className="chrome-actions">
@@ -145,14 +152,14 @@ export function SiteHeader() {
                 </>
               );
               return (
-                <Link
+                <NavigationLink
                   key={href}
                   href={href}
                   onClick={() => setOpen(false)}
                   aria-current={path === href ? "page" : undefined}
                 >
                   {content}
-                </Link>
+                </NavigationLink>
               );
             })}
           </nav>
@@ -173,9 +180,9 @@ export function SiteFooter() {
       </div>
       <nav aria-label="页脚导航">
         {links.slice(1).map(([href, text]) => (
-          <Link key={href} href={href}>
+          <NavigationLink key={href} href={href}>
             {text}
-          </Link>
+          </NavigationLink>
         ))}
       </nav>
       <div className="footer-bottom">
