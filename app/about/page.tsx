@@ -32,7 +32,7 @@ export default function About() {
         <section className={styles.hero} aria-labelledby="profile-title">
           <div className={styles.heroCopy}>
             <p className={styles.kicker} data-intro>关于我</p>
-            <h1 id="profile-title" data-title><span>你好 我是</span><br />Yibiao</h1>
+            <h1 id="profile-title" data-title><span>你好 我是</span>Yibiao</h1>
             <p className={styles.intro} data-intro>从山大出发<br />在密码与安全的世界里继续探索</p>
             <p className={styles.bio} data-intro>我在山东大学完成了网络空间安全专业的本科与硕士学习，现在中电信量子集团工作。这里记录我的技术探索，也收藏一些关于代码、设计与好奇心的尝试。</p>
             <div className={styles.actions} data-intro>
