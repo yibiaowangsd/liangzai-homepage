@@ -28,6 +28,8 @@ export type HeroScene = {
 
 /** Only imported by a client effect. No timers, WebGL or loaders run during SSR. */
 export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => void, signal: AbortSignal, onArrival: (phase: ArrivalPhase) => void = () => {}, onFusion: (phase: FusionPhase) => void = () => {}): HeroScene {
+  const loading = new AbortController();
+  const loadSignal = AbortSignal.any([signal, loading.signal]);
   const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:"high-performance"});
   renderer.setClearColor(0x050a13,0);renderer.outputColorSpace=THREE.SRGBColorSpace;
   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.96;
@@ -166,7 +168,12 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     bloom.enabled=width>=600&&(p>.6||merging);
     bloom.strength=.10+(enabled?climax*.34:0);
     renderer.toneMappingExposure=.96;
-    camera.zoom=(merging?1.06:mode==="duo"?.94:1)*(1+(enabled?(merging?Math.sin(f*Math.PI)*.12:Math.sin(p*Math.PI)*.065):0));camera.updateProjectionMatrix();
+    const zoom = (merging ? 1.06 : mode === "duo" ? .94 : 1)
+      * (1 + (enabled ? (merging ? Math.sin(f * Math.PI) * .12 : Math.sin(p * Math.PI) * .065) : 0));
+    if (camera.zoom !== zoom) {
+      camera.zoom = zoom;
+      camera.updateProjectionMatrix();
+    }
     observatory.orbit.visible=p>.45;
     observatory.glow.emissive.set(mode==="nailong"?0xffbc62:0x6fbee7);
     shockMaterial.color.set(mode==="nailong"?0xffd68f:0xb9eaff);
@@ -198,7 +205,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const observer=new ResizeObserver(()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(resize);});observer.observe(canvas);
   const visibility=new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;sync();},{threshold:.025});visibility.observe(canvas);
   const ensure=(id:CharacterId)=>{
-    if(!pending.has(id))pending.set(id,loadCharacter(id,signal).then(actor=>{if(disposed){disposeObject(actor);throw new DOMException("Scene disposed","AbortError");}if(id==="liangzai")rig=createLiangzaiRig(actor);materializations.set(id,prepareMaterialization(actor));actors.set(id,actor);actor.visible=false;scene.add(actor);return actor;}).catch(error=>{pending.delete(id);throw error;}));
+    if(!pending.has(id))pending.set(id,loadCharacter(id,loadSignal).then(actor=>{if(disposed){disposeObject(actor);throw new DOMException("Scene disposed","AbortError");}if(id==="liangzai")rig=createLiangzaiRig(actor);materializations.set(id,prepareMaterialization(actor));actors.set(id,actor);actor.visible=false;scene.add(actor);return actor;}).catch(error=>{pending.delete(id);throw error;}));
     return pending.get(id)!;
   };
   let viewTween:gsap.core.Tween|null=null;
@@ -322,7 +329,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   for(const [type,listener] of Object.entries(listeners))canvas.addEventListener(type,listener as EventListener);
   document.addEventListener("visibilitychange",sync);
   function dispose(){
-    if(disposed)return;disposed=true;modelRequest++;coast?.kill();viewTween?.kill();frames.dispose();ctx.revert();lookXTo.tween.kill();lookYTo.tween.kill();rig=null;
+    if(disposed)return;disposed=true;loading.abort();modelRequest++;coast?.kill();viewTween?.kill();frames.dispose();ctx.revert();lookXTo.tween.kill();lookYTo.tween.kill();rig=null;
     observer.disconnect();visibility.disconnect();cancelAnimationFrame(resizeFrame);document.removeEventListener("visibilitychange",sync);signal.removeEventListener("abort",dispose);
     for(const [type,listener] of Object.entries(listeners))canvas.removeEventListener(type,listener as EventListener);
     fusionNebula?.dispose();fusionNebula=null;

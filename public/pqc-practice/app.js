@@ -213,7 +213,8 @@ function startWorker() {
         const pending = active;
         active = null;
         clearTimeout(pending.timer);
-        data.type === 'error' ? pending.reject(new Error(data.message)) : pending.resolve(data.result);
+        if (data.type === 'error') pending.reject(new Error(data.message));
+        else pending.resolve(data.result);
       }
     };
     worker.onerror = event => {

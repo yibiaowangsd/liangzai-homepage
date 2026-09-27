@@ -6,12 +6,26 @@ import { NGCC_WASM } from '../public/pqc-practice/ngcc-runtime.js';
 
 const root = new URL('../public/pqc-practice/', import.meta.url);
 const catalog = JSON.parse(readFileSync(new URL('ngcc-catalog.json', root), 'utf8'));
+const buildStatus = JSON.parse(readFileSync(new URL('ngcc-build-status.json', root), 'utf8'));
+
+test('unavailable runtime slots have explicit non-verified build evidence', () => {
+  for (const [id, names] of Object.entries(NGCC_WASM)) {
+    for (const [index, basename] of names.entries()) {
+      if (basename !== null) continue;
+      const result = buildStatus.results[id]?.[index];
+      assert.ok(result?.status, `${id}/${index} is missing build evidence`);
+      assert.notEqual(result.status, 'verified', `${id}/${index} lost a verified runtime`);
+    }
+  }
+});
 
 for (const [id, names] of Object.entries(NGCC_WASM)) {
   const candidate = catalog.candidates.find(item => item.id === id);
   assert.ok(candidate, `Missing ${id} in candidate catalog`);
   for (const [index, basename] of names.entries()) {
-    test(`${id} ${candidate.parameters[index].name}: real submitted WASM runs a round trip`, async () => {
+    test(`${id} ${candidate.parameters[index].name}: real submitted WASM runs a round trip`, {
+      skip: basename === null ? 'No verified browser module; see ngcc-build-status.json' : false,
+    }, async () => {
       const { default: factory } = await import(new URL(`wasm/${basename}.mjs`, root));
       const mod = await factory({ wasmBinary: new Uint8Array(readFileSync(new URL(`wasm/${basename}.wasm`, root))) });
       const sizes = candidate.parameters[index].sizes;
