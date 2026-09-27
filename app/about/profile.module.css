@@ -1,8 +1,8 @@
 .profile { --profile-muted: #a0a6af; max-width: 1680px; margin: 0 auto; padding: 0 6vw; }
-.hero { display: grid; grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: 6vw; padding: 100px 0 90px; }
+.hero { display: grid; grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: 6vw; padding: 52px 0 72px; }
 .kicker { color: #a7b9ca; font-size: 12px; letter-spacing: .16em; margin: 0 0 24px; }
-.hero h1 { font-size: clamp(96px, 9.5vw, 154px); font-weight: 500; letter-spacing: -.065em; line-height: 1.06; margin: 0 0 30px; }
-.hero h1 span { font-size: 30px; font-weight: 400; letter-spacing: .05em; color: #c3c8d0; }
+.hero h1 { font-size: clamp(88px, 8.5vw, 136px); font-weight: 500; letter-spacing: -.065em; line-height: 1.06; margin: 0 0 30px; }
+.hero h1 span { display: block; line-height: 1.4; margin-bottom: 18px; font-size: 28px; font-weight: 400; letter-spacing: .05em; color: #c3c8d0; }
 .intro { font-size: clamp(22px, 2vw, 30px); line-height: 1.6 !important; margin: 0 0 20px; letter-spacing: .02em; }
 .bio { max-width: 580px; font-size: 15px; color: var(--profile-muted); margin: 0; }
 .actions { display: flex; align-items: center; gap: 30px; margin-top: 34px; }
@@ -50,5 +50,5 @@
 .contact h2 { font-size: clamp(30px, 3.5vw, 52px); font-weight: 400; margin: 0 0 25px; }
 .contact > p:not(.kicker) { color: var(--profile-muted); font-size: 14px; margin-bottom: 30px; }
 .signature { display: block; margin-top: 80px; color: #78818c; font-size: 10px; letter-spacing: .3em; }
-@media (max-width: 1100px) { .hero { gap: 35px; padding-top: 65px; } .hero h1 { font-size: 96px; } .focusGrid { gap: 20px; } .index > div { gap: 20px; } }
+@media (max-width: 1100px) { .hero { gap: 35px; padding-top: 40px; } .hero h1 { font-size: 96px; } .focusGrid { gap: 20px; } .index > div { gap: 20px; } }
 @media (max-width: 760px) { .hero { grid-template-columns: 1fr; } .hero h1 { font-size: 88px; } .index { flex-direction: column; } .index > div { flex-wrap: wrap; } .sectionHead { grid-template-columns: 1fr; gap: 16px; } .sectionHead > p:last-child { justify-self: start; } .timeline li { grid-template-columns: 1fr; } .period { padding-bottom: 20px; } .timelineBody { margin-left: 4px; padding-left: 26px; } .focusGrid { grid-template-columns: 1fr; gap: 40px; } .focusCard > p { min-height: 0; } .project { grid-template-columns: 25px 1fr; } .projectAction { grid-column: 2; } .section { padding: 65px 0; } }
