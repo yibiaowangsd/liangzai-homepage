@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
-import { useExperience } from "./Motion";
 import { runPageArrival } from "./page-arrival";
 
 export default function PageArrival() {
   const pathname = usePathname();
-  const { enabled } = useExperience();
-  useEffect(() => {
-    if (enabled) return runPageArrival();
-  }, [pathname, enabled]);
+  // Only navigation starts an entry, never hydration of motion preferences or
+  // toggling motion back on. The runner reads and observes browser preferences.
+  useLayoutEffect(() => runPageArrival(pathname), [pathname]);
   return null;
 }

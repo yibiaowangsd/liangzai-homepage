@@ -4,7 +4,6 @@ import "./experience/cinematic.css";
 import { ExperienceProvider } from "./experience/Motion";
 import AboutPushTransition from "./experience/AboutPushTransition";
 import PageArrival from "./experience/PageArrival";
-import "./experience/page-arrival.css";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
 
 export const metadata: Metadata = {
