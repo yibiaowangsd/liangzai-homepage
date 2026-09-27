@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MotionSurface } from "../experience/Motion";
 import styles from "./profile.module.css";
+import FloatingIdentity from "./FloatingIdentity";
 
 export const metadata: Metadata = {
   title: "关于我 Wang Yibiao",
@@ -39,14 +40,7 @@ export default function About() {
               <a className="line-link" href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">GitHub</a>
             </div>
           </div>
-          <aside className={styles.identity} data-intro aria-label="个人名片">
-            <div className={styles.cardTop}><span>WANG YIBIAO</span><span className={styles.status}>持续探索中</span></div>
-            <span className={styles.monogram} aria-hidden="true">WY</span>
-            <div className={styles.cardBottom}>
-              <p>密码学与工程实践</p>
-              <dl><div><dt>现在</dt><dd>中电信量子集团</dd></div><div><dt>毕业于</dt><dd>山东大学</dd></div><div><dt>关注</dt><dd>抗量子密码与安全协议</dd></div></dl>
-            </div>
-          </aside>
+          <FloatingIdentity />
         </section>
         <nav className={styles.index} aria-label="个人主页目录">
           <span>一份仍在续写的个人记录</span>
