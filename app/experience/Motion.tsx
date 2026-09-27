@@ -12,16 +12,15 @@ import {
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { SplitText } from "gsap/SplitText";
 
 // Official greensock/gsap-skills: scoped React lifecycle, timelines,
 // responsive matchMedia and transform-only continuous interactions.
 // useGSAP is headless and registration wakes GSAP's ticker.
 // Never create that timer while Cloudflare evaluates the SSR module.
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
+  gsap.registerPlugin(useGSAP, ScrollTrigger);
 }
-export { gsap, useGSAP, ScrollTrigger, SplitText };
+export { gsap, useGSAP, ScrollTrigger };
 const MotionContext = createContext({
   enabled: false,
   paused: false,
@@ -105,33 +104,10 @@ export function usePageMotion(root: RefObject<HTMLElement | null>) {
         (context) => {
           if (!context.conditions?.motion) return;
           const el = root.current!;
-          const titles = el.querySelectorAll("[data-title]");
-          titles.forEach((title) => {
-            SplitText.create(title as HTMLElement, {
-              type: "lines",
-              mask: "lines",
-              autoSplit: true,
-              onSplit(split) {
-                return gsap.from(split.lines, {
-                  yPercent: 110,
-                  autoAlpha: 0,
-                  duration: 1.15,
-                  stagger: 0.12,
-                  ease: "power4.out",
-                });
-              },
-            });
-          });
-          const intro = el.querySelectorAll("[data-intro]");
-          if (intro.length)
-            gsap.from(intro, {
-              y: 26,
-              autoAlpha: 0,
-              duration: 1,
-              stagger: 0.12,
-              ease: "power3.out",
-            });
+          // PageArrival / AboutPush own entry. Never hide already-painted hero
+          // content again during hydration, preference changes or font loading.
           el.querySelectorAll("[data-reveal]").forEach((target) => {
+            if (target.getBoundingClientRect().top < innerHeight) return;
             gsap.from(target, {
               y: 38,
               autoAlpha: 0,
