@@ -2,9 +2,9 @@
 
 目录快照：c5261784ef27e7363b1bbace3d687932fda35ccd。此表根据当前仓库的运行映射、已收录的 JS/WASM 文件和逐参数构建记录生成。运行 `node scripts/generate-pqc-availability.mjs` 可重新核对。
 
-119 个国内征集候选、586 组参数中，332 组已接入，254 组未接入；38 个候选完全无法运行，13 个候选仅部分参数能运行。
+119 个国内征集候选、586 组参数中，349 组已接入，237 组未接入；34 个候选完全无法运行，14 个候选仅部分参数能运行。
 
-未接入原因（组数）：原生测试超时 9；WASM 运行失败 57；编译失败 63；原生测试失败 49；编译或运行超时 8；本快照未收录源码 68。
+未接入原因（组数）：原生测试超时 9；WASM 运行失败 57；编译失败 45；原生测试失败 49；编译或运行超时 9；本快照未收录源码 68。
 
 “本快照未收录源码”只表示固定的 ngcc-harness 快照没有对应实现目录，不代表官方未公开源码。功能测试通过也不等于安全认证。
 
@@ -13,9 +13,7 @@
 | 编号与候选 | 可运行参数 | 尚不可运行的参数 | 原因（组数） |
 | --- | ---: | --- | --- |
 | kem-05 · BIKE-MLThre | 0/3 | BIKE_v2_128、BIKE_v2_256、BIKE_v2_512 | 本快照未收录源码 3 |
-| kem-06 · BRA | 0/3 | BRA-128、BRA-256、BRA-512 | 编译失败 3 |
-| kem-07 · BRQC | 0/3 | BRQC-128、BRQC-256、BRQC-512 | 编译失败 3 |
-| kem-10 · C-Multi-UR-AG | 0/3 | CMultiURAG-128、CMultiURAG-256、CMultiURAG-512 | 编译失败 3 |
+| kem-10 · C-Multi-UR-AG | 2/3 | CMultiURAG-256 | 编译或运行超时 1 |
 | kem-11 · COMPASS-KEM | 1/4 | COMPASS-KEM-256、COMPASS-KEM-384、COMPASS-KEM-512 | WASM 运行失败 3 |
 | kem-12 · CTL Algorithm | 0/3 | CTL-257-512、CTL-3329-2048、CTL-769-1024 | 编译失败 3 |
 | kem-13 · DKEM (Ding Key Encapsulation) | 0/3 | DKEM-128、DKEM-256、DKEM-512 | WASM 运行失败 3 |
@@ -70,7 +68,6 @@
 | kex-04 · DKEX (Ding Key Exchange) | 0/3 | DKEX-128、DKEX-256、DKEX-512 | 编译失败 3 |
 | kex-05 · Loom | 0/3 | LoomKEX-128、LoomKEX-256、LoomKEX-512 | WASM 运行失败 3 |
 | kex-06 · MAMBA-NIKE | 0/5 | MAMBA-NIKE-128、MAMBA-NIKE-192、MAMBA-NIKE-256、MAMBA-NIKE-384、MAMBA-NIKE-512 | WASM 运行失败 5 |
-| kex-07 · NEV-AKE | 0/9 | NEV_AKE_1024_1409_ICCS、NEV_AKE_1024_769_C_ICCS、NEV_AKE_1024_769_ICCS、NEV_AKE_2048_1409_ICCS、NEV_AKE_2048_769_C_ICCS、NEV_AKE_2048_769_ICCS、NEV_AKE_512_1409_ICCS、NEV_AKE_512_769_C_ICCS、NEV_AKE_512_769_ICCS | 编译失败 9 |
 | kex-08 · NIIKE | 0/3 | NIIKE-lv128、NIIKE-lv256、NIIKE-lv512 | WASM 运行失败 3 |
 
 ## 哈希

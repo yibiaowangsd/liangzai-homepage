@@ -107,6 +107,11 @@ def build_one(harness, candidate, parameter, index, label, limit, native_status=
             bridge_flags.append("-DNGCC_DIGEST_BITS=" + str(parameter["sizes"]["DigestBits"]))
         if candidate["type"] == "kex":
             bridge_flags.append("-DNGCC_KEX_PASSES=" + str(parameter["sizes"]["Passes"]))
+            if "reportedTotalMessageBytes" in parameter:
+                bridge_flags.extend([
+                    "-DNGCC_KEX_REPORTED_TOTAL_BYTES=" + str(parameter["reportedTotalMessageBytes"]),
+                    "-DNGCC_KEX_ACTUAL_TOTAL_BYTES=" + str(parameter["sizes"]["TotalMessageBytes"]),
+                ])
         compiler = "em++" if meta["cxx"].strip() else "emcc"
         link = [compiler, *flags, *bridge_flags, "-I" + str(harness / "api"),
                 str(REPO / "scripts/ngcc-wasm-bridge.c"),

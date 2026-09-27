@@ -1,0 +1,327 @@
+{
+  "date": "2026-09-27",
+  "source_revision": "c5261784ef27e7363b1bbace3d687932fda35ccd",
+  "toolchain": "Emscripten 6.0.10",
+  "native_seed_bytes": [
+    31,
+    72
+  ],
+  "attempted": 18,
+  "recovered": 17,
+  "records": [
+    {
+      "id": "kem-06",
+      "parameter": 0,
+      "label": "BRA-128",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "pk": "23fb2e9e35a3e1481c549008fd6ca150cf8af3eef52f4ee732bb046a66e60130",
+        "sk": "49ea7a3def41ecb3b279d5aba99fef7afea2c2ec24fe2455a6a3797bef316072",
+        "ct": "f51b12cc044887255671d48cc5b0358177f75aabb060b5770c03c99fad1dc227",
+        "ss": "cecfb5d9c44090401c98d4f69e042761f26fe9c325e1b3d3170f85e61a9e4a89"
+      },
+      "sha256": {
+        "mjs": "0b2e05183ce1fad225c475d7625eafd050028e41d07997b84ddef02c14b400f5",
+        "wasm": "557d5c2617aa2566d3f11d3741ebc7f5f6f387314c6d9158e13f7fc12eb30a94"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kem-06",
+      "parameter": 1,
+      "label": "BRA-256",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "pk": "2dee8f75c2ba2a26a4671b56d1c1d41976fc9d9aa2d23a6515feb0b8ec1f4a61",
+        "sk": "466245645f0df005d6296c95942eb919dd41eae3f1cdb9445657b69c7a2e5a52",
+        "ct": "537423b0b64cc8458056f3e29f5436643295edea0d405182ded0e2efaae226e6",
+        "ss": "840de571f1799c62fa1c693246d36b808aeb769c2abfcfa581182c4813150e69"
+      },
+      "sha256": {
+        "mjs": "c54964e5034ef09579597b0a47f8f59a0a740aaa6733c8d156cf248659cff5f8",
+        "wasm": "61f078ce5b08bcba1793a925f7102907479b324008e78e3c09c546a7227cab87"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kem-06",
+      "parameter": 2,
+      "label": "BRA-512",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "pk": "78180c8bc4950733d0f51d59e01da1df15f8c199bf53a7f961f9b98438c1edc4",
+        "sk": "092477f29669eee318bf04a37f9311282bfd09b26e36261807fce2e26b8874aa",
+        "ct": "90313a4478ccf6a68060cba97cf514d01a0552d6c66451ee1ad1ee89b6e3036a",
+        "ss": "5a83e16ffd5882154027602d43b0a5afad1df3b11c510d6a44662d264618398f"
+      },
+      "sha256": {
+        "mjs": "e708c8720cfd500a611d1419b8afb5ecffe14aba9ab680b6d2b71d8bcc41a920",
+        "wasm": "d6b137f80f4dacdddd8fc52efef0a92cf52f58b5cd6db8073079bde0033316b8"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kem-07",
+      "parameter": 0,
+      "label": "BRQC-128",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "pk": "68915bd607628702b110745195711684b40b4415ed93a25f21a5dc1c58a5ddd5",
+        "sk": "25749f9f27aa76ff8169ed8ec6b5c6b761f9d595d285140e97c8b96214d4e0f7",
+        "ct": "a4f1ba36eae543aa16f94bac16323afac169539f5d51a1a729d968d897b169e6",
+        "ss": "c4f9e0761957aa44f5b44323d5bbb360cf7b09f9b658aa9a58d37e1de81b5e8e"
+      },
+      "sha256": {
+        "mjs": "513c4e37152b3389ebf11f6c9c5fdbb8cc401f0855e868b3bf53c61760b8fc3d",
+        "wasm": "740ad66456b4151167be32c360135f0397e58a5aefa4b8460157df669c0278b4"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kem-07",
+      "parameter": 1,
+      "label": "BRQC-256",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "pk": "761eda5832926834c4a52d1ac805af8b871a24e968912f082735902696d43f1c",
+        "sk": "cbd92fba6d71cd3e59e336d9eddf1a7a8463dc2ab0a524de7d48052733e2b873",
+        "ct": "6594e24a2f1d657271b84cd5720e69dc5729574dbcb6e2884e9b78e7bb1e499a",
+        "ss": "4eeb48313ab98d9b160a67069ab21893a8c506e996c91098c76b03e7655d3095"
+      },
+      "sha256": {
+        "mjs": "5d169c0291c766337ab9ee525e1a74544a9d0735f47b07800e1cb78791112f29",
+        "wasm": "b5feff1b4c8f73a9586a3e4770d31bc164661385d3e15d1915036ffc80c8cd49"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kem-07",
+      "parameter": 2,
+      "label": "BRQC-512",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "pk": "12f7fe0ea20a8c47f6e14b8293c6e81d4d7bfdaff012e9bb886b2fca6c23b809",
+        "sk": "4ca764002eeab11c3fe59381bdc8ce4d576cb198b6be15232a84c3f0a09e7537",
+        "ct": "a8f09abc8be76f4d2eda2b6d43a746617332f1697c69f0257b8a50b0aae244dc",
+        "ss": "21c305f7a1296eb316bbf5f29ce2cff3c805dbe87fe9e884c22cbdeb2560011b"
+      },
+      "sha256": {
+        "mjs": "5b62409605b84913b5aecd8df3546cb1871d5f6959486e154e9c2f880a1f0f88",
+        "wasm": "8509057efe5e806ef32a5bc567c51aeaf345d69e985c7aa6531ff56723b157f6"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kem-10",
+      "parameter": 0,
+      "label": "CMultiURAG-128",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "pk": "af679f92fe7c60698904ba46c3c904116cde32d9980791bd0002e16a89a21080",
+        "sk": "3c71c732589b59ae068846b16edb5d36d18ac938f6beadb792ca88d43d7879e2",
+        "ct": "52d8475c3df601844abe8ed111511590df3b98e6c85c2739023364d3e212ac9b",
+        "ss": "ee1146077362272420b89271dcf6667fc109dab7397ea480843f706806a2e152"
+      },
+      "sha256": {
+        "mjs": "c7f165c2579bff3f3dcb6d930bab49fb73dc451833364705b4f889e825148b35",
+        "wasm": "7229f4b187e30da9ec9780577fd04defed14741f02697f846a30222c9c5188e3"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kem-10",
+      "parameter": 1,
+      "label": "CMultiURAG-256",
+      "previous_status": "compile_failed",
+      "status": "timeout",
+      "native": "passed",
+      "reason": "x86 适配已修复且原生 KAT 通过，但 WASM 检查超过 30 秒；保持未接入。"
+    },
+    {
+      "id": "kem-10",
+      "parameter": 2,
+      "label": "CMultiURAG-512",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "pk": "6a6e2ad161d7f35a509dff0c7b853a49561aceab5b105fa3218640988432565b",
+        "sk": "9f003ec951c4c5d632ffd644f0e15db7cc7fb1b67e7faefd9d17e8b7e223944e",
+        "ct": "96e1a2158381c20f3c5f023719f15ca65da9a72d6489916ae294832e76732234",
+        "ss": "c83bc28e3629088e73dbd767db947a666b0c1524c9af38fa877fdb7acd73a722"
+      },
+      "sha256": {
+        "mjs": "9b03a9f92a3b97637ccfbf32991a16ded1401384bacbd2a62723b931c17257aa",
+        "wasm": "4e8a72d932b23e9ace28e0f7059b7e469275e5b55a90a5186455114802c1f9ee"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kex-07",
+      "parameter": 0,
+      "label": "NEV_AKE_1024_1409_ICCS",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "first": "6936b041669f98a2fde82c000eba3ef7f826da8fb662ea3ca49c94bf5ac384fc",
+        "second": "3f03000da3047a2b04bba0f3a9753c313a419cd37f7601924a2e4a337122bb3c"
+      },
+      "sha256": {
+        "mjs": "d9a0df7bc9e07ad3ee7577321e9abba74d3293934eda48b7b4dabd1ac99ea97b",
+        "wasm": "fd04dfbb659c5667d684a1850284a3226e0be9a7d631b551ce11ad1774ec6723"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kex-07",
+      "parameter": 1,
+      "label": "NEV_AKE_1024_769_C_ICCS",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "first": "208802eb7c553530ef2489b63b090066dd80cc96ff9fa49f29f0c7d353597b6f",
+        "second": "c7dd8fe2064f17f0174e621fb732199243a2bf8ffbd6b77df13592d93550ec8f"
+      },
+      "sha256": {
+        "mjs": "97e6bec11f1d66acfc12e8e5132134270bf26ee37e2abb53fe41bac9c5658b90",
+        "wasm": "524591999c6fc18d8c5ea389eb0edaf24c5fcf315d821d3ccdc8e5fdfb12a7f6"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kex-07",
+      "parameter": 2,
+      "label": "NEV_AKE_1024_769_ICCS",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "first": "a5a1e79835bbb8a5196d37c558148b094557d844bf75c7b0ac13919c86aa9643",
+        "second": "38be523d8b0e484cfa666d023c0454dee65cae1c1afc3ed3a582e319cdd16779"
+      },
+      "sha256": {
+        "mjs": "b8b72fa15598dab78a8b8a0dbab7818332f7a5dbce25804b2b96e156024ddddb",
+        "wasm": "667643f009512a994ae7a8638b22bc4f96e4ef374b4d21a1b36f0b7e87545b61"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kex-07",
+      "parameter": 3,
+      "label": "NEV_AKE_2048_1409_ICCS",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "first": "1b8b465418c788b0fa7c50496e5ccf3b221a7006ae667a42ff75f2d3c7d4fea3",
+        "second": "9a55c7514012fe8ad84cae46e9bb8848ea403fc71fc4b84f9b7ef6aa4567bf4b"
+      },
+      "sha256": {
+        "mjs": "71e4391f21126c50681983e93d0c78078e2b24e4975119ee924af4500e92d4f2",
+        "wasm": "ddbb4c5d68c8a66587c5ca6886acc401e2cdd3b108903170073ee860fa837e4c"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kex-07",
+      "parameter": 4,
+      "label": "NEV_AKE_2048_769_C_ICCS",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "first": "8059432509575c9f5f2dbba70786548e614fb91f7fb274e7a2af521bff952693",
+        "second": "b5ea6f4ab518f7cee8fb3b599eefe25e0d783ffc3025496bb562d99d65888c67"
+      },
+      "sha256": {
+        "mjs": "3650663efadfb6eb70bd14d4af707e8da44d3d1f5029b5c65fb460a0dacd2e2d",
+        "wasm": "a1334109f4f18813b205c0c91fc922975588d98d002e6bb3182456a67a2f4b2d"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kex-07",
+      "parameter": 5,
+      "label": "NEV_AKE_2048_769_ICCS",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "first": "41ef61951056438ef97d92d6383a982321b397a119cd8f81f054a8f41a34085e",
+        "second": "b5ad050652ebbf00b341ce3da1d873a3eabdd31895750913c8dd11048c527392"
+      },
+      "sha256": {
+        "mjs": "4959a7db23c792d78a698d11ceae3da03e3bf06f297e0c961f503353c8948967",
+        "wasm": "3653f4334e4189b953976adbcc1dd78cc5073d556d7b276d10c7bee690925538"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kex-07",
+      "parameter": 6,
+      "label": "NEV_AKE_512_1409_ICCS",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "first": "96eb74477cd27312a305c81c09f44ca47ad223223daa84b372a6944c08410f49",
+        "second": "95887a45548e79c2a30997828ab0faed8beee3b1d229a341675e805daf5955cc"
+      },
+      "sha256": {
+        "mjs": "0afce536d8b91f98e5ec732577fe4b8ed6edd171f828dd3c415a4625321de976",
+        "wasm": "44540040cac0fccdcbfa9b27599af33426ea5f3be2ecd8e4a95bf58584e02dc1"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kex-07",
+      "parameter": 7,
+      "label": "NEV_AKE_512_769_C_ICCS",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "first": "d367bfea32d85f81aa26839ad375063ff8182531eb50eb304a1874cb3d8f9383",
+        "second": "60c0da8333b7f26169c696cbf12927fea853ffcff63d97652f766695296e7a02"
+      },
+      "sha256": {
+        "mjs": "4235a1eb6db39d409c9c9459a6b383dcb297e9c92440d0e298f2fd5113fc00f0",
+        "wasm": "4858fc667020bb339b3821bf916b2bb322290a6fec63231dba0660e9be456fd0"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    },
+    {
+      "id": "kex-07",
+      "parameter": 8,
+      "label": "NEV_AKE_512_769_ICCS",
+      "previous_status": "compile_failed",
+      "status": "verified",
+      "native": "passed",
+      "parity": {
+        "first": "5fcbc8dbd27496fa1e7304b4f19862c09df7c6b749c1ca5868b799898cf25c69",
+        "second": "d6e1a31c48b5de7b4dbb809751f2972471999596fc0fb0c1a0a2d21139bfbef2"
+      },
+      "sha256": {
+        "mjs": "9092606d42c612ec019c4e98cc6d4c385c1eb6756a5e4ab9fc9ea8217b2f192b",
+        "wasm": "9ddd3d1b99dc1ce9c805f6644f30dcf27bb6152510b0f014aa14950c79db9388"
+      },
+      "reason": "原生官方 KAT、WASM 功能及原生/WASM 确定性输出对照通过。"
+    }
+  ]
+}

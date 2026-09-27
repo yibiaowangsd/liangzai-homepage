@@ -62,6 +62,14 @@ try {
     assert.equal(mod._lab_exchange(secret), 0, 'second reference protocol failed to agree on a secret');
     assert.notDeepEqual(first, mod.HEAPU8.slice(secret, secret + sizes.SharedSecretBytes),
       'independent seeds generated the same shared secret');
+    if (vectorFile) {
+      const native = JSON.parse(readFileSync(vectorFile))[String(index)];
+      assert.ok(native, 'native exchange parity record is missing');
+      assert.equal(createHash('sha256').update(first).digest('hex'), native.first,
+        'first exchange differs from native reference');
+      assert.equal(createHash('sha256').update(mod.HEAPU8.slice(secret, secret + sizes.SharedSecretBytes)).digest('hex'),
+        native.second, 'second exchange differs from native reference');
+    }
     seed(31);
     assert.equal(mod._lab_session_start(),0,'session initialization failed');
     assert.equal(mod._lab_session_pass(2),-1,'out-of-order pass accepted');
@@ -100,6 +108,15 @@ try {
       assert.equal(mod._lab_dec(recovered, ct, sk), 0, 'decapsulation failed');
       assert.deepEqual(mod.HEAPU8.slice(ss, ss + sizes.SharedSecretBytes),
         mod.HEAPU8.slice(recovered, recovered + sizes.SharedSecretBytes));
+      if (vectorFile) {
+        const native = JSON.parse(readFileSync(vectorFile))[String(index)];
+        assert.ok(native, 'native parity record is missing');
+        for (const [name, pointer, size] of [['pk', pk, pkSize], ['sk', sk, skSize],
+          ['ct', ct, outSize], ['ss', ss, sizes.SharedSecretBytes]]) {
+          const digest = createHash('sha256').update(mod.HEAPU8.slice(pointer, pointer + size)).digest('hex');
+          assert.equal(digest, native[name], `${name}: differs from native reference`);
+        }
+      }
       mod.HEAPU8[ct] ^= 1;
       const status = mod._lab_dec(recovered, ct, sk);
       assert.ok(status !== 0 || !mod.HEAPU8.slice(recovered, recovered + sizes.SharedSecretBytes)

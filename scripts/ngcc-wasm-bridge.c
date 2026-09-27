@@ -105,7 +105,16 @@ int lab_private_bytes(void) { return (int)kex_get_sk_len_bytes(); }
 int lab_state_a_bytes(void) { return (int)kex_get_sta_len_bytes(); }
 int lab_state_b_bytes(void) { return (int)kex_get_stb_len_bytes(); }
 int lab_shared_bytes(void) { return (int)kex_get_ss_len_bytes(); }
-int lab_total_bytes(void) { return (int)kex_get_total_msg_len_bytes(); }
+int lab_total_bytes(void) {
+#ifdef NGCC_KEX_ACTUAL_TOTAL_BYTES
+  /* NEV-AKE reports the maximum individual message length. Preserve that
+   * allocation bound below, but expose the actual sum to the browser. */
+  return kex_get_total_msg_len_bytes() == NGCC_KEX_REPORTED_TOTAL_BYTES
+    ? NGCC_KEX_ACTUAL_TOTAL_BYTES : -1;
+#else
+  return (int)kex_get_total_msg_len_bytes();
+#endif
+}
 static uint8_t *kexbuf(unsigned long long n) { return n <= 16 * 1024 * 1024 ? (uint8_t *)calloc((size_t)(n ? n : 1), 1) : NULL; }
 /* One session per isolated worker. Slots expose actual reference API outputs. */
 static uint8_t *session_buf[12];
