@@ -12,6 +12,7 @@ import { createObservatory, createStudioEnvironment } from "./observatory";
 import { createArrivalMemory, type ArrivalPhase } from "./arrival-state";
 import { createNebula, prepareMaterialization, type Nebula } from "./nebula";
 import { createCelestialSystem } from "./celestial";
+import { createNebulaWake } from "./nebula-wake";
 import { createFusionState, type FusionPhase } from "./fusion-state";
 import { createFusionGuardian } from "./fusion-model";
 import { createFrameScheduler, createShadowBudget } from "./render-scheduler";
@@ -72,16 +73,18 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   let nebulas:Nebula[]=[createNebula(null)], modelLoaded=false, currentPhase:ArrivalPhase="nebula";
   scene.add(nebulas[0].points);
   const stageElement=canvas.parentElement!;
-  const trail=Array.from({length:6},()=>new THREE.Vector4(0,0,-100,0));
-  const nebulaPointer=new THREE.Vector3(),pointerTarget=new THREE.Vector3(),ripple=new THREE.Vector3(0,0,-100);
+  const wake = createNebulaWake();
+  const ripple = new THREE.Vector3(0,0,-100);
+  const inputNdc = new THREE.Vector2();
+  let interactionTime = 0;
   const inputRay=new THREE.Raycaster(),inputPlane=new THREE.Plane(new THREE.Vector3(0,0,1),0),inputPoint=new THREE.Vector3();
   let pointerUntil=0,holdingInput=false;
   function trackNebula(e:PointerEvent,tap=false){
     if(!enabled||arrival.phase==="formed")return;
     const r=canvas.getBoundingClientRect();
-    inputRay.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
+    inputRay.setFromCamera(inputNdc.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
     if(!inputRay.ray.intersectPlane(inputPlane,inputPoint))return;
-    pointerTarget.set(inputPoint.x,inputPoint.y,1);
+    wake.sample(inputPoint.x, inputPoint.y, performance.now() / 1000);
     if(tap)ripple.set(inputPoint.x,inputPoint.y,time);
     pointerUntil=performance.now()+800;
     invalidate();
@@ -111,13 +114,8 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     fps:()=>dragging||arrival.active||(mode==="duo"&&fusion.active)||performance.now()<pointerUntil?60:30,
     render(now,delta){
       if(enabled||arrival.active||(mode==="duo"&&fusion.active))time+=delta;
-      nebulaPointer.lerp(pointerTarget,1-Math.exp(-delta*18));
-      // A continuous spring chain replaces the old 65 ms history jumps.
-      for(let i=0;i<trail.length;i++){
-        const target=i===0?nebulaPointer:trail[i-1],a=1-Math.exp(-delta*(i===0?22:12));
-        trail[i].x=THREE.MathUtils.lerp(trail[i].x,target.x,a);trail[i].y=THREE.MathUtils.lerp(trail[i].y,target.y,a);
-        trail[i].z=time;trail[i].w=THREE.MathUtils.lerp(trail[i].w,pointerTarget.z*(1-i*.1)*.28,a);
-      }
+      interactionTime = now / 1000;
+      wake.update(interactionTime);
       const was=fusion.phase;if(mode==="duo")fusion.step(delta);
       if(mode==="duo"&&was!=="merging"&&fusion.phase==="merging"){dragging=false;canvas.classList.remove("is-dragging");setView("reset");}
       publishFusion();
@@ -144,13 +142,13 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   const lookYTo=gsap.quickTo(look,"y",{duration:.22,ease:"power2.out",onUpdate:()=>invalidate(true)});
   function updateScene(){
     const p=arrival.progress, formed=arrival.phase==="formed",f=mode==="duo"?fusion.progress:0,merging=mode==="duo"&&(fusion.phase==="merging"||fusion.phase==="fused"||fusion.phase==="docked");
-    celestial.update(time,merging?1:p);
+    celestial.update(time,merging?1:p,enabled);
     if(rig){rig.look.x=look.x;rig.look.y=look.y;rig.apply(time,enabled&&formed);}
     for(const [id,actor] of actors){
       actor.visible=modelLoaded&&(mode==="duo"||mode===id)&&p>.78&&(!merging||f<.46);
       const material=materializations.get(id);if(material)material.value=merging?1-THREE.MathUtils.smoothstep(f,.12,.46):THREE.MathUtils.smoothstep(p,.78,1);
     }
-    for(const nebula of nebulas){nebula.interact(trail,nebulaPointer,ripple);nebula.update(time,p,height,enabled,merging?0:arrival.afterglow);}
+    for(const nebula of nebulas){nebula.interact(wake.segments,wake.metadata,wake.pointer,ripple,interactionTime);nebula.update(time,p,height,enabled,merging?0:arrival.afterglow);}
     if(merging){
       for(const [id,actor] of actors){const t=THREE.MathUtils.smoothstep(f,0,.48),side=id==="liangzai"?-1:1;
         actor.position.set(side*Math.cos(t*Math.PI*2)*1.24*(1-t),.092+Math.sin(t*Math.PI)*.6,side*Math.sin(t*Math.PI*2)*1.1*(1-t));
@@ -184,7 +182,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
     observatory.pulse.scale.setScalar(1+pose.energy*.075);
   }
   const sync=()=>{
-    if(document.hidden||!visible){pointerTarget.set(0,0,0);holdingInput=false;arrival.hold(false);fusion.hold(false);dragging=false;canvas.classList.remove("is-dragging");}
+    if(document.hidden||!visible){wake.clear();holdingInput=false;arrival.hold(false);fusion.hold(false);dragging=false;canvas.classList.remove("is-dragging");}
     frames.sync();
     invalidate();
   };
@@ -285,7 +283,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
       rotateInspection(target,THREE.MathUtils.clamp(velocityX*55,-width*.04,width*.04),THREE.MathUtils.clamp(velocityY*55,-height*.04,height*.04),width,height,camera.quaternion);
       coast=tweenOrientation(target,.22);
     }
-    if(distance<8&&!wasCharging){scene.updateMatrixWorld(true);const r=canvas.getBoundingClientRect();raycaster.setFromCamera(new THREE.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
+    if(distance<8&&!wasCharging){scene.updateMatrixWorld(true);const r=canvas.getBoundingClientRect();raycaster.setFromCamera(inputNdc.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);
       const actor=actors.get("liangzai"),hit=actor?.visible?raycaster.intersectObject(actor,true)[0]:null;
       if(hit){
         let node:THREE.Object3D|null=hit.object,action:GuardianAction="stretch";
@@ -301,7 +299,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
       }else if((fusion.phase==="fused"||fusion.phase==="docked")&&fusionModel?.actor.visible&&raycaster.intersectObject(fusionModel.actor,true).length){resonate("nailong");}else{const dragon=actors.get("nailong");if(dragon?.visible&&raycaster.intersectObject(dragon,true).length)resonate("nailong");}}
   };
   const cancel=()=>{holdingInput=false;fusion.hold(false);arrival.hold(false);sync();coast?.kill();dragging=false;canvas.classList.remove("is-dragging");};
-  const leave=()=>{pointerTarget.set(0,0,0);if(enabled&&!dragging&&arrival.phase==="formed"){lookXTo(0);lookYTo(0);}};
+  const leave=()=>{wake.leave();if(enabled&&!dragging&&arrival.phase==="formed"){lookXTo(0);lookYTo(0);}};
   const keyboard=(e:KeyboardEvent)=>{
     if(!["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","Enter"," "].includes(e.key))return;e.preventDefault();
     if(arrival.phase!=="formed"){
@@ -314,7 +312,7 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   };
   const lost=(e:Event)=>{e.preventDefault();lostContext=true;sync();onFallback();};
   const keyup=(e:KeyboardEvent)=>{if(e.key==="Enter"||e.key===" "){holdingInput=false;fusion.hold(false);arrival.hold(false);sync();}};
-  const blur=()=>{pointerTarget.set(0,0,0);cancel();};
+  const blur=()=>{wake.leave();cancel();};
   const lostCapture=()=>{if(dragging||arrival.phase!=="formed")cancel();};
   // A one-off redraw copies pixels before WebGL clears its non-preserved buffer.
   const snapshot=(event:Event)=>{
@@ -349,14 +347,13 @@ export function createHeroScene(canvas: HTMLCanvasElement, onFallback: () => voi
   signal.addEventListener("abort",dispose,{once:true});
   resize();
   return {
-    setMotion(value){enabled=value;if(!value){pointerTarget.set(0,0,0);nebulaPointer.set(0,0,0);ripple.z=-100;for(const point of trail)point.w=0;coast?.kill();viewTween?.kill();pulseTimeline?.kill();lookXTo.tween.pause();lookYTo.tween.pause();look.x=look.y=0;rig?.reset();pose.energy=0;applyPose();}sync();},
+    setMotion(value){enabled=value;if(!value){wake.clear();ripple.z=-100;coast?.kill();viewTween?.kill();pulseTimeline?.kill();lookXTo.tween.pause();lookYTo.tween.pause();look.x=look.y=0;rig?.reset();pose.energy=0;applyPose();}sync();},
     setView,resonate,perform,dispose,exitFusion,
     async setModel(next){
       if(disposed||lostContext)throw new Error("3D unavailable");
       const request=++modelRequest,ids:CharacterId[]=next==="duo"?["liangzai","nailong"]:[next];
       exitFusion();modelLoaded=false;arrival=arrivalMemory.select(next);lastProgress=-1;publishArrival();
-      pointerTarget.set(0,0,0);nebulaPointer.set(0,0,0);ripple.set(0,0,-100);pointerUntil=0;
-      for(const point of trail)point.set(0,0,-100,0);
+      wake.clear();ripple.set(0,0,-100);pointerUntil=0;
       coast?.kill();viewTween?.kill();pulseTimeline?.kill();rig?.reset();cancel();
       lookXTo.tween.pause();lookYTo.tween.pause();look.x=look.y=0;pose.energy=0;
       mode=next;publishFusion();

@@ -1,4 +1,8 @@
 import { runAboutPush } from "./about-push";
+import { runPageArrival } from "./page-arrival";
+import "./page-arrival.css";
+
+runPageArrival();
 
 // The laboratory is a standalone HTML application. Keep it alive above a real,
 // same-origin About page until the same 3D push has finished, then hand off.

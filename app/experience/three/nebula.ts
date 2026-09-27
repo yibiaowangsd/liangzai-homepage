@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { MeshSurfaceSampler } from "three/addons/math/MeshSurfaceSampler.js";
 import type { CharacterId } from "./character-assets";
+import { WAKE_LIFETIME, WAKE_SEGMENTS } from "./nebula-wake.ts";
 
 export type NebulaIdentity = CharacterId | "fusion";
 /** Hard support: outside this radius the cursor contributes exactly zero force. */
@@ -93,7 +94,9 @@ export function createNebula(actor: THREE.Group | null, id: NebulaIdentity = "li
   geometry.setAttribute("aScatter", new THREE.BufferAttribute(scatter, 3));
   geometry.setAttribute("aSeed", new THREE.BufferAttribute(seeds, 1));
   const uniforms = {
-    uTrail: { value: Array.from({length:6},()=>new THREE.Vector4(0,0,-100,0)) },
+    uTrail: { value: Array.from({length:WAKE_SEGMENTS},()=>new THREE.Vector4()) },
+    uTrailMeta: { value: Array.from({length:WAKE_SEGMENTS},()=>new THREE.Vector2(-100,0)) },
+    uWakeTime: { value: 0 }, uWakeScale: { value: 1 },
     uPointer: { value: new THREE.Vector3() }, uRipple: { value: new THREE.Vector3(0,0,-100) },
     uWakeRadius:{value:LOCAL_WAKE_RADIUS}, uKind: {value:id==="nailong"?1:0}, uAfterglow:{value:0}, uMotion: { value: 1 }, uTime: { value: 0 }, uProgress: { value: 0 }, uResolution: { value: 700 },
     uColor: { value: new THREE.Color(id === "nailong" ? "#ffca67" : "#65cfff") },
@@ -102,7 +105,8 @@ export function createNebula(actor: THREE.Group | null, id: NebulaIdentity = "li
   // Shared by stars and cloud wisps. All displacement stays on the GPU.
   const fieldShader = `
     uniform float uTime, uProgress, uResolution, uMotion, uKind, uAfterglow, uWakeRadius;
-    uniform vec4 uTrail[6]; uniform vec3 uPointer, uRipple;
+    uniform vec4 uTrail[6]; uniform vec2 uTrailMeta[6];
+    uniform float uWakeTime, uWakeScale; uniform vec3 uPointer, uRipple;
     uniform vec3 uColor, uAccent;
     vec3 nebulaPosition(vec3 start, vec3 target, float seed) {
       float gather = smoothstep(.05,.72,uProgress);
@@ -116,22 +120,29 @@ export function createNebula(actor: THREE.Group | null, id: NebulaIdentity = "li
       cloud += vec3(0.,2.6,0.);
       vec3 p = mix(cloud,target,gather);
       vec3 world = (modelMatrix*vec4(p,1.)).xyz;
-      float free = (1.-gather)*(1.-gather)*uMotion;
+      float free = (1.-gather)*(1.-gather)*uMotion*uWakeScale;
       float rippleAge = max(0.,uTime-uRipple.z);
       vec2 waveDelta = world.xy-uRipple.xy;
       float waveDistance = length(waveDelta);
       float wave = exp(-pow((waveDistance-rippleAge*2.)*3.,2.)) * exp(-rippleAge*3.) * (1.-smoothstep(.15,uWakeRadius,waveDistance));
       world.xy += waveDelta / max(.2,waveDistance) * wave * .48 * free;
-      vec2 wake = vec2(0.); float lift = 0.;
+      vec2 wake = vec2(0.); float weight = 0.;
       for(int i=0;i<6;i++) {
-        vec2 delta = world.xy-uTrail[i].xy;
-        float d = length(delta), age = max(0.,uTime-uTrail[i].z);
-        float force = (1.-smoothstep(.12,uWakeRadius,d)) * exp(-age*2.8) * uTrail[i].w * free;
+        vec2 start = uTrail[i].xy, stroke = uTrail[i].zw-start;
+        float along = clamp(dot(world.xy-start,stroke)/max(.0001,dot(stroke,stroke)),0.,1.);
+        vec2 delta = world.xy-(start+stroke*along);
+        float d = length(delta), age = max(0.,uWakeTime-uTrailMeta[i].x);
+        float decay = 1.-smoothstep(0.,${WAKE_LIFETIME},age);
+        float force = (1.-smoothstep(.12,uWakeRadius,d))*decay*uTrailMeta[i].y;
+        vec2 direction = stroke/max(.001,length(stroke));
         vec2 tangent = vec2(-delta.y,delta.x)/max(.3,d);
-        wake += (delta/max(.3,d)*.3 + tangent*.45) * force;
-        lift += force*.16;
+        wake += (delta/max(.3,d)*.20+tangent*.26+direction*.18)*force;
+        weight += force;
       }
-      world.xy += wake; world.z += lift;
+      // Normalize overlapping strokes: high event rates cannot inflate the whole field.
+      wake /= max(1.,weight);
+      wake *= min(1.,.24/max(.001,length(wake)));
+      world.xy += wake*free;
       return world;
     }
   `;
@@ -191,7 +202,7 @@ export function createNebula(actor: THREE.Group | null, id: NebulaIdentity = "li
   const mistNoise=new THREE.DataTexture(noiseBytes,noiseSize,noiseSize);mistNoise.wrapS=mistNoise.wrapT=THREE.RepeatWrapping;
   mistNoise.magFilter=mistNoise.minFilter=THREE.LinearFilter;mistNoise.needsUpdate=true;
   const mistMaterial = new THREE.ShaderMaterial({
-    uniforms:{...uniforms,uMistNoise:{value:mistNoise}},transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
+    uniforms:{...uniforms,uWakeScale:{value:.06},uMistNoise:{value:mistNoise}},transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,
     vertexShader: fieldShader + `
       attribute float aSeed; varying float vSeed, vOpacity; varying vec3 vColor;
       void main(){
@@ -224,8 +235,10 @@ export function createNebula(actor: THREE.Group | null, id: NebulaIdentity = "li
   if (actor) { points.position.copy(actor.position); points.quaternion.copy(actor.quaternion); points.scale.copy(actor.scale); }
   return {
     points,
-    interact(trail: readonly THREE.Vector4[], pointer: THREE.Vector3, ripple: THREE.Vector3) {
+    interact(trail: readonly THREE.Vector4[], metadata: readonly THREE.Vector2[], pointer: THREE.Vector3, ripple: THREE.Vector3, now: number) {
       trail.forEach((value,i)=>uniforms.uTrail.value[i].copy(value));
+      metadata.forEach((value,i)=>uniforms.uTrailMeta.value[i].copy(value));
+      uniforms.uWakeTime.value=now;
       uniforms.uPointer.value.copy(pointer);uniforms.uRipple.value.copy(ripple);
     },
     update(time: number, progress: number, height: number, motion = true, afterglow = 0) {

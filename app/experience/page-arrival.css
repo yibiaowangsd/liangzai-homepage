@@ -1,0 +1,14 @@
+/* One broad matte surface; navigation stays available above the reveal. */
+.page-arrival {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+  background: linear-gradient(165deg, #101419, #07090d 72%);
+  border-bottom: 1px solid rgb(220 230 240 / 12%);
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-arrival { display: none; }
+}
