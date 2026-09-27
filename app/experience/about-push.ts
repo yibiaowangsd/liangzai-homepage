@@ -116,26 +116,28 @@ export function runAboutPush(source: HTMLElement, options: {
       if (done || !scene) return;
       const width = actor.offsetWidth;
       // Both the page edge and the actor derive from this same displacement.
-      const motion = { edge: 0, enter: -width, stride: 0 };
+      const motion = { edge: 0, approach: 0 };
       actor.style.visibility = "visible";
       timeline = gsap.timeline({ id: "about-push", onComplete: () => finish(), onUpdate() {
         if (!scene) return;
-        gsap.set(page, { x: motion.edge });
-        gsap.set(actor, { x: motion.edge + motion.enter });
-        scene.pose.stride = motion.stride;
+        // Distance-driven gait stays still during the planted anticipation beat.
+        scene.pose.stride = motion.edge / width * 4.8;
         scene.render(timeline!.time());
+        const reach = width * (1 - motion.approach) + scene.contactX * width * motion.approach;
+        gsap.set(page, { x: motion.edge });
+        gsap.set(actor, { x: motion.edge - reach });
       } });
-      // Arrive, plant both palms, recoil with effort, then accelerate the heavy page.
-      timeline.to(motion, { enter: -width * .76, duration: .32, ease: "power2.out" }, 0)
-        .to(scene.pose, { effort: 1, lean: .18, duration: .28 }, .18)
-        .to(motion, { edge: width * .84, duration: .44, ease: "power2.out" }, .26)
-        .to(motion, { stride: Math.PI * 3, duration: .7, ease: "none" }, 0)
-        .to(motion, { edge: width * .84 + 12, duration: .16, ease: "power2.out" }, .7)
-        .to(motion, { edge: width * .84 - 4, duration: .15, ease: "power1.inOut" }, .86)
-        .to(scene.pose, { lean: .28, duration: .18 }, .86)
-        .to(motion, { edge: innerWidth + width, duration: 1.35, ease: "power2.in" }, 1.05)
-        .to(motion, { stride: Math.PI * 13, duration: 1.35, ease: "power1.in" }, 1.05)
-        .to(scene.pose, { effort: .8, lean: .22, duration: .3 }, 2);
+      // Overlapping weight shifts replace the abrupt recoil and rigid, uniform march.
+      timeline.to(motion, { approach: 1, duration: .46, ease: "sine.inOut" }, 0)
+        .to(scene.pose, { leftReach: 1, duration: .4, ease: "sine.inOut" }, .08)
+        .to(scene.pose, { rightReach: 1, duration: .4, ease: "sine.inOut" }, .18)
+        .to(scene.pose, { effort: .7, lean: .12, walking: .8, duration: .4, ease: "sine.inOut" }, .12)
+        .to(motion, { edge: width * .82, duration: .65, ease: "sine.inOut" }, .2)
+        .to(scene.pose, { walking: 0, compression: 1, lean: .17, duration: .26, ease: "sine.inOut" }, .68)
+        .to(scene.pose, { effort: 1, lean: .27, duration: .35, ease: "sine.inOut" }, .88)
+        .to(scene.pose, { walking: 1, compression: .3, duration: .42, ease: "sine.inOut" }, 1.04)
+        .to(motion, { edge: innerWidth + width, duration: 2, ease: "power1.inOut" }, 1.04)
+        .to(scene.pose, { lean: .20, effort: .85, compression: .08, duration: .65, ease: "sine.inOut" }, 2.1);
 
     });
   };
