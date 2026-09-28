@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   gsap,
@@ -7,9 +7,8 @@ import {
   usePageMotion,
   useExperience,
 } from "./experience/Motion";
-import QuantumAtmosphere from "./experience/QuantumAtmosphere";
-import QuantumSculpture from "./experience/QuantumSculpture";
-import InteractiveGuardian from "./experience/InteractiveGuardian";
+import { useHomeEffects } from "./experience/HomeEffects";
+import { HomeAtmosphere, HomeEffectsControls, HomeGuardian, HomeSculpture } from "./experience/HomeVisuals";
 
 const paths = [
   {
@@ -45,8 +44,14 @@ export default function QuantumHome() {
     hero = useRef<HTMLElement>(null),
     track = useRef<HTMLDivElement>(null),
     chapter = useRef<HTMLElement>(null);
-  const { enabled } = useExperience();
-  usePageMotion(root);
+  const { enabled: motionEnabled } = useExperience();
+  const { models, particles } = useHomeEffects();
+  const enabled = motionEnabled && (models || particles);
+  usePageMotion(root, models || particles);
+  useEffect(() => {
+    document.documentElement.classList.add("liangzai-home-active");
+    return () => document.documentElement.classList.remove("liangzai-home-active");
+  }, []);
   useGSAP(
     () => {
       if (!enabled) return;
@@ -91,10 +96,10 @@ export default function QuantumHome() {
     { scope: root, dependencies: [enabled], revertOnUpdate: true },
   );
   return (
-    <main ref={root} id="main-content" className="cinematic-home">
-      <QuantumAtmosphere />
+    <main ref={root} id="main-content" className="cinematic-home" data-motion={enabled ? "active" : "paused"} data-home-effects={models || particles ? "active" : "lite"}>
+      <HomeAtmosphere />
       <section ref={hero} className="portal-hero" aria-labelledby="home-title">
-        <InteractiveGuardian />
+        <HomeGuardian />
         <div className="portal-copy">
           <p className="eyebrow" data-intro>
             <span className="status-light" /> A LITTLE CURIOSITY. AN INFINITE
@@ -116,6 +121,7 @@ export default function QuantumHome() {
               <i aria-hidden="true" />
             </Link>
           </div>
+          <HomeEffectsControls />
         </div>
         <div className="hero-baseline">
           <a href="#worlds">
@@ -217,7 +223,7 @@ export default function QuantumHome() {
           </div>
           <small>交互艺术 · 不表示真实量子态</small>
         </div>
-        <QuantumSculpture />
+        <HomeSculpture />
       </section>
       <section className="practice-portal section-wrap" aria-labelledby="practice-portal-title">
         <div className="practice-portal-copy" data-reveal>

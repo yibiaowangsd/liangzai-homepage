@@ -89,8 +89,9 @@ export function ExperienceProvider({ children }: { children: ReactNode }) {
 }
 export const useExperience = () => useContext(MotionContext);
 
-export function usePageMotion(root: RefObject<HTMLElement | null>) {
-  const { enabled } = useExperience();
+export function usePageMotion(root: RefObject<HTMLElement | null>, active = true) {
+  const { enabled: motionEnabled } = useExperience();
+  const enabled = motionEnabled && active;
   useGSAP(
     () => {
       if (!enabled || !root.current) return;
