@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useExperience } from "./Motion";
+import { useHomeEffects } from "./HomeEffects";
 import catalog from "./three/model-catalog.json";
 import { runAboutPush } from "./about-push";
 
@@ -12,6 +13,7 @@ export default function AboutPushTransition() {
   const pathname = usePathname();
   const router = useRouter();
   const { enabled } = useExperience();
+  const { models } = useHomeEffects();
   const current = useRef({ pathname, router });
   const routeReady = useRef<(() => void) | null>(null);
   useEffect(() => {
@@ -20,7 +22,7 @@ export default function AboutPushTransition() {
   }, [pathname, router]);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !models) return;
     let active: { cancel: (navigate?: boolean) => void } | null = null;
     let warmed = false;
     const warmController = new AbortController();
@@ -70,6 +72,6 @@ export default function AboutPushTransition() {
       document.removeEventListener("focusin", warm);
       document.removeEventListener("click", click, true);
     };
-  }, [enabled]);
+  }, [enabled, models]);
   return null;
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "./experience/cinematic.css";
 import { ExperienceProvider } from "./experience/Motion";
+import { HomeEffectsProvider } from "./experience/HomeEffects";
 import AboutPushTransition from "./experience/AboutPushTransition";
 import PageArrival from "./experience/PageArrival";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
@@ -19,13 +20,13 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body>
-        <ExperienceProvider>
+        <HomeEffectsProvider><ExperienceProvider>
           <PageArrival />
           <AboutPushTransition />
           <SiteHeader />
           {children}
           <SiteFooter />
-        </ExperienceProvider>
+        </ExperienceProvider></HomeEffectsProvider>
       </body>
     </html>
   );

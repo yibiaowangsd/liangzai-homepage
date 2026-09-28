@@ -8,11 +8,6 @@ export default function QuantumAtmosphere() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const { enabled } = useExperience();
   useEffect(() => {
-    document.documentElement.classList.add("liangzai-home-active");
-    return () =>
-      document.documentElement.classList.remove("liangzai-home-active");
-  }, []);
-  useEffect(() => {
     const el = canvas.current;
     const ctx = el?.getContext("2d");
     if (!el || !ctx) return;
