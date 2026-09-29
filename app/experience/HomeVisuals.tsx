@@ -1,7 +1,8 @@
 "use client";
 
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { useHomeEffects } from "./HomeEffects";
+import { startImageBurst } from "./image-burst";
 import "./guardian-3d.css";
 import "./home-effects.css";
 
@@ -9,56 +10,53 @@ const Guardian = lazy(() => import("./InteractiveGuardian"));
 const Atmosphere = lazy(() => import("./QuantumAtmosphere"));
 const Sculpture = lazy(() => import("./QuantumSculpture"));
 
-export function HomeEffectsControls() {
-  const { profile, models, particles, toggleModels, toggleParticles } = useHomeEffects();
-  return <div className="home-effects-controls" aria-label="首页视觉效果">
-    <p role="status">{profile === "checking" ? "正在适配显示效果" : !models && !particles ? "轻量浏览 · 特效按需开启" : "自由切换，找到舒适的显示效果"}</p>
-    <div className="home-effects-switches">
-      <button type="button" aria-pressed={models} onClick={toggleModels}>
-        <span className="home-effects-indicator" aria-hidden="true" />3D 星云<span>{models ? "已开启" : "已关闭"}</span>
-      </button>
-      <button type="button" aria-pressed={particles} onClick={toggleParticles}>
-        <span className="home-effects-indicator" aria-hidden="true" />背景粒子<span>{particles ? "已开启" : "已关闭"}</span>
-      </button>
-    </div>
-  </div>;
-}
-
-function GuardianCover({ loading = false }: { loading?: boolean }) {
-  const { toggleModels } = useHomeEffects();
-  return <div className="guardian-stage guardian-static" aria-label="量仔静态展台">
-    <img src="/assets/models/observatory/liangzai-front.webp" alt="量仔" width="768" height="864" decoding="async" />
-    <div className="guardian-static-caption">
-      <span>量仔，随时待命</span>
-      {loading ? <p role="status">正在开启 3D 星云</p> : <>
-        <p>静态封面 · 点击开启星云与模型互动</p>
-        <button type="button" onClick={toggleModels}>开启 3D 星云<span aria-hidden="true">＋</span></button>
-      </>}
-    </div>
-  </div>;
-}
-
 export function HomeGuardian() {
-  const { models } = useHomeEffects();
-  return models ? <Suspense fallback={<GuardianCover loading />}><Guardian /></Suspense> : <GuardianCover />;
+  const { models, activateModels } = useHomeEffects();
+  const [clicks, setClicks] = useState(0);
+  const [bursting, setBursting] = useState(false);
+  const [complete, setComplete] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const image = useRef<HTMLImageElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (!bursting || !image.current || !canvas.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      const frame = requestAnimationFrame(() => setComplete(true));
+      return () => cancelAnimationFrame(frame);
+    }
+    return startImageBurst(image.current, canvas.current, () => setComplete(true));
+  }, [bursting]);
+
+  function clickLiangzai() {
+    if (failed) { setFailed(false); setBursting(false); return; }
+    if (models) return;
+    const next = clicks + 1;
+    setClicks(next);
+    if (next >= 3) activateModels();
+  }
+
+  return <>
+    {models && !failed && <Suspense fallback={null}>
+      <Guardian onReady={() => setBursting(true)} onFailure={() => { setFailed(true); setBursting(false); setComplete(false); }} />
+    </Suspense>}
+    {!complete && <div className="guardian-stage guardian-static" data-bursting={bursting} aria-label="量仔贴图">
+      <button type="button" className="guardian-static-cover" onClick={clickLiangzai} disabled={models && !failed}
+        aria-label={failed ? "星云暂不可用，点击量仔重试" : models ? "星云正在苏醒" : `点击量仔，${3 - clicks} 次后化为星云`}>
+        <img ref={image} src="/assets/characters-v2/arsenal-liangzai-cutout.webp" alt="量仔" width="1024" height="1536" decoding="async" fetchPriority="high" />
+        <canvas ref={canvas} className="guardian-image-burst" aria-hidden="true" />
+      </button>
+      <p className="guardian-static-hint" role="status">
+        {failed ? "星云暂不可用，轻点量仔重试" : models ? "星云正在苏醒" : clicks ? `再点 ${3 - clicks} 次，化为星云` : "轻点量仔三次，化为星云"}
+      </p>
+    </div>}
+  </>;
 }
 
 export function HomeAtmosphere() {
-  const { particles } = useHomeEffects();
-  return particles ? <Suspense fallback={null}><Atmosphere /></Suspense> : null;
-}
-
-function SculptureCover({ loading = false }: { loading?: boolean }) {
-  const { toggleParticles } = useHomeEffects();
-  return <div className="sculpture sculpture-static">
-    <div className="sculpture-static-orbit" aria-hidden="true"><i /><i /><i /></div>
-    <h3>让星光随指尖流动</h3>
-    <p>{loading ? "正在开启粒子互动" : "粒子互动暂未开启，需要时再唤醒。"}</p>
-    {!loading && <button type="button" onClick={toggleParticles}>开启背景粒子<span aria-hidden="true">＋</span></button>}
-  </div>;
+  return <Suspense fallback={null}><Atmosphere /></Suspense>;
 }
 
 export function HomeSculpture() {
-  const { particles } = useHomeEffects();
-  return particles ? <Suspense fallback={<SculptureCover loading />}><Sculpture /></Suspense> : <SculptureCover />;
+  return <Suspense fallback={null}><Sculpture /></Suspense>;
 }

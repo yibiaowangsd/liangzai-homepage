@@ -9,7 +9,7 @@ import "./guardian-3d.css";
 
 const labels={liangzai:"量仔",nailong:"奶龙",duo:"量仔与奶龙"};
 const clouds={liangzai:"量子星云",nailong:"奶龙星云",duo:"双星共鸣"};
-export default function InteractiveGuardian() {
+export default function InteractiveGuardian({ onReady, onFailure }: { onReady?: () => void; onFailure?: () => void }) {
   const shell=useRef<HTMLDialogElement>(null);
   const canvas=useRef<HTMLCanvasElement>(null),runtime=useRef<HeroScene|null>(null);
   const {enabled}=useExperience();
@@ -26,7 +26,7 @@ export default function InteractiveGuardian() {
   useEffect(()=>{
     let alive=true;
     const controller=new AbortController();
-    const fallback=()=>{if(alive){runtime.current?.dispose();runtime.current=null;setFusion("idle");setStatus("fallback");}};
+    const fallback=()=>{if(alive){runtime.current?.dispose();runtime.current=null;setFusion("idle");setStatus("fallback");onFailure?.();}};
     void (async()=>{
       try{
         const {createHeroScene}=await import("./three/hero-scene");
@@ -35,7 +35,7 @@ export default function InteractiveGuardian() {
         runtime.current=instance;instance.setMotion(motion.current);
         const version=++request.current;
         await instance.setModel(selection.current);
-        if(alive&&version===request.current)setStatus("ready");
+        if(alive&&version===request.current){setStatus("ready");onReady?.();}
       }catch{fallback();}
     })();
     return()=>{alive=false;request.current++;controller.abort();runtime.current?.dispose();runtime.current=null;};

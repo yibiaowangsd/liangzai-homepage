@@ -1,28 +1,43 @@
-.home-effects-controls { margin-top:28px; max-width:410px; }
-.home-effects-controls > p { margin:0 0 12px; font-size:12px; color:#8999a9; line-height:1.6; }
-.home-effects-switches { display:flex; gap:8px; flex-wrap:wrap; }
-.home-effects-switches button { display:flex; align-items:center; gap:9px; min-height:40px; padding:10px 13px; border:1px solid #8da5b52e; border-radius:8px; color:#d5e0e8; background:#111a24; font-size:12px; cursor:pointer; }
-.home-effects-switches button > span:last-child { font-size:10px; color:#8a9ca9; }
-.home-effects-indicator { width:5px; height:5px; border-radius:50%; background:#657381; }
-.home-effects-switches button[aria-pressed="true"] { border-color:#9ed7f45c; background:#142735; }
-.home-effects-switches button[aria-pressed="true"] .home-effects-indicator { background:#b5e6fb; }
-.home-effects-switches button:hover { border-color:#b0cbdd; }
-.home-effects-switches button:focus-visible, .guardian-static button:focus-visible, .sculpture-static button:focus-visible { outline:2px solid #b5e6fb; outline-offset:4px; }
-.guardian-static { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:80px 0 45px; }
-.guardian-static > img { width:auto; max-width:90%; height:72%; max-height:520px; object-fit:contain; mask-image:linear-gradient(to bottom,#000 85%,transparent); }
-.guardian-static-caption { position:relative; text-align:center; padding:0 24px; }
-.guardian-static-caption > span { font-size:18px; letter-spacing:.1em; color:#d4e3ef; }
-.guardian-static-caption p { margin:12px 0 18px; color:#879aa9; font-size:12px; }
-.guardian-static button, .sculpture-static button { display:inline-flex; align-items:center; justify-content:center; gap:20px; padding:12px 19px; border:1px solid #a6c9df55; border-radius:8px; color:#dbeaf4; background:#182a3a; font-size:12px; cursor:pointer; }
-.guardian-static button:hover, .sculpture-static button:hover { background:#253e51; }
-.sculpture-static { min-height:480px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px; text-align:center; }
-.sculpture-static h3 { margin:8px 0 0; color:#d7e5ef; font-size:20px; font-weight:400; }
-.sculpture-static > p { margin:18px 0 24px; }
-.sculpture-static-orbit { position:relative; width:230px; height:210px; }
-.sculpture-static-orbit i { position:absolute; inset:30px; border:1px solid #a1c5de55; border-radius:50%; }
-.sculpture-static-orbit i:nth-child(2) { transform:rotate(-30deg) scaleX(.4); }
-.sculpture-static-orbit i:nth-child(3) { transform:rotate(45deg) scaleX(.4); }
-@media(min-width:1101px) {
-  .guardian-stage.guardian-static { width:57%; right:0; }
-  .portal-hero:has(.guardian-static) .portal-copy { max-width:48%; }
+.guardian-stage.guardian-static {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  pointer-events: none;
 }
+.guardian-static-cover {
+  position: relative;
+  display: block;
+  width: min(42%, 360px);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  filter: drop-shadow(0 12px 35px #3592c02b);
+}
+.guardian-static-cover img {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.guardian-static-cover:disabled { cursor: default; }
+.guardian-static-cover:focus-visible { outline: 2px solid #b5e6fb; outline-offset: 6px; border-radius: 16px; }
+.guardian-static-cover:hover:not(:disabled) { filter: drop-shadow(0 10px 40px #67c9fd60); }
+.guardian-image-burst { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.guardian-static[data-bursting="true"] .guardian-static-cover img { opacity: 0; transition: opacity .16s ease-out; }
+.guardian-static-hint {
+  margin: 10px 0 0;
+  color: #a9c7d8;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-shadow: 0 1px 8px #02070d;
+  pointer-events: none;
+}
+.guardian-static[data-bursting="true"] .guardian-static-hint { opacity: 0; }
+.portal-hero:has(.guardian-static) dialog.guardian-stage { pointer-events: none; }
+@media (max-width: 1100px) { .guardian-static-cover { width: min(53%, 340px); } }
+@media (max-width: 700px) { .guardian-static-cover { width: min(72%, 330px); } }
