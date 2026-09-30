@@ -92,7 +92,7 @@ export function formatNewsDate(value: string): string {
 }
 
 export function formatEditionDate(value: string): string {
-  const date = new Date(\`\${value}T00:00:00+08:00\`);
+  const date = new Date(value + "T00:00:00+08:00");
   if (Number.isNaN(date.getTime())) return value;
   return new Intl.DateTimeFormat("zh-CN", {
     timeZone: "Asia/Shanghai",
@@ -118,7 +118,7 @@ export async function getNewsEditions(
     headers: { Accept: "application/json" },
   });
   if (!response.ok) {
-    throw new Error(\`News API returned \${response.status}\`);
+    throw new Error("News API returned " + response.status);
   }
   return (await response.json()) as EditionsPayload;
 }
@@ -134,14 +134,14 @@ export async function getFeaturedNews(limit = 6): Promise<{
     headers: { Accept: "application/json" },
   });
   if (!response.ok) {
-    throw new Error(\`News API returned \${response.status}\`);
+    throw new Error(`News API returned ${response.status}`);
   }
   return (await response.json()) as { edition_date: string | null; data: NewsItem[] };
 }
 
 export async function getNewsDetail(slug: string): Promise<NewsItem | null> {
   const response = await fetch(
-    \`\${NEWS_API}/api/news/\${encodeURIComponent(slug)}\`,
+    NEWS_API + "/api/news/" + encodeURIComponent(slug),
     {
       cache: "no-store",
       headers: { Accept: "application/json" },
@@ -150,7 +150,7 @@ export async function getNewsDetail(slug: string): Promise<NewsItem | null> {
 
   if (response.status === 404) return null;
   if (!response.ok) {
-    throw new Error(\`News API returned \${response.status}\`);
+    throw new Error(`News API returned ${response.status}`);
   }
   return (await response.json()) as NewsItem;
 }
