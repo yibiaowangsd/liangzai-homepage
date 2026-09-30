@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  isNewsEditionDismissed,
+  openNewsGateModal,
+  rememberNewsEditionDismissed,
+} from "./news-gate-modal.ts";
 
 type GateItem = {
   slug: string;
@@ -36,11 +41,23 @@ const covers: Record<string, string> = {
 export default function NewsGate() {
   const [payload, setPayload] = useState<GatePayload | null>(null);
   const [open, setOpen] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  const dismiss = useCallback(() => {
+    if (payload?.edition_date) {
+      rememberNewsEditionDismissed(payload.edition_date);
+    }
+    setOpen(false);
+  }, [payload]);
 
   useEffect(() => {
     let cancelled = false;
+    let openTimer: number | undefined;
+    const controller = new AbortController();
     fetch("https://api.wangyibiao.com/api/news/featured?limit=6", {
       headers: { Accept: "application/json" },
+      signal: controller.signal,
     })
       .then((response) => {
         if (!response.ok) throw new Error("news feed unavailable");
@@ -48,78 +65,65 @@ export default function NewsGate() {
       })
       .then((data) => {
         if (cancelled || !data.edition_date || !data.data?.length) return;
-        const key = "liangzai-news-gate:" + data.edition_date;
-        if (window.localStorage.getItem(key) === "dismissed") return;
+        if (isNewsEditionDismissed(data.edition_date)) return;
         setPayload(data);
-        window.setTimeout(() => {
+        openTimer = window.setTimeout(() => {
           if (!cancelled) setOpen(true);
         }, 260);
       })
       .catch(() => {});
     return () => {
       cancelled = true;
+      controller.abort();
+      window.clearTimeout(openTimer);
     };
   }, []);
 
-  useEffect(() => {
-    if (!open) return;
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = previous;
-    };
-  }, [open]);
+  useLayoutEffect(() => {
+    if (!open || !dialogRef.current) return;
+    return openNewsGateModal(dialogRef.current, closeButtonRef.current, dismiss);
+  }, [open, dismiss]);
 
   if (!open || !payload?.edition_date) return null;
 
-  const dismiss = () => {
-    window.localStorage.setItem(
-      "liangzai-news-gate:" + payload.edition_date,
-      "dismissed",
-    );
-    setOpen(false);
-  };
-
   return (
-    <div className="news-gate-backdrop" role="presentation">
-      <section className="news-gate" role="dialog" aria-modal="true" aria-labelledby="news-gate-title">
-        <button className="news-gate-close" type="button" onClick={dismiss} aria-label="进入首页并关闭今日简报">
-          ×
-        </button>
+    <dialog ref={dialogRef} className="news-gate" aria-labelledby="news-gate-title" aria-describedby="news-gate-description">
+      <button ref={closeButtonRef} className="news-gate-close" type="button" onClick={dismiss} aria-label="进入首页并关闭今日简报">
+        ×
+      </button>
 
-        <header>
-          <div>
-            <span>FRONTIER / DAILY · {payload.edition_date.replaceAll("-", ".")}</span>
-            <h2 id="news-gate-title">今天，先看世界发生了什么。</h2>
-          </div>
-          <p>五个方向 · 每个方向 5 条 · 原始来源可追溯</p>
-        </header>
-
-        <div className="news-gate-grid">
-          {payload.data.slice(0, 6).map((item, index) => (
-            <Link
-              className={"news-gate-card gate-" + index}
-              href={"/news/" + item.slug}
-              key={item.slug}
-              onClick={dismiss}
-            >
-              <div className="gate-thumb">
-                <img src={item.cover_image || covers[item.category] || covers.pqc} alt="" aria-hidden="true" />
-              </div>
-              <span>{labels[item.category] || item.category}</span>
-              <h3>{item.title}</h3>
-              <small>{item.source_name || "原始来源"}</small>
-            </Link>
-          ))}
+      <header>
+        <div>
+          <span>FRONTIER / DAILY · {payload.edition_date.replaceAll("-", ".")}</span>
+          <h2 id="news-gate-title">今天，先看世界发生了什么。</h2>
         </div>
+        <p id="news-gate-description">五个方向 · 每个方向 5 条 · 原始来源可追溯</p>
+      </header>
 
-        <footer>
-          <button type="button" onClick={dismiss}>进入首页</button>
-          <Link href="/news" onClick={dismiss}>
-            进入每日前沿 <span aria-hidden="true">↗</span>
+      <div className="news-gate-grid">
+        {payload.data.slice(0, 6).map((item, index) => (
+          <Link
+            className={"news-gate-card gate-" + index}
+            href={"/news/" + item.slug}
+            key={item.slug}
+            onClick={dismiss}
+          >
+            <div className="gate-thumb">
+              <img src={item.cover_image || covers[item.category] || covers.pqc} alt="" aria-hidden="true" />
+            </div>
+            <span>{labels[item.category] || item.category}</span>
+            <h3>{item.title}</h3>
+            <small>{item.source_name || "原始来源"}</small>
           </Link>
-        </footer>
-      </section>
-    </div>
+        ))}
+      </div>
+
+      <footer>
+        <button type="button" onClick={dismiss}>进入首页</button>
+        <Link href="/news" onClick={dismiss}>
+          进入每日前沿 <span aria-hidden="true">↗</span>
+        </Link>
+      </footer>
+    </dialog>
   );
 }

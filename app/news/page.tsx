@@ -1,10 +1,10 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import StoryImage from "./StoryImage";
 import {
   categoryEnglish,
   categoryLabels,
   coreCategories,
-  coverFor,
   formatEditionDate,
   getNewsEditions,
   parseTags,
@@ -15,17 +15,6 @@ export const metadata: Metadata = {
   title: "每日前沿 · 量仔",
   description: "每天五个方向、每个方向五条：后量子密码、抗量子协议、标准动态、网络安全与 AI 前沿。",
 };
-
-function StoryImage({ item, eager = false }: { item: NewsItem; eager?: boolean }) {
-  return (
-    <img
-      src={coverFor(item)}
-      alt=""
-      loading={eager ? "eager" : "lazy"}
-      aria-hidden="true"
-    />
-  );
-}
 
 function TopicDesk({ category, items }: { category: string; items: NewsItem[] }) {
   if (!items.length) return null;
@@ -44,7 +33,7 @@ function TopicDesk({ category, items }: { category: string; items: NewsItem[] })
 
       <div className="desk-layout">
         <article className="desk-lead">
-          <Link className="desk-lead-image" href={"/news/" + lead.slug}>
+          <Link className="desk-lead-image" href={"/news/" + lead.slug} aria-label={"阅读：" + lead.title}>
             <StoryImage item={lead} />
             <span>{lead.source_name || "ORIGINAL SOURCE"}</span>
           </Link>
@@ -123,7 +112,7 @@ export default async function NewsPage({
     <main id="main-content" className="newsroom">
       <section className="news-toolbar" aria-label="前沿新闻导航">
         <div className="news-toolbar-title">
-          <strong>前沿新闻</strong>
+          <h1>前沿新闻</h1>
           <span>FRONTIER DAILY · 08:00 CST</span>
         </div>
         <details className="news-category-menu">
@@ -172,7 +161,7 @@ export default async function NewsPage({
             </div>
 
             <article className="lead-story">
-              <Link className="lead-visual" href={"/news/" + heroLead.slug}>
+              <Link className="lead-visual" href={"/news/" + heroLead.slug} aria-label={"阅读：" + heroLead.title}>
                 <StoryImage item={heroLead} eager />
                 <span className="image-label">{heroLead.source_name || "SOURCE"}</span>
               </Link>
@@ -192,7 +181,7 @@ export default async function NewsPage({
             <aside className="front-deck" aria-label="今日重点">
               {heroSide.map((item, index) => (
                 <article key={item.slug}>
-                  <Link className="deck-thumb" href={"/news/" + item.slug}>
+                  <Link className="deck-thumb" href={"/news/" + item.slug} aria-label={"阅读：" + item.title}>
                     <StoryImage item={item} />
                   </Link>
                   <div>
