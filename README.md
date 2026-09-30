@@ -9,6 +9,7 @@
 | `/archive` | 角色故事与档案 |
 | `/pqc-arsenal` | ML-KEM、ML-DSA、SLH-DSA、FN-DSA 的教学交互 |
 | `/pqc-practice` | PQC 武器实战：18 组 NIST 标准算法参数组合（ML-KEM、ML-DSA、SLH-DSA）；2026 年国内征集的 119 个候选和 586 个参数实例（含团队成员），其中 80 个候选、325 组参数已登记并收录可运行的提交源码 WASM；密钥封装、签名、密钥交换与哈希在同一工作台选择 |
+| `/news` | 每日前沿：由 Worker + D1 提供动态数据，展示 PQC、协议标准、网络安全、AI 与产业动态 |
 | `/about` | 项目作者简介 |
 
 技术栈：Next.js App Router、React 19、TypeScript、Vinext/Vite、Cloudflare Worker、Three.js 与 GSAP。武器库的教学交互是概念演示；武器实战页面在浏览器中使用保留来源说明的 WASM 执行真实算法运算。NIST 标准算法模块源自 PQMagic 项目，页面不宣称该实现经过 FIPS 验证。
