@@ -3,20 +3,17 @@ const ALLOWED_ORIGINS = new Set([
   "https://www.wangyibiao.com",
 ]);
 
+const CORE_CATEGORIES = ["pqc", "protocol", "standards", "security", "ai"];
+
 const ALLOWED_CATEGORIES = new Set([
-  "pqc",
-  "protocol",
-  "standards",
-  "security",
-  "ai",
+  ...CORE_CATEGORIES,
   "industry",
   "daily",
   "test",
 ]);
 
 const ALLOWED_STATUSES = new Set(["draft", "published"]);
-// GitHub Actions owns production deployments for this dedicated API Worker.
-const MAX_BATCH_ITEMS = 20;
+const MAX_BATCH_ITEMS = 30;
 
 function corsHeaders(request) {
   const origin = request.headers.get("Origin");
@@ -45,17 +42,17 @@ function optionalString(value, maxLength) {
   if (value === undefined || value === null || value === "") return null;
   if (typeof value !== "string") throw new Error("must be a string");
   const normalized = value.trim();
-  if (normalized.length > maxLength) throw new Error(`must be <= ${maxLength} characters`);
+  if (normalized.length > maxLength) throw new Error(\`must be <= \${maxLength} characters\`);
   return normalized || null;
 }
 
 function requiredString(value, field, maxLength) {
   if (typeof value !== "string" || !value.trim()) {
-    throw new Error(`${field} is required`);
+    throw new Error(\`\${field} is required\`);
   }
   const normalized = value.trim();
   if (normalized.length > maxLength) {
-    throw new Error(`${field} must be <= ${maxLength} characters`);
+    throw new Error(\`\${field} must be <= \${maxLength} characters\`);
   }
   return normalized;
 }
@@ -63,14 +60,16 @@ function requiredString(value, field, maxLength) {
 function normalizeUrl(value, field) {
   const normalized = optionalString(value, 2048);
   if (!normalized) return null;
+  if (normalized.startsWith("/")) return normalized;
+
   let parsed;
   try {
     parsed = new URL(normalized);
   } catch {
-    throw new Error(`${field} must be a valid URL`);
+    throw new Error(\`\${field} must be a valid URL\`);
   }
   if (!["http:", "https:"].includes(parsed.protocol)) {
-    throw new Error(`${field} must use http or https`);
+    throw new Error(\`\${field} must use http or https\`);
   }
   return normalized;
 }
@@ -120,12 +119,12 @@ function normalizeItem(raw) {
   const summary = optionalString(raw.summary, 2000);
   const category = optionalString(raw.category, 64) || "daily";
   if (!ALLOWED_CATEGORIES.has(category)) {
-    throw new Error(`unsupported category: ${category}`);
+    throw new Error(\`unsupported category: \${category}\`);
   }
 
   const status = optionalString(raw.status, 32) || "published";
   if (!ALLOWED_STATUSES.has(status)) {
-    throw new Error(`unsupported status: ${status}`);
+    throw new Error(\`unsupported status: \${status}\`);
   }
 
   return {
@@ -162,7 +161,7 @@ function sameNews(existing, item) {
 function isAdmin(request, env) {
   if (!env.ADMIN_TOKEN) return false;
   const authorization = request.headers.get("Authorization") || "";
-  return authorization === `Bearer ${env.ADMIN_TOKEN}`;
+  return authorization === \`Bearer \${env.ADMIN_TOKEN}\`;
 }
 
 async function publishItems(env, rawItems) {
@@ -170,7 +169,7 @@ async function publishItems(env, rawItems) {
     throw new Error("items must be a non-empty array");
   }
   if (rawItems.length > MAX_BATCH_ITEMS) {
-    throw new Error(`items must contain at most ${MAX_BATCH_ITEMS} entries`);
+    throw new Error(\`items must contain at most \${MAX_BATCH_ITEMS} entries\`);
   }
 
   const seen = new Set();
@@ -191,21 +190,21 @@ async function publishItems(env, rawItems) {
   let skipped = duplicateSlugs.length;
 
   for (const item of items) {
-    const existing = await env.DB.prepare(`
+    const existing = await env.DB.prepare(\`
       SELECT
         slug, title, summary, content, category, tags,
         source_name, source_url, cover_image, published_at, status
       FROM news
       WHERE slug = ?
       LIMIT 1
-    `).bind(item.slug).first();
+    \`).bind(item.slug).first();
 
     if (existing && sameNews(existing, item)) {
       skipped += 1;
       continue;
     }
 
-    const statement = env.DB.prepare(`
+    const statement = env.DB.prepare(\`
       INSERT INTO news (
         slug,
         title,
@@ -231,7 +230,7 @@ async function publishItems(env, rawItems) {
         published_at = excluded.published_at,
         status = excluded.status,
         updated_at = datetime('now')
-    `).bind(
+    \`).bind(
       item.slug,
       item.title,
       item.summary,
@@ -254,12 +253,164 @@ async function publishItems(env, rawItems) {
 
   return {
     ok: true,
+    items,
     inserted: changes.filter((change) => change.type === "inserted").length,
     updated: changes.filter((change) => change.type === "updated").length,
     skipped,
     duplicate_slugs: duplicateSlugs,
     changed_slugs: changes.map((change) => change.slug),
   };
+}
+
+async function syncEdition(env, date, slugs) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !slugs.length) return 0;
+
+  const placeholders = slugs.map(() => "?").join(", ");
+  const result = await env.DB.prepare(\`
+    DELETE FROM news
+    WHERE status = 'published'
+      AND substr(published_at, 1, 10) = ?
+      AND slug NOT IN (\${placeholders})
+  \`).bind(date, ...slugs).run();
+
+  return Number(result.meta?.changes || 0);
+}
+
+async function getEditions(env, page, pageSize, category) {
+  const where = category
+    ? "WHERE status = 'published' AND category = ?"
+    : "WHERE status = 'published'";
+  const countArgs = category ? [category] : [];
+
+  const countRow = await env.DB.prepare(\`
+    SELECT COUNT(DISTINCT substr(published_at, 1, 10)) AS total_days
+    FROM news
+    \${where}
+  \`).bind(...countArgs).first();
+
+  const totalDays = Number(countRow?.total_days || 0);
+  const totalPages = Math.max(1, Math.ceil(totalDays / pageSize));
+  const safePage = Math.min(Math.max(page, 1), totalPages);
+  const offset = (safePage - 1) * pageSize;
+
+  const datesStatement = category
+    ? env.DB.prepare(\`
+        SELECT substr(published_at, 1, 10) AS edition_date
+        FROM news
+        WHERE status = 'published' AND category = ?
+        GROUP BY edition_date
+        ORDER BY edition_date DESC
+        LIMIT ? OFFSET ?
+      \`).bind(category, pageSize, offset)
+    : env.DB.prepare(\`
+        SELECT substr(published_at, 1, 10) AS edition_date
+        FROM news
+        WHERE status = 'published'
+        GROUP BY edition_date
+        ORDER BY edition_date DESC
+        LIMIT ? OFFSET ?
+      \`).bind(pageSize, offset);
+
+  const datesResult = await datesStatement.all();
+  const dates = (datesResult.results || []).map((row) => row.edition_date).filter(Boolean);
+
+  if (!dates.length) {
+    return {
+      data: [],
+      meta: { page: safePage, pageSize, totalDays, totalPages },
+    };
+  }
+
+  const placeholders = dates.map(() => "?").join(", ");
+  const rowsStatement = category
+    ? env.DB.prepare(\`
+        SELECT id, slug, title, summary, category, tags,
+               source_name, source_url, cover_image, published_at
+        FROM news
+        WHERE status = 'published'
+          AND category = ?
+          AND substr(published_at, 1, 10) IN (\${placeholders})
+        ORDER BY published_at DESC, id DESC
+      \`).bind(category, ...dates)
+    : env.DB.prepare(\`
+        SELECT id, slug, title, summary, category, tags,
+               source_name, source_url, cover_image, published_at
+        FROM news
+        WHERE status = 'published'
+          AND substr(published_at, 1, 10) IN (\${placeholders})
+        ORDER BY published_at DESC, id DESC
+      \`).bind(...dates);
+
+  const rowsResult = await rowsStatement.all();
+  const byDate = new Map(
+    dates.map((date) => [
+      date,
+      {
+        date,
+        total: 0,
+        topics: Object.fromEntries(CORE_CATEGORIES.map((key) => [key, []])),
+      },
+    ]),
+  );
+
+  for (const row of rowsResult.results || []) {
+    const date = String(row.published_at).slice(0, 10);
+    const edition = byDate.get(date);
+    if (!edition) continue;
+    edition.total += 1;
+    if (!edition.topics[row.category]) edition.topics[row.category] = [];
+    edition.topics[row.category].push(row);
+  }
+
+  return {
+    data: dates.map((date) => byDate.get(date)),
+    meta: { page: safePage, pageSize, totalDays, totalPages },
+  };
+}
+
+async function getFeatured(env, limit) {
+  const latest = await env.DB.prepare(\`
+    SELECT substr(published_at, 1, 10) AS edition_date
+    FROM news
+    WHERE status = 'published'
+    ORDER BY published_at DESC, id DESC
+    LIMIT 1
+  \`).first();
+
+  const editionDate = latest?.edition_date;
+  if (!editionDate) return { edition_date: null, data: [] };
+
+  const result = await env.DB.prepare(\`
+    SELECT id, slug, title, summary, category, tags,
+           source_name, source_url, cover_image, published_at
+    FROM news
+    WHERE status = 'published'
+      AND substr(published_at, 1, 10) = ?
+    ORDER BY published_at DESC, id DESC
+    LIMIT 100
+  \`).bind(editionDate).all();
+
+  const rows = result.results || [];
+  const selected = [];
+  const selectedSlugs = new Set();
+
+  for (const category of CORE_CATEGORIES) {
+    const item = rows.find((row) => row.category === category);
+    if (item && !selectedSlugs.has(item.slug)) {
+      selected.push(item);
+      selectedSlugs.add(item.slug);
+    }
+  }
+
+  for (const item of rows) {
+    if (selected.length >= limit) break;
+    if (!selectedSlugs.has(item.slug)) {
+      selected.push(item);
+      selectedSlugs.add(item.slug);
+    }
+  }
+
+  return { edition_date: editionDate, data: selected.slice(0, limit) };
 }
 
 export default {
@@ -287,6 +438,26 @@ export default {
         });
       }
 
+      if (request.method === "GET" && url.pathname === "/api/news/editions") {
+        const page = Math.max(Number.parseInt(url.searchParams.get("page") || "1", 10) || 1, 1);
+        const pageSize = Math.min(
+          Math.max(Number.parseInt(url.searchParams.get("pageSize") || "3", 10) || 3, 1),
+          3,
+        );
+        const category = url.searchParams.get("category");
+        if (category && !ALLOWED_CATEGORIES.has(category)) {
+          return json(request, { error: "Unsupported category" }, 400);
+        }
+
+        return json(request, await getEditions(env, page, pageSize, category));
+      }
+
+      if (request.method === "GET" && url.pathname === "/api/news/featured") {
+        const parsedLimit = Number.parseInt(url.searchParams.get("limit") || "6", 10);
+        const limit = Math.min(Math.max(parsedLimit || 6, 1), 10);
+        return json(request, await getFeatured(env, limit));
+      }
+
       if (request.method === "GET" && url.pathname === "/api/news") {
         const parsedLimit = Number.parseInt(url.searchParams.get("limit") || "20", 10);
         const limit = Number.isFinite(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 100) : 20;
@@ -294,25 +465,23 @@ export default {
 
         let statement;
         if (category) {
-          statement = env.DB.prepare(`
-            SELECT
-              id, slug, title, summary, category, tags,
-              source_name, source_url, cover_image, published_at
+          statement = env.DB.prepare(\`
+            SELECT id, slug, title, summary, category, tags,
+                   source_name, source_url, cover_image, published_at
             FROM news
             WHERE status = 'published' AND category = ?
             ORDER BY published_at DESC, id DESC
             LIMIT ?
-          `).bind(category, limit);
+          \`).bind(category, limit);
         } else {
-          statement = env.DB.prepare(`
-            SELECT
-              id, slug, title, summary, category, tags,
-              source_name, source_url, cover_image, published_at
+          statement = env.DB.prepare(\`
+            SELECT id, slug, title, summary, category, tags,
+                   source_name, source_url, cover_image, published_at
             FROM news
             WHERE status = 'published'
             ORDER BY published_at DESC, id DESC
             LIMIT ?
-          `).bind(limit);
+          \`).bind(limit);
         }
 
         const result = await statement.all();
@@ -326,24 +495,20 @@ export default {
         const slug = decodeURIComponent(url.pathname.slice("/api/news/".length)).trim().toLowerCase();
         if (!slug) return json(request, { error: "News not found" }, 404);
 
-        const item = await env.DB.prepare(`
+        const item = await env.DB.prepare(\`
           SELECT *
           FROM news
           WHERE slug = ? AND status = 'published'
           LIMIT 1
-        `).bind(slug).first();
+        \`).bind(slug).first();
 
         if (!item) return json(request, { error: "News not found" }, 404);
         return json(request, item);
       }
 
       if (request.method === "POST" && url.pathname === "/api/admin/news") {
-        if (!env.ADMIN_TOKEN) {
-          return json(request, { error: "ADMIN_TOKEN is not configured" }, 503);
-        }
-        if (!isAdmin(request, env)) {
-          return json(request, { error: "Unauthorized" }, 401);
-        }
+        if (!env.ADMIN_TOKEN) return json(request, { error: "ADMIN_TOKEN is not configured" }, 503);
+        if (!isAdmin(request, env)) return json(request, { error: "Unauthorized" }, 401);
 
         let body;
         try {
@@ -357,12 +522,8 @@ export default {
       }
 
       if (request.method === "POST" && url.pathname === "/api/admin/news/batch") {
-        if (!env.ADMIN_TOKEN) {
-          return json(request, { error: "ADMIN_TOKEN is not configured" }, 503);
-        }
-        if (!isAdmin(request, env)) {
-          return json(request, { error: "Unauthorized" }, 401);
-        }
+        if (!env.ADMIN_TOKEN) return json(request, { error: "ADMIN_TOKEN is not configured" }, 503);
+        if (!isAdmin(request, env)) return json(request, { error: "Unauthorized" }, 401);
 
         let body;
         try {
@@ -372,9 +533,17 @@ export default {
         }
 
         const result = await publishItems(env, body.items);
+        const date = typeof body.date === "string" ? body.date : null;
+        const publishedSlugs = result.items
+          .filter((item) => item.status === "published")
+          .map((item) => item.slug);
+        const removed = date ? await syncEdition(env, date, publishedSlugs) : 0;
+        const { items, ...publicResult } = result;
+
         return json(request, {
-          ...result,
-          date: typeof body.date === "string" ? body.date : null,
+          ...publicResult,
+          removed,
+          date,
         });
       }
 
