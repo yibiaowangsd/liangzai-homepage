@@ -158,6 +158,92 @@ jobs:
           PY
           done < "$RUNNER_TEMP/news-files.txt"
 
+      - name: Enrich cover images from original sources
+        if: steps.select.outputs.has_files == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          while IFS= read -r file; do
+            python3 - "$file" <<'PY'
+          import html
+          import json
+          import pathlib
+          import re
+          import sys
+          import urllib.parse
+          import urllib.request
+
+          path = pathlib.Path(sys.argv[1])
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          fallback = {
+              "pqc": "https://wangyibiao.com/news-covers/pqc.svg",
+              "protocol": "https://wangyibiao.com/news-covers/protocol.svg",
+              "standards": "https://wangyibiao.com/news-covers/standards.svg",
+              "security": "https://wangyibiao.com/news-covers/security.svg",
+              "ai": "https://wangyibiao.com/news-covers/ai.svg",
+          }
+
+          patterns = [
+              re.compile(r'<meta[^>]+property=["\']og:image(?::secure_url)?["\'][^>]+content=["\']([^"\']+)["\']', re.I),
+              re.compile(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image(?::secure_url)?["\']', re.I),
+              re.compile(r'<meta[^>]+name=["\']twitter:image(?::src)?["\'][^>]+content=["\']([^"\']+)["\']', re.I),
+              re.compile(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+name=["\']twitter:image(?::src)?["\']', re.I),
+          ]
+
+          def discover(item):
+              current = item.get("cover_image")
+              if current and "wangyibiao.com/news-covers/" not in current:
+                  return current
+
+              source = item.get("source_url")
+              if not source:
+                  return fallback.get(item.get("category"), fallback["pqc"])
+
+              try:
+                  request = urllib.request.Request(
+                      source,
+                      headers={
+                          "User-Agent": "Mozilla/5.0 (compatible; LiangzaiNews/1.0)",
+                          "Accept": "text/html,application/xhtml+xml",
+                      },
+                  )
+                  with urllib.request.urlopen(request, timeout=8) as response:
+                      content_type = response.headers.get("Content-Type", "")
+                      if "text/html" not in content_type and "application/xhtml+xml" not in content_type:
+                          raise ValueError("not html")
+                      raw = response.read(500000)
+                      charset = response.headers.get_content_charset() or "utf-8"
+                      text = raw.decode(charset, errors="replace")
+                      base_url = response.geturl()
+
+                  for pattern in patterns:
+                      match = pattern.search(text)
+                      if not match:
+                          continue
+                      candidate = html.unescape(match.group(1)).strip()
+                      resolved = urllib.parse.urljoin(base_url, candidate)
+                      parsed = urllib.parse.urlparse(resolved)
+                      if parsed.scheme in ("http", "https"):
+                          return resolved
+              except Exception as exc:
+                  print(f"{path}: image lookup skipped for {source}: {exc}")
+
+              return fallback.get(item.get("category"), fallback["pqc"])
+
+          changed = 0
+          for item in data.get("items", []):
+              resolved = discover(item)
+              if item.get("cover_image") != resolved:
+                  item["cover_image"] = resolved
+                  changed += 1
+
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print(f"{path}: resolved cover images for {changed} item(s)")
+          PY
+          done < "$RUNNER_TEMP/news-files.txt"
+
       - name: Publish to Worker
         if: steps.select.outputs.has_files == 'true'
         shell: bash
