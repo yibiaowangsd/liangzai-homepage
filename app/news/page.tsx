@@ -32,7 +32,7 @@ export default async function NewsPage({
     ? params.category
     : "";
 
-  let news = [];
+  let news: Awaited<ReturnType<typeof getNewsList>> = [];
   let failed = false;
   try {
     news = await getNewsList(category || undefined);
