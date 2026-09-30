@@ -121,15 +121,10 @@ export default async function NewsPage({
 
   return (
     <main id="main-content" className="newsroom">
-      <header className="news-masthead">
-        <div className="masthead-rule">
-          <span>LIANGZAI EDITORIAL DESK</span>
-          <span>UPDATED DAILY · 08:00 CST</span>
-        </div>
-        <div className="masthead-title">
-          <p>技术变化太快，重要的是知道什么真正发生了变化。</p>
-          <h1>每日前沿</h1>
-          <span>FRONTIER / DAILY</span>
+      <section className="news-toolbar" aria-label="每日前沿导航">
+        <div className="news-toolbar-title">
+          <strong>每日前沿</strong>
+          <span>FRONTIER DAILY · 08:00 CST</span>
         </div>
         <nav className="desk-tabs" aria-label="新闻方向">
           <Link href="/news" aria-current={!category ? "page" : undefined}>全部</Link>
@@ -143,7 +138,7 @@ export default async function NewsPage({
             </Link>
           ))}
         </nav>
-      </header>
+      </section>
 
       {failed ? (
         <section className="news-state">
