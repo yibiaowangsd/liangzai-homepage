@@ -121,23 +121,33 @@ export default async function NewsPage({
 
   return (
     <main id="main-content" className="newsroom">
-      <section className="news-toolbar" aria-label="每日前沿导航">
+      <section className="news-toolbar" aria-label="前沿新闻导航">
         <div className="news-toolbar-title">
-          <strong>每日前沿</strong>
+          <strong>前沿新闻</strong>
           <span>FRONTIER DAILY · 08:00 CST</span>
         </div>
-        <nav className="desk-tabs" aria-label="新闻方向">
-          <Link href="/news" aria-current={!category ? "page" : undefined}>全部</Link>
-          {coreCategories.map((key) => (
-            <Link
-              key={key}
-              href={makeHref(1, key)}
-              aria-current={category === key ? "page" : undefined}
-            >
-              {categoryLabels[key]}
+        <details className="news-category-menu">
+          <summary>
+            <span>{category ? categoryLabels[category] : "全部新闻"}</span>
+            <i aria-hidden="true">⌄</i>
+          </summary>
+          <nav aria-label="新闻方向">
+            <Link href="/news" aria-current={!category ? "page" : undefined}>
+              <span>全部新闻</span>
+              <small>ALL STORIES</small>
             </Link>
-          ))}
-        </nav>
+            {coreCategories.map((key) => (
+              <Link
+                key={key}
+                href={makeHref(1, key)}
+                aria-current={category === key ? "page" : undefined}
+              >
+                <span>{categoryLabels[key]}</span>
+                <small>{categoryEnglish[key]}</small>
+              </Link>
+            ))}
+          </nav>
+        </details>
       </section>
 
       {failed ? (
