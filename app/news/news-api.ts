@@ -15,7 +15,25 @@ export type NewsItem = {
   status?: string;
 };
 
+export type NewsEdition = {
+  date: string;
+  total: number;
+  topics: Record<string, NewsItem[]>;
+};
+
+export type EditionsPayload = {
+  data: NewsEdition[];
+  meta: {
+    page: number;
+    pageSize: number;
+    totalDays: number;
+    totalPages: number;
+  };
+};
+
 export const NEWS_API = "https://api.wangyibiao.com";
+
+export const coreCategories = ["pqc", "protocol", "standards", "security", "ai"] as const;
 
 export const categoryLabels: Record<string, string> = {
   pqc: "后量子密码",
@@ -26,6 +44,28 @@ export const categoryLabels: Record<string, string> = {
   industry: "产业动态",
   daily: "每日前沿",
 };
+
+export const categoryEnglish: Record<string, string> = {
+  pqc: "POST-QUANTUM",
+  protocol: "PROTOCOLS",
+  standards: "STANDARDS",
+  security: "SECURITY",
+  ai: "ARTIFICIAL INTELLIGENCE",
+};
+
+export const categoryCovers: Record<string, string> = {
+  pqc: "/news-covers/pqc.svg",
+  protocol: "/news-covers/protocol.svg",
+  standards: "/news-covers/standards.svg",
+  security: "/news-covers/security.svg",
+  ai: "/news-covers/ai.svg",
+  industry: "/news-covers/ai.svg",
+  daily: "/news-covers/pqc.svg",
+};
+
+export function coverFor(item: Pick<NewsItem, "cover_image" | "category">): string {
+  return item.cover_image || categoryCovers[item.category] || "/news-covers/pqc.svg";
+}
 
 export function parseTags(tags: string | null): string[] {
   if (!tags) return [];
@@ -51,9 +91,26 @@ export function formatNewsDate(value: string): string {
   }).format(date);
 }
 
-export async function getNewsList(category?: string): Promise<NewsItem[]> {
-  const url = new URL("/api/news", NEWS_API);
-  url.searchParams.set("limit", "100");
+export function formatEditionDate(value: string): string {
+  const date = new Date(\`\${value}T00:00:00+08:00\`);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "short",
+  }).format(date);
+}
+
+export async function getNewsEditions(
+  page = 1,
+  pageSize = 3,
+  category?: string,
+): Promise<EditionsPayload> {
+  const url = new URL("/api/news/editions", NEWS_API);
+  url.searchParams.set("page", String(page));
+  url.searchParams.set("pageSize", String(Math.min(pageSize, 3)));
   if (category) url.searchParams.set("category", category);
 
   const response = await fetch(url, {
@@ -61,16 +118,30 @@ export async function getNewsList(category?: string): Promise<NewsItem[]> {
     headers: { Accept: "application/json" },
   });
   if (!response.ok) {
-    throw new Error(`News API returned ${response.status}`);
+    throw new Error(\`News API returned \${response.status}\`);
   }
+  return (await response.json()) as EditionsPayload;
+}
 
-  const payload = (await response.json()) as { data?: NewsItem[] };
-  return Array.isArray(payload.data) ? payload.data : [];
+export async function getFeaturedNews(limit = 6): Promise<{
+  edition_date: string | null;
+  data: NewsItem[];
+}> {
+  const url = new URL("/api/news/featured", NEWS_API);
+  url.searchParams.set("limit", String(limit));
+  const response = await fetch(url, {
+    cache: "no-store",
+    headers: { Accept: "application/json" },
+  });
+  if (!response.ok) {
+    throw new Error(\`News API returned \${response.status}\`);
+  }
+  return (await response.json()) as { edition_date: string | null; data: NewsItem[] };
 }
 
 export async function getNewsDetail(slug: string): Promise<NewsItem | null> {
   const response = await fetch(
-    `${NEWS_API}/api/news/${encodeURIComponent(slug)}`,
+    \`\${NEWS_API}/api/news/\${encodeURIComponent(slug)}\`,
     {
       cache: "no-store",
       headers: { Accept: "application/json" },
@@ -79,7 +150,7 @@ export async function getNewsDetail(slug: string): Promise<NewsItem | null> {
 
   if (response.status === 404) return null;
   if (!response.ok) {
-    throw new Error(`News API returned ${response.status}`);
+    throw new Error(\`News API returned \${response.status}\`);
   }
   return (await response.json()) as NewsItem;
 }
