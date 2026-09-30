@@ -81,3 +81,13 @@ jobs:
         run: |
           set -euo pipefail
           npx --yes wrangler@4.92.0 deploy --config "$RUNNER_TEMP/wrangler-news.jsonc"
+
+      - name: Verify news API
+        shell: bash
+        run: |
+          set -euo pipefail
+          for url in             "https://api.wangyibiao.com/api/health"             "https://api.wangyibiao.com/api/news/featured?limit=6"             "https://api.wangyibiao.com/api/news/editions?page=1&pageSize=3"; do
+            echo "Checking $url"
+            response="$(curl --fail --silent --show-error --retry 3 --retry-all-errors --max-time 30 "$url")"
+            python3 -c 'import json,sys; json.loads(sys.stdin.read())' <<< "$response"
+          done
