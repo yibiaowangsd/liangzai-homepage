@@ -61,6 +61,15 @@ export default function NewsGate() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   if (!open || !payload?.edition_date) return null;
 
   const dismiss = () => {
