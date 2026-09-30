@@ -10,6 +10,7 @@ const links = [
   ["/archive", "量仔小传", "CHARACTER"],
   ["/pqc-arsenal", "密码图鉴", "ARSENAL"],
   ["/pqc-practice", "密码实验室", "PRACTICE"],
+  ["/news", "每日前沿", "FRONTIER"],
   ["/about", "关于我", "ABOUT ME"],
 ];
 /** The laboratory is a standalone document, not an RSC route to prefetch. */
