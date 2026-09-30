@@ -1,0 +1,30 @@
+name: Validate news frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'app/news/**'
+      - 'app/experience/NewsGate.tsx'
+      - 'app/experience/news-gate.css'
+      - 'app/page.tsx'
+      - 'app/layout.tsx'
+      - 'public/news-covers/**'
+      - '.github/workflows/news-frontend-check.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
