@@ -38,11 +38,11 @@ test("renders the homepage with the integrated practice destination", async () =
   assert.match(html, /进入密码实验室/);
   assert.match(html, /开启动效|暂停动效/);
   assert.match(html, /让想象/);
-  assert.match(html, /开启 3D 星云/);
-  assert.match(html, /开启背景粒子/);
-  assert.match(html, /data-home-effects="lite"/);
+  assert.match(html, /轻点量仔三次，化为星云/);
+  assert.doesNotMatch(html, /开启 3D 星云|开启背景粒子|home-effects-switches/);
+  assert.match(html, /data-home-effects="active"/);
   assert.match(html, /guardian-static/);
-  assert.doesNotMatch(html, /<canvas\b/);
+  assert.match(html, /guardian-image-burst/);
   assert.doesNotMatch(html, /(?:src|href)="[^"]*(?:hero-scene|InteractiveGuardian|QuantumAtmosphere|QuantumSculpture)[^"]*\.js/);
   assert.doesNotMatch(html, /guardian-gestures|guardian-hello|量仔局部动作/);
   assert.doesNotMatch(html, /宇宙序章|film-launch|film-dialog/);

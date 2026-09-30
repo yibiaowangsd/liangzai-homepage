@@ -8,7 +8,7 @@ import {
   useExperience,
 } from "./experience/Motion";
 import { useHomeEffects } from "./experience/HomeEffects";
-import { HomeAtmosphere, HomeEffectsControls, HomeGuardian, HomeSculpture } from "./experience/HomeVisuals";
+import { HomeAtmosphere, HomeGuardian, HomeSculpture } from "./experience/HomeVisuals";
 
 const paths = [
   {
@@ -121,7 +121,6 @@ export default function QuantumHome() {
               <i aria-hidden="true" />
             </Link>
           </div>
-          <HomeEffectsControls />
         </div>
         <div className="hero-baseline">
           <a href="#worlds">
