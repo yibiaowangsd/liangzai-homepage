@@ -15,7 +15,8 @@ const ALLOWED_CATEGORIES = new Set([
 ]);
 
 const ALLOWED_STATUSES = new Set(["draft", "published"]);
-// Deployment probe: GitHub Actions owns production deployments for this dedicated API Worker.\nconst MAX_BATCH_ITEMS = 20;
+// GitHub Actions owns production deployments for this dedicated API Worker.
+const MAX_BATCH_ITEMS = 20;
 
 function corsHeaders(request) {
   const origin = request.headers.get("Origin");
