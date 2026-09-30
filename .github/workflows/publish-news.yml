@@ -113,10 +113,8 @@ jobs:
 
           if not isinstance(data, dict):
               raise SystemExit(f"{path}: root must be an object")
-          if not isinstance(data.get("items"), list) or not data["items"]:
-              raise SystemExit(f"{path}: items must be a non-empty array")
-          if len(data["items"]) > 20:
-              raise SystemExit(f"{path}: items must contain at most 20 entries")
+          if not isinstance(data.get("items"), list) or len(data["items"]) != 25:
+              raise SystemExit(f"{path}: production edition must contain exactly 25 items")
 
           file_date = path.stem
           try:
@@ -127,9 +125,10 @@ jobs:
           if data.get("date") not in (None, file_date):
               raise SystemExit(f"{path}: date must match filename ({file_date})")
 
+          import collections
           seen = set()
-          allowed_categories = {"pqc", "protocol", "standards", "security", "ai", "industry", "daily", "test"}
-          allowed_statuses = {"draft", "published"}
+          counts = collections.Counter()
+          allowed_categories = {"pqc", "protocol", "standards", "security", "ai"}
 
           for index, item in enumerate(data["items"], start=1):
               if not isinstance(item, dict):
@@ -143,14 +142,19 @@ jobs:
               if slug in seen:
                   raise SystemExit(f"{path}: duplicate slug in payload: {slug}")
               seen.add(slug)
-              category = item.get("category", "daily")
+              category = item.get("category")
               if category not in allowed_categories:
-                  raise SystemExit(f"{path}: item #{index} has unsupported category: {category}")
+                  raise SystemExit(f"{path}: item #{index} has unsupported production category: {category}")
+              counts[category] += 1
               status = item.get("status", "published")
-              if status not in allowed_statuses:
-                  raise SystemExit(f"{path}: item #{index} has unsupported status: {status}")
+              if status != "published":
+                  raise SystemExit(f"{path}: production items must be published")
 
-          print(f"Validated {path}: {len(data['items'])} item(s)")
+          for category in ("pqc", "protocol", "standards", "security", "ai"):
+              if counts[category] != 5:
+                  raise SystemExit(f"{path}: category {category} must contain exactly 5 items, got {counts[category]}")
+
+          print(f"Validated {path}: 25 stories, 5 x 5 desks")
           PY
           done < "$RUNNER_TEMP/news-files.txt"
 
@@ -219,6 +223,7 @@ jobs:
               f"inserted={data.get('inserted', 0)}",
               f"updated={data.get('updated', 0)}",
               f"skipped={data.get('skipped', 0)}",
+              f"removed={data.get('removed', 0)}",
           )
           PY
           done < "$RUNNER_TEMP/news-files.txt"
