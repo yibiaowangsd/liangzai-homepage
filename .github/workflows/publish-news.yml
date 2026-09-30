@@ -74,14 +74,22 @@ jobs:
             exit 0
           fi
 
+          existing_files=()
           for file in "${files[@]}"; do
-            if [[ ! -f "$file" ]]; then
-              echo "Selected file does not exist: $file" >&2
-              exit 1
+            if [[ -f "$file" ]]; then
+              existing_files+=("$file")
+            else
+              echo "Skipping deleted or missing file: $file"
             fi
           done
 
-          printf '%s\n' "${files[@]}" | sort -u > "$RUNNER_TEMP/news-files.txt"
+          if (( ${#existing_files[@]} == 0 )); then
+            echo "No existing news JSON files selected; nothing to publish."
+            echo "has_files=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          printf '%s\n' "${existing_files[@]}" | sort -u > "$RUNNER_TEMP/news-files.txt"
           echo "Selected files:"
           cat "$RUNNER_TEMP/news-files.txt"
           echo "has_files=true" >> "$GITHUB_OUTPUT"
