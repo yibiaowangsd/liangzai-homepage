@@ -1,0 +1,22 @@
+{
+  "date": "2026-09-30",
+  "items": [
+    {
+      "slug": "20260930-pipeline-probe",
+      "title": "流水线联调测试（草稿）",
+      "summary": "用于验证 GitHub Actions、Cloudflare Worker 与 D1 的自动发布链路。",
+      "content": "这是一条仅用于自动化链路验证的草稿记录，不对网站访客展示。",
+      "category": "test",
+      "tags": [
+        "pipeline",
+        "cloudflare",
+        "d1"
+      ],
+      "source_name": "system-test",
+      "source_url": "https://wangyibiao.com",
+      "cover_image": null,
+      "published_at": "2026-09-30T06:58:00Z",
+      "status": "draft"
+    }
+  ]
+}
