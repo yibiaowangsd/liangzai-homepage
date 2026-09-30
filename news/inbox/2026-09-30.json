@@ -15,7 +15,7 @@
       ],
       "source_name": "Cloudflare Blog",
       "source_url": "https://blog.cloudflare.com/cloudflare-certificate-authority/",
-      "cover_image": "https://wangyibiao.com/news-covers/pqc.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:00:01Z",
       "status": "published"
     },
@@ -33,7 +33,7 @@
       ],
       "source_name": "Cloudflare Blog",
       "source_url": "https://blog.cloudflare.com/pq-ca-with-mtcs/",
-      "cover_image": "https://wangyibiao.com/news-covers/pqc.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:00:02Z",
       "status": "published"
     },
@@ -51,7 +51,7 @@
       ],
       "source_name": "Cloudflare Blog",
       "source_url": "https://blog.cloudflare.com/ai-driven-cryptography-discovery/",
-      "cover_image": "https://wangyibiao.com/news-covers/pqc.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:00:03Z",
       "status": "published"
     },
@@ -69,7 +69,7 @@
       ],
       "source_name": "Cloudflare Blog",
       "source_url": "https://blog.cloudflare.com/post-quantum-visibility/",
-      "cover_image": "https://wangyibiao.com/news-covers/pqc.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:00:04Z",
       "status": "published"
     },
@@ -87,7 +87,7 @@
       ],
       "source_name": "NIST CSRC",
       "source_url": "https://csrc.nist.gov/Events/2026/tcpt3",
-      "cover_image": "https://wangyibiao.com/news-covers/pqc.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:00:05Z",
       "status": "published"
     },
@@ -105,7 +105,7 @@
       ],
       "source_name": "Cloudflare Blog",
       "source_url": "https://blog.cloudflare.com/ipsec-downgrade-protection/",
-      "cover_image": "https://wangyibiao.com/news-covers/protocol.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:01:01Z",
       "status": "published"
     },
@@ -123,7 +123,7 @@
       ],
       "source_name": "IETF Datatracker",
       "source_url": "https://datatracker.ietf.org/doc/draft-ietf-tls-mlkem/",
-      "cover_image": "https://wangyibiao.com/news-covers/protocol.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:01:02Z",
       "status": "published"
     },
@@ -141,7 +141,7 @@
       ],
       "source_name": "IETF Datatracker",
       "source_url": "https://datatracker.ietf.org/doc/draft-ietf-tls-mldsa/",
-      "cover_image": "https://wangyibiao.com/news-covers/protocol.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:01:03Z",
       "status": "published"
     },
@@ -159,7 +159,7 @@
       ],
       "source_name": "RFC Editor",
       "source_url": "https://www.rfc-editor.org/rfc/rfc10042.html",
-      "cover_image": "https://wangyibiao.com/news-covers/protocol.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:01:04Z",
       "status": "published"
     },
@@ -177,7 +177,7 @@
       ],
       "source_name": "IETF Datatracker",
       "source_url": "https://datatracker.ietf.org/doc/draft-ietf-ipsecme-ikev2-pqc-auth/",
-      "cover_image": "https://wangyibiao.com/news-covers/protocol.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:01:05Z",
       "status": "published"
     },
@@ -195,7 +195,7 @@
       ],
       "source_name": "NIST CSRC",
       "source_url": "https://csrc.nist.gov/Events/2026/tcpt3",
-      "cover_image": "https://wangyibiao.com/news-covers/standards.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:02:01Z",
       "status": "published"
     },
@@ -213,7 +213,7 @@
       ],
       "source_name": "IETF IESG Decisions",
       "source_url": "https://datatracker.ietf.org/iesg/decisions/2026/",
-      "cover_image": "https://wangyibiao.com/news-covers/standards.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:02:02Z",
       "status": "published"
     },
@@ -231,7 +231,7 @@
       ],
       "source_name": "IETF IESG Decisions",
       "source_url": "https://datatracker.ietf.org/iesg/decisions/2026/",
-      "cover_image": "https://wangyibiao.com/news-covers/standards.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:02:03Z",
       "status": "published"
     },
@@ -249,7 +249,7 @@
       ],
       "source_name": "IETF IESG Decisions",
       "source_url": "https://datatracker.ietf.org/iesg/decisions/2026/",
-      "cover_image": "https://wangyibiao.com/news-covers/standards.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:02:04Z",
       "status": "published"
     },
@@ -267,7 +267,7 @@
       ],
       "source_name": "IETF Datatracker",
       "source_url": "https://datatracker.ietf.org/doc/draft-ietf-sshm-composite-sigs/",
-      "cover_image": "https://wangyibiao.com/news-covers/standards.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:02:05Z",
       "status": "published"
     },
@@ -285,7 +285,7 @@
       ],
       "source_name": "Cloudflare Blog",
       "source_url": "https://blog.cloudflare.com/ai-era-framework/",
-      "cover_image": "https://wangyibiao.com/news-covers/security.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:03:01Z",
       "status": "published"
     },
@@ -303,7 +303,7 @@
       ],
       "source_name": "Cloudflare Blog",
       "source_url": "https://blog.cloudflare.com/adaptive-ai-waf-testing/",
-      "cover_image": "https://wangyibiao.com/news-covers/security.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:03:02Z",
       "status": "published"
     },
@@ -321,7 +321,7 @@
       ],
       "source_name": "Cloudflare Blog",
       "source_url": "https://blog.cloudflare.com/threat-signals/",
-      "cover_image": "https://wangyibiao.com/news-covers/security.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:03:03Z",
       "status": "published"
     },
@@ -339,7 +339,7 @@
       ],
       "source_name": "Cloudflare Blog",
       "source_url": "https://blog.cloudflare.com/application-profiles/",
-      "cover_image": "https://wangyibiao.com/news-covers/security.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:03:04Z",
       "status": "published"
     },
@@ -357,7 +357,7 @@
       ],
       "source_name": "Anthropic",
       "source_url": "https://www.anthropic.com/threat-intelligence-report-september-2026",
-      "cover_image": "https://wangyibiao.com/news-covers/security.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:03:05Z",
       "status": "published"
     },
@@ -375,7 +375,7 @@
       ],
       "source_name": "OpenAI",
       "source_url": "https://openai.com/index/devday-2026-recap/",
-      "cover_image": "https://wangyibiao.com/news-covers/ai.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:04:01Z",
       "status": "published"
     },
@@ -393,7 +393,7 @@
       ],
       "source_name": "OpenAI",
       "source_url": "https://openai.com/index/introducing-dots/",
-      "cover_image": "https://wangyibiao.com/news-covers/ai.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:04:02Z",
       "status": "published"
     },
@@ -411,7 +411,7 @@
       ],
       "source_name": "Anthropic",
       "source_url": "https://www.anthropic.com/claude-sonnet-5-5",
-      "cover_image": "https://wangyibiao.com/news-covers/ai.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:04:03Z",
       "status": "published"
     },
@@ -429,7 +429,7 @@
       ],
       "source_name": "MongoDB",
       "source_url": "https://www.mongodb.com/company/newsroom/press-releases/mongodb-launches-atlas-agent-engine-to-put-ai-agents-in-production-without-a-new-stack",
-      "cover_image": "https://wangyibiao.com/news-covers/ai.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:04:04Z",
       "status": "published"
     },
@@ -447,7 +447,7 @@
       ],
       "source_name": "Google",
       "source_url": "https://blog.google/innovation-and-ai/products/gemini-app/new-connected-apps-gemini/",
-      "cover_image": "https://wangyibiao.com/news-covers/ai.svg",
+      "cover_image": null,
       "published_at": "2026-09-30T07:04:05Z",
       "status": "published"
     }
