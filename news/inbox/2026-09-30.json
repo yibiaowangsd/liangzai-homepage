@@ -2,98 +2,453 @@
   "date": "2026-09-30",
   "items": [
     {
-      "slug": "20260930-cloudflare-ipsec-quantum-downgrade-protection",
-      "title": "Cloudflare 为 IPsec 增加抗量子降级保护，相关机制已进入产品测试",
-      "summary": "Cloudflare 公布了面向 IPsec 的量子降级攻击缓解方案，并表示已与 IETF 协作推进相关设计，在其 IPsec 产品中提供 Beta 实现。重点不是再叠加一种 PQC 算法，而是确保协商过程不能被攻击者诱导回落到不具备抗量子能力的参数组合。",
-      "content": "## 发生了什么\n\nCloudflare 在 9 月 29 日发布技术文章，讨论 IPsec 在引入后量子密钥交换后仍需面对的“降级攻击”问题：攻击者如果能够干扰协商，就可能尝试让双方从量子安全组合退回传统公钥算法，从而削弱迁移效果。\n\nCloudflare 表示，其与 IETF 协作设计了针对这类降级风险的缓解机制，并已在 Cloudflare 的 IPsec 产品中提供 Beta 实现。\n\n## 为什么值得关注\n\nPQC 迁移不只是“把 ML-KEM 接进 IKE”这么简单。真正进入生产环境后，还要保证协商状态机、回退逻辑、能力宣告和异常处理不会形成新的攻击面。\n\n对于 IKE/IPsec 抗量子改造，这类机制直接对应几个工程重点：\n\n- 防止协商被强制回退到经典密钥交换；\n- 明确混合模式与纯 PQC 模式之间的安全边界；\n- 将“是否发生不安全降级”纳入互通和安全测试；\n- 在密码敏捷架构中记录并验证最终协商结果。\n\n## 对研发的启发\n\n后续设计 IKEv2 混合密钥交换测试时，可以把“主动篡改能力宣告、删除 PQC 提案、重排提案、模拟中间盒兼容逻辑”等加入负面测试，而不只验证正常握手成功率。",
-      "category": "protocol",
-      "tags": [
-        "PQC",
-        "IKEv2",
-        "IPsec",
-        "Downgrade",
-        "Cloudflare"
-      ],
-      "source_name": "Cloudflare Blog",
-      "source_url": "https://blog.cloudflare.com/ipsec-downgrade-protection/",
-      "cover_image": null,
-      "published_at": "2026-09-30T07:03:00Z",
-      "status": "published"
-    },
-    {
-      "slug": "20260930-nist-tcpt3-threshold-call-preview",
-      "title": "NIST TCPT3 启动：门限密码征集进入方案预览阶段",
-      "summary": "NIST 的 Threshold Call Preview Talks #3 于 9 月 30 日启动，共安排 15 场以上预览报告。首日聚焦门限 FHE 与零知识证明，10 月 6 日将集中讨论门限后量子签名与公钥加密方案，说明后量子迁移正在从单体算法进一步延伸到分布式和门限密码体系。",
-      "content": "## 事件概览\n\nNIST 于 9 月 30 日开始举办 Threshold Call Preview Talks #3（TCPT3），用于展示计划提交到 NIST Threshold Call 的候选方案。活动跨 9 月 30 日和 10 月 6—7 日举行，计划包含 15 场以上预览报告。\n\n首日重点是门限全同态加密与零知识证明；10 月 6 日则专门安排门限后量子签名和公钥加密方案。\n\n## 为什么值得关注\n\n后量子密码标准化的下一阶段并不止于单机算法。大量真实系统需要 HSM 集群、多方审批、密钥分片、联合签名和高可用密钥服务，这些场景天然依赖门限密码。\n\n因此，未来“PQC 密码机”或“量子安全密钥服务”很可能要同时考虑：\n\n- PQC 算法本身的标准兼容性；\n- 密钥分片与门限签名/解封装；\n- 多节点故障模型；\n- 协议层如何表达门限密钥和联合认证结果；\n- 与现有 HSM、TEE、密钥管理系统的接口衔接。\n\n## 观察点\n\n10 月 6 日的门限后量子专场值得继续跟踪，尤其关注具体方案是否基于 ML-DSA、ML-KEM 或其他结构，以及 NIST 后续是否形成更明确的测试、接口和安全模型要求。",
-      "category": "standards",
-      "tags": [
-        "NIST",
-        "PQC",
-        "Threshold Cryptography",
-        "ML-DSA",
-        "ML-KEM"
-      ],
-      "source_name": "NIST CSRC",
-      "source_url": "https://csrc.nist.gov/Events/2026/tcpt3",
-      "cover_image": null,
-      "published_at": "2026-09-30T07:04:00Z",
-      "status": "published"
-    },
-    {
-      "slug": "20260930-nist-ark-pq-post-quantum-zk",
-      "title": "ark-pq 亮相 NIST TCPT3：面向后量子场景的透明零知识证明组件",
-      "summary": "NIST TCPT3 首日公布 ark-pq 预览报告。该项目面向后量子零知识证明，使用 IOP 与 Merkle Tree Vector Commitment 构建透明 zkSNARK，可用于证明门限密码中的密钥持有、签名有效性和复杂格式约束，而不暴露敏感数据。",
-      "content": "## 技术内容\n\n在 NIST TCPT3 的首日预览中，ark-pq 团队介绍了一个面向后量子安全的透明零知识证明库。其目标是为门限密码等场景提供 succinct non-interactive arguments of knowledge，同时避免依赖传统椭圆曲线配对等可能受到量子计算影响的构件。\n\nNIST 页面介绍，ark-pq 主要由两类成熟原语组合：\n\n- Interactive Oracle Proofs（IOP）；\n- Merkle Tree Vector Commitments。\n\n## 可用于什么\n\n这种工具并不是替代 ML-KEM 或 ML-DSA，而是为更复杂的系统关系提供“可验证但不泄密”的证明能力，例如：\n\n- 证明参与方确实持有某个秘密密钥；\n- 证明某个签名有效但不公开全部内部状态；\n- 证明门限协议中的输入满足格式约束；\n- 对多方密钥服务中的状态一致性进行零知识验证。\n\n## 研发意义\n\n随着 PQC 从单算法接入走向多方密钥管理、门限密码机和跨域协作，零知识证明会逐渐成为“如何证明系统正确执行了密码流程”的基础组件之一。\n\n对工程实现来说，值得重点观察证明大小、生成时间、验证时间以及它与现有 HSM/TEE 接口的组合方式。",
+      "slug": "20260930-cloudflare-public-ca-post-quantum",
+      "title": "Cloudflare 申请成为公共 CA，把后量子 Web PKI 纳入生产路线",
+      "summary": "Cloudflare 9 月 29 日宣布申请加入 Chrome、Apple、Microsoft 和 Mozilla 根计划，并计划在新 CA 中支持 Merkle Tree Certificates。后量子迁移正在从密钥交换扩展到证书发行、透明度和根信任体系。",
+      "content": "## 发生了什么\nCloudflare 宣布申请成为公共证书颁发机构，并与 GlobalSign 签署收购既有受信根的协议。新 CA 采用 ACME-first 路线，同时从架构起点考虑后量子认证。\n\n## 关键结论\n- Web PKI 的 PQC 迁移已经进入 CA、根计划和浏览器生态层面。\n- 后量子认证不只是替换签名算法，还涉及证书体积、透明度日志和兼容性。\n- Cloudflare 计划把传统证书和 MTC 发行放在同一套 CA 能力中。\n\n## 为什么值得关注\n对于 TLS/TLCP 迁移，认证链往往比 KEM 更难改。公共 CA 开始推进 PQ 证书，意味着证书侧工程问题将更快进入生产验证。",
       "category": "pqc",
       "tags": [
         "PQC",
-        "Zero Knowledge",
-        "zkSNARK",
-        "NIST",
-        "Threshold"
+        "WebPKI",
+        "CA",
+        "MTC"
       ],
-      "source_name": "NIST CSRC",
-      "source_url": "https://csrc.nist.gov/Presentations/2026/tctp3-1a4",
-      "cover_image": null,
-      "published_at": "2026-09-30T07:05:00Z",
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/cloudflare-certificate-authority/",
+      "cover_image": "https://wangyibiao.com/news-covers/pqc.svg",
+      "published_at": "2026-09-30T07:00:01Z",
       "status": "published"
     },
     {
-      "slug": "20260930-openai-devday-gpt61-sol-dots",
-      "title": "OpenAI DevDay 2026：GPT-6.1 Sol 与持续运行的 dots 正式发布",
-      "summary": "OpenAI 在 DevDay 2026 汇总发布多项新能力，其中 GPT-6.1 Sol 主打更高性价比的智能与代理式编码能力；dots 则是可持续运行、拥有独立云端计算环境并可连接大量插件的长期代理。AI 产品形态继续从单轮问答向持续执行任务演进。",
-      "content": "## 两个核心变化\n\nOpenAI 在 9 月 29 日的 DevDay 2026 公布了多项产品更新。其中 GPT-6.1 Sol 面向编码、计算机使用和专业工作强化，并强调在接近更高端模型能力的同时降低调用成本。\n\n另一项重要发布是 dots：这类长期运行代理拥有自己的云端计算环境，可持续执行任务，并通过插件连接外部应用。\n\n## 行业含义\n\n过去一年的 AI 工具重点是“模型能不能完成任务”，现在重点正在转向“代理能不能长时间、稳定、可审计地承担职责”。\n\n这种变化会让工程关注点从提示词和模型选型扩展到：\n\n- 持久化工作状态；\n- 权限与凭据隔离；\n- 外部工具调用审计；\n- 任务失败后的恢复和重试；\n- 长期运行代理的成本控制；\n- 与企业数据和工作流的连接方式。\n\n## 与安全研发的关系\n\n持续运行代理会显著放大凭据、插件权限和供应链安全的重要性。对于密码工程场景，未来可能进一步出现“代理负责证书更新、密钥轮换、协议配置审计”的工作流，因此最小权限、操作留痕和人工审批边界会更加重要。",
+      "slug": "20260930-cloudflare-mtc-pq-ca",
+      "title": "Merkle Tree Certificates 成为 Cloudflare 后量子 CA 的核心方案",
+      "summary": "Cloudflare 表示其新公共 CA 将支持 Merkle Tree Certificates，并目标在 2027 年初进入 Chrome 的量子抗性根计划。MTC 通过对 Merkle 树根签名和包含证明减少后量子证书链带来的握手膨胀。",
+      "content": "## 技术机制\nMTC 把大量证书组织进追加式 Merkle 树，CA 对树根签名，客户端通过包含证明验证证书，而不是每张证书携带完整的大型后量子签名链。\n\n## 关键结论\n- MTC 把证书透明度和证书发行更紧密地绑定。\n- Cloudflare 与 Chrome 的实验显示该方向具有现实性能可行性。\n- PQ 证书性能优化的重点从单个签名算法扩展到整个信任分发结构。\n\n## 研发启发\n协议性能测试应把证书链长度、压缩、缓存和握手分片与 KEM/签名耗时一起评估。",
+      "category": "pqc",
+      "tags": [
+        "PQC",
+        "MTC",
+        "Certificate",
+        "TLS"
+      ],
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/pq-ca-with-mtcs/",
+      "cover_image": "https://wangyibiao.com/news-covers/pqc.svg",
+      "published_at": "2026-09-30T07:00:02Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-cloudflare-cryptolabe-pq-inventory",
+      "title": "CryptoLabe：Cloudflare 用 AI 自动发现大型代码库中的密码依赖",
+      "summary": "Cloudflare 公开内部迁移工具 CryptoLabe，用 AI 在代码、文档和工单中识别密码算法、依赖关系和迁移阻塞点，服务于其 2029 年全面后量子就绪目标。密码资产发现正成为大规模 PQC 迁移的第一步。",
+      "content": "## 核心问题\n大型平台最难的是先回答“哪些地方用了哪些密码”。CryptoLabe 试图把源码、配置、文档和工程依赖串起来形成密码资产视图。\n\n## 关键结论\n- PQC 迁移首先是资产发现和依赖管理问题。\n- AI 可用于扩大搜索范围，但最终仍需要工程人员核实。\n- 密码敏捷需要持续维护的资产清单，而不是一次性盘点。\n\n## 可借鉴点\n协议库可以建立算法、Provider、证书、协议模式与设备之间的依赖图，再把性能和迁移测试绑定到该图上。",
+      "category": "pqc",
+      "tags": [
+        "PQC Migration",
+        "Crypto Agility",
+        "AI",
+        "Inventory"
+      ],
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/ai-driven-cryptography-discovery/",
+      "cover_image": "https://wangyibiao.com/news-covers/pqc.svg",
+      "published_at": "2026-09-30T07:00:03Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-cloudflare-pq-tls-observability",
+      "title": "Cloudflare 把后量子 TLS 密钥交换结果加入 Analytics 与日志",
+      "summary": "Cloudflare 新增域名级 PQ TLS 可观测能力，可在 HTTP Analytics、Log Explorer 和 Logpush 中查看实际协商的密钥交换组。官方观察到浏览器侧约 70% 流量已采用混合 ML-KEM，而源站侧比例仍明显更低。",
+      "content": "## 新能力\nCloudflare 现在把 TLS key exchange group 暴露为可查询指标，让用户直接确认连接是否协商 X25519MLKEM768。\n\n## 关键结论\n- “启用 PQC”与“实际协商 PQC”是两回事。\n- 边缘到源站和浏览器到边缘的迁移进度可能显著不同。\n- 可观测性可以支撑合规审计、覆盖率统计和回退检测。\n\n## 工程启发\n自研协议栈也应输出最终协商模式、算法、回退原因和握手耗时，而不是只记录成功或失败。",
+      "category": "pqc",
+      "tags": [
+        "PQC",
+        "TLS1.3",
+        "Observability",
+        "ML-KEM"
+      ],
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/post-quantum-visibility/",
+      "cover_image": "https://wangyibiao.com/news-covers/pqc.svg",
+      "published_at": "2026-09-30T07:00:04Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-nist-tcpt3-pq-threshold-preview",
+      "title": "NIST TCPT3 启动：后量子门限密码进入候选方案预览阶段",
+      "summary": "NIST 的 Threshold Call Preview Talks #3 于 9 月 30 日启动，安排 15 场以上预览报告。10 月 6 日将专门讨论后量子门限签名与公钥加密，说明 PQC 标准化正在从单体算法向门限与分布式密码延伸。",
+      "content": "## 活动内容\nTCPT3 跨 9 月 30 日和 10 月 6—7 日举行。首日关注 FHE 与 ZKP，第二日聚焦后量子门限签名与 PKE。\n\n## 关键结论\n- 后量子体系正在进入门限签名、门限解密和分布式密钥管理阶段。\n- HSM 集群、多方审批和分片密钥服务会直接受益。\n- 后续标准不仅要定义算法，还要定义故障模型、接口和可验证性。\n\n## 研发关注\n应重点跟踪 10 月 6 日的 PQ threshold 专场，观察与 ML-DSA、ML-KEM 的组合方式和性能开销。",
+      "category": "pqc",
+      "tags": [
+        "NIST",
+        "Threshold",
+        "PQC",
+        "ZKP"
+      ],
+      "source_name": "NIST CSRC",
+      "source_url": "https://csrc.nist.gov/Events/2026/tcpt3",
+      "cover_image": "https://wangyibiao.com/news-covers/pqc.svg",
+      "published_at": "2026-09-30T07:00:05Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-cloudflare-ipsec-downgrade-protection",
+      "title": "Cloudflare 为 IPsec 增加抗量子降级保护，已进入 Beta",
+      "summary": "Cloudflare 与 IETF 协作设计 IPsec 的量子降级攻击缓解方案，并已在其 IPsec 产品中提供 Beta。重点是确保攻击者无法通过操纵协商过程把后量子隧道强制退回传统密钥交换。",
+      "content": "## 协议问题\nIKE/IPsec 即使支持 PQC，如果攻击者能修改能力宣告或诱导回退，最终连接仍可能落到经典密码方案。\n\n## 关键结论\n- 必须测试不安全回退是否可被主动攻击触发。\n- 兼容模式、混合模式和异常回退都应进入威胁模型。\n- 负面测试应覆盖提案删除、重排和能力篡改。\n\n## 对 IKE 改造的意义\n该机制与混合密钥交换、密码敏捷状态机和异常处理测试高度相关。",
+      "category": "protocol",
+      "tags": [
+        "IPsec",
+        "IKEv2",
+        "Downgrade",
+        "PQC"
+      ],
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/ipsec-downgrade-protection/",
+      "cover_image": "https://wangyibiao.com/news-covers/protocol.svg",
+      "published_at": "2026-09-30T07:01:01Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-ietf-tls-mlkem-11",
+      "title": "TLS 1.3 的纯 ML-KEM 草案更新到 -11，并处于 RFC Editor 队列",
+      "summary": "draft-ietf-tls-mlkem-11 定义 ML-KEM-512、768、1024 作为 TLS 1.3 NamedGroups。Datatracker 显示文档已提交 IESG 并进入 RFC Editor 队列，纯 ML-KEM 密钥建立的协议文本继续接近发布。",
+      "content": "## 当前状态\n该草案在 9 月更新到 -11，定义三个 ML-KEM 参数集在 TLS Supported Groups 中的使用。\n\n## 关键结论\n- 这是纯 ML-KEM 路线，与 RFC 10024 的混合 PQ/T 路线不同。\n- 文档已进入 RFC Editor 队列。\n- 实现侧应把纯 PQC 与混合模式分开配置和测试。\n\n## 工程关注\nHello 报文大小、分片和算法优先级仍是落地重点。",
+      "category": "protocol",
+      "tags": [
+        "TLS1.3",
+        "ML-KEM",
+        "IETF",
+        "NamedGroup"
+      ],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/draft-ietf-tls-mlkem/",
+      "cover_image": "https://wangyibiao.com/news-covers/protocol.svg",
+      "published_at": "2026-09-30T07:01:02Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-ietf-tls-mldsa-06",
+      "title": "TLS 1.3 的 ML-DSA 认证草案更新到 -06，进入 RFC Editor 队列",
+      "summary": "draft-ietf-tls-mldsa-06 定义 ML-DSA 在 TLS 1.3 中通过 signature_algorithms 和 signature_algorithms_cert 参与认证。Datatracker 显示文档已完成 IESG 审批并进入 RFC Editor 队列。",
+      "content": "## 当前状态\nTLS 的后量子迁移正在从 KEM 延伸到签名认证。ML-DSA 草案定义 mldsa44、mldsa65、mldsa87 的协商方式。\n\n## 关键结论\n- KEM 与认证算法可以独立迁移。\n- 证书链体积和签名验证性能将成为握手新瓶颈。\n- 实现需要覆盖混合 KEM + 经典签名、混合 KEM + PQ 签名等模式。\n\n## 工程关注\n证书格式、算法标识和 side-channel 处理需要与状态机一起验证。",
+      "category": "protocol",
+      "tags": [
+        "TLS1.3",
+        "ML-DSA",
+        "Authentication",
+        "IETF"
+      ],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/draft-ietf-tls-mldsa/",
+      "cover_image": "https://wangyibiao.com/news-covers/protocol.svg",
+      "published_at": "2026-09-30T07:01:03Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-ssh-rfc10042-mlkem-hybrid",
+      "title": "SSH 的 ML-KEM 混合密钥交换已形成 RFC 10042",
+      "summary": "RFC 10042 定义 ML-KEM 与 ECDH 组合的 SSH PQ/T 混合密钥交换方法，包括 X25519、P-256 与 P-384 的组合，为 SSH 抗量子密钥建立提供可直接实现的 IETF 文本。",
+      "content": "## 标准内容\nRFC 10042 把 ML-KEM/ECDH 混合方案写入 SSH transport layer 的密钥交换方法。\n\n## 关键结论\n- SSH 已有面向 ML-KEM 的标准化混合 KEX。\n- 三类方法覆盖不同经典曲线与 ML-KEM 参数组合。\n- 协商仍通过 SSH_MSG_KEXINIT 完成，利于兼容现有状态机。\n\n## 工程关注\n需要重点验证算法列表排序、报文尺寸、密钥派生输入以及旧客户端兼容行为。",
+      "category": "protocol",
+      "tags": [
+        "SSH",
+        "RFC10042",
+        "ML-KEM",
+        "Hybrid"
+      ],
+      "source_name": "RFC Editor",
+      "source_url": "https://www.rfc-editor.org/rfc/rfc10042.html",
+      "cover_image": "https://wangyibiao.com/news-covers/protocol.svg",
+      "published_at": "2026-09-30T07:01:04Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-ikev2-pqc-auth-rfc-editor",
+      "title": "IKEv2 的 PQC 签名认证草案已完成 IESG 处理并进入 RFC Editor",
+      "summary": "draft-ietf-ipsecme-ikev2-pqc-auth-12 定义在 IKEv2 现有认证框架中接入 PQC 签名的一般机制，并明确 ML-DSA 与 SLH-DSA 的使用。文档已完成 IESG 处理并进入 RFC Editor 流程。",
+      "content": "## 协议进展\nIKEv2 的 PQC 改造正在形成“密钥交换 + 认证”两条并行路线。该草案聚焦签名认证，并尽量保持现有 IKEv2 框架。\n\n## 关键结论\n- ML-DSA 和 SLH-DSA 都被纳入使用说明。\n- 设计强调互操作与向后兼容。\n- 实现需要统一处理签名算法协商、公钥/证书格式和 AUTH 计算路径。\n\n## 工程关注\n多模式共存时，状态机和错误码一致性非常关键。",
+      "category": "protocol",
+      "tags": [
+        "IKEv2",
+        "ML-DSA",
+        "SLH-DSA",
+        "Authentication"
+      ],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/draft-ietf-ipsecme-ikev2-pqc-auth/",
+      "cover_image": "https://wangyibiao.com/news-covers/protocol.svg",
+      "published_at": "2026-09-30T07:01:05Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-nist-tcpt3-standardization",
+      "title": "NIST TCPT3 以 15+ 场预览报告推进门限密码征集",
+      "summary": "NIST TCPT3 将在 9 月 30 日、10 月 6—7 日举办 15 场以上 Preview Talks，为 Threshold Call 的候选提交做公开预览。活动把 FHE、ZKP、后量子门限签名与 PKE 放进同一标准化框架。",
+      "content": "## 标准化意义\nTCPT3 不是单纯学术研讨，而是 NIST Threshold Call 候选提交前的公开预览窗口。\n\n## 关键结论\n- 门限密码的安全模型和实现接口正在走向标准化。\n- 后量子门限签名和加密将在 10 月 6 日集中展示。\n- 未来密码机、HSM 集群和分布式密钥服务可能需要对应测试规范。\n\n## 跟踪建议\n重点关注候选方案的轮次、通信量、故障容错和安全证明假设。",
+      "category": "standards",
+      "tags": [
+        "NIST",
+        "Threshold",
+        "Standardization",
+        "PQC"
+      ],
+      "source_name": "NIST CSRC",
+      "source_url": "https://csrc.nist.gov/Events/2026/tcpt3",
+      "cover_image": "https://wangyibiao.com/news-covers/standards.svg",
+      "published_at": "2026-09-30T07:02:01Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-iesg-tls-mlkem-approved",
+      "title": "IETF IESG 已批准 TLS ML-KEM 文档，出版流程继续推进",
+      "summary": "IETF 2026 年决议记录显示，draft-ietf-tls-mlkem 于 9 月 3 日获 IESG 批准。当前 Datatracker 显示文档处于 RFC Editor 队列，纯 ML-KEM 在 TLS 1.3 中的标准化已越过关键审批节点。",
+      "content": "## 状态变化\nIESG 已批准 TLS ML-KEM 文档，后续进入 IANA/RFC Editor 出版流程。\n\n## 关键结论\n- 这比普通草案版本更新更重要，意味着技术文本主要共识已形成。\n- 实现方可以更稳定地准备 IANA 编号和互通测试。\n- 标准跟踪应拆分 WG、IESG、IANA 和 RFC Editor 四类状态。\n\n## 研发意义\n可以提前围绕当前文本做纯 ML-KEM 模式验证，而不是等 RFC 正式发布才启动适配。",
+      "category": "standards",
+      "tags": [
+        "IETF",
+        "IESG",
+        "TLS",
+        "ML-KEM"
+      ],
+      "source_name": "IETF IESG Decisions",
+      "source_url": "https://datatracker.ietf.org/iesg/decisions/2026/",
+      "cover_image": "https://wangyibiao.com/news-covers/standards.svg",
+      "published_at": "2026-09-30T07:02:02Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-iesg-tls-mldsa-approved",
+      "title": "IETF IESG 已批准 TLS ML-DSA 文档，认证侧标准成熟度继续提升",
+      "summary": "IETF 9 月 10 日批准 draft-ietf-tls-mldsa，规定 ML-DSA 在 TLS 1.3 认证中的使用。文档当前处于 RFC Editor 队列，TLS 的后量子标准化从密钥建立继续向认证链推进。",
+      "content": "## 状态变化\nTLS ML-DSA 文档已经完成 IESG 审批并进入出版阶段。\n\n## 关键结论\n- TLS PQC 标准正在从 KEM 向签名认证收敛。\n- 证书算法标识、签名扩展和验证性能成为互通重点。\n- 对测试体系而言，应增加 ML-DSA 证书和 signature_algorithms 协商用例。\n\n## 标准意义\n认证侧成熟将直接影响完整 PQC TLS 的部署时间表。",
+      "category": "standards",
+      "tags": [
+        "IETF",
+        "IESG",
+        "TLS",
+        "ML-DSA"
+      ],
+      "source_name": "IETF IESG Decisions",
+      "source_url": "https://datatracker.ietf.org/iesg/decisions/2026/",
+      "cover_image": "https://wangyibiao.com/news-covers/standards.svg",
+      "published_at": "2026-09-30T07:02:03Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-iesg-composite-mlkem-cms",
+      "title": "Composite ML-KEM for CMS 获 IESG 批准，复合 KEM 标准继续前进",
+      "summary": "IETF 9 月 18 日批准 draft-ietf-lamps-cms-composite-kem。文档目标是在 CMS 中定义 Composite ML-KEM，为企业消息和 PKI 迁移期需要传统与后量子双重安全假设的场景提供标准化路径。",
+      "content": "## 标准进展\nLAMPS 工作组的 Composite ML-KEM for CMS 已获 IESG 批准。\n\n## 关键结论\n- 混合/复合迁移不只发生在 TLS，也进入 CMS 和企业 PKI。\n- 复合设计在迁移期同时保留传统与 PQC 安全假设。\n- 代价是更复杂的 AlgorithmIdentifier、密钥管理和报文体积。\n\n## 工程关注\nJCE、证书服务和密码机如果支持 CMS/P7，应提前关注复合 KEM 的编码与接口设计。",
+      "category": "standards",
+      "tags": [
+        "CMS",
+        "ML-KEM",
+        "Composite",
+        "IETF"
+      ],
+      "source_name": "IETF IESG Decisions",
+      "source_url": "https://datatracker.ietf.org/iesg/decisions/2026/",
+      "cover_image": "https://wangyibiao.com/news-covers/standards.svg",
+      "published_at": "2026-09-30T07:02:04Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-ssh-composite-signatures-wg",
+      "title": "SSH Composite Signatures 已成为 SSHM 工作组文档",
+      "summary": "draft-ietf-sshm-composite-sigs-00 于 8 月成为 SSHM 工作组文档，定义 ML-DSA 与 Ed25519/ECDSA 组合的复合签名方案，为 SSH 认证阶段的后量子迁移提供另一条标准化路线。",
+      "content": "## 文档定位\n该草案定义两类 SSH 复合签名：把 ML-DSA 与经典椭圆曲线签名组合，目标是同时抵抗经典与量子攻击者。\n\n## 关键结论\n- SSH 的 PQC 标准化正在从 KEX 扩展到用户/主机认证。\n- Composite signature 与“纯 ML-DSA”路线在迁移策略上存在不同权衡。\n- 私钥和公钥编码需要遵循复合签名文档的一致结构。\n\n## 研发关注\n实现时应把复合签名的密钥格式、算法名和 known_hosts 兼容性纳入测试。",
+      "category": "standards",
+      "tags": [
+        "SSH",
+        "ML-DSA",
+        "Composite",
+        "SSHM"
+      ],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/draft-ietf-sshm-composite-sigs/",
+      "cover_image": "https://wangyibiao.com/news-covers/standards.svg",
+      "published_at": "2026-09-30T07:02:05Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-cloudflare-ai-era-appsec",
+      "title": "Cloudflare 提出 AI 时代的自适应应用安全闭环",
+      "summary": "Cloudflare 把应用安全重组为发现风险、治理身份与代理、运行时保护、调查与学习四个连续阶段，强调 AI 让攻击者可以高速变异载荷，也让防守侧必须把代码、流量、情报和自动响应连接起来。",
+      "content": "## 新框架\nCloudflare 认为 AI 时代的 AppSec 不能继续由孤立工具组成，而应形成持续学习闭环。\n\n## 关键结论\n- AI 攻击者可根据实时反馈自动改变 payload 和路径。\n- Agentic traffic 需要结合身份、历史和风险判断，而不是简单当作 bot。\n- 防守方也会使用代理做漏洞发现、调查和缓解建议。\n\n## 产品启发\n未来 WAF、零信任和代理治理将更紧密，安全控制面需要保留完整审计链。",
+      "category": "security",
+      "tags": [
+        "AppSec",
+        "AI Security",
+        "WAF",
+        "Agents"
+      ],
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/ai-era-framework/",
+      "cover_image": "https://wangyibiao.com/news-covers/security.svg",
+      "published_at": "2026-09-30T07:03:01Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-cloudflare-frontier-ai-waf-testing",
+      "title": "Cloudflare 用前沿模型对自家 WAF 做自适应攻击测试",
+      "summary": "Cloudflare 构建模型驱动 WAF 测试器，让模型根据拦截结果持续变异 HTTP 请求，在授权 staging 环境中覆盖六类攻击。方法展示了“模型扩大输入空间 + 确定性代码约束边界 + 人工复核”的安全测试范式。",
+      "content": "## 测试方式\n模型根据 WAF 返回结果建议下一种编码或投递方式，代码负责目标白名单、实际发送和证据记录。\n\n## 关键结论\n- AI 适合扩大安全测试的输入空间。\n- 模型不能拥有修改防护规则等高风险权限。\n- 最终发现必须由人工复核，避免把模型判断直接当漏洞结论。\n\n## 方法价值\n这种模式适合 WAF、协议解析器和密码接口的模糊测试：AI 负责策略搜索，确定性框架负责安全边界。",
+      "category": "security",
+      "tags": [
+        "WAF",
+        "AI Red Team",
+        "Adaptive Testing",
+        "AppSec"
+      ],
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/adaptive-ai-waf-testing/",
+      "cover_image": "https://wangyibiao.com/news-covers/security.svg",
+      "published_at": "2026-09-30T07:03:02Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-cloudflare-threat-signals",
+      "title": "Cloudflare Threat Signals 用 agentic skills 把公开报告转成可执行威胁情报",
+      "summary": "Cloudflare 发布 Threat Signals，自动摘要开源威胁报告、提取和规范化 IOC，并保留上下文后写入账户私有情报数据集，再与 Threat Events 与 WAF 规则联动。",
+      "content": "## 产品变化\nThreat Signals 解决的是威胁情报中最耗人工的一步：把非结构化研究文章变成结构化、可行动指标。\n\n## 关键结论\n- 自动化不仅抽 IOC，还保留为什么重要的上下文。\n- 数据可以转成 Threat Event 并用于防护策略。\n- agentic skills 正在把分析员经验产品化。\n\n## 安全启发\n高质量自动化应输出证据与来源，而不是只给最终标签，便于人工审核和规则回溯。",
+      "category": "security",
+      "tags": [
+        "Threat Intelligence",
+        "Agents",
+        "IOC",
+        "WAF"
+      ],
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/threat-signals/",
+      "cover_image": "https://wangyibiao.com/news-covers/security.svg",
+      "published_at": "2026-09-30T07:03:03Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-cloudflare-application-profiles",
+      "title": "Cloudflare Application Profiles 用“正常请求画像”做正向安全",
+      "summary": "Cloudflare 发布 Application Profiles，通过学习路径变量、查询参数、Header、Cookie 和请求体结构，识别偏离正常模型的请求，并允许把违规信号直接作为 WAF Security Rules 条件。",
+      "content": "## 核心思路\n传统 WAF 主要找“像攻击的请求”，Application Profiles 反过来学习“正常请求应该长什么样”。\n\n## 关键结论\n- 可学习 URL、Header、Cookie、JSON 和表单结构。\n- 先以观察模式输出偏差信号，再由用户决定是否阻断。\n- 正向安全可以缩小 AI 变异 payload 的有效空间。\n\n## 工程关注\nAPI 版本变化和动态字段容易产生误报，因此模型生命周期和变更审批同样重要。",
+      "category": "security",
+      "tags": [
+        "Positive Security",
+        "WAF",
+        "Schema",
+        "API"
+      ],
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/application-profiles/",
+      "cover_image": "https://wangyibiao.com/news-covers/security.svg",
+      "published_at": "2026-09-30T07:03:04Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-anthropic-threat-intelligence",
+      "title": "Anthropic 9 月威胁情报报告：AI 滥用从助手走向流程编排",
+      "summary": "Anthropic 汇总 2025 年 12 月至 2026 年 8 月发现并处置的真实滥用案例，覆盖网络行动、监控、诈骗、影响行动等七类风险。报告认为部分威胁者已把模型用于持续工程和行动编排，而不再只是问答辅助。",
+      "content": "## 报告范围\nAnthropic Threat Intelligence 团队披露其处置的多类真实滥用案例，并总结模型被用于网络行动、监控、诈骗和非法蒸馏等趋势。\n\n## 关键结论\n- 模型使用方式正从脚本辅助转向更长链路的工作流编排。\n- 防守方需要分析连续多步骤行为，而不是单条 prompt。\n- AI 能力扩散正在降低高级攻击所需的人力门槛。\n\n## 企业安全启发\n强代理系统更需要最小权限、隔离环境、动作审计和异常行为检测。",
+      "category": "security",
+      "tags": [
+        "Anthropic",
+        "Threat Intelligence",
+        "AI Misuse",
+        "Cybersecurity"
+      ],
+      "source_name": "Anthropic",
+      "source_url": "https://www.anthropic.com/threat-intelligence-report-september-2026",
+      "cover_image": "https://wangyibiao.com/news-covers/security.svg",
+      "published_at": "2026-09-30T07:03:05Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-openai-gpt61-sol",
+      "title": "OpenAI 发布 GPT-6.1 Sol，重点强化代理式编码与专业工作",
+      "summary": "OpenAI 在 DevDay 2026 发布 GPT-6.1 Sol，官方称其在 agentic coding、computer use 和专业工作上相对 GPT-6 Sol 有重大升级，并以更低价格提供接近 Astra 级别的智能能力。",
+      "content": "## 新模型定位\nGPT-6.1 Sol 面向长任务执行、代理式编码、电脑操作和专业知识工作。\n\n## 关键结论\n- 模型优化目标继续从单次回答转向多步骤执行。\n- 编码、computer use 和专业工作正在合并为同一能力栈。\n- 单位任务成本正在成为与 benchmark 同等重要的指标。\n\n## 工程观察\n代理系统会更依赖稳定工具调用、错误恢复和状态保持，而不只是更强的文本生成。",
       "category": "ai",
       "tags": [
         "OpenAI",
         "GPT-6.1 Sol",
-        "Agents",
-        "dots",
-        "DevDay"
+        "Coding",
+        "Agents"
       ],
       "source_name": "OpenAI",
       "source_url": "https://openai.com/index/devday-2026-recap/",
-      "cover_image": null,
-      "published_at": "2026-09-30T07:06:00Z",
+      "cover_image": "https://wangyibiao.com/news-covers/ai.svg",
+      "published_at": "2026-09-30T07:04:01Z",
       "status": "published"
     },
     {
-      "slug": "20260930-mongodb-agent-engine-90",
-      "title": "MongoDB 推出 Atlas Agent Engine，并发布 MongoDB 9.0 与 Atlas Infinite",
-      "summary": "MongoDB 在 9 月 29 日集中发布面向 AI 代理的新基础设施：Atlas Agent Engine 将执行、记忆、检索和治理整合到统一层；MongoDB 9.0 强化性能与安全，Atlas Infinite 则面向波动显著的 AI 负载提供弹性扩展能力。",
-      "content": "## 新发布\n\nMongoDB 在 Investor Day 上发布 Atlas Agent Engine，用统一平台承载 AI 代理执行、持久记忆、检索和治理，并强调对不同模型、框架和云环境保持开放。\n\n同时发布的 MongoDB 9.0 已正式可用，官方给出的性能数据包括最高约 2 倍吞吐、35% 更快读取和 30% 更快更新；Atlas Infinite 则进入 Public Preview，重点解决 AI/代理负载变化剧烈时的弹性扩展问题。\n\n## 为什么值得关注\n\nAgent 系统越来越依赖“长期状态 + 检索 + 工具调用 + 治理”，数据库因此不再只是保存业务数据，而开始承担代理记忆、上下文和审计基础设施。\n\nAtlas Agent Engine 特别强调 MCP 和 A2A 等开放标准，这说明未来代理平台的竞争点之一会是跨模型、跨框架的互操作能力，而不是把用户锁在单一模型栈中。\n\n## 工程观察\n\n对于需要构建长期运行智能系统的项目，值得关注三类能力是否真正成熟：\n\n- 代理记忆是否能做到可追踪、可删除和权限隔离；\n- 检索结果能否与事务型实时数据保持一致；\n- 多代理之间的调用、成本和权限是否能够统一治理。\n\n这些问题与传统数据库的事务、安全和审计能力正在快速汇合。",
-      "category": "industry",
+      "slug": "20260930-openai-dots",
+      "title": "OpenAI dots 把 AI 代理从会话工具推向“持续承担职责”",
+      "summary": "OpenAI 推出 dots：持续运行、拥有独立云端计算环境，并可通过插件连接数千应用的 always-on agents。产品重点是让代理长期承担职责，而不是等用户每次发起单独指令。",
+      "content": "## 产品形态变化\ndots 的核心不是更长的聊天，而是持续运行的职责型代理。用户给出目标与权限边界后，代理可在连接的应用中主动推进工作。\n\n## 关键结论\n- 长期状态、权限与恢复机制成为 AI 产品一等能力。\n- 独立云端计算环境降低与用户本地环境的耦合。\n- 用户需要明确哪些动作可自动完成、哪些必须确认。\n\n## 工程影响\n长期代理需要审计日志、凭据隔离、失败重试和成本预算。",
+      "category": "ai",
+      "tags": [
+        "OpenAI",
+        "dots",
+        "Agents",
+        "Automation"
+      ],
+      "source_name": "OpenAI",
+      "source_url": "https://openai.com/index/introducing-dots/",
+      "cover_image": "https://wangyibiao.com/news-covers/ai.svg",
+      "published_at": "2026-09-30T07:04:02Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-anthropic-sonnet55",
+      "title": "Anthropic 发布 Claude Sonnet 5.5：更快、更省，并强化代码代理能力",
+      "summary": "Anthropic 9 月 28 日发布 Claude Sonnet 5.5，称其比 Sonnet 5 快 30% 以上，并在多数任务上降低最高约 30% 成本。新版本重点提升 agentic coding、长任务和图像理解。",
+      "content": "## 模型更新\nSonnet 5.5 被定位为 Opus 5.5 的高性价比补充，强调日常复杂任务、代码修复和高频专业工作。\n\n## 关键结论\n- 中高端模型正在围绕“够强 + 更便宜”竞争。\n- 工具调用效率和长任务完成率成为核心指标。\n- 网络安全能力提升同时推动更严格的 safeguard。\n\n## 行业信号\n模型家族化越来越明显：旗舰承担复杂判断，中端承担大规模生产任务。",
+      "category": "ai",
+      "tags": [
+        "Anthropic",
+        "Claude",
+        "Sonnet 5.5",
+        "Coding"
+      ],
+      "source_name": "Anthropic",
+      "source_url": "https://www.anthropic.com/claude-sonnet-5-5",
+      "cover_image": "https://wangyibiao.com/news-covers/ai.svg",
+      "published_at": "2026-09-30T07:04:03Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-mongodb-atlas-agent-engine",
+      "title": "MongoDB Atlas Agent Engine 把记忆、检索和治理收进同一代理基础设施",
+      "summary": "MongoDB 发布 Atlas Agent Engine，把代理执行、持久记忆、检索与治理整合到统一层，并强调模型和框架中立。平台支持 MCP 与 A2A 等开放标准，目标是减少代理生产化时的拼装式基础设施。",
+      "content": "## 新平台\nAtlas Agent Engine 试图把代理运行时、记忆、检索、身份和治理放进统一控制面。\n\n## 关键结论\n- 每个动作可与真实身份和策略关联，便于审计。\n- Memory 与检索能力直接集成，减少重复搭建。\n- MCP 与 A2A 显示跨模型、跨框架互操作正在成为平台竞争点。\n\n## 为什么值得关注\nAgent 工程正在快速“数据库化”：状态、权限、审计和检索越来越像传统数据基础设施问题。",
+      "category": "ai",
       "tags": [
         "MongoDB",
-        "AI Agents",
-        "Database",
+        "Agent Engine",
         "MCP",
-        "Atlas"
+        "Memory"
       ],
       "source_name": "MongoDB",
       "source_url": "https://www.mongodb.com/company/newsroom/press-releases/mongodb-launches-atlas-agent-engine-to-put-ai-agents-in-production-without-a-new-stack",
-      "cover_image": null,
-      "published_at": "2026-09-30T07:07:00Z",
+      "cover_image": "https://wangyibiao.com/news-covers/ai.svg",
+      "published_at": "2026-09-30T07:04:04Z",
+      "status": "published"
+    },
+    {
+      "slug": "20260930-google-gemini-connected-apps",
+      "title": "Gemini 扩大 Connected Apps，AI 助手继续向跨应用执行层演进",
+      "summary": "Google 9 月 23 日扩大 Gemini Connected Apps 覆盖范围，新增 Airtable、Linear、monday.com、Adobe、Webflow 等生产力与创意工具。用户可在聊天中通过 @ 提及或直接指令调用连接应用。",
+      "content": "## 产品更新\nGemini 新一批 Connected Apps 覆盖项目管理、数据库、创意设计、网站构建和生活服务。\n\n## 关键结论\n- AI 助手正在从回答问题变成统一的跨应用入口。\n- 插件/连接器生态会成为模型之外的第二竞争层。\n- 权限授权、数据边界和操作确认直接决定企业可用性。\n\n## 行业趋势\nOpenAI、Google 与其他平台都在争夺“连接外部系统”的操作层。",
+      "category": "ai",
+      "tags": [
+        "Google",
+        "Gemini",
+        "Connected Apps",
+        "Agents"
+      ],
+      "source_name": "Google",
+      "source_url": "https://blog.google/innovation-and-ai/products/gemini-app/new-connected-apps-gemini/",
+      "cover_image": "https://wangyibiao.com/news-covers/ai.svg",
+      "published_at": "2026-09-30T07:04:05Z",
       "status": "published"
     }
   ]
