@@ -7,6 +7,19 @@ on:
       - 'app/news/**'
       - 'app/experience/NewsGate.tsx'
       - 'app/experience/news-gate.css'
+      - 'app/experience/news-gate-modal.ts'
+      - 'tests/news-*.test.mjs'
+      - 'app/page.tsx'
+      - 'app/layout.tsx'
+      - 'public/news-covers/**'
+      - '.github/workflows/news-frontend-check.yml'
+  pull_request:
+    paths:
+      - 'app/news/**'
+      - 'app/experience/NewsGate.tsx'
+      - 'app/experience/news-gate.css'
+      - 'app/experience/news-gate-modal.ts'
+      - 'tests/news-*.test.mjs'
       - 'app/page.tsx'
       - 'app/layout.tsx'
       - 'public/news-covers/**'
@@ -27,4 +40,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
       - run: npm run build
+      - run: node --experimental-strip-types --test tests/news-*.test.mjs

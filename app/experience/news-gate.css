@@ -1,33 +1,42 @@
-.news-gate-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 260;
-  display: grid;
-  place-items: center;
-  padding: 28px;
+.news-gate::backdrop {
   background: rgba(2, 5, 8, .82);
   backdrop-filter: blur(18px);
   animation: gate-in .35s ease both;
 }
 
 .news-gate {
-  width: min(1120px, 94vw);
+  width: min(1120px, calc(100% - 56px));
+  max-width: none;
   max-height: min(820px, 90vh);
+  max-height: min(820px, 90dvh);
+  margin: auto;
   padding: 28px;
   overflow: auto;
-  position: relative;
+  position: fixed;
+  inset: 0;
   color: #eef4f8;
   background: #0a0e13;
   border: 1px solid rgba(190, 222, 245, .24);
   box-shadow: 0 35px 120px rgba(0,0,0,.55);
+  overscroll-behavior: contain;
+  animation: gate-in .35s ease both;
+}
+
+.news-gate:not([open]) {
+  display: none;
+}
+
+.news-gate :is(a, button):focus-visible {
+  outline: 2px solid #94cfff;
+  outline-offset: 3px;
 }
 
 .news-gate-close {
   position: absolute;
   right: 18px;
   top: 14px;
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border: 0;
   background: transparent;
   color: #aebbc6;
@@ -45,7 +54,7 @@
 
 .news-gate header span {
   color: #94cfff;
-  font: 700 8px/1 var(--font-mono-en);
+  font: 700 11px/1.4 var(--font-mono-en);
   letter-spacing: .16em;
 }
 
@@ -60,7 +69,7 @@
   max-width: 250px;
   margin: 0;
   color: #8d9aa6;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.7;
   text-align: right;
 }
@@ -89,18 +98,19 @@
   aspect-ratio: 16 / 8.8;
   overflow: hidden;
   margin-bottom: 13px;
+  background: #e8edf3;
 }
 
 .gate-thumb img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
 .news-gate-card > span {
   color: #93cfff;
-  font: 700 7px/1 var(--font-mono-en);
+  font: 700 11px/1.4 var(--font-mono-en);
   letter-spacing: .1em;
 }
 
@@ -113,8 +123,8 @@
 }
 
 .news-gate-card small {
-  color: #71808c;
-  font: 600 7px/1 var(--font-mono-en);
+  color: #9baab6;
+  font: 600 11px/1.4 var(--font-mono-en);
 }
 
 .news-gate > footer {
@@ -132,7 +142,7 @@
   align-items: center;
   justify-content: center;
   border: 1px solid rgba(199, 225, 244, .28);
-  font-size: 11px;
+  font-size: 14px;
 }
 
 .news-gate footer button {
@@ -152,15 +162,32 @@
 }
 
 @media (max-width: 800px) {
-  .news-gate-backdrop { padding: 12px; }
-
-  .news-gate { padding: 20px; }
+  .news-gate { width: calc(100% - 24px); padding: 20px; }
 
   .news-gate > header { grid-template-columns: 1fr; }
 
   .news-gate header p { text-align: left; }
 
   .news-gate-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+[data-motion="paused"] .news-gate,
+[data-motion="paused"] .news-gate::backdrop,
+[data-motion="paused"] .news-gate-card {
+  animation: none;
+  transition: none;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .news-gate,
+  .news-gate::backdrop,
+  .news-gate-card,
+  .news-gate-card:hover {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
 }
 
 @media (max-width: 520px) {

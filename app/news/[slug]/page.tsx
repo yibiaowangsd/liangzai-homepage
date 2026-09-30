@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
+import StoryImage from "../StoryImage";
 import {
   categoryEnglish,
   categoryLabels,
-  coverFor,
   formatNewsDate,
   getNewsDetail,
   parseTags,
@@ -82,9 +82,9 @@ export default async function NewsDetailPage({
         </header>
 
         <figure className="article-hero-image">
-          <img src={coverFor(item)} alt="" aria-hidden="true" />
+          <StoryImage item={item} eager />
           <figcaption>
-            <span>LIANGZAI / EDITORIAL VISUAL</span>
+            <span>LIANGZAI / FRONTIER</span>
             <span>{item.source_name || "SOURCE"}</span>
           </figcaption>
         </figure>
