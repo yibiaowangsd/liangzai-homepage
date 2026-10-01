@@ -1,7 +1,8 @@
 /** One subtle content entry; never cover a page that is already visible. */
 export function shouldEnterPage(pathname: string) {
   const path = pathname.replace(/\/$/, "") || "/";
-  return ["/", "/storybook", "/archive", "/pqc-arsenal", "/pqc-practice/index.html", "/pqc-practice/audit.html"].includes(path);
+  return ["/", "/storybook", "/archive", "/pqc-arsenal", "/pqc-practice", "/pqc-practice/index.html", "/pqc-practice/audit.html", "/news"].includes(path)
+    || path.startsWith("/news/");
 }
 
 export function runPageArrival(pathname = location.pathname) {
