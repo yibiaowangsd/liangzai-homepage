@@ -88,3 +88,14 @@ test('committed React route takes precedence over a not-yet-updated address bar'
   try { assert.equal(back.calls.length, 1, 'leaving About receives the destination entry'); }
   finally { dispose(); back.restore(); }
 });
+
+test('news listings, details and the laboratory receive their destination entry', () => {
+  for (const pathname of ['/news', '/news/', '/news/20261001-story', '/pqc-practice']) {
+    const env = environment(pathname);
+    const dispose = runPageArrival(pathname);
+    try {
+      assert.equal(env.calls.length, 1, pathname);
+      assert.equal(env.calls[0].animation.id, 'page-arrival');
+    } finally { dispose(); env.restore(); }
+  }
+});

@@ -151,7 +151,7 @@
 .front-page {
   padding-block: 28px 56px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 24px var(--news-gap);
   border-bottom: 1px solid var(--ink);
 }
@@ -286,12 +286,17 @@
   font-weight: 700;
 }
 
-.front-deck { border-top: 1px solid var(--ink); }
+.front-deck {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 24px;
+  border-top: 1px solid var(--ink);
+}
 
 .front-deck article {
   padding: 16px 0;
   display: grid;
-  grid-template-columns: 104px minmax(0, 1fr);
+  grid-template-columns: 88px minmax(0, 1fr);
   gap: 14px;
   align-items: start;
   border-bottom: 1px solid var(--rule);
@@ -357,7 +362,7 @@
 .desk-layout {
   padding-top: 24px;
   display: grid;
-  grid-template-columns: minmax(0, 1.3fr) minmax(400px, .8fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--news-gap);
   align-items: start;
 }
@@ -386,7 +391,12 @@
   font: 400 16px/1.8 var(--editorial-serif);
 }
 
-.desk-briefs { border-top: 1px solid var(--ink); }
+.desk-briefs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--news-gap);
+  border-top: 1px solid var(--ink);
+}
 
 .brief-row {
   padding: 18px 0;
@@ -510,9 +520,7 @@
 .source-rail p { margin: 24px 0 0; padding-top: 18px; border-top: 1px solid var(--rule); color: var(--soft); font-size: 14px; line-height: 1.8; }
 
 @media (max-width: 1449px) {
-  .front-page,
-  .desk-layout { grid-template-columns: minmax(0, 1fr); }
-  .front-deck { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 24px; }
+  .front-deck { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .front-deck article { grid-template-columns: 128px minmax(0, 1fr); }
 }
 
@@ -528,7 +536,8 @@
   .news-toolbar-title span { display: none; }
   .lead-story,
   .desk-lead,
-  .front-deck { grid-template-columns: minmax(0, 1fr); }
+  .front-deck,
+  .desk-briefs { grid-template-columns: minmax(0, 1fr); }
   .lead-visual { height: clamp(240px, 48vw, 320px); }
   .lead-copy h2 { font-size: 30px; }
   .desk-lead-image { max-height: 360px; }
