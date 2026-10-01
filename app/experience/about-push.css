@@ -32,6 +32,17 @@
   will-change: transform;
 }
 .about-push__actor canvas { position: relative; width: 100%; height: 100%; display: block; }
+.about-push__actor canvas[hidden] { display: none; }
+.about-push__image {
+  position: absolute;
+  left: 10%;
+  bottom: -14%;
+  width: 80%;
+  height: auto;
+  max-width: none;
+  transform-origin: 50% 88%;
+  filter: drop-shadow(0 8px 10px #06102355);
+}
 .about-push__shadow {
   position: absolute;
   bottom: 0;

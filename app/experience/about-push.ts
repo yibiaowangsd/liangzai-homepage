@@ -1,4 +1,5 @@
 import { gsap } from "gsap";
+import { createAboutPushImage } from "./about-push-image";
 import "./about-push.css";
 type PushScene = Awaited<ReturnType<typeof import("./three/about-push-scene").createAboutPushScene>>;
 /** Freeze the actual viewport, including form values, scrollers and WebGL pixels. */
@@ -143,9 +144,16 @@ export function runAboutPush(source: HTMLElement, options: {
   };
   void (async () => {
     try {
-      const { createAboutPushScene } = await import("./three/about-push-scene");
-      if (done) return;
-      const loaded = await createAboutPushScene(canvas, AbortSignal.any([controller.signal, AbortSignal.timeout(2200)]));
+      let loaded: PushScene;
+      try {
+        const { createAboutPushScene } = await import("./three/about-push-scene");
+        if (done) return;
+        loaded = await createAboutPushScene(canvas, AbortSignal.any([controller.signal, AbortSignal.timeout(2200)]));
+      } catch {
+        if (done) return;
+        canvas.hidden = true;
+        loaded = await createAboutPushImage(actor, controller.signal);
+      }
       if (done) { loaded.dispose(); return; }
       scene = loaded;
       const frozen = freezePage(source);
