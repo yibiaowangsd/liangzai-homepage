@@ -3,9 +3,9 @@ import QuantumHome from "./QuantumHome";
 import NewsGate from "./experience/NewsGate";
 
 export const metadata: Metadata = {
-  title: "探索首页 量仔 LIANGZAI",
+  title: "量仔 · 让想象穿越边界",
   description:
-    "和量仔一起探索量子世界。穿越量子之门，阅读互动故事，探索密码图鉴，了解我的经历，让复杂科技触手可及。",
+    "Yibiao 与量仔的数字宇宙。创作一片星空，阅读星际故事，走近密码原理，在真实算法实验与前沿新闻中继续探索。",
 };
 
 export default function Home() {

@@ -37,7 +37,7 @@ if (trigger && source) {
     if (event.shiftKey && index <= 0) { event.preventDefault(); items.at(-1).focus(); }
     else if (!event.shiftKey && index === items.length - 1) { event.preventDefault(); trigger.focus(); }
   });
-  const desktop = matchMedia('(min-width: 901px)');
+  const desktop = matchMedia('(min-width: 1101px)');
   const resize = () => { if (desktop.matches) setOpen(false); };
   if (desktop.addEventListener) desktop.addEventListener('change', resize);
   else desktop.addListener(resize);

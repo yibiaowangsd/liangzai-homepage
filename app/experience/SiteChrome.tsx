@@ -3,21 +3,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { gsap, useGSAP, useExperience } from "./Motion";
+import { destinations } from "./destinations";
+import JumpNavigation from "./JumpNavigation";
 
-const links = [
-  ["/", "探索首页"],
-  ["/storybook", "星际漫游"],
-  ["/archive", "量仔小传"],
-  ["/pqc-arsenal", "密码图鉴"],
-  ["/pqc-practice", "密码实验室"],
-  ["/news", "前沿新闻"],
-  ["/about", "关于我"],
-];
+const links = destinations.map((item) => [item.href, item.name]);
 /** The laboratory is a standalone document, not an RSC route to prefetch. */
-function NavigationLink({ href, ...props }: ComponentProps<"a"> & { href: string }) {
-  return href === "/pqc-practice"
-    ? <a href={href} {...props} />
-    : <Link href={href} {...props} />;
+function NavigationLink({
+  href,
+  ...props
+}: ComponentProps<"a"> & { href: string }) {
+  return href === "/pqc-practice" ? (
+    <a href={href} {...props} />
+  ) : (
+    <Link href={href} {...props} />
+  );
 }
 
 export function SiteHeader() {
@@ -67,7 +66,7 @@ export function SiteHeader() {
       }
     };
     window.addEventListener("keydown", key);
-    const desktop = window.matchMedia("(min-width: 901px)");
+    const desktop = window.matchMedia("(min-width: 1101px)");
     const resize = () => {
       if (desktop.matches) setOpen(false);
     };
@@ -107,13 +106,18 @@ export function SiteHeader() {
             <NavigationLink
               href={href}
               key={href}
-              aria-current={path === href || (href !== "/" && path?.startsWith(href + "/")) ? "page" : undefined}
+              aria-current={
+                path === href || (href !== "/" && path?.startsWith(href + "/"))
+                  ? "page"
+                  : undefined
+              }
             >
               {text}
             </NavigationLink>
           ))}
         </nav>
         <div className="chrome-actions">
+          <JumpNavigation blocked={open} onOpen={() => setOpen(false)} />
           <button
             className="motion-switch"
             onClick={toggle}
@@ -183,9 +187,9 @@ export function SiteFooter() {
         ))}
       </nav>
       <div className="footer-bottom">
-        <span>© 2026 LIANGZAI · A QUANTUM EXPLORATION</span>
+        <span>© 2026 量仔 · Yibiao 的数字空间</span>
         <a href="#main-content">回到顶部</a>
-        <span>MADE OF CURIOSITY</span>
+        <span>保持好奇，继续探索。</span>
       </div>
     </footer>
   );
