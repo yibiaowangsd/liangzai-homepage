@@ -6,6 +6,7 @@ on:
     paths:
       - 'news/inbox/*.json'
       - '.github/workflows/publish-news.yml'
+      - 'news/validate-edition.py'
   workflow_dispatch:
     inputs:
       file:
@@ -101,61 +102,7 @@ jobs:
           set -euo pipefail
 
           while IFS= read -r file; do
-            python3 - "$file" <<'PY'
-          import json
-          import pathlib
-          import re
-          import sys
-          from datetime import date
-
-          path = pathlib.Path(sys.argv[1])
-          data = json.loads(path.read_text(encoding="utf-8"))
-
-          if not isinstance(data, dict):
-              raise SystemExit(f"{path}: root must be an object")
-          if not isinstance(data.get("items"), list) or len(data["items"]) != 25:
-              raise SystemExit(f"{path}: production edition must contain exactly 25 items")
-
-          file_date = path.stem
-          try:
-              date.fromisoformat(file_date)
-          except ValueError as exc:
-              raise SystemExit(f"{path}: filename must be YYYY-MM-DD.json") from exc
-
-          if data.get("date") not in (None, file_date):
-              raise SystemExit(f"{path}: date must match filename ({file_date})")
-
-          import collections
-          seen = set()
-          counts = collections.Counter()
-          allowed_categories = {"pqc", "protocol", "standards", "security", "ai"}
-
-          for index, item in enumerate(data["items"], start=1):
-              if not isinstance(item, dict):
-                  raise SystemExit(f"{path}: item #{index} must be an object")
-              for field in ("slug", "title", "content"):
-                  if not isinstance(item.get(field), str) or not item[field].strip():
-                      raise SystemExit(f"{path}: item #{index} missing {field}")
-              slug = item["slug"].strip().lower()
-              if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
-                  raise SystemExit(f"{path}: item #{index} has invalid slug: {slug}")
-              if slug in seen:
-                  raise SystemExit(f"{path}: duplicate slug in payload: {slug}")
-              seen.add(slug)
-              category = item.get("category")
-              if category not in allowed_categories:
-                  raise SystemExit(f"{path}: item #{index} has unsupported production category: {category}")
-              counts[category] += 1
-              status = item.get("status", "published")
-              if status != "published":
-                  raise SystemExit(f"{path}: production items must be published")
-
-          for category in ("pqc", "protocol", "standards", "security", "ai"):
-              if counts[category] != 5:
-                  raise SystemExit(f"{path}: category {category} must contain exactly 5 items, got {counts[category]}")
-
-          print(f"Validated {path}: 25 stories, 5 x 5 desks")
-          PY
+            python3 news/validate-edition.py "$file"
           done < "$RUNNER_TEMP/news-files.txt"
 
       - name: Enrich cover images from original sources
