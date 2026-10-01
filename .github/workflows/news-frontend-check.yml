@@ -8,6 +8,12 @@ on:
       - 'app/experience/NewsGate.tsx'
       - 'app/experience/news-gate.css'
       - 'app/experience/news-gate-modal.ts'
+      - 'app/experience/AboutPushTransition.tsx'
+      - 'app/experience/PageArrival.tsx'
+      - 'app/experience/about-push*'
+      - 'app/experience/page-arrival.ts'
+      - 'tests/page-arrival.test.mjs'
+      - 'tests/about-push-image.test.mjs'
       - 'tests/news-*.test.mjs'
       - 'app/page.tsx'
       - 'app/layout.tsx'
@@ -19,6 +25,12 @@ on:
       - 'app/experience/NewsGate.tsx'
       - 'app/experience/news-gate.css'
       - 'app/experience/news-gate-modal.ts'
+      - 'app/experience/AboutPushTransition.tsx'
+      - 'app/experience/PageArrival.tsx'
+      - 'app/experience/about-push*'
+      - 'app/experience/page-arrival.ts'
+      - 'tests/page-arrival.test.mjs'
+      - 'tests/about-push-image.test.mjs'
       - 'tests/news-*.test.mjs'
       - 'app/page.tsx'
       - 'app/layout.tsx'
@@ -43,4 +55,4 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - run: node --experimental-strip-types --test tests/news-*.test.mjs
+      - run: node --experimental-strip-types --test tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs
