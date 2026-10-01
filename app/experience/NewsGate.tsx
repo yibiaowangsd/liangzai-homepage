@@ -68,7 +68,7 @@ export default function NewsGate() {
         if (isNewsEditionDismissed(data.edition_date)) return;
         setPayload(data);
         openTimer = window.setTimeout(() => {
-          if (!cancelled) setOpen(true);
+          if (!cancelled && !document.querySelector("dialog[open], .mobile-menu")) setOpen(true);
         }, 260);
       })
       .catch(() => {});

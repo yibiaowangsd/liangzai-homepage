@@ -7,6 +7,7 @@
 | 页面 | 入口 | 关键实现 |
 | --- | --- | --- |
 | `/` | `app/page.tsx` | `app/QuantumHome.tsx`、`app/experience/InteractiveGuardian.tsx`、`QuantumSculpture.tsx` |
+| `/observatory` | `app/observatory/page.tsx` | `Observatory.tsx` 的创作控制、`ArtCanvas.tsx` 的按需绘制、`art-state.ts` 的可分享参数 |
 | `/storybook` | `app/storybook/page.tsx` | `StoryBook.tsx` 负责翻页与旁白，`storyData.ts` 负责页面和音轨路径 |
 | `/archive` | `app/archive/page.tsx` | 角色档案和战后内容 |
 | `/pqc-arsenal` | `app/pqc-arsenal/page.tsx` | `ArsenalLab.tsx` 的算法数据与交互；`cinematic-arsenal.css` 调整暗色视觉 |
@@ -57,7 +58,7 @@ npm run dev
 
 ## 4. 页面行为与维护点
 
-- 首页初始显示量子星云，自动加载量仔模型作为粒子采样目标但隐藏实体。长按约 4 秒，粒子沿螺旋轨迹凝聚为真实模型表面；松开未完成的长按会回散，轮廓锁定后约 1.3 秒自动凝实。奶龙使用暖金星云，双人模式同时凝聚两个角色。出场后保留点击身体部位互动、拖动旋转和四视角选择，移除独立动作按钮。仅加载选中的角色；WebGL 不可用或加载失败时切换预览图。场景参数、资源预算和验证细节见 [docs/liangzai-3d.md](docs/liangzai-3d.md)。
+- 首页默认显示量仔贴图，轻点三次再加载原有 3D 星云体验。进入星云后长按约 4 秒，粒子沿螺旋轨迹凝聚为真实模型表面；松开未完成的长按会回散，轮廓锁定后约 1.3 秒自动凝实。奶龙使用暖金星云，双人模式同时凝聚两个角色。出场后保留点击身体部位互动、拖动旋转和四视角选择。仅加载选中的角色；WebGL 不可用或加载失败时切换预览图。场景参数、资源预算和验证细节见 [docs/liangzai-3d.md](docs/liangzai-3d.md)。
 - GSAP 动效跟随系统减少动态效果，另有全站暂停按钮。离屏、后台和暂停状态不能保持无意义的渲染循环。组件卸载时释放动画、事件监听和 Three.js 资源。参考 [docs/gsap-motion.md](docs/gsap-motion.md)。
 - `ArsenalLab.tsx` 的四种算法和参数集中在组件的数据数组中；新增算法时同步处理类型、切换状态、界面与来源说明。教学评分不能表述为实测性能或正式安全结论。
 - 故事书的插图与音轨按 `storyData.ts` 的页序关联；改页序时同时核对旁白、章节跳转和页面测试。

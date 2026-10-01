@@ -1,10 +1,19 @@
-name: Validate news and laboratory frontend
+name: Validate creative universe, news and laboratory frontend
 
 on:
   push:
     branches: [main]
     paths:
       - 'app/news/**'
+      - 'app/QuantumHome.tsx'
+      - 'app/observatory/**'
+      - 'app/experience/JumpNavigation.tsx'
+      - 'app/experience/UniverseIndex.tsx'
+      - 'app/experience/destinations.ts'
+      - 'app/experience/home-universe.css'
+      - 'app/experience/jump-navigation.css'
+      - 'app/experience/SiteChrome.tsx'
+      - 'tests/observatory.test.mjs'
       - 'public/assets/site-navigation.css'
       - 'public/pqc-practice/**'
       - 'tests/browser-compat.test.mjs'
@@ -27,6 +36,15 @@ on:
   pull_request:
     paths:
       - 'app/news/**'
+      - 'app/QuantumHome.tsx'
+      - 'app/observatory/**'
+      - 'app/experience/JumpNavigation.tsx'
+      - 'app/experience/UniverseIndex.tsx'
+      - 'app/experience/destinations.ts'
+      - 'app/experience/home-universe.css'
+      - 'app/experience/jump-navigation.css'
+      - 'app/experience/SiteChrome.tsx'
+      - 'tests/observatory.test.mjs'
       - 'public/assets/site-navigation.css'
       - 'public/pqc-practice/**'
       - 'tests/browser-compat.test.mjs'
@@ -66,4 +84,4 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - run: node --experimental-strip-types --test tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs
+      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs
