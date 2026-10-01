@@ -56,3 +56,73 @@ select,.catalog-sidebar input,.audit-controls input{background:#0c1116;border-co
 @media(prefers-reduced-motion:reduce){.kex-inbox.incoming,.kex-channel .sending .traveller{animation:none}}
 .kex-controls .primary[hidden]{display:none}
 .topbar .brand-mark{width:40px;height:42px;border:0;border-radius:0;box-shadow:none}.topbar .brand-mark img{display:block;width:100%;height:100%;filter:drop-shadow(0 0 9px #58c9ff30)}
+
+/* Narrow screens retain all operations and stack local parties and transport. */
+body { min-width: 0; }
+.main, .practice-content, .configuration, .candidate-workbench, .catalog-heading { min-width: 0; }
+.report-items a, .catalog-team, .catalog-source, .catalog-links { overflow-wrap: anywhere; }
+.topbar .brand small { display: none; }
+@media (max-width: 1180px) {
+  .practice-layout { grid-template-columns: 210px minmax(0, 1fr); gap: 16px; }
+  .dialogue, .kex-peers { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .channel, .kex-channel { padding: 14px 18px; border: 1px solid #354958; border-radius: 10px; background: #0b1015; }
+  .channel-heading { padding-top: 0; }
+  .route, .route + .route, .kex-channel .route { margin: 20px 0; }
+  .wire, .kex-channel .wire { margin-inline: 0; }
+  .channel-bottom { padding: 0; }
+  .kex-peer { min-height: 0; }
+  .page-heading { align-items: start; }
+  .heading-links { flex-wrap: wrap; gap: 14px; }
+}
+@media (max-width: 900px) {
+  .main { padding: 0 5vw 40px; }
+  .page-heading { flex-direction: column; gap: 22px; padding: 34px 0 26px; }
+  .page-heading h1 { font-size: clamp(36px, 7vw, 58px); margin: 12px 0; }
+  .page-heading > div > p:last-child { font-size: 14px; }
+  .practice-layout, .practice-layout.is-collapsed { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .library-sidebar { position: static; min-height: 0; max-height: 310px; margin-top: 24px; }
+  .library-sidebar .sidebar-body { min-height: 0; }
+  .practice-layout.is-collapsed .library-sidebar { flex-direction: row; justify-content: space-between; padding: 12px; }
+  .practice-layout.is-collapsed .sidebar-top { border: 0; padding: 0; align-items: center; flex: 1; }
+  .practice-layout.is-collapsed .sidebar-top > div { display: block; }
+  .practice-layout.is-collapsed .sidebar-shortcuts { flex-direction: row; margin: 0 0 0 12px; }
+  .lab-heading { margin-top: 24px; }
+  .step-list { flex-wrap: wrap; gap: 12px 16px; }
+  .step-list li { flex: none; font-size: 12px; white-space: normal; }
+  .step-list li:not(:last-child):after { display: none; }
+  .result-facts { flex-wrap: wrap; gap: 16px; }
+  .result-facts > div { min-width: 0; flex: 1 1 120px; }
+  .practice-footer { grid-template-columns: minmax(0, 1fr); padding: 32px 5vw; }
+  .practice-footer nav { grid-column: 1; grid-row: auto; flex-wrap: wrap; gap: 16px; padding-top: 14px; }
+  .catalog-layout { grid-template-columns: minmax(0, 1fr); }
+  .catalog-sidebar { position: static; }
+  .catalog-index { max-height: 240px; }
+}
+@media (max-width: 600px) {
+  .configuration { gap: 12px; padding: 14px; }
+  .select-field { flex: 1 1 100%; min-width: 0; flex-wrap: wrap; }
+  .select-field select { flex: 1; min-width: 0; }
+  select, .message-input, .material textarea, .hash-workbench textarea, .sidebar-body > input, .audit-controls input { font-size: 16px; }
+  .quiet-button { margin-left: 0; }
+  .actor-head, .actor-body { padding: 16px; }
+  .identity h2 { font-size: 21px; }
+  .actor-status { white-space: normal; text-align: right; }
+  .material-head { flex-wrap: wrap; }
+  .field-tools { gap: 14px; }
+  .tool, .import-tool { min-height: 32px; display: inline-flex; align-items: center; }
+  .primary, .send-button, .quiet-button { min-height: 44px; }
+  .sidebar-toggle { width: 44px; height: 44px; }
+  .library-pick, .algorithm-choice { min-height: 44px; }
+  .catalog-detail, .hash-workbench, .report-panel, .audit-availability { padding: 18px 16px; }
+  .catalog-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .catalog-heading { flex-wrap: wrap; }
+  .catalog-heading h2 { font-size: 21px; overflow-wrap: anywhere; }
+  .catalog-links, .report-head, .candidate-work-heading, .hash-actions, .kex-controls, .footer { flex-wrap: wrap; gap: 14px; }
+  .kex-transcript ol, .availability-list { grid-template-columns: minmax(0, 1fr); }
+  .kex-peer { padding: 16px; }
+  .report-items .report-detail { font-size: 14px; }
+  .audit-controls input { min-width: 0; width: 100%; }
+  .hash-parameter select { min-width: 0; width: 100%; }
+  .result-panel { padding: 16px; }
+  .result-heading { min-width: 0; }
+}

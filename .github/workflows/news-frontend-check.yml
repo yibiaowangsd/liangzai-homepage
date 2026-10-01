@@ -1,10 +1,14 @@
-name: Validate news frontend
+name: Validate news and laboratory frontend
 
 on:
   push:
     branches: [main]
     paths:
       - 'app/news/**'
+      - 'public/assets/site-navigation.css'
+      - 'public/pqc-practice/**'
+      - 'tests/browser-compat.test.mjs'
+      - 'tests/kex-worker-flow.test.mjs'
       - 'app/experience/NewsGate.tsx'
       - 'app/experience/news-gate.css'
       - 'app/experience/news-gate-modal.ts'
@@ -23,6 +27,10 @@ on:
   pull_request:
     paths:
       - 'app/news/**'
+      - 'public/assets/site-navigation.css'
+      - 'public/pqc-practice/**'
+      - 'tests/browser-compat.test.mjs'
+      - 'tests/kex-worker-flow.test.mjs'
       - 'app/experience/NewsGate.tsx'
       - 'app/experience/news-gate.css'
       - 'app/experience/news-gate-modal.ts'
@@ -58,4 +66,4 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - run: node --experimental-strip-types --test tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs
+      - run: node --experimental-strip-types --test tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs

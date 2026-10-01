@@ -1,0 +1,60 @@
+/* One header geometry for the React pages and the standalone laboratory. */
+.site-chrome,
+.topbar.site-chrome {
+  --header-height: 80px;
+  height: var(--header-height);
+  padding: 0 4vw;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  background: #07090c;
+  background: rgba(7, 9, 12, .94);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  font-family: Arial, "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+}
+.site-chrome .brand { justify-self: start; gap: 10px; letter-spacing: normal; }
+.site-chrome .brand-mark { width: 40px; height: 42px; }
+.site-chrome .brand strong { font-size: 19px; gap: 12px; }
+.site-chrome .brand strong span { font: 9px/1.2 ui-monospace, monospace; letter-spacing: .16em; color: #abb5be; }
+.site-chrome .desktop-nav { justify-self: center; margin: 0; gap: 30px; }
+.site-chrome .desktop-nav a { white-space: nowrap; padding: 31px 0; font-size: 12px; text-decoration: none; }
+.site-chrome .desktop-nav a:after { bottom: 20px; }
+.site-chrome .chrome-actions { justify-self: end; display: flex; align-items: center; gap: 18px; min-width: 0; }
+.site-chrome .runtime { min-width: 0; font-size: 11px; }
+.site-chrome .menu-toggle { display: none; }
+.mobile-menu { padding-bottom: calc(35px + env(safe-area-inset-bottom, 0px)); overscroll-behavior: contain; }
+.mobile-menu a { min-height: 56px; }
+.practice-mobile-menu[hidden] { display: none; }
+.practice-mobile-menu {
+  position: fixed; inset: 70px 0 0; z-index: 99;
+  padding: 24px 7vw calc(24px + env(safe-area-inset-bottom, 0px));
+  background: #080b10; overflow-y: auto; overscroll-behavior: contain;
+}
+.practice-mobile-menu nav { display: grid; }
+.practice-mobile-menu a { padding: 22px 0; border-bottom: 1px solid #d5e6f729; color: #eef2f6; font-size: 29px; text-decoration: none; }
+.practice-mobile-menu a[aria-current] { color: #a8d9ff; }
+@media (max-width: 1100px) {
+  .site-chrome .desktop-nav { gap: 20px; }
+  .site-chrome .brand strong span { display: none; }
+}
+@media (max-width: 900px) {
+  .site-chrome, .topbar.site-chrome { --header-height: 70px; padding: 0 5vw; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+  .site-chrome .desktop-nav { display: none; }
+  .site-chrome .brand strong span { display: inline; }
+  .site-chrome .menu-toggle { display: grid; align-content: center; gap: 6px; width: 44px; height: 44px; padding: 10px; border: 0; background: transparent; }
+  .site-chrome .menu-toggle span { height: 1px; width: 24px; background: #d7e7f5; }
+  .site-chrome .menu-toggle[aria-expanded="true"] span:first-child { transform: translateY(3.5px) rotate(45deg); }
+  .site-chrome .menu-toggle[aria-expanded="true"] span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
+  .site-chrome .chrome-actions { gap: 10px; }
+}
+@media (max-width: 600px) {
+  .site-chrome, .topbar.site-chrome { --header-height: 66px; }
+  .site-chrome .brand { gap: 8px; }
+  .site-chrome .brand-mark { width: 27px; height: 27px; }
+  .site-chrome .brand strong { font-size: 17px; gap: 8px; }
+  .site-chrome .brand strong span { font-size: 7px; }
+  .practice-mobile-menu { top: 66px; }
+  .site-chrome .runtime { font-size: 10px; max-width: 100px; }
+}

@@ -43,3 +43,21 @@ test('reject premature computation, invented send, unsent-round skip and prematu
   assert.ok((await command({action:'send',pass:1})).error);
   assert.ok((await command({action:'pass',pass:2})).error,'error resets the session');
 });
+
+test('an HTTP worker without SubtleCrypto completes actual WASM exchange and matches keys', async () => {
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, 'crypto');
+  const secureCrypto = globalThis.crypto;
+  Object.defineProperty(globalThis, 'crypto', { configurable: true, value: { getRandomValues: secureCrypto.getRandomValues.bind(secureCrypto) } });
+  try {
+    const init = await okay({ action: 'init', id: 'kex-02', index: 0 });
+    await publicInputs();
+    for (let pass = 1; pass <= init.passes; pass++) {
+      await okay({ action: 'pass', pass });
+      await okay({ action: 'send', pass });
+    }
+    const alice = await okay({ action: 'derive', side: 0 });
+    const bob = await okay({ action: 'derive', side: 1 });
+    assert.equal(bob.match, true);
+    assert.equal(alice.secret.fingerprint, bob.secret.fingerprint);
+  } finally { Object.defineProperty(globalThis, 'crypto', descriptor); }
+});

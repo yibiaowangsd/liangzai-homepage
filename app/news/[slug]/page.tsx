@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import StoryImage from "../StoryImage";
 import {
-  categoryEnglish,
   categoryLabels,
   formatNewsDate,
   getNewsDetail,
@@ -81,9 +80,8 @@ export default async function NewsDetailPage({
     <main id="main-content" className="article-page">
       <article className="article-shell">
         <header className="article-header">
-          <Link className="article-back" href="/news">← 返回每日前沿</Link>
+          <Link className="article-back" href="/news">← 返回新闻</Link>
           <div className="article-kicker">
-            <span>{categoryEnglish[item.category] || "FRONTIER"}</span>
             <span>{categoryLabels[item.category] || item.category}</span>
           </div>
           <h1>{item.title}</h1>
@@ -99,20 +97,18 @@ export default async function NewsDetailPage({
         <figure className="article-hero-image">
           <StoryImage item={item} eager />
           <figcaption>
-            <span>LIANGZAI / FRONTIER</span>
-            <span>{item.source_name || "SOURCE"}</span>
+            <span>{item.source_name || "原始来源"}</span>
           </figcaption>
         </figure>
 
         <div className="article-layout">
           <NewsBody content={item.content} />
           <footer className="article-source">
-            <span>SOURCE &amp; EDITORIAL</span>
             <h2>原文与编译说明</h2>
             <p>{item.source_name || "原始来源"}</p>
             {item.source_url && (
               <a href={item.source_url} target="_blank" rel="noreferrer">
-                阅读原文 ↗
+                阅读原文 <span className="news-arrow" aria-hidden="true">↗</span>
               </a>
             )}
             <p>
