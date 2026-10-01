@@ -212,7 +212,7 @@ test("news pages preserve published content and accessible rendering", async (t)
       const item = {
         ...publishedItems[1],
         // Explicit parser fixtures exercise text escaping without changing source records.
-        content: "# 测试正文标题\n真实内容保留：ML-KEM & TLS <draft>。\n\n## 关键更新\n- 第一项：保留完整信息\n- 第二项：保留原始顺序\n\n### 阅读提示\n<script>alert(1)</script>\n- 最后一项也需要输出",
+        content: "# 测试正文标题\n真实内容保留：ML-KEM & TLS <draft>。\n换行仍属于同一个段落。\n\n## 关键更新\n- 第一项：保留完整信息\n- 第二项：保留原始顺序\n\n### 阅读提示\n<script>alert(1)</script>\n- 最后一项也需要输出",
       };
       upstream = (url) => {
         assert.equal(url.pathname, "/api/news/" + item.slug);
@@ -222,28 +222,29 @@ test("news pages preserve published content and accessible rendering", async (t)
       assert.equal([...main.matchAll(/<h1\b/g)].length, 1);
       assert.ok(main.includes(`<h1>${escapeHtml(item.title)}</h1>`));
       assert.ok(main.includes(`<p class="article-deck">${escapeHtml(item.summary)}</p>`));
-      const summary = main.match(/<section class="article-summary">([\s\S]*?)<\/section>/)?.[1];
-      assert.ok(summary);
-      assert.match(summary, /<h2>一句话看懂<\/h2>/);
-      assert.ok(summary.includes(`<p>${escapeHtml(item.summary)}</p>`));
+      assert.doesNotMatch(main, /article-summary|source-rail|一句话看懂/);
+      assert.equal(main.split(escapeHtml(item.summary)).length - 1, 1, "The deck appears once");
+      assert.match(main.replace(/<!-- -->/g, ""), /约 1 分钟阅读/);
+      assert.ok(main.indexOf('class="article-body"') < main.indexOf('class="article-source"'));
+      assert.match(main, /原文与编译说明/);
       assert.ok(main.includes(`dateTime="${item.published_at}"`));
       assert.ok(main.includes('class="article-hero-image"'));
       assert.ok(main.includes('data-treatment="source"'));
       assert.ok(main.includes(`src="${escapeHtml(item.cover_image)}"`));
       const body = main.match(/<div class="article-body">([\s\S]*?)<\/div>/)?.[1];
       assert.equal(body,
-        '<h2>测试正文标题</h2><p>真实内容保留：ML-KEM &amp; TLS &lt;draft&gt;。</p>' +
+        '<h2>测试正文标题</h2><p>真实内容保留：ML-KEM &amp; TLS &lt;draft&gt;。 换行仍属于同一个段落。</p>' +
         '<h2>关键更新</h2><ul><li>第一项：保留完整信息</li><li>第二项：保留原始顺序</li></ul>' +
         '<h3>阅读提示</h3><p>&lt;script&gt;alert(1)&lt;/script&gt;</p><ul><li>最后一项也需要输出</li></ul>',
       );
       const sourceLinks = [...main.matchAll(/<a\b[^>]*>/g)].map((match) => match[0])
         .filter((anchor) => attribute(anchor, "href") === escapeHtml(item.source_url));
-      assert.equal(sourceLinks.length, 2, "Summary and source rail both preserve the original source");
+      assert.equal(sourceLinks.length, 1, "The article footer preserves the original source");
       for (const anchor of sourceLinks) {
         assert.equal(attribute(anchor, "target"), "_blank");
         assert.equal(attribute(anchor, "rel"), "noreferrer");
       }
-      assert.ok(main.includes(`<strong>${escapeHtml(item.source_name)}</strong>`));
+      assert.ok(main.includes(`<p>${escapeHtml(item.source_name)}</p>`));
     });
 
     await t.test("an offline or empty feed remains readable and never invents stories", async () => {

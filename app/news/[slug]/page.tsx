@@ -14,6 +14,13 @@ function NewsBody({ content }: { content: string }) {
   const lines = content.split(/\r?\n/);
   const blocks: ReactNode[] = [];
   let bullets: string[] = [];
+  let paragraph: string[] = [];
+
+  const flushParagraph = () => {
+    if (!paragraph.length) return;
+    blocks.push(<p key={"paragraph-" + blocks.length}>{paragraph.join(" ")}</p>);
+    paragraph = [];
+  };
 
   const flushBullets = () => {
     if (!bullets.length) return;
@@ -29,25 +36,31 @@ function NewsBody({ content }: { content: string }) {
   lines.forEach((raw, index) => {
     const line = raw.trim();
     if (!line) {
+      flushParagraph();
       flushBullets();
       return;
     }
     if (line.startsWith("- ")) {
+      flushParagraph();
       bullets.push(line.slice(2));
       return;
     }
     flushBullets();
     if (line.startsWith("### ")) {
+      flushParagraph();
       blocks.push(<h3 key={index}>{line.slice(4)}</h3>);
     } else if (line.startsWith("## ")) {
+      flushParagraph();
       blocks.push(<h2 key={index}>{line.slice(3)}</h2>);
     } else if (line.startsWith("# ")) {
+      flushParagraph();
       blocks.push(<h2 key={index}>{line.slice(2)}</h2>);
     } else {
-      blocks.push(<p key={index}>{line}</p>);
+      paragraph.push(line);
     }
   });
   flushBullets();
+  flushParagraph();
 
   return <div className="article-body">{blocks}</div>;
 }
@@ -62,6 +75,7 @@ export default async function NewsDetailPage({
   if (!item || !item.content) notFound();
 
   const tags = parseTags(item.tags);
+  const readingMinutes = Math.max(1, Math.ceil(item.content.replace(/\s/g, "").length / 350));
 
   return (
     <main id="main-content" className="article-page">
@@ -77,6 +91,7 @@ export default async function NewsDetailPage({
           <div className="article-byline">
             <time dateTime={item.published_at}>{formatNewsDate(item.published_at)}</time>
             <span>{item.source_name || "原始来源"}</span>
+            <span>约 {readingMinutes} 分钟阅读</span>
             {tags.map((tag) => <i key={tag}>{tag}</i>)}
           </div>
         </header>
@@ -89,31 +104,21 @@ export default async function NewsDetailPage({
           </figcaption>
         </figure>
 
-        <section className="article-summary">
-          <span>EDITOR&apos;S SUMMARY</span>
-          <h2>一句话看懂</h2>
-          <p>{item.summary}</p>
-          {item.source_url && (
-            <a href={item.source_url} target="_blank" rel="noreferrer">
-              阅读原始资料 <span aria-hidden="true">↗</span>
-            </a>
-          )}
-        </section>
-
         <div className="article-layout">
           <NewsBody content={item.content} />
-          <aside className="source-rail">
-            <span>ORIGINAL SOURCE</span>
-            <strong>{item.source_name || "原始来源"}</strong>
+          <footer className="article-source">
+            <span>SOURCE &amp; EDITORIAL</span>
+            <h2>原文与编译说明</h2>
+            <p>{item.source_name || "原始来源"}</p>
             {item.source_url && (
               <a href={item.source_url} target="_blank" rel="noreferrer">
-                打开原文 ↗
+                阅读原文 ↗
               </a>
             )}
             <p>
-              本页是基于原始资料整理的中文摘要与技术解读。涉及标准状态、性能数据和产品能力时，以原始页面为最终依据。
+              正文为原始资料的中文编译，长原文保留主要事实与论证；“量仔观察”是本站的独立总结与分析。原始发布日期见正文，页首日期为本站日报日期。
             </p>
-          </aside>
+          </footer>
         </div>
       </article>
     </main>
