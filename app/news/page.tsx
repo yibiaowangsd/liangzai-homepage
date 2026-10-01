@@ -2,7 +2,6 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import StoryImage from "./StoryImage";
 import {
-  categoryEnglish,
   categoryLabels,
   coreCategories,
   formatEditionDate,
@@ -25,7 +24,6 @@ function TopicDesk({ category, items }: { category: string; items: NewsItem[] })
     <section className="desk" id={category}>
       <header className="desk-head">
         <div>
-          <span>{categoryEnglish[category] || category.toUpperCase()}</span>
           <h3>{categoryLabels[category] || category}</h3>
         </div>
         <strong>{items.length.toString().padStart(2, "0")}</strong>
@@ -35,14 +33,14 @@ function TopicDesk({ category, items }: { category: string; items: NewsItem[] })
         <article className="desk-lead">
           <Link className="desk-lead-image" href={"/news/" + lead.slug} aria-label={"阅读：" + lead.title}>
             <StoryImage item={lead} />
-            <span>{lead.source_name || "ORIGINAL SOURCE"}</span>
+            <span>{lead.source_name || "原始来源"}</span>
           </Link>
           <div className="desk-lead-copy">
             <p className="desk-kicker">{categoryLabels[lead.category] || lead.category}</p>
             <h4><Link href={"/news/" + lead.slug}>{lead.title}</Link></h4>
             {lead.summary && <p>{lead.summary}</p>}
             <Link className="editorial-link" href={"/news/" + lead.slug}>
-              阅读解读 <span aria-hidden="true">↗</span>
+              阅读解读 <span className="news-arrow" aria-hidden="true">→</span>
             </Link>
           </div>
         </article>
@@ -113,7 +111,6 @@ export default async function NewsPage({
       <section className="news-toolbar" aria-label="前沿新闻导航">
         <div className="news-toolbar-title">
           <h1>前沿新闻</h1>
-          <span>FRONTIER DAILY · 08:00 CST</span>
         </div>
         <details className="news-category-menu">
           <summary>
@@ -123,7 +120,6 @@ export default async function NewsPage({
           <nav aria-label="新闻方向">
             <Link href="/news" aria-current={!category ? "page" : undefined}>
               <span>全部新闻</span>
-              <small>ALL STORIES</small>
             </Link>
             {coreCategories.map((key) => (
               <Link
@@ -132,7 +128,6 @@ export default async function NewsPage({
                 aria-current={category === key ? "page" : undefined}
               >
                 <span>{categoryLabels[key]}</span>
-                <small>{categoryEnglish[key]}</small>
               </Link>
             ))}
           </nav>
@@ -141,13 +136,11 @@ export default async function NewsPage({
 
       {failed ? (
         <section className="news-state">
-          <span>FEED OFFLINE</span>
           <h2>新闻 API 暂时不可用</h2>
-          <p>页面不会缓存错误结果，稍后刷新即可重新读取 D1。</p>
+          <p>请稍后刷新，继续阅读最新消息。</p>
         </section>
       ) : !newest || !heroLead ? (
         <section className="news-state">
-          <span>NO EDITION YET</span>
           <h2>下一版简报正在路上</h2>
           <p>自动发布完成后，这里会直接读取最新一期。</p>
         </section>
@@ -155,15 +148,15 @@ export default async function NewsPage({
         <>
           <section className="front-page">
             <div className="edition-label">
-              <span>ISSUE / {newest.date.replaceAll("-", ".")}</span>
+              <time dateTime={newest.date}>{newest.date.replaceAll("-", ".")}</time>
               <strong>{formatEditionDate(newest.date)}</strong>
-              <span>{newest.total} STORIES</span>
+              <span>{newest.total} 条新闻</span>
             </div>
 
             <article className="lead-story">
               <Link className="lead-visual" href={"/news/" + heroLead.slug} aria-label={"阅读：" + heroLead.title}>
                 <StoryImage item={heroLead} eager />
-                <span className="image-label">{heroLead.source_name || "SOURCE"}</span>
+                <span className="image-label">{heroLead.source_name || "原始来源"}</span>
               </Link>
               <div className="lead-copy">
                 <p className="lead-kicker">{categoryLabels[heroLead.category] || heroLead.category}</p>
@@ -173,7 +166,7 @@ export default async function NewsPage({
                   {parseTags(heroLead.tags).slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
                 </div>
                 <Link className="editorial-link" href={"/news/" + heroLead.slug}>
-                  阅读今日头条 <span aria-hidden="true">↗</span>
+                  阅读今日头条 <span className="news-arrow" aria-hidden="true">→</span>
                 </Link>
               </div>
             </article>
@@ -194,11 +187,10 @@ export default async function NewsPage({
           </section>
 
           <div className="edition-stack">
-            {editions.map((edition, editionIndex) => (
+            {editions.map((edition) => (
               <section className="edition" key={edition.date}>
                 <header className="edition-head">
                   <div>
-                    <span>EDITION {String((meta.page - 1) * 3 + editionIndex + 1).padStart(2, "0")}</span>
                     <h2>{formatEditionDate(edition.date)}</h2>
                   </div>
                   <p>{edition.total} 条 · 五个方向各取最值得关注的更新</p>
@@ -220,8 +212,9 @@ export default async function NewsPage({
               href={makeHref(Math.max(meta.page - 1, 1))}
               aria-disabled={meta.page <= 1}
               className={meta.page <= 1 ? "is-disabled" : undefined}
+              tabIndex={meta.page <= 1 ? -1 : undefined}
             >
-              ← 较新
+              ← 更新新闻
             </Link>
             <div>
               {paginationPages.map((pageNumber) => (
@@ -230,7 +223,7 @@ export default async function NewsPage({
                   href={makeHref(pageNumber)}
                   aria-current={pageNumber === meta.page ? "page" : undefined}
                 >
-                  {String(pageNumber).padStart(2, "0")}
+                  {pageNumber}
                 </Link>
               ))}
             </div>
@@ -238,15 +231,16 @@ export default async function NewsPage({
               href={makeHref(Math.min(meta.page + 1, meta.totalPages))}
               aria-disabled={meta.page >= meta.totalPages}
               className={meta.page >= meta.totalPages ? "is-disabled" : undefined}
+              tabIndex={meta.page >= meta.totalPages ? -1 : undefined}
             >
-              更早 →
+              历史新闻 →
             </Link>
           </nav>
         </>
       )}
 
       <footer className="news-method-note">
-        <span>EDITORIAL POLICY</span>
+        <span>选编说明</span>
         <p>
           默认优先原始标准、论文、官方博客与项目仓库。每日五个方向各 5 条；
           当 24 小时内信息不足时向前回溯，但保留真实来源日期，不用旧闻冒充新发布。

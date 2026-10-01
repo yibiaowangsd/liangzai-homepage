@@ -77,6 +77,7 @@
   gap: 28px;
   list-style: none;
   border: 1px solid rgba(17, 19, 21, .24);
+  border-radius: 6px;
   background: rgba(255, 255, 255, .35);
   cursor: pointer;
   font-size: 14px;
@@ -111,6 +112,7 @@
   display: grid;
   border: 1px solid rgba(17, 19, 21, .2);
   background: #f8f5ef;
+  border-radius: 8px;
   box-shadow: 0 18px 50px rgba(20, 23, 26, .14);
 }
 
@@ -279,9 +281,13 @@
   display: inline-flex;
   gap: 20px;
   align-items: center;
-  min-height: 36px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--ink);
+  min-height: 44px;
+  padding: 9px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  color: var(--accent-dark);
+  background: rgba(255, 255, 255, .48);
+  text-decoration: none;
   font-size: 14px;
   font-weight: 700;
 }
@@ -356,7 +362,7 @@
   border-bottom: 1px solid var(--rule);
 }
 
-.desk-head h3 { margin: 8px 0 0; font-size: 24px; line-height: 1.2; font-weight: 720; }
+.desk-head h3 { margin: 0; font-size: 24px; line-height: 1.2; font-weight: 720; }
 .desk-head strong { color: #747773; font: 800 36px/1 var(--font-mono-en); }
 
 .desk-layout {
@@ -436,8 +442,9 @@
 }
 
 .news-pagination > div { display: flex; flex-wrap: wrap; gap: 4px; }
-.news-pagination > div a { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid var(--rule); }
+.news-pagination > div a { border-radius: 5px; width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--rule); }
 .news-pagination > div a[aria-current] { color: white; background: var(--ink); }
+.news-pagination > a { min-height: 44px; padding: 10px 14px; border: 1px solid var(--rule); border-radius: 5px; text-decoration: none; }
 .news-pagination .is-disabled { opacity: .4; pointer-events: none; }
 
 .news-method-note {
@@ -460,7 +467,7 @@
 }
 
 .article-header { padding-bottom: 32px; }
-.article-back { display: inline-block; margin-bottom: 32px; padding-bottom: 5px; border-bottom: 1px solid var(--ink); font-size: 14px; }
+.article-back { display: inline-flex; align-items: center; min-height: 44px; margin-bottom: 24px; padding: 9px 14px; border: 1px solid var(--rule); border-radius: 5px; font-size: 14px; text-decoration: none; }
 .article-kicker { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--accent-dark); font: 800 12px/1.5 var(--font-mono-en); letter-spacing: .08em; }
 
 .article-header h1 {
@@ -501,7 +508,7 @@
 .article-source > span { color: var(--accent-dark); font: 800 11px/1.5 var(--font-mono-en); letter-spacing: .08em; }
 .article-source h2 { margin: 12px 0; font-size: 21px; line-height: 1.4; }
 .article-source p { margin: 12px 0; color: var(--soft); font-size: 14px; line-height: 1.9; }
-.article-source a { display: inline-block; padding-bottom: 5px; border-bottom: 1px solid var(--ink); font-size: 14px; font-weight: 700; }
+.article-source a { display: inline-flex; align-items: center; gap: 16px; min-height: 44px; padding: 9px 16px; border: 1px solid var(--accent-dark); border-radius: 5px; color: white; background: var(--accent-dark); font-size: 14px; font-weight: 700; text-decoration: none; }
 
 @media (max-width: 1449px) {
   .front-deck { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -509,6 +516,7 @@
 }
 
 @media (max-width: 900px) {
+  .news-toolbar { top: 70px; }
   .article-shell { max-width: 860px; }
 }
 
@@ -552,3 +560,18 @@
   .news-category-menu > summary i,
   .news-category-menu > nav a { transition: none; }
 }
+
+/* Calm, consistent reading controls, with clear keyboard and touch targets. */
+.news-arrow { display: inline-block; font: 18px/1 Arial, sans-serif; transition: transform .18s ease; }
+.editorial-link:hover, .article-back:hover, .news-pagination a:not(.is-disabled):hover { background: #e4eaf0; border-color: #8d9cad; text-decoration: none; }
+.editorial-link:hover .news-arrow, .article-source a:hover .news-arrow { transform: translateX(3px); }
+.article-source a:hover { background: #0a3273; }
+.news-category-menu:not([open]) > nav { display: none; }
+.newsroom, .article-page { color-scheme: light; }
+.newsroom img, .article-page img { max-width: 100%; }
+@media (max-width: 380px) {
+  .newsroom, .article-page { --news-gutter: 16px; }
+  .news-category-menu { min-width: 132px; }
+  .news-toolbar-title h1 { font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) { .news-arrow { transition: none; } }

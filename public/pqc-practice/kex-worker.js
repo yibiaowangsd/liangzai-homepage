@@ -1,12 +1,13 @@
 import { NGCC_KEX_WASM } from './ngcc-kex-runtime.js';
+import { fingerprintBytes } from './browser-compat.js';
 let mod=null, busy=false, nextPass=1, publicShared=[false,false], pending=null;
 const hex=bytes=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
 async function material(slot,label){
   const bytes=mod._lab_session_bytes(slot),ptr=mod._lab_session_data(slot);
   if(bytes<0||bytes>16777216||!ptr)throw new Error('协议材料长度异常');
   const data=mod.HEAPU8.slice(ptr,ptr+bytes);
-  const result={slot,label,bytes,preview:hex(data.subarray(0,128)),fingerprint:hex(new Uint8Array(await crypto.subtle.digest('SHA-256',data)))};
-  data.fill(0);return result;
+  try { return {slot,label,bytes,preview:hex(data.subarray(0,128)),fingerprint:hex(await fingerprintBytes(data))}; }
+  finally { data.fill(0); }
 }
 self.onmessage=async({data})=>{
   if(busy)return;

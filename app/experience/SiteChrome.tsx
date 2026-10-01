@@ -5,13 +5,13 @@ import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { gsap, useGSAP, useExperience } from "./Motion";
 
 const links = [
-  ["/", "探索首页", "EXPLORE"],
-  ["/storybook", "星际漫游", "STORY"],
-  ["/archive", "量仔小传", "CHARACTER"],
-  ["/pqc-arsenal", "密码图鉴", "ARSENAL"],
-  ["/pqc-practice", "密码实验室", "PRACTICE"],
-  ["/news", "前沿新闻", "FRONTIER"],
-  ["/about", "关于我", "ABOUT ME"],
+  ["/", "探索首页"],
+  ["/storybook", "星际漫游"],
+  ["/archive", "量仔小传"],
+  ["/pqc-arsenal", "密码图鉴"],
+  ["/pqc-practice", "密码实验室"],
+  ["/news", "前沿新闻"],
+  ["/about", "关于我"],
 ];
 /** The laboratory is a standalone document, not an RSC route to prefetch. */
 function NavigationLink({ href, ...props }: ComponentProps<"a"> & { href: string }) {
@@ -107,7 +107,7 @@ export function SiteHeader() {
             <NavigationLink
               href={href}
               key={href}
-              aria-current={path === href ? "page" : undefined}
+              aria-current={path === href || (href !== "/" && path?.startsWith(href + "/")) ? "page" : undefined}
             >
               {text}
             </NavigationLink>
@@ -143,12 +143,9 @@ export function SiteHeader() {
       {open && (
         <div ref={menu} id="mobile-menu" className="mobile-menu">
           <nav aria-label="移动导航">
-            {links.map(([href, text, en], i) => {
+            {links.map(([href, text]) => {
               const content = (
                 <>
-                  <small>
-                    0{i + 1} / {en}
-                  </small>
                   <span>{text}</span>
                 </>
               );
@@ -164,7 +161,6 @@ export function SiteHeader() {
               );
             })}
           </nav>
-          <p>STAY CURIOUS. GO BEYOND.</p>
         </div>
       )}
     </>

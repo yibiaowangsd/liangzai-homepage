@@ -94,10 +94,10 @@ export default function NewsGate() {
 
       <header>
         <div>
-          <span>FRONTIER / DAILY · {payload.edition_date.replaceAll("-", ".")}</span>
-          <h2 id="news-gate-title">今天，先看世界发生了什么。</h2>
+          <h2 id="news-gate-title">今日前沿</h2>
+          <time dateTime={payload.edition_date}>{payload.edition_date.replaceAll("-", ".")}</time>
         </div>
-        <p id="news-gate-description">五个方向 · 每个方向 5 条 · 原始来源可追溯</p>
+        <p id="news-gate-description">值得关注的技术新闻与解读</p>
       </header>
 
       <div className="news-gate-grid">
@@ -119,9 +119,9 @@ export default function NewsGate() {
       </div>
 
       <footer>
-        <button type="button" onClick={dismiss}>进入首页</button>
+        <button type="button" onClick={dismiss}>浏览首页</button>
         <Link href="/news" onClick={dismiss}>
-          进入每日前沿 <span aria-hidden="true">↗</span>
+          查看全部新闻 <span className="news-arrow" aria-hidden="true">→</span>
         </Link>
       </footer>
     </dialog>

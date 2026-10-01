@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./experience/cinematic.css";
+import "../public/assets/site-navigation.css";
 import "./experience/news-gate.css";
 import { ExperienceProvider } from "./experience/Motion";
 import { HomeEffectsProvider } from "./experience/HomeEffects";

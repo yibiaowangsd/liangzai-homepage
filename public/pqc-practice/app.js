@@ -1,4 +1,5 @@
 import { renderDialogue, animateTransfer, resetTransfers } from './dialogue.js';
+import { copyText, missingBrowserFeatures } from './browser-compat.js';
 import { ngccModule } from './ngcc-runtime.js';
 import { candidateModule, setCandidateProvider, showCandidateWork, stopCandidateWork } from './candidate-workbench.js';
 const $ = selector => document.querySelector(selector);
@@ -642,22 +643,15 @@ document.querySelectorAll('[data-copy]').forEach(button => button.addEventListen
   const value = (target.value ?? target.textContent).trim();
   if (!value || value.startsWith('等待')) return status('当前没有可复制的结果', 'error');
   try {
-    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(value);
-    else {
-      const fallback = document.createElement('textarea');
-      fallback.value = value; fallback.style.cssText = 'position:fixed;left:-9999px;top:0';
-      document.body.append(fallback); fallback.select();
-      const copied = document.execCommand('copy'); fallback.remove();
-      if (!copied) throw new Error('clipboard unavailable');
-    }
+    await copyText(value);
     status('已复制到剪贴板。', 'success');
   }
   catch { status('复制失败：请检查浏览器剪贴板权限。', 'error'); }
 }));
-const supportedOrigin = globalThis.isSecureContext || (import.meta.env?.DEV && location.hostname === 'terminal.local');
-if (!supportedOrigin || !globalThis.crypto?.getRandomValues || !globalThis.WebAssembly || !globalThis.Worker) {
+const missing = missingBrowserFeatures();
+if (missing.length) {
   runtime('浏览器环境不可用', 'error');
-  status('需要 HTTPS 或 localhost，以及 WebAssembly、Web Worker 和 Web Crypto。', 'error');
+  status(`当前浏览器缺少 ${missing.join('、')}，请使用支持这些功能的浏览器。`, 'error');
 } else startWorker();
 renderSidebar();
 showNistReports();
