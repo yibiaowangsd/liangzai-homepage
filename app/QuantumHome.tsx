@@ -1,198 +1,23 @@
-"use client";
 import Link from "next/link";
-import { useRef } from "react";
-import { usePageMotion } from "./experience/Motion";
-import { useHomeEffects } from "./experience/HomeEffects";
-import { HomeGuardian, HomeSculpture } from "./experience/HomeVisuals";
-import FlowField from "./studio/FlowField";
-import ProjectAtlas from "./studio/ProjectAtlas";
+import CinemaEntrance from "./studio/CinemaEntrance";
 import "./studio/home.css";
 export default function QuantumHome() {
-  const root = useRef<HTMLElement>(null),
-    { models, particles } = useHomeEffects();
-  usePageMotion(root);
-  return (
-    <main
-      ref={root}
-      id="main-content"
-      className="studio-home"
-      data-home-effects={models || particles ? "active" : "lite"}
-    >
-      <section className="studio-hero" aria-labelledby="home-title">
-        <div className="studio-hero-topline">
-          <span>Yibiao 的个人空间</span>
-          <span>密码工程 × 数学 × 想象力</span>
-          <span>
-            持续探索中 <i />
-          </span>
-        </div>
-        <h1
-          id="home-title"
-          className="studio-wordmark"
-          aria-label="量仔，好奇心不设限"
-        >
-          LIANGZAI<span aria-hidden="true">∞</span>
-        </h1>
-        <div className="studio-hero-body">
-          <div className="studio-hero-statement">
-            <p>你好，我是量仔。</p>
-            <h2>
-              好奇心，
-              <br />
-              不设限。
-            </h2>
-            <p>
-              在严谨的数学里找浪漫，
-              <br />
-              在真实的代码里造世界。
-            </p>
-            <a className="studio-text-link" href="#selected">
-              向下探索 <span aria-hidden="true">↓</span>
-            </a>
-          </div>
-          <div className="studio-hero-art">
-            <FlowField />
-            <img
-              className="studio-hero-mascot"
-              src="/assets/characters-v2/arsenal-liangzai-cutout.webp"
-              width="1024"
-              height="1536"
-              alt="站在蓝色数学纽结中的量仔"
-              fetchPriority="high"
-            />
-            <span className="studio-art-note">用鼠标，轻轻拨动这个世界。</span>
-          </div>
-          <div className="studio-hero-aside">
-            <span>
-              这里的每个入口，
-              <br />
-              都值得亲自打开。
-            </span>
-            <Link className="studio-round-link" href="/observatory">
-              <span>
-                进入
-                <br />
-                灵感现场
-              </span>
-              <b aria-hidden="true">↗</b>
-            </Link>
-            <span className="studio-small-mark">
-              量仔
-              <br />
-              好奇心实验室
-            </span>
-          </div>
-        </div>
-        <div className="studio-hero-bottom">
-          <span>01 — 08 / 自由探索</span>
-          <span>保持认真，也保持一点天真。</span>
-          <a href="#selected" aria-label="浏览作品与实验">
-            向下滚动 ↓
-          </a>
-        </div>
-      </section>
-      <ProjectAtlas />
-      <section className="studio-manifesto" aria-labelledby="manifesto-title">
-        <div className="studio-section-label">
-          <span>02 / 关于这个地方</span>
-          <span>不止于技术</span>
-        </div>
-        <div className="studio-manifesto-body">
-          <p>
-            这是我的工作之外，
-            <br />
-            也是好奇心的延长线。
-          </p>
-          <h2 id="manifesto-title" data-reveal>
-            有些问题，
-            <br />
-            需要<span>严密的证明。</span>
-            <br />
-            有些世界，
-            <br />
-            值得<em>大胆地想象。</em>
-          </h2>
-          <Link className="studio-text-link" href="/about">
-            认识屏幕背后的人 <span aria-hidden="true">↗</span>
-          </Link>
-        </div>
-      </section>
-      <section
-        className="studio-character"
-        id="liangzai"
-        aria-labelledby="character-title"
-      >
-        <div className="studio-section-label">
-          <span>03 / 认识你的同行者</span>
-          <span>量仔 · 奶龙 · 一起向前</span>
-        </div>
-        <div className="studio-character-heading">
-          <h2 id="character-title">
-            小小的身体。
-            <br />
-            <em>装着整个宇宙。</em>
-          </h2>
-          <p>
-            轻点量仔三次，唤醒星云。
-            <br />
-            再长按，让散落的光凝聚成形。
-          </p>
-        </div>
-        <div className="studio-guardian-theatre">
-          <HomeGuardian />
-        </div>
-        <div className="studio-character-bottom">
-          <span>测量 · 连接 · 守护</span>
-          <Link href="/archive">翻开量仔的档案 ↗</Link>
-          <Link href="/storybook">开启星际漫游 ↗</Link>
-        </div>
-      </section>
-      <section className="studio-play" aria-labelledby="play-title">
-        <div className="studio-play-copy">
-          <p className="studio-kicker">04 / 给灵感一点空间</p>
-          <h2 id="play-title">
-            先触碰，
-            <br />
-            再理解。
-          </h2>
-          <p>
-            移动、聚拢、释放。
-            <br />
-            让一个小小的动作，改变眼前的秩序。
-          </p>
-          <Link className="studio-text-link" href="/observatory">
-            把你的灵感带走 <span aria-hidden="true">↗</span>
-          </Link>
-          <small>生成式交互艺术</small>
-        </div>
-        <HomeSculpture />
-      </section>
-      <section className="studio-journal" aria-labelledby="journal-title">
-        <div className="studio-section-label">
-          <span>05 / 向外看看</span>
-          <span>保持与世界的连接</span>
-        </div>
-        <div>
-          <h2 id="journal-title">
-            变化正在发生。
-            <br />
-            <em>别错过下一束信号。</em>
-          </h2>
-          <p>
-            密码、协议、标准、安全与 AI。
-            <br />
-            阅读新闻，也追问它为什么重要。
-          </p>
-          <Link className="studio-pill" href="/news">
-            阅读前沿新闻 <span aria-hidden="true">↗</span>
-          </Link>
-        </div>
-        <span className="studio-journal-type" aria-hidden="true">
-          WHAT’S
-          <br />
-          NEXT?
-        </span>
-      </section>
-    </main>
-  );
+    return <main id="main-content" className="portal-home">
+    <section className="portal-hero" aria-labelledby="home-title">
+      <img className="portal-backdrop" src="/assets/cinematic/vault-entrance-v2.webp" width="1672" height="941" alt="蓝色光线照亮的密码之门" fetchPriority="high"/>
+      <div className="portal-shade"/>
+      <div className="portal-caption"><span>YIBIAO / PERSONAL LAB</span><span>密码 · 工程 · 创造</span></div>
+      <div className="portal-hero-copy"><p className="portal-eyebrow">你好，我是量仔。</p><h1 id="home-title">探索未知。<br /><em>亲手验证。</em></h1><p>从数学原理到真实代码，<br />在这里，想法可以运行。</p><div className="portal-actions"><a className="portal-button" href="/pqc-practice">进入密码实验室</a><Link className="portal-button portal-button-glass" href="/news">阅读每日新闻</Link></div></div>
+      <div className="portal-hero-foot"><span>LIANGZAI <small>一份持续生长的个人实践</small></span><CinemaEntrance /></div>
+    </section>
+    <section className="portal-tools" id="selected" aria-labelledby="tools-title">
+      <div className="portal-section-heading"><div><p className="portal-eyebrow">01 / 开始实践</p><h2 id="tools-title">从理解，到验证。</h2></div><p>把复杂的问题拆开，<br />让每一步都有迹可循。</p></div>
+      <div className="portal-work-grid">
+        <a className="portal-lab-card" href="/pqc-practice"><div className="portal-card-label"><span>密码实验室</span><span>IN YOUR BROWSER</span></div><h3>一次连接，<br />如何值得信任？</h3><p>生成密钥、封装共享秘密、签名与验签。<br />用真实算法完成一次端到端实验。</p><div className="portal-key-demo" aria-hidden="true"><span>BOB</span><div><i /><code>pk · ct · ss</code><i /></div><span>ALICE</span></div><div className="portal-card-bottom"><span>ML-KEM · ML-DSA · SM2 · HASH</span><b>开始实验</b></div></a>
+        <Link className="portal-guide-card" href="/pqc-arsenal"><div className="portal-card-label"><span>密码图鉴</span><span>LEARN THE PRINCIPLES</span></div><img src="/assets/pqc/ml-kem-studio-v2.webp" alt="晶格密码结构" width="1200" height="800" loading="lazy"/><div className="portal-guide-copy"><h3>看懂算法背后的数学。</h3><p>从晶格、哈希树到数字签名，让原理变得可理解。</p><b>打开图鉴</b></div></Link>
+      </div>
+    </section>
+    <section className="portal-news"><div><p className="portal-eyebrow">02 / 每日更新</p><h2>保持判断。<br /><em>跟上变化。</em></h2></div><div><p>后量子密码、协议、标准、网络安全与 AI。<br />从原始资料出发，读懂新闻背后的变化。</p><Link href="/news" className="portal-button">阅读前沿新闻</Link><div className="portal-news-topics"><span>密码</span><span>协议</span><span>标准</span><span>安全</span><span>AI</span></div></div></section>
+    <section className="portal-world" aria-labelledby="world-title"><div className="portal-section-heading"><div><p className="portal-eyebrow">03 / 工作之外</p><h2 id="world-title">另一些，关于创造。</h2></div><Link href="/about" className="portal-inline">认识 Yibiao</Link></div><div className="portal-world-grid"><Link href="/models" className="portal-world-card"><div className="portal-model-photo"><img src="/assets/models/observatory/duo-front.webp" alt="量仔与奶龙模型" width="768" height="864" loading="lazy"/></div><div><span>MODEL GALLERY</span><h3>量仔与奶龙 · 模型鉴赏</h3><p>旋转、缩放，近距离欣赏两位伙伴。</p></div></Link><Link href="/storybook" className="portal-world-card"><img src="/assets/book-v2/09-final-battle.webp" alt="量仔与奶龙的星际冒险" width="1200" height="800" loading="lazy"/><div><span>THE STORY</span><h3>星际漫游</h3><p>十一页关于未知、勇气与并肩的冒险。</p></div></Link></div></section>
+  </main>;
 }

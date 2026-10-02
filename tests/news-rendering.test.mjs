@@ -172,9 +172,11 @@ test("news pages preserve published content and accessible rendering", async (t)
       upstream = () => Response.json(editions(items));
       const main = await render("/news");
       const expected = new Map([
-        [publishedItems[0].cover_image, "editorial"],
+        ["/assets/pqc/ml-dsa-studio-v2.webp", "editorial"],
         [publishedItems[1].cover_image, "source"],
-        ["/news-covers/pqc.svg", "editorial"],
+        ["/news-covers/compute-v2.webp", "editorial"],
+        ["/news-covers/connection-v2.webp", "editorial"],
+        ["/assets/pqc/slh-dsa-studio-v2.webp", "editorial"],
         ["https://example.com/news-covers/pqc.svg", "source"],
       ]);
       const images = [...main.matchAll(/<img\b[^>]*class="story-image"[^>]*>/g)].map((match) => match[0]);

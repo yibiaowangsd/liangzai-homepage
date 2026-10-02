@@ -43,12 +43,11 @@ test("renders the homepage with the integrated practice destination", async () =
   }
   assert.match(html, /进入密码实验室/);
   assert.match(html, /开启动效|暂停动效/);
-  assert.match(html, /让想象/);
-  assert.match(html, /轻点量仔三次，化为星云/);
-  assert.doesNotMatch(html, /开启 3D 星云|开启背景粒子|home-effects-switches/);
-  assert.match(html, /data-home-effects="active"/);
-  assert.match(html, /guardian-static/);
-  assert.match(html, /guardian-image-burst/);
+  assert.match(html, /探索未知/);
+  assert.match(html, /重看序幕/);
+  assert.match(html, /cinema-entrance/);
+  assert.match(html, /href="\/models"/);
+  assert.doesNotMatch(html, /href="\/observatory"|guardian-static|guardian-image-burst|随指针转动的蓝色数学纽结/);
   assert.doesNotMatch(
     html,
     /(?:src|href)="[^"]*(?:hero-scene|InteractiveGuardian|QuantumAtmosphere|QuantumSculpture)[^"]*\.js/,
@@ -183,4 +182,16 @@ test("SSR animation module does not start a Worker-forbidden timer", async () =>
     },
   );
   assert.equal(child.status, 0, child.stderr || String(child.error || ""));
+});
+
+test("models live in their own SSR-safe gallery with independent controls", async () => {
+  const { default: worker } = await import("../dist/server/index.js");
+  const response = await worker.fetch(new Request("http://localhost/models"),
+    { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
+    { waitUntil() {}, passThroughOnException() {} });
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  for (const label of ["模型鉴赏", "量仔", "奶龙", "双人合照", "正面", "侧面", "背面", "自动旋转", "重置视角"])
+    assert.ok(html.includes(label), label);
+  assert.doesNotMatch(html, /长按唤醒|轻点量仔三次/);
 });

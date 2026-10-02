@@ -63,9 +63,7 @@ export const categoryCovers: Record<string, string> = {
   daily: "/news-covers/pqc.svg",
 };
 
-export function coverFor(item: Pick<NewsItem, "cover_image" | "category">): string {
-  return item.cover_image || categoryCovers[item.category] || "/news-covers/pqc.svg";
-}
+export { coverFor } from "./keyword-cover";
 
 export function parseTags(tags: string | null): string[] {
   if (!tags) return [];

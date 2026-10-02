@@ -13,7 +13,7 @@ import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
 export const metadata: Metadata = {
   title: "量仔 · 好奇心实验室",
   description:
-    "Yibiao 的好奇心实验室。探索密码工程、数学艺术、星际故事与真实算法实验。",
+    "Yibiao 的好奇心实验室。探索密码工程、每日新闻、模型鉴赏与真实算法实验。",
   other: { "codex-preview": "development" },
   icons: {
     icon: "/assets/liangzai-mark.svg",

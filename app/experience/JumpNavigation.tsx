@@ -170,7 +170,7 @@ export default function JumpNavigation({
                     <strong>{item.name}</strong>
                     <small>{item.description}</small>
                   </span>
-                  <span aria-hidden="true">↗</span>
+                  <span aria-hidden="true"></span>
                 </>
               );
               const props = {

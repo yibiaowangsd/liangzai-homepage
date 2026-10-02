@@ -358,7 +358,7 @@ function showReports(candidate) {
   const reports = reportIndex?.findings?.filter(item => item.candidateId === candidate.id) || [];
   $('#report-title').textContent = `${candidate.name} · 中文安全报告摘要`;
   $('#report-index-link').href = reports.length ? `https://ngcc.dev/reports/${candidate.id}.html` : 'https://ngcc.dev/reports/index.html';
-  $('#report-index-link').textContent = '查看 ngcc.dev 报告原文 ↗';
+  $('#report-index-link').textContent = '查看 ngcc.dev 报告原文';
   $('#report-intro').textContent = reportIndex?.unavailable
     ? '报告目录暂时无法读取，请访问原站核对最新信息。浏览器功能验证不构成安全认证。'
     : `下方为 ngcc.dev 原报告的中文摘要（非全文翻译），核对日期 ${reportIndex.reviewed_utc}；原站更新 ${reportIndex.source_updated_utc} UTC。发现针对报告注明的提交版本，不等于本站二进制复测结论。点击每项标题可查看作者署名、完整论证和复现步骤。`;
@@ -397,11 +397,11 @@ function showNistReports() {
   $('#report-panel').classList.remove('hidden');
   $('#report-title').textContent = '标准与实现评估';
   $('#report-index-link').href = url;
-  $('#report-index-link').textContent = `查看 NIST ${label} ↗`;
+  $('#report-index-link').textContent = `查看 NIST ${label}`;
   $('#report-intro').textContent = '所选算法属于 NIST 标准算法。本站 WASM 由 PQMagic 源码构建；目前没有针对本站二进制的独立安全报告或 FIPS 实现认证。算法符合标准的名称不等于此实现已获认证。';
   const link = document.createElement('a');
   link.href = 'https://github.com/pqcrypto-cn/PQMagic'; link.target = '_blank'; link.rel = 'noopener noreferrer';
-  link.textContent = '查看当前模块实现来源 ↗';
+  link.textContent = '查看当前模块实现来源';
   $('#report-list').replaceChildren(link);
 }
 function showCatalog() {
