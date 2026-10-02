@@ -251,7 +251,7 @@ test("news pages preserve published content and accessible rendering", async (t)
       upstream = () => new Response("Unavailable", { status: 503 });
       const offline = await render("/news");
       assert.match(offline, /<h1>前沿新闻<\/h1>/);
-      assert.match(offline, /新闻 API 暂时不可用/);
+      assert.match(offline, /新闻暂时无法载入/);
       assert.doesNotMatch(offline, /class="(?:lead-story|story-image)"/);
       upstream = () => Response.json({ data: [], meta: { page: 1, pageSize: 3, totalDays: 0, totalPages: 1 } });
       const empty = await render("/news");
