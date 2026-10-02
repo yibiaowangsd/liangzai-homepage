@@ -63,7 +63,7 @@ function auditPage(candidates, build) {
   }));
   if (build?.last_retry) {
     $('audit-build-link').href = build.last_retry.log_url;
-    $('audit-build-link').textContent = '查看本次重编译日志 ↗';
+    $('audit-build-link').textContent = '查看本次重编译日志';
     $('audit-build-link').classList.remove('hidden');
   } else if (build?.run_url && !build.run_url.endsWith('/0')) {
     $('audit-build-link').href = build.run_url;

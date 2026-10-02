@@ -1,0 +1,17 @@
+{
+  "tool": "built-in image_gen",
+  "assets": [
+    {
+      "path": "public/assets/cinematic/vault-entrance-v2.webp",
+      "prompt": "Use case: stylized-concept. Create a cinematic architectural image for a Chinese cryptography engineer's personal website. Landscape 16:9. A monumental circular vault aperture built from brushed ivory ceramic and dark titanium, seen almost frontally, occupying right half, opening onto an intensely cobalt blue illuminated inner chamber with a small suspended polished silver cubic crystal. Endless pale warm concrete floor, precise architecture, real reflections, subtle blue light spilling onto floor, very controlled volumetric light. Sophisticated film production design, photographed with anamorphic lens, exceptional tactile material detail, quiet mysterious scale. LEFT HALF is empty almost black charcoal architectural shadow, deliberately reserved for large white live HTML headline. No particles, no stars, no nebula, no random floating objects, no people, no robot, no letters, no text, no watermark. Frame at eye height, aperture begins near center, magnificent but restrained and physically plausible lighting."
+    },
+    {
+      "path": "public/news-covers/compute-v2.webp",
+      "prompt": "Use case: stylized-concept. Editorial keyword illustration for a technology news website, wide landscape 16:9. An exquisite macro photograph of a single modern silicon processor on a matte warm white ceramic circuit board, cobalt blue light within its central glass die, fine silver circuit traces radiating in strict right angles, soft directional studio lighting, realistic microstructures, beautiful restrained industrial design, ivory, silver and cobalt palette. Center processor right of center; negative space in top left for HTML keyword label. No text, no logos, no numbers, no particles, no sci-fi nebula, no cartoon. This represents AI, semiconductors and FPGA computing in a premium newspaper."
+    },
+    {
+      "path": "public/news-covers/connection-v2.webp",
+      "prompt": "Use case: stylized-concept. Wide 16:9 editorial technology illustration, visually representing encrypted connections, internet protocols and network security. Two precision-machined matte silver modules stand opposite one another on a warm white ceramic surface, connected by a single thick translucent cobalt-blue glass conduit with a gentle elegant bend. Extremely refined product photography, soft studio shadows, fine brushed metal detail, sophisticated modern industrial design, bold composition with lots of breathing room. One module in lower left, one in upper right; connection readable clearly. Premium editorial photography aesthetic. No text, no logos, no padlock icon, no people, no particles, no neon fantasy background. Ivory, cobalt blue, silver palette."
+    }
+  ]
+}

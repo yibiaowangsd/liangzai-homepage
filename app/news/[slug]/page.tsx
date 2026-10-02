@@ -80,7 +80,7 @@ export default async function NewsDetailPage({
     <main id="main-content" className="article-page">
       <article className="article-shell">
         <header className="article-header">
-          <Link className="article-back" href="/news">← 返回新闻</Link>
+          <Link className="article-back" href="/news">返回新闻</Link>
           <div className="article-kicker">
             <span>{categoryLabels[item.category] || item.category}</span>
           </div>
@@ -108,7 +108,7 @@ export default async function NewsDetailPage({
             <p>{item.source_name || "原始来源"}</p>
             {item.source_url && (
               <a href={item.source_url} target="_blank" rel="noreferrer">
-                阅读原文 <span className="news-arrow" aria-hidden="true">↗</span>
+                阅读原文
               </a>
             )}
             <p>

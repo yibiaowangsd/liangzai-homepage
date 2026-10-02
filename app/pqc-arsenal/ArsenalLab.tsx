@@ -585,7 +585,7 @@ export default function ArsenalLab() {
             <i aria-hidden="true" />
           </a>
           <a className="arsenal-practice-link" data-intro href="/pqc-practice">
-            已了解原理？进入密码实验室 <span aria-hidden="true">↗</span>
+            已了解原理？进入密码实验室 <span aria-hidden="true"></span>
           </a>
         </div>
         <figure className="arsenal-hero-visual" data-intro>

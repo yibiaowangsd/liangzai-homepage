@@ -56,9 +56,7 @@ function TopicDesk({
             {lead.summary && <p>{lead.summary}</p>}
             <Link className="editorial-link" href={"/news/" + lead.slug}>
               阅读解读{" "}
-              <span className="news-arrow" aria-hidden="true">
-                →
-              </span>
+
             </Link>
           </div>
         </article>
@@ -224,9 +222,7 @@ export default async function NewsPage({
                   href={"/news/" + heroLead.slug}
                 >
                   阅读今日头条{" "}
-                  <span className="news-arrow" aria-hidden="true">
-                    →
-                  </span>
+
                 </Link>
               </div>
             </article>
@@ -283,7 +279,7 @@ export default async function NewsPage({
               className={meta.page <= 1 ? "is-disabled" : undefined}
               tabIndex={meta.page <= 1 ? -1 : undefined}
             >
-              ← 更新新闻
+              更新新闻
             </Link>
             <div>
               {paginationPages.map((pageNumber) => (
@@ -304,7 +300,7 @@ export default async function NewsPage({
               }
               tabIndex={meta.page >= meta.totalPages ? -1 : undefined}
             >
-              历史新闻 →
+              历史新闻
             </Link>
           </nav>
         </>

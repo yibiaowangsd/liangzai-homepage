@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import StoryImage from "../news/StoryImage";
 import {
   useCallback,
   useEffect,
@@ -36,13 +37,6 @@ const labels: Record<string, string> = {
   ai: "AI 前沿",
 };
 
-const covers: Record<string, string> = {
-  pqc: "/news-covers/pqc.svg",
-  protocol: "/news-covers/protocol.svg",
-  standards: "/news-covers/standards.svg",
-  security: "/news-covers/security.svg",
-  ai: "/news-covers/ai.svg",
-};
 
 export default function NewsGate() {
   const [payload, setPayload] = useState<GatePayload | null>(null);
@@ -102,7 +96,7 @@ export default function NewsGate() {
             </time>
           </span>
           <strong>
-            看看世界的新进展 <i aria-hidden="true">↗</i>
+            看看世界的新进展 <i aria-hidden="true"></i>
           </strong>
         </button>
         <button type="button" onClick={dismiss} aria-label="关闭今日新闻提示">
@@ -147,11 +141,7 @@ export default function NewsGate() {
             onClick={dismiss}
           >
             <div className="gate-thumb">
-              <img
-                src={item.cover_image || covers[item.category] || covers.pqc}
-                alt=""
-                aria-hidden="true"
-              />
+              <StoryImage item={item} />
             </div>
             <span>{labels[item.category] || item.category}</span>
             <h3>{item.title}</h3>
@@ -166,9 +156,7 @@ export default function NewsGate() {
         </button>
         <Link href="/news" onClick={dismiss}>
           查看全部新闻{" "}
-          <span className="news-arrow" aria-hidden="true">
-            →
-          </span>
+
         </Link>
       </footer>
     </dialog>

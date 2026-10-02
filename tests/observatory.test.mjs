@@ -61,7 +61,7 @@ test("art seeds produce a stable bounded point cloud and different seeds change 
 });
 
 test("jump search resolves Chinese and algorithm queries without inventing destinations", () => {
-  assert.equal(searchDestinations("星空")[0].href, "/observatory");
+  assert.equal(searchDestinations("模型 奶龙")[0].href, "/models");
   assert.equal(searchDestinations("ML-KEM")[0].href, "/pqc-arsenal");
   assert.equal(searchDestinations("签名 wasm")[0].href, "/pqc-practice");
   assert.equal(searchDestinations("  NEWS  ")[0].href, "/news");
@@ -95,7 +95,7 @@ test("the studio is server-rendered with working navigation and a static initial
   ])
     assert.ok(html.includes(label), label);
   for (const route of [
-    "/observatory",
+    "/models",
     "/pqc-arsenal",
     "/pqc-practice",
     "/news",

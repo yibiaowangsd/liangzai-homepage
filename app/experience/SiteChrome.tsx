@@ -18,7 +18,7 @@ function NavigationLink({
 }
 const previews: Record<string, string> = {
   "/": "/assets/characters-v2/arsenal-liangzai-cutout.webp",
-  "/observatory": "/assets/cinematic/quantum-portal-v1.webp",
+  "/models": "/assets/models/observatory/duo-front.webp",
   "/storybook": "/assets/book-v2/09-final-battle.webp",
   "/archive": "/assets/characters-v2/archive-origin.webp",
   "/pqc-arsenal": "/assets/pqc/ml-kem-studio-v2.webp",
@@ -78,7 +78,7 @@ export function SiteHeader() {
                 href={item.href}
                 aria-current={path === item.href ? "page" : undefined}
               >
-                {item.href === "/" ? "作品与实验" : item.name}
+                {item.href === "/" ? "首页" : item.name}
               </NavigationLink>
             ))}
         </nav>
@@ -180,7 +180,7 @@ export function SiteHeader() {
                 >
                   <small>0{i + 1}</small>
                   <span>{item.name}</span>
-                  <b aria-hidden="true">↗</b>
+
                 </NavigationLink>
               ))}
             </nav>
@@ -204,7 +204,7 @@ export function SiteFooter() {
           下一个想法，会是什么？
         </p>
         <Link href="/about" className="studio-footer-cta">
-          一起保持好奇 <span aria-hidden="true">↗</span>
+          一起保持好奇
         </Link>
       </div>
       <nav aria-label="页脚导航">
@@ -215,7 +215,7 @@ export function SiteFooter() {
         ))}
       </nav>
       <Link className="studio-footer-word" href="/" aria-label="量仔首页">
-        LIANGZAI<span>↗</span>
+        LIANGZAI<span></span>
       </Link>
       <div className="studio-footer-bottom">
         <span>© 2026 量仔 · Yibiao</span>

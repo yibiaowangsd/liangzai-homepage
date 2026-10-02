@@ -7,10 +7,10 @@ export const destinations = [
     keywords: "home 首页 量仔 liangzai",
   },
   {
-    href: "/observatory",
-    name: "灵感观测站",
-    description: "以数学为笔，创作并带走一片星空。",
-    keywords: "art 灵感 观测 星空 创作 引力 共振 晶格",
+    href: "/models",
+    name: "模型鉴赏",
+    description: "旋转、缩放，近距离欣赏量仔与奶龙。",
+    keywords: "models 模型 鉴赏 量仔 奶龙 旋转 三维",
   },
   {
     href: "/storybook",

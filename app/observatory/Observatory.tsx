@@ -342,7 +342,7 @@ export default function Observatory() {
               <div className="art-preset-name">
                 <span>0{i + 1}</span>
                 <h3>{preset.name}</h3>
-                <span aria-hidden="true">↗</span>
+                <span aria-hidden="true"></span>
               </div>
               <p>{preset.caption}</p>
             </button>
@@ -352,10 +352,10 @@ export default function Observatory() {
       <section className="observatory-next">
         <span>从灵感，走向真正的密码工程。</span>
         <Link href="/pqc-arsenal">
-          探索密码图鉴 <span aria-hidden="true">↗</span>
+          探索密码图鉴 <span aria-hidden="true"></span>
         </Link>
         <a href="/pqc-practice">
-          进入密码实验室 <span aria-hidden="true">↗</span>
+          进入密码实验室 <span aria-hidden="true"></span>
         </a>
       </section>
     </main>

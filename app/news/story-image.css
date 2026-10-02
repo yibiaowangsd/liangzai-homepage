@@ -1,0 +1,43 @@
+/* Keyword art is used for missing or failed source photography, on every news surface. */
+.story-image-frame {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #e7e8df
+}
+.story-image-frame .story-image {
+  display: block;
+  width: 100%;
+  height: 100%
+}
+.story-keyword {
+  position: absolute;
+  bottom: 14px;
+  left: 14px;
+  max-width: calc(100% - 28px);
+  border-radius: 4px;
+  padding: 7px 10px;
+  background: #f8f7f1e8;
+  color: #242620;
+  font: 10px/1.4 monospace;
+  letter-spacing: .06em;
+  backdrop-filter: blur(12px)
+}
+.brief-thumb .story-keyword,.deck-thumb .story-keyword {
+  font-size: 8px;
+  bottom: 6px;
+  left: 6px;
+  padding: 4px 5px;
+  max-width: calc(100% - 12px)
+}
+.news-arrow {
+  display: none
+}
+.story-image-frame .story-image {
+  object-fit: cover
+}
+.story-image-frame .story-image[data-treatment="source"] {
+  object-fit: contain
+}

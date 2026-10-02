@@ -1,0 +1,61 @@
+"use client";
+import { useCallback, useEffect, useRef } from "react";
+/** A self-contained opening sequence. No hardware scoring or reduced-quality branch. */
+export default function CinemaEntrance() {
+    const dialog = useRef<HTMLDialogElement>(null);
+    const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const previous = useRef<HTMLElement | null>(null);
+    const overflow = useRef("");
+    const finish = useCallback(() => {
+        if (timer.current)
+            clearTimeout(timer.current);
+        const el = dialog.current;
+        if (!el?.open)
+            return;
+        el.close();
+        document.body.style.overflow = overflow.current;
+        try {
+            sessionStorage.setItem("liangzai-cinema-v1", "seen");
+        }
+        catch { }
+        previous.current?.focus({ preventScroll: true });
+    }, []);
+    const play = useCallback(() => {
+        const el = dialog.current;
+        if (!el || el.open)
+            return;
+        previous.current = document.activeElement as HTMLElement;
+        overflow.current = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        el.showModal();
+        el.querySelector<HTMLButtonElement>("button")?.focus();
+        timer.current = setTimeout(finish, 4800);
+    }, [finish]);
+    useEffect(() => {
+        const el = dialog.current;
+        let seen = false;
+        try {
+            seen = sessionStorage.getItem("liangzai-cinema-v1") === "seen";
+        }
+        catch { }
+        // Respect the visitor's explicit accessibility preference, not device performance.
+        if (!seen && !window.matchMedia("(prefers-reduced-motion: reduce)").matches)
+            play();
+        return () => { if (timer.current)
+            clearTimeout(timer.current); if (el?.open) {
+            el.close();
+            document.body.style.overflow = overflow.current;
+        } };
+    }, [play]);
+    return <>
+    <button className="portal-replay" type="button" onClick={play}>重看序幕</button>
+    <dialog ref={dialog} className="cinema-entrance" aria-label="量仔首页电影序幕" onCancel={e => { e.preventDefault(); finish(); }}>
+      <img src="/assets/cinematic/vault-entrance-v2.webp" alt="" className="cinema-scene"/>
+      <div className="cinema-shade"/>
+      <div className="cinema-credit"><span>YIBIAO PRESENTS</span><strong>LIANGZAI</strong><p>从一个问题，走进无限可能。</p></div>
+      <div className="cinema-matte cinema-matte-top"/><div className="cinema-matte cinema-matte-bottom"/>
+      <button className="cinema-skip" onClick={finish} type="button">跳过序幕 <small>ESC</small></button>
+      <span className="cinema-progress" aria-hidden="true"/>
+    </dialog>
+  </>;
+}
