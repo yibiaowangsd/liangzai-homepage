@@ -589,21 +589,14 @@ export default function ArsenalLab() {
           </a>
         </div>
         <figure className="arsenal-hero-visual" data-intro>
-          <div className="armory-portrait">
-            <img
-              src="/assets/characters-v2/arsenal-liangzai-cutout.webp"
-              alt="最新版量仔全身装备展示"
-            />
-            <p>
-              <span>KEEPER Q-∞</span> 量仔 / 武器管理员
-            </p>
-          </div>
           <div className="armory-algorithms" aria-label="四种 PQC 算法武器照片">
             {heroWeapons.map((item, index) => (
               <article className="algorithm-photo" key={item.name}>
                 <img
                   src={item.image}
-                  width="768" height="768" decoding="async"
+                  width="768"
+                  height="768"
+                  decoding="async"
                   alt={`${item.name} 的${item.note}：银白陶瓷、黑钛与冰蓝能量光的科幻装备`}
                 />
                 <div>
@@ -614,7 +607,7 @@ export default function ArsenalLab() {
               </article>
             ))}
           </div>
-          <figcaption>ARMORY 004 / 一名守护者，四种算法装备</figcaption>
+          <figcaption>PQC / 01—04 · 四种数学直觉，四种守护之力</figcaption>
         </figure>
         <div className="hero-index" aria-label="学习路径">
           <span>01 RSA / ECC</span>

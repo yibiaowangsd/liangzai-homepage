@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "./dossier.css";
 import type { Metadata } from "next";
 import { MotionSurface } from "../experience/Motion";
 export const metadata: Metadata = {
@@ -34,16 +35,16 @@ const chapters = [
 ];
 export default function Archive() {
   return (
-    <main id="main-content">
+    <main id="main-content" className="dossier">
       <MotionSurface>
-        <section className="character-hero">
+        <section className="dossier-character-hero">
           <div>
             <p className="eyebrow" data-intro>
-              <span className="status-light" /> PERSONAL FILE 000 / GUARDIAN
-              ONLINE
+              <span className="status-light" /> 角色档案 001 /
+              一位来自量子星的朋友
             </p>
             <h1 data-title>
-              量仔<span>LIANGZAI</span>
+              <small>测量世界，也守护你。</small>量仔<span>LIANGZAI / Q–∞</span>
             </h1>
             <p className="lead" data-intro>
               一根寻找答案的天线。
@@ -53,7 +54,7 @@ export default function Archive() {
             <Link href="/storybook" className="line-link" data-intro>
               进入他的宇宙冒险
             </Link>
-            <dl className="character-stats" data-intro>
+            <dl className="dossier-character-stats" data-intro>
               {[
                 ["型号", "Q–∞"],
                 ["盟友", "奶龙"],
@@ -67,7 +68,7 @@ export default function Archive() {
               ))}
             </dl>
           </div>
-          <div className="character-visual" data-intro>
+          <div className="dossier-character-visual" data-intro>
             <img
               src="/assets/characters-v2/arsenal-liangzai-cutout.webp"
               alt="蓝白战甲、蓝色天线的量仔全身形象"
@@ -80,7 +81,7 @@ export default function Archive() {
             </span>
           </div>
         </section>
-        <section className="character-bio section-wrap" id="life">
+        <section className="dossier-character-bio" id="life">
           <div data-reveal>
             <p className="eyebrow">01 / THE ONE WHO MEASURES LIGHT</p>
             <h2>
@@ -114,7 +115,7 @@ export default function Archive() {
             </dl>
           </div>
         </section>
-        <section className="chronicle" id="legend">
+        <section className="dossier-chronicle" id="legend">
           <p className="eyebrow" data-reveal>
             02 / THE MILK × MEASURE ALLIANCE
           </p>
@@ -124,8 +125,8 @@ export default function Archive() {
             <span className="silver-text">比恐惧更难分解</span>
           </h2>
           {chapters.map((c) => (
-            <article className="chronicle-entry" key={c.no}>
-              <div className="chronicle-visual" data-reveal>
+            <article className="dossier-chronicle-entry" key={c.no}>
+              <div className="dossier-chronicle-visual" data-reveal>
                 <img
                   data-parallax="8"
                   src={c.image}
@@ -133,7 +134,7 @@ export default function Archive() {
                   loading="lazy"
                 />
               </div>
-              <div className="chronicle-copy" data-reveal>
+              <div className="dossier-chronicle-copy" data-reveal>
                 <span>
                   {c.no} / {c.year}
                 </span>
@@ -142,7 +143,7 @@ export default function Archive() {
               </div>
             </article>
           ))}
-          <details className="archive-log">
+          <details className="dossier-archive-log">
             <summary>
               展开战后记录<span aria-hidden="true">＋</span>
             </summary>
@@ -160,7 +161,7 @@ export default function Archive() {
             </p>
           </details>
         </section>
-        <section className="archive-now section-wrap" id="now">
+        <section className="dossier-archive-now" id="now">
           <div data-reveal>
             <p className="eyebrow">03 / AFTER THE ALGORITHM</p>
             <h2>

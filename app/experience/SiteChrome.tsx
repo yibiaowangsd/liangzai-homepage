@@ -2,12 +2,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
-import { gsap, useGSAP, useExperience } from "./Motion";
+import { useExperience } from "./Motion";
 import { destinations } from "./destinations";
 import JumpNavigation from "./JumpNavigation";
 
-const links = destinations.map((item) => [item.href, item.name]);
-/** The laboratory is a standalone document, not an RSC route to prefetch. */
 function NavigationLink({
   href,
   ...props
@@ -18,63 +16,36 @@ function NavigationLink({
     <Link href={href} {...props} />
   );
 }
-
+const previews: Record<string, string> = {
+  "/": "/assets/characters-v2/arsenal-liangzai-cutout.webp",
+  "/observatory": "/assets/cinematic/quantum-portal-v1.webp",
+  "/storybook": "/assets/book-v2/09-final-battle.webp",
+  "/archive": "/assets/characters-v2/archive-origin.webp",
+  "/pqc-arsenal": "/assets/pqc/ml-kem-studio-v2.webp",
+  "/pqc-practice": "/assets/pqc/ml-dsa-studio-v2.webp",
+  "/news": "/news-covers/security.svg",
+  "/about": "/assets/characters-v2/archive-after.webp",
+};
 export function SiteHeader() {
-  const path = usePathname();
-  const [open, setOpen] = useState(false);
-  const menu = useRef<HTMLDivElement>(null);
-  const trigger = useRef<HTMLButtonElement>(null);
-  const { enabled, paused, toggle } = useExperience();
-  useGSAP(
-    () => {
-      if (!open || !enabled) return;
-      gsap.from("a", {
-        y: 24,
-        autoAlpha: 0,
-        stagger: 0.065,
-        duration: 0.65,
-        ease: "power3.out",
-      });
-    },
-    { scope: menu, dependencies: [open, enabled], revertOnUpdate: true },
-  );
+  const path = usePathname(),
+    [open, setOpen] = useState(false),
+    [preview, setPreview] = useState(destinations[0]);
+  const dialog = useRef<HTMLDialogElement>(null),
+    close = useRef<HTMLButtonElement>(null);
+  const { paused, toggle } = useExperience();
   useEffect(() => {
     if (!open) return;
-    const previous = document.body.style.overflow;
+    const el = dialog.current;
+    if (!el) return;
+    const previous = document.activeElement as HTMLElement | null,
+      overflow = document.body.style.overflow;
+    el.showModal();
     document.body.style.overflow = "hidden";
-    const first = menu.current?.querySelector<HTMLAnchorElement>("a");
-    first?.focus();
-    const key = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setOpen(false);
-        trigger.current?.focus();
-      }
-      if (event.key === "Tab") {
-        const items = [
-          trigger.current,
-          ...Array.from(menu.current?.querySelectorAll<HTMLElement>("a") || []),
-        ].filter(Boolean) as HTMLElement[];
-        const i = items.indexOf(document.activeElement as HTMLElement);
-        if (event.shiftKey && i === 0) {
-          event.preventDefault();
-          items[items.length - 1].focus();
-        }
-        if (!event.shiftKey && i === items.length - 1) {
-          event.preventDefault();
-          items[0].focus();
-        }
-      }
-    };
-    window.addEventListener("keydown", key);
-    const desktop = window.matchMedia("(min-width: 1101px)");
-    const resize = () => {
-      if (desktop.matches) setOpen(false);
-    };
-    desktop.addEventListener("change", resize);
+    close.current?.focus();
     return () => {
-      document.body.style.overflow = previous;
-      window.removeEventListener("keydown", key);
-      desktop.removeEventListener("change", resize);
+      if (el.open) el.close();
+      document.body.style.overflow = overflow;
+      if (previous?.isConnected) previous.focus({ preventScroll: true });
     };
   }, [open]);
   return (
@@ -83,43 +54,39 @@ export function SiteHeader() {
         跳到主要内容
       </a>
       <header className="site-chrome">
-        <Link
-          className="brand"
-          href="/"
-          aria-label="量仔首页"
-          onClick={() => setOpen(false)}
-        >
+        <Link className="brand" href="/" aria-label="量仔首页">
           <span className="brand-mark" aria-hidden="true">
             <img
               src="/assets/liangzai-mark.svg"
-              width="40"
-              height="40"
+              width="36"
+              height="36"
               alt=""
             />
           </span>
           <strong>
-            量仔<span>LIANGZAI</span>
+            量仔<span>好奇心实验室</span>
           </strong>
         </Link>
         <nav className="desktop-nav" aria-label="主导航">
-          {links.map(([href, text]) => (
-            <NavigationLink
-              href={href}
-              key={href}
-              aria-current={
-                path === href || (href !== "/" && path?.startsWith(href + "/"))
-                  ? "page"
-                  : undefined
-              }
-            >
-              {text}
-            </NavigationLink>
-          ))}
+          {destinations
+            .filter((item) =>
+              ["/", "/pqc-practice", "/news", "/about"].includes(item.href),
+            )
+            .map((item) => (
+              <NavigationLink
+                key={item.href}
+                href={item.href}
+                aria-current={path === item.href ? "page" : undefined}
+              >
+                {item.href === "/" ? "作品与实验" : item.name}
+              </NavigationLink>
+            ))}
         </nav>
         <div className="chrome-actions">
           <JumpNavigation blocked={open} onOpen={() => setOpen(false)} />
           <button
             className="motion-switch"
+            type="button"
             onClick={toggle}
             aria-pressed={paused}
             aria-label={paused ? "开启动效" : "暂停动效"}
@@ -129,67 +96,131 @@ export function SiteHeader() {
               <i />
               <i />
             </span>
-            <span>{paused ? "动效关" : "动效开"}</span>
+            <span>{paused ? "静止" : "动态"}</span>
           </button>
           <button
-            ref={trigger}
             className="menu-toggle"
+            type="button"
+            aria-haspopup="dialog"
             aria-expanded={open}
-            aria-controls="mobile-menu"
-            onClick={() => setOpen(!open)}
-            aria-label={open ? "关闭导航" : "打开导航"}
+            aria-controls="site-atlas"
+            onClick={() => setOpen(true)}
+            aria-label="打开全站目录"
           >
-            <span />
-            <span />
+            <span>目录</span>
+            <i aria-hidden="true">＋</i>
           </button>
         </div>
       </header>
       {open && (
-        <div ref={menu} id="mobile-menu" className="mobile-menu">
-          <nav aria-label="移动导航">
-            {links.map(([href, text]) => {
-              const content = (
-                <>
-                  <span>{text}</span>
-                </>
-              );
-              return (
+        <dialog
+          ref={dialog}
+          className="site-atlas"
+          id="site-atlas"
+          aria-labelledby="atlas-title"
+          onKeyDown={(event) => {
+            if (event.key !== "Tab") return;
+            const items = Array.from(
+              event.currentTarget.querySelectorAll<HTMLElement>(
+                "button, a[href]",
+              ),
+            );
+            const first = items[0],
+              last = items.at(-1);
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault();
+              last?.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault();
+              first?.focus();
+            }
+          }}
+          onCancel={(event) => {
+            event.preventDefault();
+            setOpen(false);
+          }}
+        >
+          <div className="atlas-top">
+            <span>量仔 / 好奇心实验室</span>
+            <button
+              ref={close}
+              type="button"
+              onClick={() => setOpen(false)}
+              aria-label="关闭全站目录"
+            >
+              关闭 <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div className="atlas-body">
+            <div className="atlas-preview">
+              <h2 id="atlas-title">
+                去你想去
+                <br />
+                的地方。
+              </h2>
+              <div className="atlas-preview-image">
+                <img
+                  src={previews[preview.href]}
+                  alt=""
+                  width="700"
+                  height="600"
+                />
+              </div>
+              <p>{preview.description}</p>
+            </div>
+            <nav className="atlas-links" aria-label="全站导航">
+              {destinations.map((item, i) => (
                 <NavigationLink
-                  key={href}
-                  href={href}
+                  key={item.href}
+                  href={item.href}
+                  onPointerEnter={() => setPreview(item)}
+                  onFocus={() => setPreview(item)}
                   onClick={() => setOpen(false)}
-                  aria-current={path === href ? "page" : undefined}
+                  aria-current={path === item.href ? "page" : undefined}
                 >
-                  {content}
+                  <small>0{i + 1}</small>
+                  <span>{item.name}</span>
+                  <b aria-hidden="true">↗</b>
                 </NavigationLink>
-              );
-            })}
-          </nav>
-        </div>
+              ))}
+            </nav>
+          </div>
+          <div className="atlas-bottom">
+            <span>保持认真。保持好奇。</span>
+            <span>Esc 关闭 / Ctrl + K 搜索</span>
+          </div>
+        </dialog>
       )}
     </>
   );
 }
 export function SiteFooter() {
   return (
-    <footer className="world-footer">
-      <div>
-        <Link className="footer-title" href="/">
-          LIANGZAI
+    <footer className="studio-footer">
+      <div className="studio-footer-top">
+        <p>
+          探索没有终点。
+          <br />
+          下一个想法，会是什么？
+        </p>
+        <Link href="/about" className="studio-footer-cta">
+          一起保持好奇 <span aria-hidden="true">↗</span>
         </Link>
-        <p>以好奇为起点。与未来，共振。</p>
       </div>
       <nav aria-label="页脚导航">
-        {links.slice(1).map(([href, text]) => (
-          <NavigationLink key={href} href={href}>
-            {text}
+        {destinations.slice(1).map((item) => (
+          <NavigationLink href={item.href} key={item.href}>
+            {item.name}
           </NavigationLink>
         ))}
       </nav>
-      <div className="footer-bottom">
-        <span>© 2026 量仔 · Yibiao 的数字空间</span>
-        <a href="#main-content">回到顶部</a>
-        <span>保持好奇，继续探索。</span>
+      <Link className="studio-footer-word" href="/" aria-label="量仔首页">
+        LIANGZAI<span>↗</span>
+      </Link>
+      <div className="studio-footer-bottom">
+        <span>© 2026 量仔 · Yibiao</span>
+        <span>一份持续生长的个人实验</span>
+        <a href="#main-content">回到顶部 ↑</a>
       </div>
     </footer>
   );

@@ -1,62 +1,285 @@
-/* One header geometry for the React pages and the standalone laboratory. */
+/* Shared masthead for React and standalone cryptography tools. */
 .site-chrome,
 .topbar.site-chrome {
-  --header-height: 80px;
+  --header-height: 78px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
   height: var(--header-height);
-  padding: 0 4vw;
+  padding: 0 clamp(22px, 4vw, 72px);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: center;
   gap: 24px;
-  background: #07090c;
-  background: rgba(7, 9, 12, .94);
-  -webkit-backdrop-filter: blur(22px);
-  backdrop-filter: blur(22px);
-  font-family: Arial, "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  align-items: center;
+  background: #f0eee6f2;
+  color: #242620;
+  border-bottom: 1px solid #25291f33;
+  backdrop-filter: blur(18px);
+  font-family:
+    Arial, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
 }
-.site-chrome .brand { justify-self: start; gap: 10px; letter-spacing: normal; }
-.site-chrome .brand-mark { width: 40px; height: 42px; }
-.site-chrome .brand strong { font-size: 19px; gap: 12px; }
-.site-chrome .brand strong span { font: 9px/1.2 ui-monospace, monospace; letter-spacing: .16em; color: #abb5be; }
-.site-chrome .desktop-nav { justify-self: center; margin: 0; gap: clamp(16px,1.7vw,28px); }
-.site-chrome .desktop-nav a { white-space: nowrap; padding: 31px 0; font-size: 12px; text-decoration: none; }
-.site-chrome .desktop-nav a:after { bottom: 20px; }
-.site-chrome .chrome-actions { justify-self: end; display: flex; align-items: center; gap: 12px; min-width: 0; }
-.site-chrome .runtime { min-width: 0; font-size: 11px; }
-.site-chrome .menu-toggle { display: none; }
-.mobile-menu { padding-bottom: calc(35px + env(safe-area-inset-bottom, 0px)); overscroll-behavior: contain; }
-.mobile-menu a { min-height: 56px; }
-.practice-mobile-menu[hidden] { display: none; }
+.site-chrome .brand {
+  display: flex;
+  justify-self: start;
+  align-items: center;
+  gap: 9px;
+  letter-spacing: normal;
+  color: inherit;
+  text-decoration: none;
+}
+.site-chrome .brand-mark {
+  display: block;
+  width: 33px;
+  height: 33px;
+  filter: none;
+}
+.site-chrome .brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.site-chrome .brand strong {
+  display: flex;
+  align-items: center;
+  font-size: 21px;
+  gap: 12px;
+  letter-spacing: -0.07em;
+}
+.site-chrome .brand strong span {
+  font:
+    10px/1.2 Arial,
+    "Microsoft YaHei",
+    sans-serif;
+  letter-spacing: 0.04em;
+  color: #6b7065;
+}
+.site-chrome .desktop-nav {
+  display: flex;
+  justify-self: center;
+  align-items: center;
+  margin: 0;
+  gap: 27px;
+}
+.site-chrome .desktop-nav > a {
+  color: #454a40;
+  white-space: nowrap;
+  position: relative;
+  padding: 28px 0;
+  font-size: 12px;
+  text-decoration: none;
+}
+.site-chrome .desktop-nav > a:after {
+  position: absolute;
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #2447dd;
+  bottom: 15px;
+  left: calc(50% - 2px);
+  transform: scale(0);
+  transition: transform 0.2s;
+}
+.site-chrome .desktop-nav > a[aria-current]:after,
+.site-chrome .desktop-nav > a:hover:after {
+  transform: scale(1);
+}
+.site-chrome
+  .desktop-nav
+  > a:is(
+    [href="/observatory"],
+    [href="/storybook"],
+    [href="/archive"],
+    [href="/pqc-arsenal"]
+  ) {
+  display: none;
+}
+.site-chrome .chrome-actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.site-chrome .motion-switch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #6b7065;
+  border: 0;
+  background: transparent;
+  font-size: 10px;
+  padding: 8px 0;
+}
+.site-chrome .equalizer {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 15px;
+}
+.site-chrome .equalizer i {
+  background: #2447dd;
+  width: 2px;
+}
+.site-chrome .equalizer i:nth-child(1) {
+  height: 5px;
+}
+.site-chrome .equalizer i:nth-child(2) {
+  height: 11px;
+}
+.site-chrome .equalizer i:nth-child(3) {
+  height: 7px;
+}
+.site-chrome .menu-toggle {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  width: auto;
+  height: 39px;
+  min-width: 84px;
+  border: 1px solid #242620;
+  background: #242620;
+  color: #f0eee6;
+  border-radius: 30px;
+  padding: 0 15px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.site-chrome .menu-toggle > span {
+  width: auto;
+  height: auto;
+  background: none;
+  transform: none;
+}
+.site-chrome .menu-toggle i {
+  font: 400 21px/1 Arial;
+  font-style: normal;
+}
+.site-chrome .runtime {
+  font-size: 10px;
+  color: #6b7065;
+  white-space: nowrap;
+}
+.site-chrome .runtime i {
+  background: #2447dd;
+}
+.practice-mobile-menu[hidden] {
+  display: none;
+}
 .practice-mobile-menu {
-  position: fixed; inset: 70px 0 0; z-index: 99;
-  padding: 24px 7vw calc(24px + env(safe-area-inset-bottom, 0px));
-  background: #080b10; overflow-y: auto; overscroll-behavior: contain;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  max-width: none;
+  max-height: none;
+  width: 100%;
+  height: 100dvh;
+  margin: 0;
+  padding: 35px clamp(24px, 8vw, 140px);
+  background: #2447dd;
+  color: #f0eee6;
+  border: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
 }
-.practice-mobile-menu nav { display: grid; }
-.practice-mobile-menu a { padding: 22px 0; border-bottom: 1px solid #d5e6f729; color: #eef2f6; font-size: 29px; text-decoration: none; }
-.practice-mobile-menu a[aria-current] { color: #a8d9ff; }
-@media (max-width: 1280px) {
-  .site-chrome .desktop-nav { gap: 20px; }
-  .site-chrome .brand strong span { display: none; }
+.practice-mobile-menu::backdrop {
+  background: #182785aa;
+}
+.practice-menu-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f0eee650;
+  padding-bottom: 24px;
+  font-size: 12px;
+}
+.practice-menu-top button {
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  padding: 12px;
+  cursor: pointer;
+}
+.practice-mobile-menu nav {
+  display: grid;
+  padding-top: 20px;
+}
+.practice-mobile-menu nav a {
+  display: flex;
+  padding: 15px 0;
+  border-bottom: 1px solid #f0eee64d;
+  color: #f0eee6;
+  font-size: clamp(25px, 3vw, 46px);
+  text-decoration: none;
+}
+.practice-mobile-menu nav a:before {
+  content: "↗";
+  font-size: 0.6em;
+  margin-right: 25px;
+  align-self: center;
+}
+.practice-mobile-menu nav a[aria-current] {
+  opacity: 0.5;
+}
+.practice-mobile-menu :focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
 }
 @media (max-width: 1100px) {
-  .site-chrome, .topbar.site-chrome { --header-height: 70px; padding: 0 5vw; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
-  .site-chrome .desktop-nav { display: none; }
-  .site-chrome .brand strong span { display: inline; }
-  .site-chrome .menu-toggle { display: grid; align-content: center; gap: 6px; width: 44px; height: 44px; padding: 10px; border: 0; background: transparent; }
-  .site-chrome .menu-toggle span { height: 1px; width: 24px; background: #d7e7f5; }
-  .site-chrome .menu-toggle[aria-expanded="true"] span:first-child { transform: translateY(3.5px) rotate(45deg); }
-  .site-chrome .menu-toggle[aria-expanded="true"] span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
-  .site-chrome .chrome-actions { gap: 10px; }
-  .mobile-menu { top: 70px; }
+  .site-chrome,
+  .topbar.site-chrome {
+    --header-height: 70px;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+  }
+  .site-chrome .desktop-nav {
+    display: none;
+  }
+  .site-chrome .brand strong {
+    font-size: 19px;
+  }
+  .site-chrome .chrome-actions {
+    gap: 12px;
+  }
 }
 @media (max-width: 600px) {
-  .site-chrome, .topbar.site-chrome { --header-height: 66px; }
-  .site-chrome .brand { gap: 8px; }
-  .site-chrome .brand-mark { width: 27px; height: 27px; }
-  .site-chrome .brand strong { font-size: 17px; gap: 8px; }
-  .site-chrome .brand strong span { font-size: 7px; }
-  .practice-mobile-menu { top: 66px; }
-  .mobile-menu { top: 66px; }
-  .site-chrome .runtime { font-size: 10px; max-width: 100px; }
+  .site-chrome,
+  .topbar.site-chrome {
+    --header-height: 66px;
+  }
+  .site-chrome .brand-mark {
+    width: 27px;
+    height: 27px;
+  }
+  .site-chrome .brand strong {
+    font-size: 18px;
+  }
+  .site-chrome .brand strong span {
+    display: none;
+  }
+  .site-chrome .chrome-actions {
+    gap: 9px;
+  }
+  .site-chrome .motion-switch > span:last-child {
+    display: none;
+  }
+  .site-chrome .menu-toggle {
+    min-width: 73px;
+    height: 35px;
+    gap: 10px;
+    padding: 0 12px;
+  }
+  .site-chrome .runtime {
+    max-width: 105px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .site-chrome .jump-trigger {
+    padding: 6px 10px;
+  }
+  .site-chrome .jump-trigger kbd {
+    display: none;
+  }
 }

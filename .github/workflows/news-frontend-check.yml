@@ -6,14 +6,18 @@ on:
     paths:
       - 'app/news/**'
       - 'app/QuantumHome.tsx'
+      - 'app/studio/**'
+      - 'app/about/**'
+      - 'app/archive/**'
+      - 'app/storybook/**'
+      - 'app/pqc-arsenal/**'
       - 'app/observatory/**'
       - 'app/experience/JumpNavigation.tsx'
-      - 'app/experience/UniverseIndex.tsx'
       - 'app/experience/destinations.ts'
-      - 'app/experience/home-universe.css'
       - 'app/experience/jump-navigation.css'
       - 'app/experience/SiteChrome.tsx'
       - 'tests/observatory.test.mjs'
+      - 'tests/rendered-html.test.mjs'
       - 'public/assets/site-navigation.css'
       - 'public/pqc-practice/**'
       - 'tests/browser-compat.test.mjs'
@@ -37,14 +41,18 @@ on:
     paths:
       - 'app/news/**'
       - 'app/QuantumHome.tsx'
+      - 'app/studio/**'
+      - 'app/about/**'
+      - 'app/archive/**'
+      - 'app/storybook/**'
+      - 'app/pqc-arsenal/**'
       - 'app/observatory/**'
       - 'app/experience/JumpNavigation.tsx'
-      - 'app/experience/UniverseIndex.tsx'
       - 'app/experience/destinations.ts'
-      - 'app/experience/home-universe.css'
       - 'app/experience/jump-navigation.css'
       - 'app/experience/SiteChrome.tsx'
       - 'tests/observatory.test.mjs'
+      - 'tests/rendered-html.test.mjs'
       - 'public/assets/site-navigation.css'
       - 'public/pqc-practice/**'
       - 'tests/browser-compat.test.mjs'
@@ -84,4 +92,4 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs
+      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs

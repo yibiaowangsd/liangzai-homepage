@@ -32,7 +32,13 @@ test("renders the homepage with the integrated practice destination", async () =
   assert.match(html, developmentPreviewMeta);
   assert.match(html, /量仔小传/);
   assert.match(html, /星际漫游/);
-  for (const route of ["/storybook", "/archive", "/pqc-arsenal", "/pqc-practice", "/about"]) {
+  for (const route of [
+    "/storybook",
+    "/archive",
+    "/pqc-arsenal",
+    "/pqc-practice",
+    "/about",
+  ]) {
     assert.ok(html.includes(`href="${route}"`), `Homepage links to ${route}`);
   }
   assert.match(html, /进入密码实验室/);
@@ -43,7 +49,10 @@ test("renders the homepage with the integrated practice destination", async () =
   assert.match(html, /data-home-effects="active"/);
   assert.match(html, /guardian-static/);
   assert.match(html, /guardian-image-burst/);
-  assert.doesNotMatch(html, /(?:src|href)="[^"]*(?:hero-scene|InteractiveGuardian|QuantumAtmosphere|QuantumSculpture)[^"]*\.js/);
+  assert.doesNotMatch(
+    html,
+    /(?:src|href)="[^"]*(?:hero-scene|InteractiveGuardian|QuantumAtmosphere|QuantumSculpture)[^"]*\.js/,
+  );
   assert.doesNotMatch(html, /guardian-gestures|guardian-hello|量仔局部动作/);
   assert.doesNotMatch(html, /宇宙序章|film-launch|film-dialog/);
   assert.doesNotMatch(html, /<video\b/);
@@ -96,7 +105,7 @@ test("renders the redesigned character archive", async () => {
   );
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /PERSONAL FILE 000/);
+  assert.match(html, /角色档案 001/);
   assert.match(html, /密码图鉴/);
 });
 

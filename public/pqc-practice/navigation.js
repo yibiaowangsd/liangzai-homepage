@@ -1,44 +1,66 @@
-// Standalone pages share the site's header and keyboard-friendly mobile menu.
-const trigger = document.querySelector('.menu-toggle');
-const source = document.querySelector('.site-nav');
+// Same all-screen directory as the React shell; laboratory navigation stays a document navigation.
+const trigger = document.querySelector(".menu-toggle");
+const source = document.querySelector(".site-nav");
 if (trigger && source) {
-  const menu = document.createElement('div');
-  menu.id = 'practice-mobile-menu';
-  menu.className = 'practice-mobile-menu';
-  menu.hidden = true;
+  const menu = document.createElement("dialog");
+  menu.id = "practice-mobile-menu";
+  menu.className = "practice-mobile-menu";
+  menu.setAttribute("aria-label", "全站目录");
+  const heading = document.createElement("div");
+  heading.className = "practice-menu-top";
+  const name = document.createElement("span");
+  name.textContent = "量仔 / 好奇心实验室";
+  const close = document.createElement("button");
+  close.type = "button";
+  close.textContent = "关闭 ×";
+  close.setAttribute("aria-label", "关闭全站目录");
+  heading.append(name, close);
   const nav = source.cloneNode(true);
-  nav.className = '';
-  nav.setAttribute('aria-label', '移动导航');
-  menu.append(nav);
+  nav.className = "";
+  nav.setAttribute("aria-label", "全站导航");
+  menu.append(heading, nav);
   document.body.append(menu);
-  let previousOverflow = '';
+  let opened = false,
+    previousOverflow = "";
   function setOpen(open) {
-    if (open === !menu.hidden) return;
-    menu.hidden = !open;
-    trigger.setAttribute('aria-expanded', String(open));
-    trigger.setAttribute('aria-label', open ? '关闭导航' : '打开导航');
+    if (opened === open) return;
+    opened = open;
+    trigger.setAttribute("aria-expanded", String(open));
     if (open) {
       previousOverflow = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      nav.querySelector('a')?.focus();
+      document.body.style.overflow = "hidden";
+      if (typeof menu.showModal === "function") menu.showModal();
+      else menu.setAttribute("open", "");
+      close.focus();
     } else {
+      if (typeof menu.close === "function") menu.close();
+      else menu.removeAttribute("open");
       document.body.style.overflow = previousOverflow;
       trigger.focus();
     }
   }
-  trigger.addEventListener('click', () => setOpen(menu.hidden));
-  nav.addEventListener('click', event => { if (event.target.closest('a')) setOpen(false); });
-  document.addEventListener('keydown', event => {
-    if (menu.hidden) return;
-    if (event.key === 'Escape') setOpen(false);
-    if (event.key !== 'Tab') return;
-    const items = [trigger, ...nav.querySelectorAll('a')];
-    const index = items.indexOf(document.activeElement);
-    if (event.shiftKey && index <= 0) { event.preventDefault(); items.at(-1).focus(); }
-    else if (!event.shiftKey && index === items.length - 1) { event.preventDefault(); trigger.focus(); }
+  trigger.addEventListener("click", () => setOpen(!opened));
+  close.addEventListener("click", () => setOpen(false));
+  menu.addEventListener("cancel", (event) => {
+    event.preventDefault();
+    setOpen(false);
   });
-  const desktop = matchMedia('(min-width: 1101px)');
-  const resize = () => { if (desktop.matches) setOpen(false); };
-  if (desktop.addEventListener) desktop.addEventListener('change', resize);
-  else desktop.addListener(resize);
+  nav.addEventListener("click", (event) => {
+    if (event.target.closest("a")) setOpen(false);
+  });
+  menu.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      setOpen(false);
+    }
+    if (event.key !== "Tab") return;
+    const items = [close, ...nav.querySelectorAll("a")];
+    if (event.shiftKey && document.activeElement === items[0]) {
+      event.preventDefault();
+      items.at(-1).focus();
+    } else if (!event.shiftKey && document.activeElement === items.at(-1)) {
+      event.preventDefault();
+      items[0].focus();
+    }
+  });
 }
