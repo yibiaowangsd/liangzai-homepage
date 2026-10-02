@@ -118,6 +118,23 @@ export function SiteHeader() {
           className="site-atlas"
           id="site-atlas"
           aria-labelledby="atlas-title"
+          onKeyDown={(event) => {
+            if (event.key !== "Tab") return;
+            const items = Array.from(
+              event.currentTarget.querySelectorAll<HTMLElement>(
+                "button, a[href]",
+              ),
+            );
+            const first = items[0],
+              last = items.at(-1);
+            if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault();
+              last?.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault();
+              first?.focus();
+            }
+          }}
           onCancel={(event) => {
             event.preventDefault();
             setOpen(false);
