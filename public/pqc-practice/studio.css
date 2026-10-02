@@ -1,0 +1,299 @@
+/* Paper studio around a deliberately dark, high-contrast cryptography bench. */
+:root {
+  --studio-paper: #f0eee6;
+  --studio-ink: #242620;
+  --studio-blue: #2447dd;
+  --studio-rule: #24262033;
+  --font-display: Arial, "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  color-scheme: light;
+}
+body {
+  background: var(--studio-paper);
+  color: var(--studio-ink);
+}
+.main {
+  max-width: 1800px;
+  padding-inline: 4vw;
+}
+.page-heading {
+  padding: 48px 0 35px;
+  border-color: var(--studio-rule);
+  gap: 35px;
+}
+.page-heading .eyebrow {
+  color: var(--studio-blue);
+  font-size: 11px;
+}
+.page-heading h1 {
+  font-size: clamp(42px, 6vw, 88px);
+  font-weight: 600;
+  letter-spacing: -0.06em;
+  margin: 16px 0;
+}
+.page-heading h1 em {
+  color: var(--studio-blue);
+  font-style: normal;
+  font-weight: 400;
+}
+.page-heading > div > p:last-child {
+  color: #717369;
+  font-size: 13px;
+  max-width: 660px;
+}
+.heading-links a {
+  color: var(--studio-ink);
+  border-color: var(--studio-rule);
+  font-size: 12px;
+}
+.heading-links a:hover {
+  color: var(--studio-blue);
+  border-color: currentColor;
+}
+.topbar.site-chrome .brand {
+  color: var(--studio-ink);
+}
+.topbar.site-chrome .brand strong {
+  font-size: 22px;
+}
+.topbar.site-chrome .brand strong span {
+  font-size: 10px;
+  color: #717369;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+.topbar.site-chrome .brand-mark {
+  background: none;
+  filter: none;
+}
+.topbar.site-chrome .brand-mark img {
+  filter: none;
+}
+.topbar.site-chrome .site-nav {
+  margin: 0;
+}
+.topbar.site-chrome .site-nav a {
+  color: #53564c;
+}
+.topbar.site-chrome .site-nav a[aria-current],
+.topbar.site-chrome .site-nav a:hover {
+  color: var(--studio-blue);
+}
+.topbar.site-chrome .site-nav a:after {
+  background: var(--studio-blue);
+}
+.topbar.site-chrome .runtime {
+  color: #717369;
+  font-size: 10px;
+}
+.topbar.site-chrome .runtime.ready i {
+  background: var(--studio-blue);
+}
+.practice-layout {
+  margin-top: 30px;
+  gap: 24px;
+  color: #e5edf7;
+  color-scheme: dark;
+}
+.practice-content {
+  background: #111820;
+  padding: 0 25px 25px;
+  border-radius: 0;
+  overflow: hidden;
+}
+.library-sidebar {
+  border-radius: 0;
+  background: #19232a;
+  border-color: #364652;
+  top: 96px;
+}
+.lab-heading {
+  margin-top: 25px;
+}
+.lab-heading h2 {
+  font-size: 22px;
+}
+.configuration,
+.actor,
+.actor-right,
+.result-panel,
+.report-panel,
+.catalog-detail,
+.hash-workbench,
+.catalog-sidebar,
+.audit-legend,
+.audit-table-scroll,
+.audit-availability {
+  border-radius: 0;
+}
+.actor,
+.actor-right {
+  background: #151e27;
+}
+.practice-content .lab-heading p {
+  color: #a6b6c5;
+}
+.practice-content .primary {
+  border-radius: 30px;
+  background: #b8ddf6;
+  color: #132536;
+  border-color: #b8ddf6;
+}
+.practice-content .quiet-button {
+  border-radius: 30px;
+}
+.library-pick,
+.algorithm-choice,
+.sidebar-body > input {
+  border-radius: 0;
+}
+.library-pick[aria-current="true"],
+.algorithm-choice[aria-current="true"] {
+  border-color: #92c3e5;
+  background: #2b4151;
+}
+.library-sidebar .sidebar-top h2 {
+  font-size: 20px;
+}
+.sidebar-top .eyebrow {
+  font-size: 10px;
+}
+.practice-footer {
+  background: var(--studio-ink);
+  color: #f0eee6;
+  padding: 50px 4vw 25px;
+  margin-top: 15px;
+}
+.practice-footer > strong {
+  font-size: 40px;
+  letter-spacing: -0.06em;
+}
+.practice-footer p,
+.practice-footer small {
+  color: #b9bfb2;
+}
+.practice-footer nav a {
+  color: #efede7;
+}
+.practice-footer small {
+  font-size: 10px;
+  border-color: #f0eee640;
+}
+.footer {
+  color: #a6b6c5;
+}
+.main > .audit-legend,
+.main > .audit-table-scroll,
+.main > .audit-availability,
+.main > .report-panel {
+  color: #e5edf7;
+  color-scheme: dark;
+}
+.audit-controls,
+.audit-toolbar {
+  color: var(--studio-ink);
+}
+.audit-controls input {
+  color: #242620;
+  background: #f8f7f1;
+  border-color: var(--studio-rule);
+}
+.audit-controls .primary {
+  background: var(--studio-blue);
+  color: #fff;
+}
+.page-heading .local-badge {
+  color: var(--studio-blue);
+  background: none;
+  border-color: var(--studio-rule);
+}
+.practice-mobile-menu .site-nav {
+  margin: 0;
+}
+.practice-mobile-menu .site-nav a {
+  color: #f0eee6;
+}
+.practice-mobile-menu .site-nav a:hover,
+.practice-mobile-menu .site-nav a[aria-current] {
+  color: #fff;
+}
+.practice-mobile-menu .site-nav a:after {
+  display: none;
+}
+@media (max-width: 1100px) {
+  .topbar.site-chrome .brand strong span {
+    display: none;
+  }
+  .practice-layout {
+    gap: 18px;
+  }
+  .practice-content {
+    padding: 0 18px 20px;
+  }
+  .heading-links {
+    flex-shrink: 1;
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 900px) {
+  .page-heading {
+    padding: 35px 0 28px;
+  }
+  .practice-layout {
+    margin-top: 0;
+  }
+  .practice-content {
+    margin-top: 18px;
+  }
+  .library-sidebar {
+    margin-top: 22px;
+    position: static;
+  }
+  .practice-footer {
+    padding-inline: 5vw;
+  }
+  .practice-content .lab-heading {
+    margin-top: 24px;
+  }
+}
+@media (max-width: 600px) {
+  .main {
+    padding-inline: 5vw;
+  }
+  .page-heading h1 {
+    font-size: 48px;
+  }
+  .page-heading > div > p:last-child {
+    font-size: 13px;
+  }
+  .practice-content {
+    padding: 0 12px 16px;
+  }
+  .practice-content .lab-heading {
+    padding-inline: 4px;
+  }
+  .topbar.site-chrome .runtime {
+    max-width: 92px;
+    line-height: 1.4;
+  }
+  .practice-footer > strong {
+    font-size: 34px;
+  }
+  .practice-layout {
+    gap: 0;
+  }
+  .topbar.site-chrome .brand strong {
+    font-size: 20px;
+  }
+  .practice-content .primary {
+    min-height: 44px;
+  }
+}
+@media (max-width: 600px) {
+  body[data-page="audit"] .page-heading h1 {
+    font-size: 38px;
+  }
+  body[data-page="audit"] .page-heading h1 em {
+    display: block;
+    margin-top: 7px;
+  }
+}

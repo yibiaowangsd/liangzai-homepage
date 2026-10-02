@@ -1,7 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   isNewsEditionDismissed,
   openNewsGateModal,
@@ -49,11 +55,11 @@ export default function NewsGate() {
       rememberNewsEditionDismissed(payload.edition_date);
     }
     setOpen(false);
+    setPayload(null);
   }, [payload]);
 
   useEffect(() => {
     let cancelled = false;
-    let openTimer: number | undefined;
     const controller = new AbortController();
     fetch("https://api.wangyibiao.com/api/news/featured?limit=6", {
       headers: { Accept: "application/json" },
@@ -67,35 +73,67 @@ export default function NewsGate() {
         if (cancelled || !data.edition_date || !data.data?.length) return;
         if (isNewsEditionDismissed(data.edition_date)) return;
         setPayload(data);
-        openTimer = window.setTimeout(() => {
-          if (!cancelled && !document.querySelector("dialog[open], .mobile-menu")) setOpen(true);
-        }, 260);
       })
       .catch(() => {});
     return () => {
       cancelled = true;
       controller.abort();
-      window.clearTimeout(openTimer);
     };
   }, []);
 
   useLayoutEffect(() => {
     if (!open || !dialogRef.current) return;
-    return openNewsGateModal(dialogRef.current, closeButtonRef.current, dismiss);
+    return openNewsGateModal(
+      dialogRef.current,
+      closeButtonRef.current,
+      dismiss,
+    );
   }, [open, dismiss]);
 
-  if (!open || !payload?.edition_date) return null;
+  if (!payload?.edition_date) return null;
+  if (!open)
+    return (
+      <aside className="news-edition-note" aria-label="今日新闻已更新">
+        <button type="button" onClick={() => setOpen(true)}>
+          <span>
+            今日信号{" "}
+            <time dateTime={payload.edition_date}>
+              {payload.edition_date.slice(5).replace("-", ".")}
+            </time>
+          </span>
+          <strong>
+            看看世界的新进展 <i aria-hidden="true">↗</i>
+          </strong>
+        </button>
+        <button type="button" onClick={dismiss} aria-label="关闭今日新闻提示">
+          ×
+        </button>
+      </aside>
+    );
 
   return (
-    <dialog ref={dialogRef} className="news-gate" aria-labelledby="news-gate-title" aria-describedby="news-gate-description">
-      <button ref={closeButtonRef} className="news-gate-close" type="button" onClick={dismiss} aria-label="进入首页并关闭今日简报">
+    <dialog
+      ref={dialogRef}
+      className="news-gate"
+      aria-labelledby="news-gate-title"
+      aria-describedby="news-gate-description"
+    >
+      <button
+        ref={closeButtonRef}
+        className="news-gate-close"
+        type="button"
+        onClick={dismiss}
+        aria-label="进入首页并关闭今日简报"
+      >
         ×
       </button>
 
       <header>
         <div>
           <h2 id="news-gate-title">今日前沿</h2>
-          <time dateTime={payload.edition_date}>{payload.edition_date.replaceAll("-", ".")}</time>
+          <time dateTime={payload.edition_date}>
+            {payload.edition_date.replaceAll("-", ".")}
+          </time>
         </div>
         <p id="news-gate-description">值得关注的技术新闻与解读</p>
       </header>
@@ -109,7 +147,11 @@ export default function NewsGate() {
             onClick={dismiss}
           >
             <div className="gate-thumb">
-              <img src={item.cover_image || covers[item.category] || covers.pqc} alt="" aria-hidden="true" />
+              <img
+                src={item.cover_image || covers[item.category] || covers.pqc}
+                alt=""
+                aria-hidden="true"
+              />
             </div>
             <span>{labels[item.category] || item.category}</span>
             <h3>{item.title}</h3>
@@ -119,9 +161,14 @@ export default function NewsGate() {
       </div>
 
       <footer>
-        <button type="button" onClick={dismiss}>浏览首页</button>
+        <button type="button" onClick={dismiss}>
+          浏览首页
+        </button>
         <Link href="/news" onClick={dismiss}>
-          查看全部新闻 <span className="news-arrow" aria-hidden="true">→</span>
+          查看全部新闻{" "}
+          <span className="news-arrow" aria-hidden="true">
+            →
+          </span>
         </Link>
       </footer>
     </dialog>

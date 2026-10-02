@@ -12,10 +12,17 @@ import {
 
 export const metadata: Metadata = {
   title: "每日前沿 · 量仔",
-  description: "每天五个方向、每个方向五条：后量子密码、抗量子协议、标准动态、网络安全与 AI 前沿。",
+  description:
+    "每天五个方向、每个方向五条：后量子密码、抗量子协议、标准动态、网络安全与 AI 前沿。",
 };
 
-function TopicDesk({ category, items }: { category: string; items: NewsItem[] }) {
+function TopicDesk({
+  category,
+  items,
+}: {
+  category: string;
+  items: NewsItem[];
+}) {
   if (!items.length) return null;
   const lead = items[0];
   const rest = items.slice(1);
@@ -31,16 +38,27 @@ function TopicDesk({ category, items }: { category: string; items: NewsItem[] })
 
       <div className="desk-layout">
         <article className="desk-lead">
-          <Link className="desk-lead-image" href={"/news/" + lead.slug} aria-label={"阅读：" + lead.title}>
+          <Link
+            className="desk-lead-image"
+            href={"/news/" + lead.slug}
+            aria-label={"阅读：" + lead.title}
+          >
             <StoryImage item={lead} />
             <span>{lead.source_name || "原始来源"}</span>
           </Link>
           <div className="desk-lead-copy">
-            <p className="desk-kicker">{categoryLabels[lead.category] || lead.category}</p>
-            <h4><Link href={"/news/" + lead.slug}>{lead.title}</Link></h4>
+            <p className="desk-kicker">
+              {categoryLabels[lead.category] || lead.category}
+            </p>
+            <h4>
+              <Link href={"/news/" + lead.slug}>{lead.title}</Link>
+            </h4>
             {lead.summary && <p>{lead.summary}</p>}
             <Link className="editorial-link" href={"/news/" + lead.slug}>
-              阅读解读 <span className="news-arrow" aria-hidden="true">→</span>
+              阅读解读{" "}
+              <span className="news-arrow" aria-hidden="true">
+                →
+              </span>
             </Link>
           </div>
         </article>
@@ -48,13 +66,21 @@ function TopicDesk({ category, items }: { category: string; items: NewsItem[] })
         <div className="desk-briefs">
           {rest.slice(0, 4).map((item, index) => (
             <article className="brief-row" key={item.slug}>
-              <span className="brief-no">{String(index + 2).padStart(2, "0")}</span>
+              <span className="brief-no">
+                {String(index + 2).padStart(2, "0")}
+              </span>
               <div>
-                <h4><Link href={"/news/" + item.slug}>{item.title}</Link></h4>
+                <h4>
+                  <Link href={"/news/" + item.slug}>{item.title}</Link>
+                </h4>
                 <p>{item.summary}</p>
                 <small>{item.source_name || "原始来源"}</small>
               </div>
-              <Link className="brief-thumb" href={"/news/" + item.slug} aria-label={"阅读：" + item.title}>
+              <Link
+                className="brief-thumb"
+                href={"/news/" + item.slug}
+                aria-label={"阅读：" + item.title}
+              >
                 <StoryImage item={item} />
               </Link>
             </article>
@@ -71,9 +97,13 @@ export default async function NewsPage({
   searchParams: Promise<{ page?: string; category?: string }>;
 }) {
   const params = await searchParams;
-  const requestedPage = Math.max(Number.parseInt(params.page || "1", 10) || 1, 1);
+  const requestedPage = Math.max(
+    Number.parseInt(params.page || "1", 10) || 1,
+    1,
+  );
   const category =
-    params.category && coreCategories.includes(params.category as (typeof coreCategories)[number])
+    params.category &&
+    coreCategories.includes(params.category as (typeof coreCategories)[number])
       ? params.category
       : undefined;
 
@@ -87,7 +117,12 @@ export default async function NewsPage({
   }
 
   const editions = payload?.data || [];
-  const meta = payload?.meta || { page: 1, pageSize: 3, totalDays: 0, totalPages: 1 };
+  const meta = payload?.meta || {
+    page: 1,
+    pageSize: 3,
+    totalDays: 0,
+    totalPages: 1,
+  };
   const newest = editions[0];
   const heroStories = newest
     ? coreCategories.flatMap((key) => newest.topics[key] || []).slice(0, 6)
@@ -103,14 +138,17 @@ export default async function NewsPage({
     return suffix ? "/news?" + suffix : "/news";
   };
 
-  const paginationPages = Array.from({ length: meta.totalPages }, (_, index) => index + 1)
-    .filter((pageNumber) => Math.abs(pageNumber - meta.page) <= 2);
+  const paginationPages = Array.from(
+    { length: meta.totalPages },
+    (_, index) => index + 1,
+  ).filter((pageNumber) => Math.abs(pageNumber - meta.page) <= 2);
 
   return (
     <main id="main-content" className="newsroom">
       <section className="news-toolbar" aria-label="前沿新闻导航">
         <div className="news-toolbar-title">
           <h1>前沿新闻</h1>
+          <span>THE DAILY SIGNAL</span>
         </div>
         <details className="news-category-menu">
           <summary>
@@ -136,7 +174,7 @@ export default async function NewsPage({
 
       {failed ? (
         <section className="news-state">
-          <h2>新闻 API 暂时不可用</h2>
+          <h2>新闻暂时无法载入</h2>
           <p>请稍后刷新，继续阅读最新消息。</p>
         </section>
       ) : !newest || !heroLead ? (
@@ -148,25 +186,47 @@ export default async function NewsPage({
         <>
           <section className="front-page">
             <div className="edition-label">
-              <time dateTime={newest.date}>{newest.date.replaceAll("-", ".")}</time>
+              <time dateTime={newest.date}>
+                {newest.date.replaceAll("-", ".")}
+              </time>
               <strong>{formatEditionDate(newest.date)}</strong>
               <span>{newest.total} 条新闻</span>
             </div>
 
             <article className="lead-story">
-              <Link className="lead-visual" href={"/news/" + heroLead.slug} aria-label={"阅读：" + heroLead.title}>
+              <Link
+                className="lead-visual"
+                href={"/news/" + heroLead.slug}
+                aria-label={"阅读：" + heroLead.title}
+              >
                 <StoryImage item={heroLead} eager />
-                <span className="image-label">{heroLead.source_name || "原始来源"}</span>
+                <span className="image-label">
+                  {heroLead.source_name || "原始来源"}
+                </span>
               </Link>
               <div className="lead-copy">
-                <p className="lead-kicker">{categoryLabels[heroLead.category] || heroLead.category}</p>
-                <h2><Link href={"/news/" + heroLead.slug}>{heroLead.title}</Link></h2>
+                <p className="lead-kicker">
+                  {categoryLabels[heroLead.category] || heroLead.category}
+                </p>
+                <h2>
+                  <Link href={"/news/" + heroLead.slug}>{heroLead.title}</Link>
+                </h2>
                 {heroLead.summary && <p>{heroLead.summary}</p>}
                 <div className="lead-meta">
-                  {parseTags(heroLead.tags).slice(0, 4).map((tag) => <span key={tag}>{tag}</span>)}
+                  {parseTags(heroLead.tags)
+                    .slice(0, 4)
+                    .map((tag) => (
+                      <span key={tag}>{tag}</span>
+                    ))}
                 </div>
-                <Link className="editorial-link" href={"/news/" + heroLead.slug}>
-                  阅读今日头条 <span className="news-arrow" aria-hidden="true">→</span>
+                <Link
+                  className="editorial-link"
+                  href={"/news/" + heroLead.slug}
+                >
+                  阅读今日头条{" "}
+                  <span className="news-arrow" aria-hidden="true">
+                    →
+                  </span>
                 </Link>
               </div>
             </article>
@@ -174,12 +234,21 @@ export default async function NewsPage({
             <aside className="front-deck" aria-label="今日重点">
               {heroSide.map((item, index) => (
                 <article key={item.slug}>
-                  <Link className="deck-thumb" href={"/news/" + item.slug} aria-label={"阅读：" + item.title}>
+                  <Link
+                    className="deck-thumb"
+                    href={"/news/" + item.slug}
+                    aria-label={"阅读：" + item.title}
+                  >
                     <StoryImage item={item} />
                   </Link>
                   <div>
-                    <span>{String(index + 2).padStart(2, "0")} / {categoryLabels[item.category]}</span>
-                    <h3><Link href={"/news/" + item.slug}>{item.title}</Link></h3>
+                    <span>
+                      {String(index + 2).padStart(2, "0")} /{" "}
+                      {categoryLabels[item.category]}
+                    </span>
+                    <h3>
+                      <Link href={"/news/" + item.slug}>{item.title}</Link>
+                    </h3>
                   </div>
                 </article>
               ))}
@@ -230,7 +299,9 @@ export default async function NewsPage({
             <Link
               href={makeHref(Math.min(meta.page + 1, meta.totalPages))}
               aria-disabled={meta.page >= meta.totalPages}
-              className={meta.page >= meta.totalPages ? "is-disabled" : undefined}
+              className={
+                meta.page >= meta.totalPages ? "is-disabled" : undefined
+              }
               tabIndex={meta.page >= meta.totalPages ? -1 : undefined}
             >
               历史新闻 →
@@ -242,8 +313,8 @@ export default async function NewsPage({
       <footer className="news-method-note">
         <span>选编说明</span>
         <p>
-          默认优先原始标准、论文、官方博客与项目仓库。每日五个方向各 5 条；
-          当 24 小时内信息不足时向前回溯，但保留真实来源日期，不用旧闻冒充新发布。
+          默认优先原始标准、论文、官方博客与项目仓库。每日五个方向各 5 条； 当
+          24 小时内信息不足时向前回溯，但保留真实来源日期，不用旧闻冒充新发布。
         </p>
       </footer>
     </main>

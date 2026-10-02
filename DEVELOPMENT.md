@@ -13,7 +13,7 @@
 | `/pqc-arsenal` | `app/pqc-arsenal/page.tsx` | `ArsenalLab.tsx` 的算法数据与交互；`cinematic-arsenal.css` 调整暗色视觉 |
 | `/about` | `app/about/page.tsx` | 作者简介；只使用已公开且确认的信息 |
 
-`app/layout.tsx` 加载全局样式，并装配 `ExperienceProvider`、全站导航及页脚。`app/experience/Motion.tsx` 管理 GSAP、系统减少动态效果与手动暂停。样式分工：`app/globals.css` 保留基础变量及 PQC 组件基础样式；`app/experience/cinematic.css` 为全站暗色视觉；`app/experience/guardian-3d.css` 为展台；各页面目录的 CSS 为页面局部样式。修改样式时注意 PQC 暗色样式会覆盖部分基础规则。
+`app/layout.tsx` 加载全局样式，并装配 `ExperienceProvider`、全站导航及页脚。`app/experience/Motion.tsx` 管理 GSAP、系统减少动态效果与手动暂停。样式分工：`app/globals.css` 保留基础变量及 PQC 组件基础样式；`app/studio/system.css` 定义全站纸白、墨黑与电蓝设计系统，`app/studio/home.css` 为海报式首页；`app/experience/cinematic.css` 提供动效与历史组件的基础样式；`app/experience/guardian-3d.css` 为展台；各页面目录的 CSS 为页面局部样式。PQC 图鉴的局部样式在 `app/pqc-arsenal/cinematic-arsenal.css`；独立实验室以纸白外框围绕深色技术工作台，样式在 `public/pqc-practice/studio.css`。
 
 首页的 3D 场景在客户端动态加载 `app/experience/three/hero-scene.ts`；其中 `character-assets.ts` 按 `model-catalog.json` 读取当前角色模型分片、校验长度并以 GLTFLoader/MeshoptDecoder 解析。`render-scheduler.ts` 合并重绘请求，暂停或离屏时停止连续绘制。加载失败时 `InteractiveGuardian.tsx` 显示对应模式与视角的 WebP 预览。
 
@@ -58,7 +58,7 @@ npm run dev
 
 ## 4. 页面行为与维护点
 
-- 首页默认显示量仔贴图，轻点三次再加载原有 3D 星云体验。进入星云后长按约 4 秒，粒子沿螺旋轨迹凝聚为真实模型表面；松开未完成的长按会回散，轮廓锁定后约 1.3 秒自动凝实。奶龙使用暖金星云，双人模式同时凝聚两个角色。出场后保留点击身体部位互动、拖动旋转和四视角选择。仅加载选中的角色；WebGL 不可用或加载失败时切换预览图。场景参数、资源预算和验证细节见 [docs/liangzai-3d.md](docs/liangzai-3d.md)。
+- 首页首屏使用轻量数学纽结与角色贴图；下方「认识你的同行者」展台轻点三次再加载原有 3D 星云体验。进入星云后长按约 4 秒，粒子沿螺旋轨迹凝聚为真实模型表面；松开未完成的长按会回散，轮廓锁定后约 1.3 秒自动凝实。奶龙使用暖金星云，双人模式同时凝聚两个角色。出场后保留点击身体部位互动、拖动旋转和四视角选择。仅加载选中的角色；WebGL 不可用或加载失败时切换预览图。场景参数、资源预算和验证细节见 [docs/liangzai-3d.md](docs/liangzai-3d.md)。
 - GSAP 动效跟随系统减少动态效果，另有全站暂停按钮。离屏、后台和暂停状态不能保持无意义的渲染循环。组件卸载时释放动画、事件监听和 Three.js 资源。参考 [docs/gsap-motion.md](docs/gsap-motion.md)。
 - `ArsenalLab.tsx` 的四种算法和参数集中在组件的数据数组中；新增算法时同步处理类型、切换状态、界面与来源说明。教学评分不能表述为实测性能或正式安全结论。
 - 故事书的插图与音轨按 `storyData.ts` 的页序关联；改页序时同时核对旁白、章节跳转和页面测试。
@@ -74,7 +74,7 @@ npm run lint
 git diff --check
 ```
 
-测试覆盖首页及四个子路由的 SSR、PQC 内容、故事书、Worker 的 GSAP 计时器边界、模型分片哈希与解码、贴图规格、双角色站位、回退预览图和帧调度。页面交互或视觉调整还应在浏览器检查：五条路由、三种模型模式、视角切换、键盘与拖动、WebGL 回退、故事翻页与音轨、动效暂停、算法切换，以及控制台中是否有资源 404 或 hydration 报错。桌面为主要体验，窄屏仍应可访问。
+测试覆盖首页及核心子路由的 SSR、PQC 内容、故事书、Worker 的 GSAP 计时器边界、模型分片哈希与解码、贴图规格、双角色站位、回退预览图和帧调度。页面交互或视觉调整还应在浏览器检查：全部核心路由、三种模型模式、视角切换、键盘与拖动、WebGL 回退、故事翻页与音轨、动效暂停、算法切换，以及控制台中是否有资源 404 或 hydration 报错。桌面为主要体验，窄屏仍应可访问。
 
 `main` 是 `wangyibiao.com` 的现有 Cloudflare 部署来源。提交到 GitHub 前确认当前分支与远端最新状态，切勿强推；推送后检查构建结果、站点首页和受影响路由。GitHub 更新并不等于 Cloudflare 已完成部署。`.openai/hosting.json` 对应独立 Sites 配置，不要为了更新主域名而创建或替换 Sites 项目。
 
@@ -148,6 +148,6 @@ git diff --check
 - `app/news/news.css` 集中维护新闻局部样式。桌面头条使用紧凑图文并排；不足 1450px 时重点列表移到下方。分类头条图片与正文顶对齐，摘要、来源及正文保持可读字号。
 - 文章标题、封面、摘要和正文共用 `.article-shell` 左边界。正文与来源栏的间距封顶 64px，避免宽屏下正文反而变窄；900px 以下将来源栏移到正文之后。
 - `StoryImage.tsx` 保留现有图片 URL。站内分类封面填满画框，外部来源图片使用 `contain` 保留标志、图表和文字；独立图片链接提供对应文章的可访问名称。
-- 首页简报使用原生 `<dialog>.showModal()` 让背景不可交互。打开时聚焦关闭按钮，Escape 和关闭按钮都记录当期关闭状态，卸载时恢复滚动与原焦点。浏览器存储不可用时仍可关闭；不支持原生 modal 的旧浏览器跳过可选简报。
+- 首页先显示可关闭的当期新闻提示，访客点击后才展开简报。简报使用原生 `<dialog>.showModal()` 让背景不可交互。打开时聚焦关闭按钮，Escape 和关闭按钮都记录当期关闭状态，卸载时恢复滚动与原焦点。浏览器存储不可用时仍可关闭；不支持原生 modal 的旧浏览器跳过可选简报。
 - `tests/news-gate-modal.test.mjs` 检查弹窗生命周期及存储失败；`tests/news-rendering.test.mjs` 用固定新闻数据验证服务端输出。新闻 PR 会运行类型检查、lint、生产构建及这两组回归。
 - 人工回归需覆盖 1180×757、1311px、1770px 和窄屏：头条阅读入口、分类顶对齐、正文宽度、来源图完整性，以及弹窗 Tab/Shift+Tab、Escape、点击关闭、文章跳转、返回和减少动态效果。本次云端本地 Chromium 因系统 socket 限制未能启动，不能将上述静态/单元检查视为真实浏览器验证。
