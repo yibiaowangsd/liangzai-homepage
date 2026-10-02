@@ -473,3 +473,30 @@ select,.audit-controls input {
     margin-top: 7px
   }
 }
+
+/* Size the dialogue from its workspace, not the browser: the rail can be collapsed. */
+.practice-content { container-type: inline-size; container-name: laboratory; }
+@container laboratory (min-width: 800px) {
+  .dialogue { grid-template-columns: minmax(0, 1fr) 186px minmax(0, 1fr); gap: 0; }
+  .dialogue .channel { padding: 0 12px; border: 0; background: transparent; }
+  .dialogue .channel-heading { padding-top: 25px; }
+  .dialogue .route { margin-top: 67px; }
+  .dialogue .route + .route { margin-top: 78px; }
+  .dialogue .wire { margin-inline: -12px; }
+  .dialogue .actor-head, .dialogue .actor-body { padding: 16px; }
+  .dialogue .actor-head { flex-wrap: wrap; gap: 8px; }
+  .dialogue .material-head { flex-wrap: wrap; }
+  .dialogue .secret-head { flex-wrap: wrap; }
+  .kex-peers { grid-template-columns: minmax(0, 1fr) 180px minmax(0, 1fr); gap: 12px; }
+  .kex-channel { padding: 12px; }
+  .kex-peer { padding: 14px; }
+  .kex-peer header { flex-wrap: wrap; }
+}
+@container laboratory (max-width: 799px) {
+  .dialogue, .kex-peers { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .channel, .kex-channel { padding: 14px 18px; border: 1px solid var(--line); border-radius: 10px; background: #e8ebe2; }
+  .channel-heading { padding-top: 0; }
+  .route, .route + .route, .kex-channel .route { margin: 20px 0; }
+  .wire, .kex-channel .wire { margin-inline: 0; }
+  .channel-bottom { padding: 0; }
+}

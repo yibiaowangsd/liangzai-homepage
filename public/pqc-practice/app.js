@@ -1,4 +1,4 @@
-import { renderDialogue, animateTransfer, resetTransfers } from './dialogue.js';
+import { renderDialogue, animateTransfer, resetTransfers } from './dialogue.js?v=20261002-usability';
 import { copyText, missingBrowserFeatures } from './browser-compat.js';
 import { ngccModule } from './ngcc-runtime.js';
 import { candidateModule, setCandidateProvider, showCandidateWork, stopCandidateWork } from './candidate-workbench.js';

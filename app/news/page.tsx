@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import StoryImage from "./StoryImage";
+import { newsListingHref, newsStoryHref, parseNewsContext, type NewsSearchParams } from "./navigation";
 import {
   categoryLabels,
   coreCategories,
@@ -19,9 +20,11 @@ export const metadata: Metadata = {
 function TopicDesk({
   category,
   items,
+  listingHref,
 }: {
   category: string;
   items: NewsItem[];
+  listingHref: string;
 }) {
   if (!items.length) return null;
   const lead = items[0];
@@ -40,7 +43,7 @@ function TopicDesk({
         <article className="desk-lead">
           <Link
             className="desk-lead-image"
-            href={"/news/" + lead.slug}
+            href={newsStoryHref(lead.slug, listingHref)}
             aria-label={"阅读：" + lead.title}
           >
             <StoryImage item={lead} />
@@ -51,10 +54,10 @@ function TopicDesk({
               {categoryLabels[lead.category] || lead.category}
             </p>
             <h4>
-              <Link href={"/news/" + lead.slug}>{lead.title}</Link>
+              <Link href={newsStoryHref(lead.slug, listingHref)}>{lead.title}</Link>
             </h4>
             {lead.summary && <p>{lead.summary}</p>}
-            <Link className="editorial-link" href={"/news/" + lead.slug}>
+            <Link className="editorial-link" href={newsStoryHref(lead.slug, listingHref)}>
               阅读解读{" "}
 
             </Link>
@@ -69,14 +72,14 @@ function TopicDesk({
               </span>
               <div>
                 <h4>
-                  <Link href={"/news/" + item.slug}>{item.title}</Link>
+                  <Link href={newsStoryHref(item.slug, listingHref)}>{item.title}</Link>
                 </h4>
                 <p>{item.summary}</p>
                 <small>{item.source_name || "原始来源"}</small>
               </div>
               <Link
                 className="brief-thumb"
-                href={"/news/" + item.slug}
+                href={newsStoryHref(item.slug, listingHref)}
                 aria-label={"阅读：" + item.title}
               >
                 <StoryImage item={item} />
@@ -92,18 +95,10 @@ function TopicDesk({
 export default async function NewsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; category?: string }>;
+  searchParams: Promise<NewsSearchParams>;
 }) {
   const params = await searchParams;
-  const requestedPage = Math.max(
-    Number.parseInt(params.page || "1", 10) || 1,
-    1,
-  );
-  const category =
-    params.category &&
-    coreCategories.includes(params.category as (typeof coreCategories)[number])
-      ? params.category
-      : undefined;
+  const { page: requestedPage, category } = parseNewsContext(params);
 
   let payload: Awaited<ReturnType<typeof getNewsEditions>> | null = null;
   let failed = false;
@@ -128,13 +123,9 @@ export default async function NewsPage({
   const heroLead = heroStories[0];
   const heroSide = heroStories.slice(1, 5);
 
-  const makeHref = (pageNumber: number, nextCategory = category) => {
-    const query = new URLSearchParams();
-    if (pageNumber > 1) query.set("page", String(pageNumber));
-    if (nextCategory) query.set("category", nextCategory);
-    const suffix = query.toString();
-    return suffix ? "/news?" + suffix : "/news";
-  };
+  const makeHref = (pageNumber: number, nextCategory = category) =>
+    newsListingHref({ page: pageNumber, category: nextCategory });
+  const listingHref = makeHref(meta.page);
 
   const paginationPages = Array.from(
     { length: meta.totalPages },
@@ -194,7 +185,7 @@ export default async function NewsPage({
             <article className="lead-story">
               <Link
                 className="lead-visual"
-                href={"/news/" + heroLead.slug}
+                href={newsStoryHref(heroLead.slug, listingHref)}
                 aria-label={"阅读：" + heroLead.title}
               >
                 <StoryImage item={heroLead} eager />
@@ -207,7 +198,7 @@ export default async function NewsPage({
                   {categoryLabels[heroLead.category] || heroLead.category}
                 </p>
                 <h2>
-                  <Link href={"/news/" + heroLead.slug}>{heroLead.title}</Link>
+                  <Link href={newsStoryHref(heroLead.slug, listingHref)}>{heroLead.title}</Link>
                 </h2>
                 {heroLead.summary && <p>{heroLead.summary}</p>}
                 <div className="lead-meta">
@@ -219,7 +210,7 @@ export default async function NewsPage({
                 </div>
                 <Link
                   className="editorial-link"
-                  href={"/news/" + heroLead.slug}
+                  href={newsStoryHref(heroLead.slug, listingHref)}
                 >
                   阅读今日头条{" "}
 
@@ -232,7 +223,7 @@ export default async function NewsPage({
                 <article key={item.slug}>
                   <Link
                     className="deck-thumb"
-                    href={"/news/" + item.slug}
+                    href={newsStoryHref(item.slug, listingHref)}
                     aria-label={"阅读：" + item.title}
                   >
                     <StoryImage item={item} />
@@ -243,7 +234,7 @@ export default async function NewsPage({
                       {categoryLabels[item.category]}
                     </span>
                     <h3>
-                      <Link href={"/news/" + item.slug}>{item.title}</Link>
+                      <Link href={newsStoryHref(item.slug, listingHref)}>{item.title}</Link>
                     </h3>
                   </div>
                 </article>
@@ -265,6 +256,7 @@ export default async function NewsPage({
                   <TopicDesk
                     key={key}
                     category={key}
+                    listingHref={listingHref}
                     items={edition.topics[key] || []}
                   />
                 ))}

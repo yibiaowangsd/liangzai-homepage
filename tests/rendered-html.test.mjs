@@ -191,7 +191,7 @@ test("models live in their own SSR-safe gallery with independent controls", asyn
     { waitUntil() {}, passThroughOnException() {} });
   assert.equal(response.status, 200);
   const html = await response.text();
-  for (const label of ["模型鉴赏", "量仔", "奶龙", "双人合照", "正面", "侧面", "背面", "自动旋转", "重置视角"])
+  for (const label of ["模型鉴赏", "量仔", "奶龙", "双人合照", "正面", "侧面", "背面", "自动旋转", "重置视角", "放大模型", "缩小模型"])
     assert.ok(html.includes(label), label);
   assert.doesNotMatch(html, /长按唤醒|轻点量仔三次/);
 });

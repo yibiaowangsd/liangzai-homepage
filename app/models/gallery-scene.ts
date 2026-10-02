@@ -70,6 +70,12 @@ export function createGalleryScene(canvas: HTMLCanvasElement, onFailure: () => v
             setView("front");
         },
         setView,
+        zoom(factor: number) {
+            const offset = camera.position.clone().sub(controls.target);
+            const nextDistance = THREE.MathUtils.clamp(offset.length() * factor, controls.minDistance, controls.maxDistance);
+            camera.position.copy(controls.target).add(offset.setLength(nextDistance));
+            controls.update();
+        },
         setRotate(value: boolean) { controls.autoRotate = value; },
         dispose() { if (disposed)
             return; disposed = true; cancelAnimationFrame(frame); observer.disconnect(); canvas.removeEventListener("webglcontextlost", lost); controls.dispose(); disposeObject(scene); environment.dispose(); renderer.dispose(); },
