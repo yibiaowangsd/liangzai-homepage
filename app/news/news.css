@@ -247,10 +247,10 @@
 }
 
 .image-label,
-.desk-lead-image > span {
+.desk-lead-image > span:not(.story-image-frame) {
   position: absolute;
-  left: 10px;
-  bottom: 10px;
+  right: 10px;
+  top: 10px;
   max-width: calc(100% - 20px);
   padding: 6px 8px;
   color: white;
