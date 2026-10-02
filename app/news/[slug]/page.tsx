@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import StoryImage from "../StoryImage";
+import { newsListingHref, parseNewsContext, type NewsSearchParams } from "../navigation";
 import {
   categoryLabels,
   formatNewsDate,
@@ -66,10 +67,13 @@ function NewsBody({ content }: { content: string }) {
 
 export default async function NewsDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<NewsSearchParams>;
 }) {
   const { slug } = await params;
+  const listingHref = newsListingHref(parseNewsContext(await searchParams));
   const item = await getNewsDetail(slug);
   if (!item || !item.content) notFound();
 
@@ -80,7 +84,7 @@ export default async function NewsDetailPage({
     <main id="main-content" className="article-page">
       <article className="article-shell">
         <header className="article-header">
-          <Link className="article-back" href="/news">返回新闻</Link>
+          <Link className="article-back" href={listingHref}>返回新闻</Link>
           <div className="article-kicker">
             <span>{categoryLabels[item.category] || item.category}</span>
           </div>
