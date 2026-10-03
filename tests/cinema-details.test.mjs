@@ -48,7 +48,7 @@ test('literal page headings omit sentence-ending full stops but preserve body pr
 
 test('all laboratory transports have contained opaque surfaces and no escaping wires', async () => {
   const css = await read('public/pqc-practice/studio.css');
-  assert.match(css, /\.channel, \.kex-channel \{[^}]*background: #e8ebe2/s);
+  assert.match(css, /\.channel, \.kex-channel \{[^}]*background: var\(--theme-soft\)/s);
   assert.match(css, /\.channel \.route, \.channel \.route \+ \.route, \.kex-channel \.route \{[^}]*background: var\(--lab-surface\)/s);
   assert.match(css, /\.channel \.wire, \.kex-channel \.wire \{[^}]*margin: 0 4px 14px/s);
   assert.doesNotMatch(css, /margin-inline: -/);

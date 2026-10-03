@@ -495,6 +495,7 @@ export default function ArsenalLab() {
   const root = useRef<HTMLElement>(null);
   const { enabled } = useExperience();
   usePageMotion(root);
+  const [catalogQuery, setCatalogQuery] = useState("");
   const [selected, setSelected] = useState<WeaponId>("ml-kem");
   const [levelIndex, setLevelIndex] = useState(1);
   const [demo, setDemo] = useState<"kem" | "sign">("kem");
@@ -571,9 +572,7 @@ export default function ArsenalLab() {
             <span>Q–∞ / ARMORY 004</span> 面向未来的密码学
           </p>
           <h1 data-title>
-            密码
-            <br />
-            <em>图鉴</em>
+            密码<em>图鉴</em>
           </h1>
           <p className="arsenal-lead" data-intro>
             从 Shor 如何拆掉 RSA / ECC，
@@ -588,27 +587,6 @@ export default function ArsenalLab() {
             已了解原理？进入密码实验室 <span aria-hidden="true"></span>
           </a>
         </div>
-        <figure className="arsenal-hero-visual" data-intro>
-          <div className="armory-algorithms" aria-label="四种 PQC 算法武器照片">
-            {heroWeapons.map((item, index) => (
-              <article className="algorithm-photo" key={item.name}>
-                <img
-                  src={item.image}
-                  width="768"
-                  height="768"
-                  decoding="async"
-                  alt={`${item.name} 的${item.note}：银白陶瓷、黑钛与冰蓝能量光的科幻装备`}
-                />
-                <div>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <strong>{item.name}</strong>
-                  <small>{item.note}</small>
-                </div>
-              </article>
-            ))}
-          </div>
-          <figcaption>PQC / 01—04 · 四种数学直觉，四种守护之力</figcaption>
-        </figure>
         <div className="hero-index" aria-label="学习路径">
           <span>01 RSA / ECC</span>
           <span>02 LWE / SIS</span>
@@ -616,6 +594,17 @@ export default function ArsenalLab() {
           <span>04 实现风险</span>
         </div>
       </header>
+
+      <section className="algorithm-directory" aria-labelledby="directory-title">
+        <div className="algorithm-directory-heading"><div><p className="arsenal-eyebrow">四种算法 / 从这里开始</p><h2 id="directory-title">先选问题，再看原理</h2></div><label>查找算法<input type="search" value={catalogQuery} onChange={(event) => setCatalogQuery(event.target.value)} placeholder="名称、用途或数学原理" /></label></div>
+        <div className="algorithm-directory-grid">
+          {weapons.filter((item) => `${item.name} ${item.role} ${item.principle} ${item.simple}`.toLowerCase().includes(catalogQuery.trim().toLowerCase())).map((item) => {
+            const visual = heroWeapons.find((entry) => entry.name === item.name);
+            return <article key={item.id}><img src={visual?.image} alt={visual ? `${item.name} · ${visual.note}` : item.name} width="768" height="768" loading="lazy" /><div><span>{item.role}</span><h3>{item.name}</h3><p>{item.simple}</p><small>{item.status} · {item.id === "fn-dsa" ? "原理参考，未接入本地运行" : "可在浏览器运行"}</small><a href="#weapons" onClick={() => chooseWeapon(item.id)}>查看原理与参数 →</a>{item.id !== "fn-dsa" && <a href="/pqc-practice">进入实验室选择 {item.name} ↗</a>}</div></article>;
+          })}
+        </div>
+        {!weapons.some((item) => `${item.name} ${item.role} ${item.principle} ${item.simple}`.toLowerCase().includes(catalogQuery.trim().toLowerCase())) && <p role="status" className="algorithm-empty">没有匹配的算法。试试 ML-KEM、签名或哈希。</p>}
+      </section>
 
       <section id="break" className="arsenal-section break-section">
         <header className="arsenal-section-head" data-reveal>
@@ -626,11 +615,7 @@ export default function ArsenalLab() {
           <div className="big-question">
             <p className="marker-note">真正被击中的是困难问题</p>
             <h2>
-              RSA 与 ECC 没有突然变弱
-              <br />
-              量子计算改变了
-              <br />
-              <em>攻击算法的复杂度</em>
+              RSA 与 ECC 的威胁模型变了<br /><em>量子算法，改变攻击成本</em>
             </h2>
           </div>
           <div className="quantum-note">

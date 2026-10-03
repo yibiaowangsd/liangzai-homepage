@@ -1,0 +1,356 @@
+/* Semantic palettes shared by React routes and the standalone laboratory.
+ * Explicit data-theme selectors beat route-local legacy token declarations.
+ * Images, WebGL materials, and illustrated story frames are never inverted. */
+:root,
+:root[data-theme="paper"] {
+  color-scheme: light;
+  --theme-bg: #F6F5EF;
+  --theme-surface: #FFFFFF;
+  --theme-ink: #18201E;
+  --theme-muted: #53615E;
+  --theme-accent: #2948D8;
+  --theme-border: #D7DDD7;
+  --theme-on-accent: #FFFFFF;
+  --theme-success: #17633C;
+  --theme-danger: #A82C3F;
+}
+:root[data-theme="midnight"] {
+  color-scheme: dark;
+  --theme-bg: #101820;
+  --theme-surface: #18242F;
+  --theme-ink: #F2F5F7;
+  --theme-muted: #B4C2CD;
+  --theme-accent: #9FB4FF;
+  --theme-border: #3E5263;
+  --theme-on-accent: #101820;
+  --theme-success: #86D8A6;
+  --theme-danger: #FFABB9;
+}
+:root[data-theme="mist"] {
+  color-scheme: light;
+  --theme-bg: #EEF5F5;
+  --theme-surface: #FFFFFF;
+  --theme-ink: #142E34;
+  --theme-muted: #4C656B;
+  --theme-accent: #126A78;
+  --theme-border: #CADCDE;
+  --theme-on-accent: #FFFFFF;
+  --theme-success: #17633C;
+  --theme-danger: #A82C3F;
+}
+:root[data-theme="sand"] {
+  color-scheme: light;
+  --theme-bg: #F4EEE5;
+  --theme-surface: #FFFBF5;
+  --theme-ink: #30261F;
+  --theme-muted: #6C5949;
+  --theme-accent: #8A4F21;
+  --theme-border: #DDD0BF;
+  --theme-on-accent: #FFFFFF;
+  --theme-success: #17633C;
+  --theme-danger: #A82C3F;
+}
+/* A usable OS fallback also exists when scripts are disabled or unavailable. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --theme-bg: #101820;
+    --theme-surface: #18242F;
+    --theme-ink: #F2F5F7;
+    --theme-muted: #B4C2CD;
+    --theme-accent: #9FB4FF;
+    --theme-border: #3E5263;
+    --theme-on-accent: #101820;
+    --theme-success: #86D8A6;
+    --theme-danger: #FFABB9;
+  }
+}
+:root:root {
+  --site-header-height: 72px;
+  --theme-soft: color-mix(in srgb, var(--theme-ink) 5%, var(--theme-bg));
+  --theme-accent-soft: color-mix(in srgb, var(--theme-accent) 10%, var(--theme-surface));
+  --theme-success-soft: color-mix(in srgb, var(--theme-success) 10%, var(--theme-surface));
+  --theme-danger-soft: color-mix(in srgb, var(--theme-danger) 10%, var(--theme-surface));
+  --theme-control-border: var(--theme-muted);
+  --theme-shadow: color-mix(in srgb, var(--theme-ink) 12%, transparent);
+  --studio-paper: var(--theme-bg);
+  --studio-ink: var(--theme-ink);
+  --studio-muted: var(--theme-muted);
+  --studio-blue: var(--theme-accent);
+  --studio-line: var(--theme-border);
+  --studio-rule: var(--theme-border);
+  --bg: var(--theme-bg);
+  --paper: var(--theme-bg);
+  --panel: var(--theme-surface);
+  --text: var(--theme-ink);
+  --ink: var(--theme-ink);
+  --muted: var(--theme-muted);
+  --soft: var(--theme-muted);
+  --line: var(--theme-border);
+  --rule: var(--theme-border);
+  --accent: var(--theme-accent);
+  --accent-dark: var(--theme-accent);
+  --teal: var(--theme-accent);
+  --violet: var(--theme-accent);
+  --cyan-dark: var(--theme-accent);
+  --lab-surface: var(--theme-surface);
+  --lab-soft: var(--theme-soft);
+  --lab-success: var(--theme-success);
+  --lab-danger: var(--theme-danger);
+  --lab-shadow: var(--theme-shadow);
+  background: var(--theme-bg);
+  color: var(--theme-ink);
+}
+html body,
+html body.studio-theme,
+html body.studio-theme > .experience,
+html .studio-theme .experience {
+  --night: var(--theme-bg);
+  --surface: var(--theme-surface);
+  --surface-2: var(--theme-soft);
+  --white: var(--theme-ink);
+  --dim: var(--theme-muted);
+  --ice: var(--theme-accent);
+  --hairline: var(--theme-border);
+  background: var(--theme-bg);
+  color: var(--theme-ink);
+}
+html:root body :focus-visible,
+html:root body .import-tool:focus-within {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 4px;
+}
+html body ::selection {
+  background: var(--theme-accent);
+  color: var(--theme-on-accent);
+}
+html body :is(input, select, textarea) { accent-color: var(--theme-accent); }
+html body :is(input, textarea)::placeholder { color: var(--theme-muted); opacity: 1; }
+
+/* Shared masthead. Native select supplies keyboard navigation and selected state. */
+html .site-chrome,
+html .topbar.site-chrome {
+  --header-height: 72px;
+  background: var(--theme-bg);
+  color: var(--theme-ink);
+  border-color: var(--theme-border);
+  padding-inline: max(40px, calc((100vw - 1200px) / 2));
+  gap: 20px;
+}
+html .site-chrome :is(.brand strong span, .motion-switch, .runtime) { color: var(--theme-muted); }
+html .site-chrome .desktop-nav > a { color: var(--theme-ink); }
+html .site-chrome .desktop-nav > a[aria-current] { color: var(--theme-accent); }
+html .site-chrome .desktop-nav > a:after,
+html .site-chrome .equalizer i,
+html .site-chrome .runtime i { background: var(--theme-accent); }
+html .site-chrome .chrome-actions { gap: 10px; }
+html .site-chrome :is(.menu-toggle, .jump-trigger, .motion-switch) { min-height: 44px; }
+html .site-chrome .menu-toggle {
+  background: var(--theme-ink);
+  color: var(--theme-bg);
+  border-color: var(--theme-ink);
+  border-radius: 10px;
+}
+html .studio-theme .jump-trigger {
+  background: var(--theme-surface);
+  color: var(--theme-ink);
+  border-color: var(--theme-control-border);
+  border-radius: 10px;
+}
+html .studio-theme .jump-trigger kbd { color: var(--theme-muted); background: var(--theme-soft); }
+.theme-picker { display: block; flex: 0 0 auto; position: relative; margin: 0; }
+.theme-picker-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.theme-picker-swatch {
+  position: absolute;
+  left: 10px;
+  top: calc(50% - 6px);
+  width: 12px;
+  height: 12px;
+  border: 1px solid var(--theme-control-border);
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--theme-bg) 50%, var(--theme-accent) 50%);
+  pointer-events: none;
+  z-index: 1;
+}
+html .theme-picker select {
+  display: block;
+  width: 144px;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 6px 8px 27px;
+  border: 1px solid var(--theme-control-border);
+  border-radius: 10px;
+  background: var(--theme-surface);
+  color: var(--theme-ink);
+  font: 500 12px/1.4 var(--font-sans);
+  cursor: pointer;
+}
+html .theme-picker option { color: var(--theme-ink); background: var(--theme-surface); }
+
+/* Navigation and news dialogs share the current palette, including focus/fields. */
+html .site-atlas,
+html .practice-mobile-menu,
+html .studio-theme .jump-dialog,
+html .news-gate,
+html .news-edition-note {
+  background: var(--theme-surface);
+  color: var(--theme-ink);
+  border-color: var(--theme-border);
+  box-shadow: 0 24px 80px var(--theme-shadow);
+}
+html :is(.site-atlas, .practice-mobile-menu, .jump-dialog, .news-gate)::backdrop {
+  background: #071019aa;
+}
+html :is(.atlas-top, .atlas-bottom, .atlas-links > a, .practice-menu-top, .practice-mobile-menu nav a) {
+  color: var(--theme-ink);
+  border-color: var(--theme-border);
+}
+html .practice-mobile-menu nav a[aria-current] { color: var(--theme-accent); opacity: 1; }
+html .atlas-links > a[aria-current] { color: var(--theme-accent); }
+html .atlas-preview-image { background: var(--theme-soft); }
+html .atlas-bottom { opacity: 1; color: var(--theme-muted); }
+html .studio-theme :is(.jump-heading p, .jump-result-count, .jump-result small, .jump-help, .jump-empty),
+html .jump-heading button,
+html .jump-heading kbd,
+html .news-gate :is(time, header p, small),
+html .news-gate-close,
+html .news-edition-note button:last-child { color: var(--theme-muted); }
+html .studio-theme .jump-search {
+  background: var(--theme-bg);
+  color: var(--theme-ink);
+  border-color: var(--theme-control-border);
+}
+html .studio-theme .jump-search input { color: var(--theme-ink); }
+html .studio-theme .jump-result:hover,
+html .studio-theme .jump-result:focus-visible { background: var(--theme-accent-soft); color: var(--theme-accent); }
+html .news-gate > :is(header, footer),
+html .news-gate-card { border-color: var(--theme-border); }
+html .news-gate > footer { background: var(--theme-surface); box-shadow: 0 -12px 18px var(--theme-surface); }
+html .news-gate-card > span,
+html .news-gate-card:hover h3,
+html .news-edition-note button:first-child > span { color: var(--theme-accent); }
+html .news-gate footer button { color: var(--theme-ink); background: var(--theme-surface); border-color: var(--theme-control-border); }
+html .news-gate footer a,
+html .news-gate footer a:hover,
+html .studio-theme .silver-button:hover {
+  color: var(--theme-on-accent);
+  background: var(--theme-accent);
+  border-color: var(--theme-accent);
+}
+html .gate-thumb { background: var(--theme-soft); }
+html .news-gate-close:hover { background: var(--theme-soft); color: var(--theme-ink); }
+html .news-gate { border-radius: 16px; }
+html .studio-theme .jump-dialog { border-radius: 16px; }
+html .news-edition-note { border-radius: 12px; }
+
+/* Footers remain theme-aware rather than imposing a second unrelated palette. */
+html .studio-footer,
+html .practice-footer { background: var(--theme-soft); color: var(--theme-ink); border-top: 1px solid var(--theme-border); }
+html .studio-footer :is(a, nav),
+html .practice-footer :is(a, nav a) { color: var(--theme-ink); border-color: var(--theme-border); }
+html .studio-footer-bottom,
+html .practice-footer :is(p, small) { color: var(--theme-muted); border-color: var(--theme-border); }
+html .studio-footer-cta { border-color: var(--theme-control-border); }
+html .studio-footer-cta:hover { color: var(--theme-on-accent); background: var(--theme-accent); }
+html .about-push__page { background: var(--theme-bg); }
+html .about-push__skip {
+  min-height: 44px;
+  color: var(--theme-ink);
+  background: var(--theme-surface);
+  border-color: var(--theme-control-border);
+}
+@media (max-width: 1100px) {
+  html .site-chrome,
+  html .topbar.site-chrome { grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+}
+@media (max-width: 700px) {
+  :root:root { --site-header-height: 64px; }
+  html .site-chrome,
+  html .topbar.site-chrome { --header-height: 64px; padding-inline: 20px; gap: 8px; }
+  html .site-chrome .chrome-actions { gap: 6px; }
+  html .theme-picker select { width: 118px; font-size: 11px; padding-left: 25px; }
+  html .site-chrome .menu-toggle { min-width: 54px; padding-inline: 9px; gap: 4px; }
+  html .site-chrome .menu-toggle i { display: none; }
+  html .site-chrome .jump-trigger { padding-inline: 8px; }
+  html .site-chrome .motion-switch { min-width: 44px; padding-inline: 2px; justify-content: center; }
+  html .site-chrome .motion-switch > span:last-child { display: none; }
+  html .site-chrome .brand strong span { display: none; }
+  html .site-chrome .brand { gap: 5px; }
+}
+@media (max-width: 430px) {
+  html .site-chrome .jump-trigger { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body { scroll-behavior: auto; }
+  html .theme-picker select { transition: none; }
+}
+
+/* Legacy portal/atlas components consume the same palette as newly laid-out cards. */
+html .portal-section-heading :is(.portal-eyebrow, p),
+html .portal-guide-copy p,
+html .portal-news > div > p:not(.portal-eyebrow),
+html .portal-news-topics,
+html .portal-world-card :is(span, p) { color: var(--theme-muted); }
+html :is(.portal-lab-card, .portal-guide-card, .portal-news) { border-color: var(--theme-border); }
+html .portal-lab-card { background: var(--theme-accent); color: var(--theme-on-accent); }
+html .portal-lab-card :is(p, .portal-card-bottom > span, .portal-key-demo > div) { color: var(--theme-on-accent); }
+html .portal-lab-card .portal-card-label span:last-child { opacity: 1; }
+html .portal-lab-card :is(.portal-key-demo > span, .portal-card-bottom) { border-color: color-mix(in srgb, var(--theme-on-accent) 60%, transparent); }
+html .portal-lab-card .portal-key-demo i { background: var(--theme-on-accent); }
+html .portal-guide-card { background: var(--theme-surface); color: var(--theme-ink); }
+html .portal-guide-card > img { mix-blend-mode: normal; }
+html :is(.portal-guide-copy b, .portal-news h2 em) { color: var(--theme-accent); }
+html .portal-inline { border-color: var(--theme-ink); }
+html :is(.portal-world-card > img, .portal-model-photo) { background: var(--theme-soft); }
+html .portal-button:not(.portal-button-glass),
+html .portal-button:not(.portal-button-glass):hover { background: var(--theme-accent); color: var(--theme-on-accent); border-color: var(--theme-accent); }
+html:root body :is(.portal-hero, .cinema-entrance) :focus-visible { outline-color: #DCE5FF; }
+html:root body [data-theme-surface="silver"] :focus-visible { outline-color: #31475C; }
+html .portal-lab-card:hover,
+html .portal-guide-card:hover { box-shadow: 0 12px 30px var(--theme-shadow); }
+html .cinematic-arsenal :is(.legacy-lab, .lattice-lab, .weapon-console) {
+  background: var(--theme-surface);
+  border-color: var(--theme-border);
+}
+html .cinematic-arsenal .legacy-tabs button.active,
+html .cinematic-arsenal .weapon-tabs button.active,
+html .cinematic-arsenal .job-switch button.active,
+html .cinematic-arsenal .packet,
+html .cinematic-arsenal .weapon-identity > strong,
+html .cinematic-arsenal .final-map .final-door {
+  background: var(--theme-accent);
+  color: var(--theme-on-accent);
+}
+html .cinematic-arsenal .legacy-tabs .active span,
+html .cinematic-arsenal .weapon-tabs button.active small,
+html .cinematic-arsenal .final-map .final-door :is(span, small) { color: var(--theme-on-accent); }
+html .cinematic-arsenal .attack-flow button.active,
+html .cinematic-arsenal .algorithm-flow button.active,
+html .cinematic-arsenal .lattice-equation code,
+html .cinematic-arsenal .weapon-glyph { background: var(--theme-accent-soft); color: var(--theme-accent); }
+html .cinematic-arsenal :is(.flow-detail, .grover-note, .assumption-grid code, .implementation-notes, .parameter-bench, .final-map, .arsenal-sources) {
+  background: var(--theme-soft);
+  color: var(--theme-ink);
+}
+html .cinematic-arsenal .equation-strip code { background: var(--theme-soft); color: var(--theme-accent); }
+html .cinematic-arsenal .score-row i { background: var(--theme-border); }
+html .cinematic-arsenal .score-row i.filled { background: var(--theme-accent); }
+html .cinematic-arsenal .lattice-visual {
+  background-image:
+    linear-gradient(var(--theme-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--theme-border) 1px, transparent 1px);
+}
+html .cinematic-arsenal .lattice-visual > span.target { background: var(--theme-success); border-color: var(--theme-ink); }
+html .dossier-chronicle-copy p { color: var(--theme-muted); }
+html .dossier-archive-log { border-color: var(--theme-border); }
+
+/* Canvas focus is inset so its clipped artwork frame cannot hide the outline. */
+html:root body .art-viewport canvas:focus-visible { outline: 2px solid #a4d5ff; outline-offset: -6px; }

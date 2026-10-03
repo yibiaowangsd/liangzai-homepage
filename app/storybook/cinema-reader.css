@@ -333,3 +333,30 @@
     gap: 8px;
   }
 }
+
+/* Persistent reading controls keep navigation available beside long chapters. */
+.cinema-reader { max-width: 1280px; margin-inline: auto; padding-inline: 40px; }
+.reader-bar { min-height: 72px; font-size: 13px; }
+.reader-stage { min-height: 500px; grid-template-columns: 1.15fr 1fr; border-radius: 16px 16px 0 0; overflow: hidden; background: var(--theme-surface); }
+.reader-art { min-height: 500px; }
+.reader-copy { padding: 32px; }
+.reader-copy h1 { font-size: clamp(28px,3vw,36px); letter-spacing: -.04em; margin-block: 20px; }
+.reader-body { font-size: 16px; line-height: 1.9; }
+.reader-controls { position: sticky; bottom: 0; z-index: 5; padding: 16px 20px; background: var(--theme-surface); border: 1px solid var(--theme-border); border-radius: 0 0 16px 16px; }
+.reader-controls button,.reader-bar button { min-height: 44px; }
+.reader-pagination button { min-width: 54px; }
+.reader-caption { background: #081121d9; padding: 8px 12px; border-radius: 8px; font-size: 12px; line-height: 1.7; }
+.reader-timeline { gap: 10px; }
+.reader-timeline button>span { border-radius: 8px; }
+.reader-timeline strong { font-size: 12px; }
+.reader-note { font-size: 12px; }
+@media(max-width:800px) {
+ .cinema-reader { padding-inline: 20px; }
+ .reader-stage { grid-template-columns: 1fr; }
+ .reader-art { min-height: 0; aspect-ratio: 1.25; }
+ .reader-copy { padding: 24px; }
+ .reader-controls { padding: 10px 12px; gap: 8px; }
+ .reader-pagination { gap: 8px; }
+ .reader-audio button { font-size: 12px; }
+ .reader-audio .audio-icon { width: 32px; height: 32px; }
+}

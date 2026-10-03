@@ -369,3 +369,35 @@
     font-size: 37px;
   }
 }
+
+/* A readable profile and timeline at the same content width as the workspaces. */
+.profile { max-width: 1280px; margin-inline: auto; }
+.hero { min-height: 580px; padding: 48px 40px; gap: 48px; grid-template-columns: 1.1fr .9fr; }
+.hero h1 { font-size: clamp(36px,4vw,56px); line-height: 1.1; letter-spacing: -.05em; }
+.hero h1 span { font-size: 26px; margin-bottom: 16px; }
+.intro { font-size: 23px; margin-block: 24px 16px; }
+.bio { font-size: 16px; line-height: 1.8; }
+.index { padding: 20px 40px; flex-wrap: wrap; }
+.section { padding: 48px 40px; }
+.sectionHead { grid-template-columns: 1fr 1.4fr 1.3fr; padding-bottom: 28px; }
+.sectionHead h2 { font-size: 30px; }
+.timeline li { padding: 24px 0; grid-template-columns: 160px 1fr; }
+.timelineBody { grid-template-columns: 1fr; gap: 12px; }
+.description { grid-column: 1; grid-row: auto; max-width: 68ch; font-size: 15px; }
+.place h3 { font-size: 24px; }
+.detail,.period small { font-size: 13px; }
+.focusGrid { gap: 20px; }
+.section:has(.focusGrid) { color: var(--theme-ink); background: var(--theme-surface); border-block: 1px solid var(--theme-border); }
+.section:has(.focusGrid) .kicker,.section:has(.focusGrid) .sectionHead>p:last-child { color: var(--theme-muted); }
+.focusCard { border-color: var(--theme-border); }
+.focusCard p,.focusCard li { color: var(--theme-muted); }
+.contact { padding: 48px 40px; }
+@media(max-width:700px) {
+ .hero { grid-template-columns: 1fr; min-height: 0; padding: 32px 20px; gap: 32px; }
+ .section,.contact { padding: 32px 20px; }
+ .index { padding: 20px; }
+ .sectionHead { grid-template-columns: 1fr; gap: 12px; }
+ .timeline li { grid-template-columns: 1fr; gap: 16px; }
+ .period small { display: inline; margin-left: 12px; }
+ .focusGrid { grid-template-columns: 1fr; }
+}

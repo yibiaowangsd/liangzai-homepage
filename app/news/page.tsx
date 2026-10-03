@@ -142,6 +142,16 @@ export default async function NewsPage({
           <h1>前沿新闻</h1>
           <span>THE DAILY SIGNAL</span>
         </div>
+        {newest && (
+          <nav className="news-day-controls" aria-label="本期日期与日刊切换">
+            <Link href={makeHref(Math.max(meta.page - 1, 1))} aria-label="查看较新一天" aria-disabled={meta.page <= 1} tabIndex={meta.page <= 1 ? -1 : undefined}>←</Link>
+            <div>
+              <time dateTime={newest.date}>{formatEditionDate(newest.date)}</time>
+              <span>{newest.total} 条 · 第 {meta.page} / {meta.totalPages} 期</span>
+            </div>
+            <Link href={makeHref(Math.min(meta.page + 1, meta.totalPages))} aria-label="查看较早一天" aria-disabled={meta.page >= meta.totalPages} tabIndex={meta.page >= meta.totalPages ? -1 : undefined}>→</Link>
+          </nav>
+        )}
         <details className="news-category-menu">
           <summary>
             <span>{category ? categoryLabels[category] : "全部新闻"}</span>

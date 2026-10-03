@@ -89,21 +89,24 @@ export default async function NewsDetailPage({
             <span>{categoryLabels[item.category] || item.category}</span>
           </div>
           <h1>{item.title}</h1>
-          <p className="article-deck">{item.summary}</p>
           <div className="article-byline">
-            <time dateTime={item.published_at}>{formatNewsDate(item.published_at)}</time>
+            <time dateTime={item.published_at}>日报日期 · {formatNewsDate(item.published_at)}</time>
             <span>{item.source_name || "原始来源"}</span>
             <span>约 {readingMinutes} 分钟阅读</span>
             {tags.map((tag) => <i key={tag}>{tag}</i>)}
           </div>
+          <div className="article-reading-start">
+            <figure className="article-hero-image">
+              <StoryImage item={item} eager />
+              <figcaption>{item.source_name || "原始来源"}</figcaption>
+            </figure>
+            <div className="article-takeaway">
+              <span className="article-takeaway-label">本篇要点</span>
+              {item.summary && <p className="article-deck">{item.summary}</p>}
+              <p className="article-date-note">原始发布日期见正文；上方日期为本站日报日期。原文编译与「量仔观察」分别呈现。</p>
+            </div>
+          </div>
         </header>
-
-        <figure className="article-hero-image">
-          <StoryImage item={item} eager />
-          <figcaption>
-            <span>{item.source_name || "原始来源"}</span>
-          </figcaption>
-        </figure>
 
         <div className="article-layout">
           <NewsBody content={item.content} />

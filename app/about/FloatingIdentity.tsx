@@ -49,7 +49,7 @@ export default function FloatingIdentity() {
   }
 
   return (
-    <aside className={styles.stage} ref={stage} data-intro
+    <aside data-theme-surface="silver" className={styles.stage} ref={stage} data-intro
       data-enabled={enabled} aria-label="Wang Yibiao 的悬浮个人名片"
       onPointerMove={move} onPointerLeave={reset} onPointerCancel={reset}>
       <div className={styles.halo} aria-hidden="true" />

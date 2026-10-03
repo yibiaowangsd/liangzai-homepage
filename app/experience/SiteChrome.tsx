@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useExperience } from "./Motion";
 import { destinations } from "./destinations";
 import JumpNavigation from "./JumpNavigation";
+import ThemePicker from "../theme/ThemePicker";
 
 function NavigationLink({
   href,
@@ -24,6 +25,7 @@ const previews: Record<string, string> = {
   "/pqc-arsenal": "/assets/pqc/ml-kem-studio-v2.webp",
   "/pqc-practice": "/assets/pqc/ml-dsa-studio-v2.webp",
   "/news": "/news-covers/security.svg",
+  "/observatory": "/assets/models/observatory/duo-front.webp",
   "/about": "/assets/characters-v2/archive-after.webp",
 };
 export function SiteHeader() {
@@ -83,6 +85,7 @@ export function SiteHeader() {
             ))}
         </nav>
         <div className="chrome-actions">
+          <ThemePicker />
           <JumpNavigation blocked={open} onOpen={() => setOpen(false)} />
           <button
             className="motion-switch"
