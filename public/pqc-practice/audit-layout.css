@@ -1,5 +1,5 @@
 /* Audit is a bounded data workspace. Its content and export remain source-driven. */
-body[data-page="audit"] .main { max-width: 1280px; }
+body[data-page="audit"] .main { width: 100%; max-width: none; }
 body[data-page="audit"] .page-heading { margin-bottom: 20px; }
 body[data-page="audit"] .audit-legend {
   padding: 16px 20px;

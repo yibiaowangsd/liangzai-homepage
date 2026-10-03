@@ -274,7 +274,7 @@
 }
 
 /* Character dossier: art remains prominent, information stays within reach. */
-.dossier { max-width: 1280px; margin-inline: auto; }
+.dossier { width: 100%; max-width: none; margin-inline: auto; }
 .dossier-character-hero { min-height: 580px; padding: 40px; gap: 40px; align-items: center; }
 .dossier-character-hero h1 { font-size: 56px; margin-block: 28px 20px; }
 .dossier-character-visual { min-height: 450px; border-radius: 16px; background: #203e76; }

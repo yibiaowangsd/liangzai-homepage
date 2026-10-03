@@ -22,8 +22,9 @@ body {
   color: var(--text)
 }
 .main {
-  max-width: 1360px;
-  padding-inline: clamp(20px, 3vw, 40px)
+  width: 100%;
+  max-width: none;
+  padding-inline: var(--site-gutter, 40px)
 }
 .page-heading {
   padding: 20px 0 16px;
@@ -346,7 +347,7 @@ select,.audit-controls input {
 .practice-footer {
   background: var(--theme-ink);
   color: var(--theme-bg);
-  padding: 45px 4vw 25px
+  padding: 45px var(--site-gutter, 40px) 25px
 }
 .practice-footer>a {
   color: var(--theme-bg);

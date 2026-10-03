@@ -52,11 +52,19 @@ preview transport is required for this visual gate.
 ## Responsive browser checks
 
 `npm run test:layout` serves the production artifact with the committed news edition
-as a fixture and checks Chromium, Firefox and WebKit. Eleven viewports from 320px
-to 2560px cover portrait, landscape and short desktop windows across ten route
+as a fixture and checks Chromium, Firefox and WebKit. Thirteen viewports from 320px
+to 3840px cover portrait, landscape, short desktop, ultrawide and 4K windows across ten route
 families. The checks measure actual overflow, masthead collisions, home action/footer
 overlap, the directory, theme selection and the retired `/observatory` redirect.
-The frontend workflow installs the three browser engines and retains screenshots.
+Desktop checks also verify that page content, navigation controls and the homepage
+copy reach the window edges with at most 49px of inset, catching fixed-width layouts
+that leave large blank margins despite having no overflow. The frontend workflow
+installs the three browser engines and retains screenshots, including 4K home,
+laboratory and news views.
+
+Page frames and card/workspace grids use the available window width with bounded
+side gutters, without the former 1200–1360px caps. Individual long-form reading
+columns retain their line-length limit inside the expanded article frame.
 
 Only the homepage main heading is enlarged. It scales from 52px to 112px; its
 content-driven hero has no clipping height. Shared masthead styles own laboratory
