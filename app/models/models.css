@@ -166,3 +166,22 @@
   .model-gallery-toolbar { padding-block: 12px; }
   .model-gallery-controls { padding-block: 10px; }
 }
+
+/* Gallery chrome follows the site palette; rendered art is never filtered. */
+.model-gallery-page { max-width: 1280px; padding: 32px 40px 48px; }
+.model-gallery { border-color: var(--theme-border); background: var(--theme-bg); border-radius: 16px; }
+.model-gallery-toolbar,.model-gallery-controls { background: var(--theme-surface); border-color: var(--theme-border); }
+.model-page-heading p,.model-gallery-status,.model-gallery-number,.model-page-footer p { color: var(--theme-muted); }
+.model-gallery button { color: var(--theme-ink); min-height: 44px; }
+.model-gallery button[aria-pressed=true] { background: var(--theme-accent); color: var(--theme-on-accent); }
+.model-gallery button:hover:not(:disabled) { border-color: var(--theme-accent); }
+.model-page-footer a { color: var(--theme-accent); border-color: currentColor; }
+.model-gallery-controls>div { flex-wrap: wrap; }
+@media(max-width:700px) {
+ .model-gallery-page { padding: 24px 20px 40px; }
+ .model-gallery-toolbar>div { flex-wrap: wrap; }
+ .model-gallery-controls { gap: 10px; }
+ .model-gallery .model-zoom-controls button { min-width: 44px; }
+}
+
+.model-gallery-number { background: var(--theme-surface); color: var(--theme-ink); border: 1px solid var(--theme-border); border-radius: 8px; padding: 8px 12px; }

@@ -39,6 +39,13 @@ on:
       - 'news/validate-edition.py'
       - 'app/page.tsx'
       - 'app/layout.tsx'
+      - 'app/theme/**'
+      - 'public/theme/**'
+      - 'tests/site-theme.test.mjs'
+      - 'tests/site-typography.test.mjs'
+      - 'tests/layout-redesign.test.mjs'
+      - 'tests/mobile-sidebar.test.mjs'
+      - 'tests/reading-workspaces.test.mjs'
       - 'public/news-covers/**'
       - '.github/workflows/news-frontend-check.yml'
   pull_request:
@@ -78,6 +85,13 @@ on:
       - 'news/validate-edition.py'
       - 'app/page.tsx'
       - 'app/layout.tsx'
+      - 'app/theme/**'
+      - 'public/theme/**'
+      - 'tests/site-theme.test.mjs'
+      - 'tests/site-typography.test.mjs'
+      - 'tests/layout-redesign.test.mjs'
+      - 'tests/mobile-sidebar.test.mjs'
+      - 'tests/reading-workspaces.test.mjs'
       - 'public/news-covers/**'
       - '.github/workflows/news-frontend-check.yml'
   workflow_dispatch:
@@ -100,4 +114,4 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs
+      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs tests/site-theme.test.mjs tests/site-typography.test.mjs tests/layout-redesign.test.mjs tests/mobile-sidebar.test.mjs tests/reading-workspaces.test.mjs

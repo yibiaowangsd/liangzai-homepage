@@ -472,3 +472,46 @@
     font-size: 34px;
   }
 }
+
+/* Compact index and searchable catalog, with the teaching labs retained below. */
+.studio-theme .cinematic-arsenal { max-width: 1280px; margin-inline: auto; }
+.cinematic-arsenal .arsenal-hero { display: block; padding: 32px 40px 24px; }
+.cinematic-arsenal .arsenal-hero h1 { font-size: clamp(30px,3vw,36px); margin: 16px 0; letter-spacing: -.04em; }
+.cinematic-arsenal .arsenal-hero h1 em { display: inline; }
+.cinematic-arsenal .arsenal-lead br { display: none; }
+.cinematic-arsenal .arsenal-lead { max-width: 70ch; margin-bottom: 18px; }
+.cinematic-arsenal .hero-index { margin-top: 24px; }
+.arsenal-index { margin-inline: 40px; position: sticky; top: 72px; z-index: 8; background: var(--theme-bg); }
+.algorithm-directory { padding: 24px 40px 40px; }
+.algorithm-directory-heading { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 24px; }
+.algorithm-directory h2 { font-size: 26px; margin: 8px 0 0; }
+.algorithm-directory label { display: grid; gap: 8px; color: var(--theme-muted); font-size: 13px; }
+.algorithm-directory input { min-height: 44px; width: 280px; max-width: 100%; border: 1px solid var(--theme-muted); border-radius: 10px; padding: 10px 14px; font: inherit; background: var(--theme-surface); color: var(--theme-ink); }
+.algorithm-directory-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 16px; }
+.algorithm-directory-grid article { min-width: 0; overflow: hidden; border: 1px solid var(--theme-border); border-radius: 16px; background: var(--theme-surface); }
+.algorithm-directory-grid img { width: 100%; height: auto; aspect-ratio: 1.5; object-fit: cover; }
+.algorithm-directory-grid article>div { padding: 20px; }
+.algorithm-directory-grid h3 { font-size: 22px; margin: 8px 0; }
+.algorithm-directory-grid span,.algorithm-directory-grid small { font-size: 12px; color: var(--theme-muted); line-height: 1.6; }
+.algorithm-directory-grid p { font-size: 14px; line-height: 1.7; min-height: 72px; }
+.algorithm-directory-grid a { display: flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--theme-accent); text-decoration: underline; text-underline-offset: 4px; }
+.algorithm-empty { border: 1px solid var(--theme-border); padding: 24px; border-radius: 12px; }
+.cinematic-arsenal .arsenal-section { padding: 40px; scroll-margin-top: 150px; }
+.cinematic-arsenal .big-question h2,.cinematic-arsenal .math-heading h2,.cinematic-arsenal .loadout-title h2 { font-size: clamp(26px,2.5vw,34px); line-height: 1.45; letter-spacing: -.025em; text-wrap: balance; }
+.cinematic-arsenal .section-intro-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+.cinematic-arsenal .weapon-tabs button { min-height: 72px; }
+@media(max-width:1000px) { .algorithm-directory-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:680px) {
+ .cinematic-arsenal .arsenal-hero,.cinematic-arsenal .arsenal-section,.algorithm-directory { padding: 24px 20px; }
+ .arsenal-index { margin-inline: 20px; top: 64px; overflow-x: auto; }
+ .arsenal-index>span { display: none; }
+ .arsenal-index>div { gap: 22px; white-space: nowrap; }
+ .algorithm-directory-heading { align-items: stretch; flex-direction: column; }
+ .algorithm-directory input { width: 100%; }
+ .algorithm-directory-grid { grid-template-columns: 1fr; }
+ .algorithm-directory-grid article { display: grid; grid-template-columns: 100px minmax(0,1fr); }
+ .algorithm-directory-grid img { height: 100%; aspect-ratio: auto; object-fit: cover; }
+ .algorithm-directory-grid article>div { padding: 16px; }
+ .algorithm-directory-grid p { min-height: 0; }
+ .cinematic-arsenal .section-intro-grid { grid-template-columns: 1fr; }
+}

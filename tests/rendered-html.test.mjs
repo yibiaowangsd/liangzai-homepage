@@ -47,7 +47,9 @@ test("renders the homepage with the integrated practice destination", async () =
   assert.match(html, /重看序幕/);
   assert.match(html, /cinema-entrance/);
   assert.match(html, /href="\/models"/);
-  assert.doesNotMatch(html, /href="\/observatory"|guardian-static|guardian-image-burst|随指针转动的蓝色数学纽结/);
+  assert.match(html, /href="\/observatory"/);
+  assert.match(html, /aria-label="从这里开始"/);
+  assert.doesNotMatch(html, /guardian-static|guardian-image-burst|随指针转动的蓝色数学纽结/);
   assert.doesNotMatch(
     html,
     /(?:src|href)="[^"]*(?:hero-scene|InteractiveGuardian|QuantumAtmosphere|QuantumSculpture)[^"]*\.js/,

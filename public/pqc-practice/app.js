@@ -147,20 +147,23 @@ function renderSidebar() {
   });
 }
 
-$('#sidebar-search').addEventListener('input', renderSidebar);
-$('#sidebar-toggle').addEventListener('click', () => {
-  const collapsed = $('#practice-layout').classList.toggle('is-collapsed');
+function setSidebarCollapsed(collapsed, focusSearch = false) {
+  $('#practice-layout').classList.toggle('is-collapsed', collapsed);
   $('#sidebar-toggle').setAttribute('aria-expanded', String(!collapsed));
   $('#sidebar-toggle').setAttribute('aria-label', collapsed ? '展开算法栏' : '收起算法栏');
   $('#sidebar-toggle').firstElementChild.textContent = collapsed ? '›' : '‹';
-  if (!collapsed) $('#sidebar-search').focus({ preventScroll: true });
+  if (!collapsed && focusSearch) $('#sidebar-search').focus({ preventScroll: true });
+}
+
+// Start mobile sessions at the workspace; an explicit toggle always wins after load.
+if (window.matchMedia('(max-width: 900px)').matches) setSidebarCollapsed(true);
+$('#sidebar-search').addEventListener('input', renderSidebar);
+$('#sidebar-toggle').addEventListener('click', () => {
+  setSidebarCollapsed(!$('#practice-layout').classList.contains('is-collapsed'), true);
 });
 document.querySelectorAll('[data-library-shortcut]').forEach(button => button.addEventListener('click', async () => {
   if (busy) return;
-  $('#practice-layout').classList.remove('is-collapsed');
-  $('#sidebar-toggle').setAttribute('aria-expanded', 'true');
-  $('#sidebar-toggle').setAttribute('aria-label', '收起算法栏');
-  $('#sidebar-toggle').firstElementChild.textContent = '‹';
+  setSidebarCollapsed(false);
   const library = button.dataset.libraryShortcut;
   expandedLibrary = library;
   if ($('#library').value !== library) {

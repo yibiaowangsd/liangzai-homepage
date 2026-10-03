@@ -5,6 +5,7 @@ import "./experience/cinematic.css";
 import "../public/assets/site-navigation.css";
 import "./experience/news-gate.css";
 import "./studio/system.css";
+import "../public/theme/site-theme.css";
 import { ExperienceProvider } from "./experience/Motion";
 import { HomeEffectsProvider } from "./experience/HomeEffects";
 import AboutPushTransition from "./experience/AboutPushTransition";
@@ -26,7 +27,13 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" suppressHydrationWarning>
+      <head>
+        <meta name="theme-color" content="#F6F5EF" suppressHydrationWarning />
+        {/* Synchronous by design: a saved theme must apply before the first paint. */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="/theme/site-theme.js?v=20261003" />
+      </head>
       <body className="studio-theme">
         <HomeEffectsProvider>
           <ExperienceProvider>

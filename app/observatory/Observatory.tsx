@@ -153,9 +153,7 @@ export default function Observatory() {
             <span className="status-light" /> 灵感观测站
           </p>
           <h1>
-            以数学为笔，
-            <br />
-            <em>写一片星空</em>
+            以数学为笔，<em>写一片星空</em>
           </h1>
         </div>
         <p>
@@ -164,6 +162,13 @@ export default function Observatory() {
           转动、调节、停留，找到属于你的那一瞬间。
         </p>
       </header>
+      <div className="art-actionbar" role="group" aria-label="保存与分享创作">
+        <span>调整参数，留下此刻</span>
+        <div className="art-output-controls">
+          <button type="button" onClick={saveImage} disabled={!ready}>保存画面</button>
+          <button type="button" onClick={copyLink}>分享创作</button>
+        </div>
+      </div>
       <section className="art-workbench" aria-label="星空创作工作台">
         <div className="art-viewport">
           <div className="art-viewport-label">
@@ -203,6 +208,24 @@ export default function Observatory() {
               复位
             </button>
           </div>
+          <div className="art-run-controls">
+            <button
+              type="button"
+              aria-pressed={playing && enabled}
+              disabled={!enabled}
+              onClick={() => setPlaying(!playing)}
+            >
+              {playing && enabled ? "定格这一刻" : "让宇宙流动"}
+            </button>
+            <button type="button" onClick={regenerate}>
+              换一片星空
+            </button>
+          </div>
+          {!enabled && (
+            <p className="art-motion-note">
+              已按顶部或系统动效设置暂停，仍可调整参数。
+            </p>
+          )}
           <div className="art-mode-controls" role="group" aria-label="选择形态">
             {modes.map((item, i) => (
               <button
@@ -265,32 +288,6 @@ export default function Observatory() {
               }
             />
           </label>
-          <div className="art-run-controls">
-            <button
-              type="button"
-              aria-pressed={playing && enabled}
-              disabled={!enabled}
-              onClick={() => setPlaying(!playing)}
-            >
-              {playing && enabled ? "定格这一刻" : "让宇宙流动"}
-            </button>
-            <button type="button" onClick={regenerate}>
-              换一片星空
-            </button>
-          </div>
-          {!enabled && (
-            <p className="art-motion-note">
-              已按顶部或系统动效设置暂停，仍可调整参数。
-            </p>
-          )}
-          <div className="art-output-controls">
-            <button type="button" onClick={saveImage}>
-              保存画面
-            </button>
-            <button type="button" onClick={copyLink}>
-              分享创作
-            </button>
-          </div>
           <p className="art-message" role="status">
             {message || mode.note}
           </p>

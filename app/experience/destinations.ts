@@ -43,6 +43,12 @@ export const destinations = [
     keywords: "news 新闻 ai 前沿 技术 标准 资讯",
   },
   {
+    href: "/observatory",
+    name: "创意观测站",
+    description: "用形态与颜色创作，保存并分享你的作品。",
+    keywords: "observatory 观测站 创作 画布 调色 保存 分享",
+  },
+  {
     href: "/about",
     name: "关于我",
     description: "从山东大学，到量子安全工程。",

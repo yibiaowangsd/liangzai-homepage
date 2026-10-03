@@ -1,0 +1,54 @@
+/* Audit is a bounded data workspace. Its content and export remain source-driven. */
+body[data-page="audit"] .main { max-width: 1280px; }
+body[data-page="audit"] .page-heading { margin-bottom: 20px; }
+body[data-page="audit"] .audit-legend {
+  padding: 16px 20px;
+  font-size: 14px;
+  line-height: 1.75;
+  background: var(--theme-surface);
+}
+#audit-summary { padding-top: 12px; margin-top: 12px; border-top: 1px solid var(--theme-border); }
+#audit-build-link { display: inline-flex; min-height: 44px; align-items: center; color: var(--theme-accent); }
+#audit-build-link.hidden { display: none; }
+.audit-availability { margin: 24px 0; }
+.audit-availability h2 { font-size: 22px; line-height: 1.4; margin: 0 0 8px; }
+#availability-intro { font-size: 14px; color: var(--theme-muted); line-height: 1.7; }
+#availability-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: start; }
+.availability-group { min-width: 0; border: 1px solid var(--theme-border); border-radius: 10px; background: var(--theme-surface); }
+.availability-group summary { min-height: 44px; padding: 12px; font-size: 13px; color: var(--theme-ink); cursor: pointer; }
+.availability-list { max-height: 240px; overflow-y: auto; overscroll-behavior: contain; padding: 0 12px 12px; }
+.availability-item { min-height: 44px; color: var(--theme-accent); background: var(--theme-accent-soft); border-color: var(--theme-border); }
+.audit-controls {
+  position: sticky; top: var(--site-header-height, 72px); z-index: 3;
+  padding: 16px; margin: 20px 0 12px; gap: 10px;
+  background: var(--theme-surface); border: 1px solid var(--theme-border); border-radius: 12px;
+}
+.audit-controls label { font-size: 13px; font-weight: 600; }
+.audit-controls input { min-width: 180px; flex: 1 1 240px; max-width: 320px; }
+.audit-controls input, .audit-controls select { min-height: 44px; border-color: var(--theme-control-border); }
+#audit-count { color: var(--theme-muted); font-size: 12px; margin-left: auto; }
+#audit-export { min-height: 44px; white-space: normal; }
+.audit-table-scroll {
+  width: 100%; max-height: min(640px, 62dvh); min-height: 280px;
+  overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable;
+  scroll-padding-top: 48px; border-radius: 12px; background: var(--theme-surface);
+}
+.audit-table { min-width: 1080px; font-size: 13px; line-height: 1.65; }
+.audit-table th { padding: 12px 16px; font-size: 12px; font-weight: 650; background: var(--theme-soft); }
+.audit-table td { padding: 14px 16px; }
+.audit-table tbody tr:nth-child(even) { background: color-mix(in srgb, var(--theme-soft) 35%, var(--theme-surface)); }
+.audit-table tbody tr:hover { background: var(--theme-accent-soft); }
+.audit-table td:first-child { font-weight: 600; }
+.audit-table code { font-size: 12px; }
+.audit-table td.audit-ready { color: var(--theme-success); }
+.audit-table a { display: inline-flex; align-items: center; min-height: 44px; text-underline-offset: 3px; }
+.audit-footnote { max-width: 100ch; font-size: 13px; line-height: 1.85; margin: 20px 0 0; overflow-wrap: anywhere; }
+.audit-footnote a { color: var(--theme-accent); text-decoration: underline; }
+@media (max-width: 760px) {
+  #availability-groups { grid-template-columns: minmax(0, 1fr); }
+  .audit-controls { position: static; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px 12px; }
+  .audit-controls input, .audit-controls select { width: 100%; max-width: none; min-width: 0; font-size: 16px; }
+  #audit-count { margin-left: 0; grid-column: 1 / -1; }
+  #audit-export { grid-column: 1 / -1; }
+  .audit-table-scroll { max-height: 65dvh; }
+}
