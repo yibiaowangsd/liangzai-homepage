@@ -36,3 +36,14 @@ test('push preserves the body background and closes the native lab directory bef
   assert.match(await read('app/experience/about-push-static.ts'),/liangzai:close-directory/);
   assert.match(await read('public/pqc-practice/navigation.js'),/liangzai:close-directory/);
 });
+
+
+test('standalone transition entries revalidate outside the immutable assets namespace', async () => {
+  for(const name of ['index','audit']) {
+    const html=await read(`public/pqc-practice/${name}.html`);
+    assert.match(html,/src="\/pqc-practice\/about-push\/static\.js"/);
+    assert.match(html,/href="\/pqc-practice\/about-push\/static\.css"/);
+    assert.doesNotMatch(html,/\/assets\/about-push\//);
+  }
+  assert.match(await read('build/about-push-assets.ts'),/outdir: resolve\("public\/pqc-practice\/about-push"\)/);
+});
