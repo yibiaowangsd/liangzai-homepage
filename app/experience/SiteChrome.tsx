@@ -25,7 +25,6 @@ const previews: Record<string, string> = {
   "/pqc-arsenal": "/assets/pqc/ml-kem-studio-v2.webp",
   "/pqc-practice": "/assets/pqc/ml-dsa-studio-v2.webp",
   "/news": "/news-covers/security.svg",
-  "/observatory": "/assets/models/observatory/duo-front.webp",
   "/about": "/assets/characters-v2/archive-after.webp",
 };
 export function SiteHeader() {

@@ -6,14 +6,13 @@ This redesign starts from `ca4a185` and is independent of the separately pending
 static transition cache-path change. It does not edit cryptographic runtimes,
 algorithm parameters, news collection, character assets, or cinematic sequences.
 
-- Home: compact cinematic introduction, three direct task entries, Observatory discovery
+- Home: responsive cinematic introduction, three direct task entries, enlarged main heading
 - Algorithm atlas: searchable four-algorithm catalog, honest local-run/reference labels,
   compact teaching sections, retained parameter and explanation interactions
 - News: dated navigation grouped near categories; compact source visual and takeaway
   before the reading column; existing return context and content retained
 - Profile/archive: consistent content width, shorter timeline and character dossier
 - Gallery/story: readable control bars, touch targets, persistent story navigation
-- Observatory: visible sticky save/share actions and compact parameter controls
 - Standalone laboratory/audit: matching palette, usable workspace and bounded audit table
 
 ## Theme contract
@@ -46,6 +45,22 @@ These tests do not substitute for rendered contrast and browser interaction revi
 Before publication, visually review all route families at 390, 768 and 1440px with
 the four themes. Test theme change without lab reset, full ML-KEM round trip,
 lab → About → Back, news date/category/detail/back, model view/reset, story page
-navigation, Observatory save/share, dialogs/focus, and reduced-motion. A cloud
+navigation, dialogs/focus, and reduced-motion. A cloud
 browser cannot access the local development URL in this environment; authorized
 preview transport is required for this visual gate.
+
+## Responsive browser checks
+
+`npm run test:layout` serves the production artifact with the committed news edition
+as a fixture and checks Chromium, Firefox and WebKit. Eleven viewports from 320px
+to 2560px cover portrait, landscape and short desktop windows across ten route
+families. The checks measure actual overflow, masthead collisions, home action/footer
+overlap, the directory, theme selection and the retired `/observatory` redirect.
+The frontend workflow installs the three browser engines and retains screenshots.
+
+Only the homepage main heading is enlarged. It scales from 52px to 112px; its
+content-driven hero has no clipping height. Shared masthead styles own laboratory
+branding too. Gutters use the available document width, theme selects use a shared
+arrow, and viewport height and color mixing have CSS fallbacks. The retired
+Observatory's interface and navigation entries are removed; model assets stay in
+their existing directory because the gallery and transitions still use them.

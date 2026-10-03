@@ -14,6 +14,7 @@
   background: #f0eee6f2;
   color: #242620;
   border-bottom: 1px solid #25291f33;
+  -webkit-backdrop-filter: blur(18px);
   backdrop-filter: blur(18px);
   font-family: var(--font-sans);
 }
@@ -173,6 +174,7 @@
   max-width: none;
   max-height: none;
   width: 100%;
+  height: 100vh;
   height: 100dvh;
   margin: 0;
   padding: 35px clamp(24px, 8vw, 140px);
@@ -226,7 +228,7 @@
   outline: 2px solid white;
   outline-offset: 3px;
 }
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
   .site-chrome,
   .topbar.site-chrome {
     --header-height: 70px;
