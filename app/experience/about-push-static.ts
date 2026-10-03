@@ -21,6 +21,8 @@ document.addEventListener("click", event => {
   event.stopImmediatePropagation();
   if (busy) return;
   busy = true;
+  // Release the native dialog top layer and its scroll lock before snapshotting.
+  document.dispatchEvent(new Event("liangzai:close-directory"));
   const visibility = source.style.visibility;
   let navigating = false;
   const navigateOnce = () => {

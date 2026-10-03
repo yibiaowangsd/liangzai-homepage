@@ -39,6 +39,7 @@ if (trigger && source) {
       trigger.focus();
     }
   }
+  document.addEventListener("liangzai:close-directory", () => setOpen(false));
   trigger.addEventListener("click", () => setOpen(!opened));
   close.addEventListener("click", () => setOpen(false));
   menu.addEventListener("cancel", (event) => {

@@ -13,7 +13,7 @@
   --lab-success: #187347;
   --lab-danger: #b23946;
   --lab-shadow: #2426200d;
-  --font-display: Arial,"Noto Sans CJK SC","Microsoft YaHei",sans-serif;
+  --font-display: var(--font-sans);
   color-scheme: light;
   font-family: var(--font-display)
 }
@@ -26,15 +26,16 @@ body {
   padding-inline: 4vw
 }
 .page-heading {
-  padding: 45px 0 32px;
+  padding: 22px 0 20px;
   border-color: var(--line);
   gap: 30px
 }
 .page-heading h1 {
-  font-size: clamp(42px,5.8vw,82px);
+  font-size: clamp(28px, 2.5vw, 36px);
+  line-height: 1.25;
   font-weight: 550;
-  letter-spacing: -.06em;
-  margin: 16px 0
+  letter-spacing: -.025em;
+  margin: 8px 0 10px
 }
 .page-heading h1 em {
   color: var(--teal);
@@ -429,7 +430,7 @@ select,.audit-controls input {
 }
 @media(max-width:900px) {
   .page-heading {
-    padding: 32px 0
+    padding: 20px 0
   }
   .library-sidebar {
     position: static
@@ -454,7 +455,7 @@ select,.audit-controls input {
     padding-inline: 5vw
   }
   .page-heading h1 {
-    font-size: 48px
+    font-size: 28px
   }
   .practice-layout {
     gap: 0
@@ -466,7 +467,7 @@ select,.audit-controls input {
     padding-inline: 5vw
   }
   body[data-page=audit] .page-heading h1 {
-    font-size: 38px
+    font-size: 28px
   }
   body[data-page=audit] .page-heading h1 em {
     display: block;

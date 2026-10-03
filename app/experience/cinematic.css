@@ -6,7 +6,7 @@
   --dim: #929da9;
   --ice: #a8d9ff;
   --hairline: rgba(213, 230, 247, 0.16);
-  --font-display: Arial, "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  --font-display: var(--font-sans);
 }
 html {
   scroll-padding-top: 95px;

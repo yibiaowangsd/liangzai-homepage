@@ -18,7 +18,7 @@
 }
 .dossier-character-hero h1 {
   margin: 45px 0 25px;
-  font-size: clamp(110px, 15vw, 225px);
+  font-size: clamp(36px, 4.5vw, 64px);
   line-height: 1;
   letter-spacing: -0.085em;
   font-weight: 650;
@@ -225,7 +225,7 @@
     min-height: 0;
   }
   .dossier-character-hero h1 {
-    font-size: 29vw;
+    font-size: clamp(36px, 5vw, 56px);
     margin-top: 30px;
   }
   .dossier-character-visual {

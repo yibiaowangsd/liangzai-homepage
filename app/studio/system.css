@@ -5,9 +5,7 @@
   --studio-blue: #2447dd;
   --studio-line: #25291f33;
   --studio-rule: var(--studio-line);
-  --studio-serif:
-    "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "SimSun", Georgia,
-    serif;
+  --studio-serif: var(--font-sans);
 }
 body.studio-theme,
 body.studio-theme > .experience,
@@ -23,8 +21,7 @@ body.studio-theme > .experience,
   --hairline: var(--studio-line);
 }
 .studio-theme {
-  font-family:
-    Arial, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-sans);
 }
 .studio-theme :focus-visible {
   outline: 2px solid var(--studio-blue);
