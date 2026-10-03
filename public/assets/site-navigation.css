@@ -15,8 +15,7 @@
   color: #242620;
   border-bottom: 1px solid #25291f33;
   backdrop-filter: blur(18px);
-  font-family:
-    Arial, "PingFang SC", "Noto Sans CJK SC", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-sans);
 }
 .site-chrome .brand {
   display: flex;

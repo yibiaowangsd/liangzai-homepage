@@ -53,7 +53,7 @@
 }
 .cinematic-arsenal .arsenal-hero h1 {
   font-family: var(--font-display);
-  font-size: clamp(80px, 10.5vw, 165px);
+  font-size: clamp(36px, 4.5vw, 64px);
   font-weight: 650;
   letter-spacing: -0.09em;
   line-height: 1.08;
@@ -404,7 +404,7 @@
     gap: 25px 4vw;
   }
   .cinematic-arsenal .arsenal-hero h1 {
-    font-size: 11vw;
+    font-size: clamp(36px, 5vw, 56px);
   }
   .cinematic-arsenal .arsenal-lead {
     font-size: 13px;
@@ -431,7 +431,7 @@
     gap: 35px;
   }
   .cinematic-arsenal .arsenal-hero h1 {
-    font-size: 24vw;
+    font-size: clamp(36px, 5vw, 56px);
     line-height: 1;
     margin: 24px 0;
   }

@@ -2,45 +2,7 @@ import { gsap } from "gsap";
 import { createAboutPushImage } from "./about-push-image";
 import "./about-push.css";
 type PushScene = Awaited<ReturnType<typeof import("./three/about-push-scene").createAboutPushScene>>;
-/** Freeze the actual viewport, including form values, scrollers and WebGL pixels. */
-function freezePage(source: HTMLElement) {
-  const clone = source.cloneNode(true) as HTMLElement;
-  const originals = [source, ...source.querySelectorAll<HTMLElement>("*")];
-  const copies = [clone, ...clone.querySelectorAll<HTMLElement>("*")];
-  originals.forEach((original, index) => {
-    const copy = copies[index];
-    const position = getComputedStyle(original).position;
-    if (position === "fixed" || position === "sticky") {
-      const rect = original.getBoundingClientRect();
-      // Portaled to the snapshot root so transformed ancestors cannot displace it.
-      clone.append(copy);
-      Object.assign(copy.style, { position: "absolute", top: `${rect.top + scrollY}px`, left: `${rect.left + scrollX}px`, width: `${rect.width}px`, height: `${rect.height}px`, bottom: "auto", right: "auto", margin: "0", transform: "none" });
-    }
-    if (original instanceof HTMLCanvasElement && copy instanceof HTMLCanvasElement) {
-      copy.width = original.width; copy.height = original.height;
-      const context = copy.getContext("2d");
-      if (context) {
-        try { context.drawImage(original, 0, 0); } catch { /* A missing frame must never block navigation. */ }
-        // WebGL clears its drawing buffer after compositing: ask its owner for one fresh frame.
-        original.dispatchEvent(new CustomEvent("liangzai:snapshot", { detail: context }));
-      }
-    }
-    if (original instanceof HTMLInputElement && copy instanceof HTMLInputElement) { copy.value = original.value; copy.checked = original.checked; }
-    if (original instanceof HTMLTextAreaElement && copy instanceof HTMLTextAreaElement) copy.value = original.value;
-    if (original instanceof HTMLSelectElement && copy instanceof HTMLSelectElement) copy.selectedIndex = original.selectedIndex;
-    copy.removeAttribute("id");
-  });
-  clone.style.width = `${innerWidth}px`;
-  clone.style.transform = `translate(${-scrollX}px, ${-scrollY}px)`;
-  clone.setAttribute("aria-hidden", "true");
-  clone.inert = true;
-  return { clone, restoreScrollers() {
-    originals.forEach((original, index) => {
-      copies[index].scrollTop = original.scrollTop;
-      copies[index].scrollLeft = original.scrollLeft;
-    });
-  } };
-}
+import { freezePage } from "./page-snapshot";
 
 export function runAboutPush(source: HTMLElement, options: {
   navigate(ready?: () => void): void;
@@ -53,6 +15,8 @@ export function runAboutPush(source: HTMLElement, options: {
   overlay.setAttribute("aria-label", "量仔正在推开页面，进入关于我");
   const page = document.createElement("div");
   page.className = "about-push__page";
+  // The standalone laboratory paints its paper background on body, not .page.
+  page.style.background = getComputedStyle(document.body).background;
   const actor = document.createElement("div");
   actor.className = "about-push__actor";
   actor.setAttribute("aria-hidden", "true");

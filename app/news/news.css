@@ -6,12 +6,8 @@
   --soft: #5e6469;
   --rule: rgba(17, 19, 21, 0.22);
   --accent-dark: var(--studio-blue);
-  --editorial-sans:
-    "Helvetica Neue", "Inter", "SF Pro Display", "PingFang SC",
-    "Noto Sans CJK SC", "Microsoft YaHei", Arial, sans-serif;
-  --editorial-serif:
-    "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "SimSun", Georgia,
-    serif;
+  --editorial-sans: var(--font-sans);
+  --editorial-serif: var(--font-sans);
   --news-gutter: clamp(20px, 4vw, 56px);
   --news-gap: clamp(24px, 2.5vw, 40px);
   min-height: 100vh;

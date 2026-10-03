@@ -49,7 +49,7 @@
   margin: 0 0 24px
 }
 .portal-hero-copy h1 {
-  font-size: clamp(56px,6.6vw,108px);
+  font-size: clamp(36px, 4.5vw, 64px);
   line-height: 1.17;
   letter-spacing: -.065em;
   font-weight: 550;
@@ -531,7 +531,7 @@
     padding-top: 100px
   }
   .portal-hero-copy h1 {
-    font-size: 64px
+    font-size: clamp(36px, 8vw, 48px)
   }
   .portal-work-grid,.portal-world-grid,.portal-news {
     grid-template-columns: 1fr

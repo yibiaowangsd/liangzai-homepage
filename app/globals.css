@@ -8,9 +8,9 @@
   --cyan-dark: #007f99;
   --milk: #f0bd28;
   --rule: rgba(23, 23, 22, 0.28);
-  --font-sans-cn: "Noto Sans CJK SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
-  --font-serif-cn: "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", "SimSun", serif;
-  --font-mono-en: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --font-sans-cn: var(--font-sans);
+  --font-serif-cn: var(--font-sans);
+  --font-mono-en: var(--font-mono);
 }
 
 * { box-sizing: border-box; }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "../public/assets/site-typography.css";
 import "./experience/cinematic.css";
 import "../public/assets/site-navigation.css";
 import "./experience/news-gate.css";
