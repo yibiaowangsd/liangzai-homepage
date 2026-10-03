@@ -9,7 +9,9 @@ export function aboutPushAssets(): Plugin {
     async buildStart() {
       await build({
         entryPoints: { static: resolve("app/experience/about-push-static.ts") },
-        outdir: resolve("public/assets/about-push"),
+        // /assets/* receives immutable caching from the production runtime.
+        // This stable entry name must live with revalidated public documents.
+        outdir: resolve("public/pqc-practice/about-push"),
         bundle: true, splitting: true, format: "esm", minify: true,
         target: "es2022", logLevel: "warning",
       });
