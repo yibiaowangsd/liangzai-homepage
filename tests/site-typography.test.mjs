@@ -20,8 +20,6 @@ test('utility page headings stay compact across desktop and mobile', async () =>
   for(const file of ['public/pqc-practice/studio.css','app/models/models.css']) {
     assert.match(await read(file),/font-size: clamp\(28px, 2\.5vw, 36px\)/);
   }
-  assert.match(await read('app/observatory/observatory.css'),/font-size: clamp\(26px, 3vw, 36px\)/);
-  assert.doesNotMatch(await read('app/observatory/observatory.css'),/font-size: 11vw/);
   const lab=await read('public/pqc-practice/studio.css');
   assert.match(lab,/\.page-heading \{\s*padding: 20px 0 16px/);
   assert.doesNotMatch(lab,/font-size: (48px|clamp\(42px,5\.8vw,82px\))/);

@@ -29,10 +29,10 @@ export default function ThemePicker() {
         }))}
       >
         <option value="system">跟随系统</option>
-        <option value="paper">Paper · 纸白</option>
-        <option value="midnight">Midnight · 午夜</option>
-        <option value="mist">Mist · 雾青</option>
-        <option value="sand">Sand · 暖沙</option>
+        <option value="paper">纸白</option>
+        <option value="midnight">午夜</option>
+        <option value="mist">雾青</option>
+        <option value="sand">暖沙</option>
       </select>
     </label>
   );

@@ -15,11 +15,12 @@ test('searchable algorithm directory retains working lessons and clear lab navig
  assert.doesNotMatch(source, /RSA 与 ECC 没有突然变弱/);
 });
 
-test('navigation surfaces creative workspace and practical home entry points', async () => {
+test('navigation keeps practical home entry points after retiring the observatory', async () => {
  const home = await read('app/QuantumHome.tsx');
  assert.match(home, /aria-label="从这里开始"/);
- assert.match(home, /className="portal-observatory"/);
- assert.match(await read('app/experience/destinations.ts'), /href: "\/observatory"/);
+ assert.doesNotMatch(home, /portal-observatory|href="\/observatory"/);
+ assert.doesNotMatch(await read('app/experience/destinations.ts'), /href: "\/observatory"/);
+ for (const page of ['index', 'audit']) assert.doesNotMatch(await read(`public/pqc-practice/${page}.html`), /href="\/observatory"/);
  assert.match(home, /<CinemaEntrance/);
 });
 
@@ -32,11 +33,10 @@ test('reader and model controls remain reachable in compact responsive layouts',
  assert.match(model, /color: var\(--theme-on-accent\)/);
 });
 
-test('fixed artwork keeps visible keyboard focus and readable overlay labels in every palette', async () => {
+test('model controls keep readable overlay labels in every palette', async () => {
  const theme = await read('public/theme/site-theme.css');
  assert.match(theme, /\.motion-switch \{ min-width: 44px/);
  assert.match(theme, /@media \(max-width: 430px\)/);
- assert.match(theme, /html:root body \.art-viewport canvas:focus-visible \{ outline: 2px solid #a4d5ff; outline-offset: -6px/);
  const model = await read('app/models/models.css');
  assert.match(model, /\.model-gallery-number \{ background: var\(--theme-surface\); color: var\(--theme-ink\)/);
 });

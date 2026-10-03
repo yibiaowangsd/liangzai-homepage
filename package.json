@@ -13,6 +13,7 @@
     "test": "npm run build && node --experimental-strip-types --test tests/*.test.mjs",
     "validate:artifact": "bash scripts/validate-artifact.sh",
     "typecheck": "tsc --noEmit",
+    "test:layout": "node scripts/check-responsive-layout.mjs",
     "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
     "models:prepare": "node scripts/prepare-character-models.mjs"
   },
@@ -37,6 +38,7 @@
     "eslint": "9.39.4",
     "eslint-config-next": "16.2.6",
     "gltfpack": "^1.2.0",
+    "playwright": "1.62.1",
     "react-server-dom-webpack": "19.2.6",
     "sharp": "0.34.5",
     "tailwindcss": "4.2.1",

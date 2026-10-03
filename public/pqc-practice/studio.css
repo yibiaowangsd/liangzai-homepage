@@ -58,44 +58,6 @@ body {
   color: var(--teal);
   border-color: var(--teal)
 }
-.topbar.site-chrome {
-  background: var(--theme-bg);
-  border-color: var(--line)
-}
-.topbar.site-chrome .brand {
-  color: var(--text)
-}
-.topbar.site-chrome .brand strong {
-  font-size: 22px
-}
-.topbar.site-chrome .brand strong span {
-  font-size: 10px;
-  color: var(--muted);
-  font-weight: 400
-}
-.topbar.site-chrome .brand-mark,.topbar.site-chrome .brand-mark img {
-  background: none;
-  filter: none
-}
-.topbar.site-chrome .site-nav {
-  margin: 0
-}
-.topbar.site-chrome .site-nav a {
-  color: var(--muted)
-}
-.topbar.site-chrome .site-nav a[aria-current],.topbar.site-chrome .site-nav a:hover {
-  color: var(--teal)
-}
-.topbar.site-chrome .site-nav a:after {
-  background: var(--teal)
-}
-.topbar.site-chrome .runtime {
-  font-size: 10px;
-  color: var(--muted)
-}
-.topbar.site-chrome .runtime.ready i {
-  background: var(--teal)
-}
 .practice-layout {
   margin-top: 20px;
   gap: 20px;
@@ -411,9 +373,6 @@ select,.audit-controls input {
   display: none
 }
 @media(max-width:1100px) {
-  .topbar.site-chrome .brand strong span {
-    display: none
-  }
   .lab-heading {
     flex-wrap: wrap;
     gap: 10px

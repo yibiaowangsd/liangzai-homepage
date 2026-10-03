@@ -25,17 +25,6 @@ test('daily toolbar contains date navigation without replacing archive paginatio
   assert.match(page, /href=\{makeHref\(Math\.min\(meta\.page \+ 1, meta\.totalPages\)\)\}/);
 });
 
-test('observatory save and share sit above the workbench in a sticky action shelf', async () => {
-  const page = await read('app/observatory/Observatory.tsx');
-  const css = await read('app/observatory/observatory.css');
-  assert.ok(page.indexOf('className="art-actionbar"') < page.indexOf('className="art-workbench"'));
-  assert.equal((page.match(/onClick=\{saveImage\}/g) || []).length, 1);
-  assert.equal((page.match(/onClick=\{copyLink\}/g) || []).length, 1);
-  assert.match(css, /\.art-actionbar\s*\{\s*position: sticky/);
-  assert.match(css, /var\(--theme-on-accent\)/);
-  assert.match(css, /@media \(prefers-reduced-motion: reduce\)/);
-});
-
 test('audit table scrolling is bounded and keyboard reachable without changing data or exports', async () => {
   const html = await read('public/pqc-practice/audit.html');
   const css = await read('public/pqc-practice/audit-layout.css');
