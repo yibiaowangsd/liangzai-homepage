@@ -111,6 +111,7 @@ try {
                 nav: getComputedStyle(nav).display === 'none' ? null : rect(nav),
                 retiredLinks: document.querySelectorAll('a[href="/observatory"]').length,
                 identity: identity ? { ...rect(identity), canonicalWidth: identity.offsetWidth, canonicalHeight: identity.offsetHeight } : null,
+                editionNote: document.querySelector('.news-edition-note') ? rect(document.querySelector('.news-edition-note')) : null,
                 content: [...document.querySelectorAll(selector)].map(el => {
                   const r = el.getBoundingClientRect();
                   const style = getComputedStyle(el);
@@ -144,6 +145,7 @@ try {
               assert.ok(layout.home.size >= 60 && layout.home.size <= 260, `home title size ${layout.home.size}`);
               assert.ok(layout.home.actions.bottom + 12 <= layout.home.foot.top, 'hero footer overlaps actions');
               assert.ok(layout.home.foot.bottom <= layout.home.hero.bottom + 1, 'hero clips its footer');
+              if (layout.editionNote) assert.ok(layout.editionNote.top >= layout.home.hero.bottom - 1, 'news prompt floats over the cinematic hero');
             }
             if (layout.identity) {
               assert.equal(layout.identity.canonicalWidth, 460, 'identity card changes its canonical width');
@@ -154,7 +156,15 @@ try {
             if (viewport.width === 320 || viewport.width === 1440) {
               const slug = path === '/' ? 'home' : path.replaceAll('/', '-').replace(/^-/, '');
               await page.screenshot({ path: `${output}/${name}-${slug}-${viewport.width}.png` });
-              if (path === '/') await page.screenshot({ path: `${output}/${name}-home-full-${viewport.width}.jpg`, fullPage: true, type: 'jpeg', quality: 75 });
+              if (path === '/') {
+                // A full-page screenshot must contain loaded art, including the
+                // scenes beyond the viewport that intentionally use lazy images.
+                for (const artwork of await page.locator('.portal-home img[loading="lazy"]').all()) await artwork.scrollIntoViewIfNeeded();
+                await page.waitForFunction(() => [...document.querySelectorAll('.portal-home img[loading="lazy"]')].every(img => img.complete && img.naturalWidth > 0));
+                await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+                await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+                await page.screenshot({ path: `${output}/${name}-home-full-${viewport.width}.jpg`, fullPage: true, type: 'jpeg', quality: 75 });
+              }
             }
             if (viewport.width === 3840 && ['/', '/pqc-practice/index.html', '/news'].includes(path)) {
               const slug = path === '/' ? 'home' : path.replaceAll('/', '-').replace(/^-/, '');

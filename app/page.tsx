@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import QuantumHome from "./QuantumHome";
-import NewsGate from "./experience/NewsGate";
 
 export const metadata: Metadata = {
   title: "量仔 · 探索与实践",
@@ -9,10 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return (
-    <>
-      <NewsGate />
-      <QuantumHome />
-    </>
-  );
+  return <QuantumHome />;
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { MotionSurface } from "./experience/Motion";
+import NewsGate from "./experience/NewsGate";
 import CinemaEntrance from "./studio/CinemaEntrance";
 import HomeDispatch from "./studio/HomeDispatch";
 import "./studio/home.css";
@@ -29,6 +30,7 @@ export default function QuantumHome() {
           <a href="#signal"><span>02 / 前沿</span><strong>保持自己的判断</strong><p>从原始资料，读懂每一次变化</p></a>
           <a href="#world"><span>03 / 创造</span><strong>去想象之外</strong><p>角色、故事，与未知世界的相遇</p></a>
         </nav>
+        <div className="portal-edition-slot"><NewsGate /></div>
         <section className="portal-tools portal-chapter" id="selected" aria-labelledby="tools-title">
           <div className="portal-section-heading" data-reveal><p className="portal-eyebrow">01 / THE PRACTICE</p><h2 id="tools-title">从理解，到验证</h2><p>把复杂的问题拆开，<br />让每一步都有迹可循。</p></div>
           <div className="portal-lab-scene" data-reveal>

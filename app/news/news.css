@@ -958,8 +958,8 @@
 /* Editorial proportions: a generous lead frame and a separate reading column. */
 .newsroom,.article-page { --news-gutter: var(--site-gutter); --news-gap: clamp(20px,3vw,90px); }
 .front-page { padding-block: clamp(28px,4vw,100px); }
-.lead-story { grid-template-columns: 1.15fr 1fr; gap: 5vw; }
-.lead-visual { height: auto; aspect-ratio: 1.65; border-radius: 0; align-self: stretch; }
+.lead-story { grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); gap: 5vw; }
+.lead-visual { width: 100%; min-width: 0; height: auto; aspect-ratio: 1.65; border-radius: 0; align-self: start; }
 .lead-copy { max-width: 70ch; }
 .front-deck { gap: 4vw; }
 .desk { padding-block: clamp(40px,5vw,120px); }
