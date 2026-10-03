@@ -84,6 +84,7 @@ try {
         for (const viewport of viewports) {
           await page.setViewportSize(viewport);
           await page.evaluate(() => document.fonts.ready);
+          await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
           const label = `${name} ${path} ${viewport.width}×${viewport.height}`;
           try {
             const layout = await page.evaluate(() => {
@@ -118,7 +119,12 @@ try {
             }
             checked++;
           } catch (error) {
-            failures.push(`${label}: ${error.message}`);
+            const overflow = await page.evaluate(() => [...document.querySelectorAll('body *')]
+              .filter(el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.right > document.documentElement.clientWidth + 1; })
+              .slice(0, 10).map(el => ({ tag: el.tagName, id: el.id, class: el.className, right: el.getBoundingClientRect().right, width: el.getBoundingClientRect().width, position: getComputedStyle(el).position })));
+            const slug = path === '/' ? 'home' : path.replaceAll('/', '-').replace(/^-/, '');
+            await page.screenshot({ path: `${output}/failed-${name}-${slug}-${viewport.width}.png` });
+            failures.push(`${label}: ${error.message}; overflow=${JSON.stringify(overflow)}`);
           }
         }
         await page.setViewportSize({ width: 320, height: 568 });
