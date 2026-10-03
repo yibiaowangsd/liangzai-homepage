@@ -12,11 +12,12 @@ export function freezePage(source: HTMLElement) {
   // height spacers rather than serializing thousands of invisible cells.
   const omitted = new Set<HTMLElement>();
   const copyByOriginal = new Map(originals.map((original, index) => [original, copies[index]]));
-  const bodies = originals.filter(original => original.tagName === "TBODY");
+  // Scope windowing to the known collapsed-border, non-spanning audit table.
+  const bodies = originals.filter(original => original.tagName === "TBODY" && original.id === "audit-rows");
   for (const body of bodies) {
     const rows = Array.from(body.children).filter(child => child.tagName === "TR") as HTMLTableRowElement[];
     // A spanning cell can begin outside the viewport but paint inside it.
-    if (rows.some(row => Array.from(row.cells).some(cell => cell.rowSpan > 1))) continue;
+    if (rows.some(row => Array.from(row.cells).some(cell => cell.rowSpan !== 1))) continue;
     const columns = Math.max(1, ...rows.map(row => Array.from(row.cells).reduce((count, cell) => count + cell.colSpan, 0)));
     let spacer: HTMLTableRowElement | undefined;
     let spacerHeight = 0;

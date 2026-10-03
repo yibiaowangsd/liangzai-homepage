@@ -17,7 +17,7 @@ class Style {
 }
 class Element {
   constructor(id, computed = {}, rect = {}) {
-    this.id = id; this.style = new Style(); this.computed = new Style({position:'static',...computed});
+    this.id = id; this.rowSpan = 1; this.style = new Style(); this.computed = new Style({position:'static',...computed});
     this.rect = {left:0,top:0,width:100,height:20,...rect}; this.children = []; this.dataset = {};
     this.scrollTop = 0; this.scrollLeft = 0; this.attributes = {id};
   }
@@ -120,7 +120,7 @@ test('large table snapshots preserve visible rows and exact offscreen space with
   const restore=environment();
   try {
     const source=new Element('root');
-    const body=new Element('tbody');body.tagName='TBODY';source.append(body);
+    const body=new Element('audit-rows');body.tagName='TBODY';source.append(body);
     const hiddenStyle = new Style({position:'static'});
     hiddenStyle[Symbol.iterator] = () => { throw new Error('Offscreen cell must not serialize computed styles'); };
     for(let index=0;index<100;index++) {
@@ -135,5 +135,19 @@ test('large table snapshots preserve visible rows and exact offscreen space with
     assert.equal(rows.at(-1).style.height,'2600px');
     assert.equal(rows.length,29);
     assert.equal(rows.slice(1,-1).reduce((n,row)=>n+row.rect.height,0)+320+2600,4000);
+  } finally {restore();}
+});
+
+
+test('rowSpan zero keeps the complete audit table because the cell spans remaining rows', () => {
+  const restore=environment();
+  try {
+    const source=new Element('root');
+    const body=new Element('audit-rows');body.tagName='TBODY';source.append(body);
+    const row=new Element('spanning-row',{}, {top:2000,height:40});row.tagName='TR';
+    const cell=new Element('spanning-cell');cell.colSpan=1;cell.rowSpan=0;row.append(cell);body.append(row);
+    const {clone}=freezePage(source);
+    assert.equal(clone.children[0].children[0].id,'spanning-row');
+    assert.equal(clone.children[0].children[0].children[0].id,'spanning-cell');
   } finally {restore();}
 });
