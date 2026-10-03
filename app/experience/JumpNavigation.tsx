@@ -127,7 +127,7 @@ export default function JumpNavigation({
           <div className="jump-heading">
             <div>
               <p>找到下一个目的地</p>
-              <h2 id="jump-title">从好奇心，跃迁。</h2>
+              <h2 id="jump-title">从好奇心，跃迁</h2>
             </div>
             <button
               type="button"

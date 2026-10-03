@@ -103,12 +103,13 @@ export function formatEditionDate(value: string): string {
 
 export async function getNewsEditions(
   page = 1,
-  pageSize = 3,
+  pageSize = 1,
   category?: string,
 ): Promise<EditionsPayload> {
   const url = new URL("/api/news/editions", NEWS_API);
   url.searchParams.set("page", String(page));
-  url.searchParams.set("pageSize", String(Math.min(pageSize, 3)));
+  // Retain the old pageSize argument while enforcing one complete edition per page.
+  url.searchParams.set("pageSize", String(Math.min(Math.max(pageSize || 1, 1), 1)));
   if (category) url.searchParams.set("category", category);
 
   const response = await fetch(url, {

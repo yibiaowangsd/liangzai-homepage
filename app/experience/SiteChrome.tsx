@@ -156,7 +156,7 @@ export function SiteHeader() {
               <h2 id="atlas-title">
                 去你想去
                 <br />
-                的地方。
+                的地方
               </h2>
               <div className="atlas-preview-image">
                 <img

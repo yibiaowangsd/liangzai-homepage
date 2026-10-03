@@ -88,7 +88,7 @@ function editions(items = publishedItems, page = 1) {
   for (const item of items) (topics[item.category] ||= []).push(item);
   return {
     data: [{ date: "2026-09-30", total: items.length, topics }],
-    meta: { page, pageSize: 3, totalDays: 9, totalPages: 3 },
+    meta: { page, pageSize: 1, totalDays: 3, totalPages: 3 },
   };
 }
 
@@ -132,7 +132,7 @@ test("news pages preserve published content and accessible rendering", async (t)
       upstream = (url) => {
         assert.equal(url.pathname, "/api/news/editions");
         assert.equal(url.searchParams.get("page"), "1");
-        assert.equal(url.searchParams.get("pageSize"), "3");
+        assert.equal(url.searchParams.get("pageSize"), "1");
         return Response.json(editions());
       };
       const main = await render("/news");
@@ -198,7 +198,7 @@ test("news pages preserve published content and accessible rendering", async (t)
       const protocolItems = publishedItems.filter((item) => item.category === "protocol");
       upstream = (url) => {
         assert.equal(url.searchParams.get("page"), "2");
-        assert.equal(url.searchParams.get("pageSize"), "3");
+        assert.equal(url.searchParams.get("pageSize"), "1");
         assert.equal(url.searchParams.get("category"), "protocol");
         return Response.json(editions(protocolItems, 2));
       };
@@ -208,6 +208,62 @@ test("news pages preserve published content and accessible rendering", async (t)
       assert.match(main, /href="\/news\?category=protocol"/);
       assert.match(main, /href="\/news\?page=3&amp;category=protocol"/);
       assert.match(main, /<a[^>]*aria-current="page"[^>]*href="\/news\?page=2&amp;category=protocol"|<a[^>]*href="\/news\?page=2&amp;category=protocol"[^>]*aria-current="page"/);
+    });
+
+    await t.test("one day per page renders every story and keeps dated navigation through the last page", async () => {
+      const dates = ["2026-10-03", "2026-10-02", "2026-09-30"];
+      const archive = dates.map((date) => {
+        const items = ["pqc", "protocol", "industry"].flatMap((category) =>
+          Array.from({ length: 7 }, (_, index) => ({
+            ...publishedItems[0],
+            slug: `${date}-${category}-${index}`,
+            title: `${date} ${category} 新闻 ${index}`,
+            category,
+            published_at: `${date}T07:00:00Z`,
+          })),
+        );
+        return { date, items };
+      });
+      upstream = (url) => {
+        assert.equal(url.searchParams.get("pageSize"), "1");
+        const page = Math.min(Number(url.searchParams.get("page")), dates.length);
+        const category = url.searchParams.get("category");
+        const edition = archive[page - 1];
+        const items = edition.items.filter((item) => !category || item.category === category);
+        const payload = editions(items, page);
+        payload.data[0].date = edition.date;
+        return Response.json(payload);
+      };
+      for (const category of ["", "protocol"]) {
+        for (const page of [1, 2, 3, 999]) {
+          const safePage = Math.min(page, 3);
+          const date = dates[safePage - 1];
+          const main = await render(`/news?page=${page}${category ? "&category=" + category : ""}`);
+          assert.equal([...main.matchAll(/class="edition"/g)].length, 1);
+          assert.ok(main.includes(`dateTime="${date}"`));
+          for (const edition of archive) {
+            for (const item of edition.items) {
+              assert.equal(main.includes(escapeHtml(item.title)), edition.date === date && (!category || item.category === category), item.slug);
+            }
+          }
+          const pagination = main.match(/<nav class="news-pagination"[\s\S]*?<\/nav>/)?.[0];
+          assert.ok(pagination);
+          const links = [...pagination.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/g)].map((match) => match[0]);
+          assert.equal(attribute(links[0], "aria-disabled"), String(safePage === 1));
+          assert.equal(attribute(links.at(-1), "aria-disabled"), String(safePage === 3));
+          const prev = new URL(attribute(links[0], "href").replaceAll("&amp;", "&"), "http://localhost");
+          const next = new URL(attribute(links.at(-1), "href").replaceAll("&amp;", "&"), "http://localhost");
+          assert.equal(Number(prev.searchParams.get("page") || 1), Math.max(1, safePage - 1));
+          assert.equal(Number(next.searchParams.get("page") || 1), Math.min(3, safePage + 1));
+          assert.equal(prev.searchParams.get("category") || "", category);
+          assert.equal(next.searchParams.get("category") || "", category);
+          for (const match of main.matchAll(/href="(\/news\/[^"]+)"/g)) {
+            const href = new URL(match[1].replaceAll("&amp;", "&"), "http://localhost");
+            assert.equal(Number(href.searchParams.get("page") || 1), safePage);
+            assert.equal(href.searchParams.get("category") || "", category);
+          }
+        }
+      }
     });
 
     await t.test("detail keeps summary, semantic body blocks, date and original source", async () => {
@@ -255,7 +311,7 @@ test("news pages preserve published content and accessible rendering", async (t)
       assert.match(offline, /<h1>前沿新闻<\/h1>/);
       assert.match(offline, /新闻暂时无法载入/);
       assert.doesNotMatch(offline, /class="(?:lead-story|story-image)"/);
-      upstream = () => Response.json({ data: [], meta: { page: 1, pageSize: 3, totalDays: 0, totalPages: 1 } });
+      upstream = () => Response.json({ data: [], meta: { page: 1, pageSize: 1, totalDays: 0, totalPages: 1 } });
       const empty = await render("/news");
       assert.match(empty, /下一版简报正在路上/);
       assert.doesNotMatch(empty, /class="(?:lead-story|story-image)"/);

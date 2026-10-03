@@ -155,7 +155,7 @@ export default function Observatory() {
           <h1>
             以数学为笔，
             <br />
-            <em>写一片星空。</em>
+            <em>写一片星空</em>
           </h1>
         </div>
         <p>
@@ -314,7 +314,7 @@ export default function Observatory() {
         <div className="art-section-heading">
           <div>
             <p className="eyebrow">从一个灵感开始</p>
-            <h2 id="presets-title">三种方式，看见未知。</h2>
+            <h2 id="presets-title">三种方式，看见未知</h2>
           </div>
           <span>选一个起点，再把它变成你的。</span>
         </div>

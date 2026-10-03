@@ -44,7 +44,7 @@ export default function Archive() {
               一位来自量子星的朋友
             </p>
             <h1 data-title>
-              <small>测量世界，也守护你。</small>量仔<span>LIANGZAI / Q–∞</span>
+              <small>测量世界，也守护你</small>量仔<span>LIANGZAI / Q–∞</span>
             </h1>
             <p className="lead" data-intro>
               一根寻找答案的天线。

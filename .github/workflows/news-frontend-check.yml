@@ -21,6 +21,7 @@ on:
       - 'tests/observatory.test.mjs'
       - 'tests/rendered-html.test.mjs'
       - 'tests/site-usability.test.mjs'
+      - 'tests/cinema-details.test.mjs'
       - 'public/assets/site-navigation.css'
       - 'public/pqc-practice/**'
       - 'tests/browser-compat.test.mjs'
@@ -59,6 +60,7 @@ on:
       - 'tests/observatory.test.mjs'
       - 'tests/rendered-html.test.mjs'
       - 'tests/site-usability.test.mjs'
+      - 'tests/cinema-details.test.mjs'
       - 'public/assets/site-navigation.css'
       - 'public/pqc-practice/**'
       - 'tests/browser-compat.test.mjs'
@@ -98,4 +100,4 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs
+      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs
