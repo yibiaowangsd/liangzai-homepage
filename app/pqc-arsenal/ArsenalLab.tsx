@@ -587,6 +587,7 @@ export default function ArsenalLab() {
             已了解原理？进入密码实验室 <span aria-hidden="true"></span>
           </a>
         </div>
+        <figure className="arsenal-intro-art" aria-hidden="true"><img src="/assets/pqc/ml-dsa-studio-v2.webp" width="1200" height="800" alt="" /></figure>
         <div className="hero-index" aria-label="学习路径">
           <span>01 RSA / ECC</span>
           <span>02 LWE / SIS</span>

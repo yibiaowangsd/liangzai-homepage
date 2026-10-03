@@ -54,7 +54,7 @@ export function SiteHeader() {
       <a className="skip-link" href="#main-content">
         跳到主要内容
       </a>
-      <header className="site-chrome">
+      <header className="site-chrome" data-scene={path === "/" ? "home" : "page"}>
         <Link className="brand" href="/" aria-label="量仔首页">
           <span className="brand-mark" aria-hidden="true">
             <img
