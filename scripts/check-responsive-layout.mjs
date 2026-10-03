@@ -104,11 +104,14 @@ try {
               const header = document.querySelector('.site-chrome');
               const nav = header.querySelector('.desktop-nav');
               const homeTitle = document.querySelector('#home-title');
+              const identity = document.querySelector('[data-identity-card]');
               return {
                 width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth,
                 brand: rect(header.querySelector('.brand')), actions: rect(header.querySelector('.chrome-actions')),
                 nav: getComputedStyle(nav).display === 'none' ? null : rect(nav),
                 retiredLinks: document.querySelectorAll('a[href="/observatory"]').length,
+                identity: identity ? { ...rect(identity), canonicalWidth: identity.offsetWidth, canonicalHeight: identity.offsetHeight } : null,
+                editionNote: document.querySelector('.news-edition-note') ? rect(document.querySelector('.news-edition-note')) : null,
                 content: [...document.querySelectorAll(selector)].map(el => {
                   const r = el.getBoundingClientRect();
                   const style = getComputedStyle(el);
@@ -131,20 +134,37 @@ try {
             if (viewport.width >= 1280) {
               assert.ok(layout.content.length > 0, 'page content is missing');
               for (const block of layout.content) {
-                assert.ok(block.left <= 49 && block.right >= layout.width - 49,
+                const maxInset = layout.width * .055;
+                assert.ok(block.left <= maxInset && block.right >= layout.width - maxInset,
                   `content stays too narrow: ${block.name}, ${Math.round(block.width)}/${layout.width}, edges ${Math.round(block.left)}/${Math.round(layout.width - block.right)}`);
               }
-              assert.ok(layout.brand.left <= 49 && layout.actions.right >= layout.width - 49, 'masthead stays in a narrow central column');
-              if (layout.home) assert.ok(layout.heroInset <= 49, 'home copy has oversized side gutters');
+              assert.ok(layout.brand.left <= layout.width * .055 && layout.actions.right >= layout.width * .945, 'masthead stays in a narrow central column');
+              if (layout.home) assert.ok(layout.heroInset <= layout.width * .055, 'home copy has oversized side gutters');
             }
             if (layout.home) {
-              assert.ok(layout.home.size >= 52 && layout.home.size <= 112, `home title size ${layout.home.size}`);
+              assert.ok(layout.home.size >= 60 && layout.home.size <= 260, `home title size ${layout.home.size}`);
               assert.ok(layout.home.actions.bottom + 12 <= layout.home.foot.top, 'hero footer overlaps actions');
               assert.ok(layout.home.foot.bottom <= layout.home.hero.bottom + 1, 'hero clips its footer');
+              if (layout.editionNote) assert.ok(layout.editionNote.top >= layout.home.hero.bottom - 1, 'news prompt floats over the cinematic hero');
+            }
+            if (layout.identity) {
+              assert.equal(layout.identity.canonicalWidth, 460, 'identity card changes its canonical width');
+              assert.equal(layout.identity.canonicalHeight, 356, 'identity card changes its canonical height');
+              if (viewport.width >= 600) assert.ok(Math.abs(layout.identity.width - 460) < 1, 'desktop identity card grows or shrinks');
+              assert.ok(layout.identity.left >= -1 && layout.identity.right <= layout.width + 1, 'identity card leaves the screen');
             }
             if (viewport.width === 320 || viewport.width === 1440) {
               const slug = path === '/' ? 'home' : path.replaceAll('/', '-').replace(/^-/, '');
               await page.screenshot({ path: `${output}/${name}-${slug}-${viewport.width}.png` });
+              if (path === '/') {
+                // A full-page screenshot must contain loaded art, including the
+                // scenes beyond the viewport that intentionally use lazy images.
+                for (const artwork of await page.locator('.portal-home img[loading="lazy"]').all()) await artwork.scrollIntoViewIfNeeded();
+                await page.waitForFunction(() => [...document.querySelectorAll('.portal-home img[loading="lazy"]')].every(img => img.complete && img.naturalWidth > 0));
+                await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }));
+                await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+                await page.screenshot({ path: `${output}/${name}-home-full-${viewport.width}.jpg`, fullPage: true, type: 'jpeg', quality: 75 });
+              }
             }
             if (viewport.width === 3840 && ['/', '/pqc-practice/index.html', '/news'].includes(path)) {
               const slug = path === '/' ? 'home' : path.replaceAll('/', '-').replace(/^-/, '');
@@ -175,10 +195,30 @@ try {
         await page.getByLabel('页面主题', { exact: true }).selectOption(theme);
         await page.waitForFunction(theme => document.documentElement.dataset.theme === theme, theme);
       }
+      // The redesign must preserve the entrance, navigation and real page controls.
+      await page.getByLabel('页面主题', { exact: true }).selectOption('paper');
+      await page.getByRole('button', { name: '重看序幕', exact: true }).click();
+      await page.locator('.cinema-entrance[open]').waitFor();
+      await page.keyboard.press('Space');
+      await page.locator('.cinema-entrance[open]').waitFor({ state: 'hidden' });
+      assert.equal(await page.evaluate(() => document.activeElement?.textContent), '重看序幕', 'replay restores keyboard focus');
+      assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', 'intro leaves the page locked');
+      await page.locator('.portal-quickstart a[href="#selected"]').click();
+      await page.waitForFunction(() => location.hash === '#selected');
+      assert.ok(await page.locator('#selected').isVisible());
+      await page.goto(base + '/pqc-arsenal', { waitUntil: 'networkidle' });
+      await page.getByRole('searchbox').fill('ML-KEM');
+      assert.equal(await page.locator('.algorithm-directory-grid article').count(), 1);
+      await page.goto(base + '/storybook', { waitUntil: 'networkidle' });
+      await page.getByRole('button', { name: '下一页', exact: true }).click();
+      await page.waitForFunction(() => document.querySelector('.reader-pagination b')?.textContent === '02');
+      await page.goto(base + '/models', { waitUntil: 'networkidle' });
+      await page.getByRole('button', { name: '侧面', exact: true }).click();
+      assert.equal(await page.getByRole('button', { name: '侧面', exact: true }).getAttribute('aria-pressed'), 'true');
       await page.goto(base + '/observatory?form=wave', { waitUntil: 'networkidle' });
       assert.equal(new URL(page.url()).pathname, '/');
       await context.close();
-      console.log(`${name}: responsive routes, directory, themes and retired URL checked`);
+      console.log(`${name}: responsive routes, fixed card, directory, themes, intro, chapter anchors, catalog, story and model controls checked`);
     } finally {
       await browser.close();
     }

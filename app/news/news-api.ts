@@ -122,7 +122,7 @@ export async function getNewsEditions(
   return (await response.json()) as EditionsPayload;
 }
 
-export async function getFeaturedNews(limit = 6): Promise<{
+export async function getFeaturedNews(limit = 6, signal?: AbortSignal): Promise<{
   edition_date: string | null;
   data: NewsItem[];
 }> {
@@ -131,6 +131,7 @@ export async function getFeaturedNews(limit = 6): Promise<{
   const response = await fetch(url, {
     cache: "no-store",
     headers: { Accept: "application/json" },
+    signal,
   });
   if (!response.ok) {
     throw new Error(`News API returned ${response.status}`);

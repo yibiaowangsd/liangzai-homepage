@@ -273,28 +273,31 @@
   }
 }
 
-/* Character dossier: art remains prominent, information stays within reach. */
+/* Alternating image and text sequences, sized by the page frame. */
 .dossier { width: 100%; max-width: none; margin-inline: auto; }
-.dossier-character-hero { min-height: 580px; padding: 40px; gap: 40px; align-items: center; }
+.dossier-character-hero { min-height: 76svh; padding: var(--scene-space) var(--site-gutter); gap: 7vw; align-items: center; grid-template-columns: 1fr 1.1fr; }
 .dossier-character-hero h1 { font-size: 56px; margin-block: 28px 20px; }
-.dossier-character-visual { min-height: 450px; border-radius: 16px; background: #203e76; }
-.dossier-character-visual img { height: 430px; }
-.dossier-character-bio { gap: 48px; padding: 48px 40px; }
+.dossier-character-visual { min-height: 0; aspect-ratio: 1.15; border-radius: 0; background: #102b55; }
+.dossier-character-visual img { height: auto; width: 76%; aspect-ratio: .88; max-height: 92%; }
+.dossier-character-visual::before { display: none; }
+.dossier-character-bio { grid-template-columns: 1fr 1.1fr; gap: 7vw; padding: var(--scene-space) var(--site-gutter); }
+.dossier-character-bio>div>p { max-width: 68ch; }
 .dossier h2 { font-size: clamp(28px,3vw,36px); line-height: 1.4; margin-block: 20px; letter-spacing: -.035em; }
-.dossier-chronicle { padding: 48px 40px; background: var(--theme-surface); border-block: 1px solid var(--theme-border); }
-.dossier-chronicle>h2 { margin-bottom: 32px; }
-.dossier-chronicle-entry { gap: 32px; margin-top: 32px; }
-.dossier-chronicle-visual { border-radius: 16px; }
-.dossier-chronicle-copy h3 { font-size: 28px; margin-block: 16px; }
-.dossier-chronicle-copy p { color: var(--theme-muted); line-height: 1.8; }
-.dossier-archive-now { padding: 48px 40px; gap: 40px; }
-.dossier-archive-log { color: var(--theme-ink); }
-@media(max-width:700px) {
- .dossier-character-hero,.dossier-character-bio,.dossier-chronicle,.dossier-archive-now { padding: 32px 20px; }
- .dossier-character-hero { min-height: 0; grid-template-columns: 1fr; }
- .dossier-character-visual { min-height: 360px; }
- .dossier-character-visual img { height: 350px; }
- .dossier-character-bio { grid-template-columns: 1fr; gap: 20px; }
- .dossier-chronicle-entry,.dossier-chronicle-entry:nth-of-type(even) { grid-template-columns: 1fr; gap: 20px; }
+.dossier-chronicle { padding: var(--scene-space) var(--site-gutter); background: var(--theme-surface); border-block: 1px solid var(--theme-border); }
+.dossier-chronicle>h2 { margin-bottom: 48px; }
+.dossier-chronicle-entry { gap: 7vw; margin-top: 7vw; grid-template-columns: 1.4fr 1fr; }
+.dossier-chronicle-entry:nth-of-type(even) { grid-template-columns: 1fr 1.4fr; }
+.dossier-chronicle-visual { border-radius: 0; aspect-ratio: 1.55; }
+.dossier-chronicle-copy h3 { font-size: 28px; margin-block: 20px; }
+.dossier-chronicle-copy p { max-width: 56ch; color: var(--theme-muted); line-height: 1.9; }
+.dossier-archive-now { padding: var(--scene-space) var(--site-gutter); gap: 7vw; }
+.dossier-archive-now>img { aspect-ratio: 1.15; }
+.dossier-archive-log { color: var(--theme-ink); border-color: var(--theme-border); }
+@media(max-width:800px) {
+ .dossier-character-hero { min-height: 0; grid-template-columns: 1fr; padding-top: 48px; gap: 32px; }
+ .dossier-character-visual { min-height: 0; max-width: none; margin: 0; aspect-ratio: 1.12; }
+ .dossier-character-visual img { height: auto; }
+ .dossier-character-bio,.dossier-archive-now { grid-template-columns: 1fr; gap: 24px; }
+ .dossier-chronicle-entry,.dossier-chronicle-entry:nth-of-type(even) { grid-template-columns: 1fr; gap: 24px; margin-top: 48px; }
  .dossier-chronicle-entry:nth-of-type(even) .dossier-chronicle-visual { order: 0; }
 }

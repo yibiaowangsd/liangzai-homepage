@@ -6,6 +6,7 @@ import "../public/assets/site-navigation.css";
 import "./experience/news-gate.css";
 import "./studio/system.css";
 import "../public/theme/site-theme.css";
+import "./studio/scenes.css";
 import { ExperienceProvider } from "./experience/Motion";
 import { HomeEffectsProvider } from "./experience/HomeEffects";
 import AboutPushTransition from "./experience/AboutPushTransition";
