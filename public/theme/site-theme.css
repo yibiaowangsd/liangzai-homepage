@@ -144,7 +144,7 @@ html .topbar.site-chrome {
   background: var(--theme-bg);
   color: var(--theme-ink);
   border-color: var(--theme-border);
-  padding-inline: max(var(--site-gutter), calc((100% - 1200px) / 2));
+  padding-inline: var(--site-gutter);
   gap: 20px;
 }
 html .site-chrome .brand { white-space: nowrap; }

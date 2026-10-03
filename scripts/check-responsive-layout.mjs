@@ -60,8 +60,20 @@ const viewports = [
   { width: 1180, height: 757 }, { width: 1280, height: 720 },
   { width: 1440, height: 900 }, { width: 1920, height: 1080 },
   { width: 2560, height: 1440 },
+  { width: 3440, height: 1440 }, { width: 3840, height: 2160 },
 ];
 const routes = ['/', '/pqc-practice/index.html', '/pqc-practice/audit.html', '/news', `/news/${items[0].slug}`, '/about', '/models', '/storybook', '/archive', '/pqc-arsenal'];
+const contentSelectors = {
+  '/': '.portal-quickstart, .portal-tools, .portal-news, .portal-world',
+  '/pqc-practice/index.html': '.practice-layout',
+  '/pqc-practice/audit.html': '.audit-table-scroll',
+  '/news': '.front-page, .edition, .news-pagination, .news-method-note',
+  [`/news/${items[0].slug}`]: '.article-shell',
+  '/models': '.model-gallery',
+  '/storybook': '.reader-stage',
+  '/archive': '.dossier-character-hero',
+  '/pqc-arsenal': '.algorithm-directory',
+};
 const output = resolve('outputs/responsive');
 await mkdir(output, { recursive: true });
 const failures = [];
@@ -87,7 +99,7 @@ try {
           await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
           const label = `${name} ${path} ${viewport.width}×${viewport.height}`;
           try {
-            const layout = await page.evaluate(() => {
+            const layout = await page.evaluate(selector => {
               const rect = el => { const r = el.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width }; };
               const header = document.querySelector('.site-chrome');
               const nav = header.querySelector('.desktop-nav');
@@ -97,9 +109,17 @@ try {
                 brand: rect(header.querySelector('.brand')), actions: rect(header.querySelector('.chrome-actions')),
                 nav: getComputedStyle(nav).display === 'none' ? null : rect(nav),
                 retiredLinks: document.querySelectorAll('a[href="/observatory"]').length,
+                content: [...document.querySelectorAll(selector)].map(el => {
+                  const r = el.getBoundingClientRect();
+                  const style = getComputedStyle(el);
+                  const left = r.left + parseFloat(style.paddingLeft);
+                  const right = r.right - parseFloat(style.paddingRight);
+                  return { name: el.className, left, right, width: right - left };
+                }),
+                heroInset: homeTitle ? parseFloat(getComputedStyle(document.querySelector('.portal-hero-copy')).paddingLeft) : null,
                 home: homeTitle ? { size: parseFloat(getComputedStyle(homeTitle).fontSize), actions: rect(document.querySelector('.portal-actions')), foot: rect(document.querySelector('.portal-hero-foot')), hero: rect(document.querySelector('.portal-hero')) } : null,
               };
-            });
+            }, contentSelectors[path] || 'main');
             assert.ok(layout.scroll <= layout.width + 1, `horizontal overflow: ${layout.scroll}/${layout.width}`);
             assert.ok(layout.brand.right + 2 <= layout.actions.left, 'header controls overlap brand');
             assert.ok(layout.actions.right <= layout.width + 1, 'header controls leave viewport');
@@ -108,6 +128,15 @@ try {
               assert.ok(layout.nav.right + 2 <= layout.actions.left, 'navigation overlaps controls');
             }
             assert.equal(layout.retiredLinks, 0, 'retired destination appears in navigation');
+            if (viewport.width >= 1280) {
+              assert.ok(layout.content.length > 0, 'page content is missing');
+              for (const block of layout.content) {
+                assert.ok(block.left <= 49 && block.right >= layout.width - 49,
+                  `content stays too narrow: ${block.name}, ${Math.round(block.width)}/${layout.width}, edges ${Math.round(block.left)}/${Math.round(layout.width - block.right)}`);
+              }
+              assert.ok(layout.brand.left <= 49 && layout.actions.right >= layout.width - 49, 'masthead stays in a narrow central column');
+              if (layout.home) assert.ok(layout.heroInset <= 49, 'home copy has oversized side gutters');
+            }
             if (layout.home) {
               assert.ok(layout.home.size >= 52 && layout.home.size <= 112, `home title size ${layout.home.size}`);
               assert.ok(layout.home.actions.bottom + 12 <= layout.home.foot.top, 'hero footer overlaps actions');
@@ -116,6 +145,11 @@ try {
             if (viewport.width === 320 || viewport.width === 1440) {
               const slug = path === '/' ? 'home' : path.replaceAll('/', '-').replace(/^-/, '');
               await page.screenshot({ path: `${output}/${name}-${slug}-${viewport.width}.png` });
+            }
+            if (viewport.width === 3840 && ['/', '/pqc-practice/index.html', '/news'].includes(path)) {
+              const slug = path === '/' ? 'home' : path.replaceAll('/', '-').replace(/^-/, '');
+              await page.screenshot({ path: `${output}/${name}-${slug}-3840.jpg`, type: 'jpeg', quality: 80 });
+              console.log(`${label}: content widths ${layout.content.map(block => Math.round(block.width)).join(', ')}`);
             }
             checked++;
           } catch (error) {

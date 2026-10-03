@@ -165,7 +165,8 @@
 .edition,
 .news-pagination,
 .news-method-note {
-  max-width: 1280px;
+  width: 100%;
+  max-width: none;
   margin-inline: auto;
   padding-inline: var(--news-gutter);
 }
@@ -572,7 +573,8 @@
 
 /* A continuous article column, with source attribution after the full text. */
 .article-shell {
-  max-width: 1040px;
+  width: 100%;
+  max-width: none;
   margin: 0 auto;
   padding: 40px clamp(20px, 4vw, 48px) 96px;
 }
@@ -762,9 +764,6 @@
   .news-toolbar {
     top: var(--site-header-height, 72px);
   }
-  .article-shell {
-    max-width: 860px;
-  }
 }
 
 @media (max-width: 780px) {
@@ -916,7 +915,7 @@
 }
 
 /* Date, archive navigation and categories stay together while reading a daily edition. */
-.news-toolbar { padding-inline: max(var(--news-gutter), calc((100vw - 1200px) / 2)); }
+.news-toolbar { padding-inline: var(--news-gutter); }
 .news-day-controls { display: flex; align-items: center; gap: 12px; }
 .news-day-controls > div { display: grid; gap: 4px; text-align: center; }
 .news-day-controls time { font-size: 13px; font-weight: 650; }

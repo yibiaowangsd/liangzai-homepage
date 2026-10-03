@@ -196,7 +196,7 @@ body.studio-theme > .experience,
   opacity: 0.75;
 }
 .studio-footer {
-  padding: 65px clamp(22px, 4vw, 72px) 20px;
+  padding: 65px var(--site-gutter, 40px) 20px;
   background: #242620;
   color: #efede7;
 }

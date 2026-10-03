@@ -1,5 +1,6 @@
 .model-gallery-page {
-  max-width: 1700px;
+  width: 100%;
+  max-width: none;
   margin: auto;
   padding: 28px 5vw 64px
 }
@@ -168,7 +169,7 @@
 }
 
 /* Gallery chrome follows the site palette; rendered art is never filtered. */
-.model-gallery-page { max-width: 1280px; padding: 32px 40px 48px; }
+.model-gallery-page { max-width: none; padding: 32px 40px 48px; }
 .model-gallery { border-color: var(--theme-border); background: var(--theme-bg); border-radius: 16px; }
 .model-gallery-toolbar,.model-gallery-controls { background: var(--theme-surface); border-color: var(--theme-border); }
 .model-page-heading p,.model-gallery-status,.model-gallery-number,.model-page-footer p { color: var(--theme-muted); }
