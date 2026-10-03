@@ -52,3 +52,11 @@ body[data-page="audit"] .audit-legend {
   #audit-export { grid-column: 1 / -1; }
   .audit-table-scroll { max-height: 65dvh; }
 }
+
+/* The source overview and review controls share the same proportional grid. */
+.audit-availability { margin-block: clamp(28px,3vw,80px); }
+#availability-groups { gap: clamp(16px,2vw,50px); }
+.availability-group,.audit-table-scroll { border-radius: 6px; }
+.audit-legend { border-inline: 0; }
+.audit-controls { padding: clamp(16px,1.5vw,40px); border-radius: 6px; }
+.audit-table-scroll { max-height: 62dvh; }

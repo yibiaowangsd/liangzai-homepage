@@ -546,3 +546,14 @@ button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-
 @media (prefers-reduced-motion: reduce) {
   .primary, .send-button, .quiet-button { transition: none; }
 }
+
+/* A proportional control rail and balanced two-party experiment. */
+.main { padding-bottom: var(--scene-space); }
+.page-heading { padding-block: clamp(28px,3vw,80px); }
+.practice-layout { grid-template-columns: minmax(210px,18%) minmax(0,1fr); gap: clamp(20px,2.5vw,80px); margin-top: 28px; }
+.library-sidebar,.configuration,.dialogue .actor,.kex-peer { border-radius: 6px; }
+@container laboratory (min-width: 800px) {
+  .dialogue,.kex-peers { grid-template-columns: minmax(0,1fr) minmax(180px,22%) minmax(0,1fr); gap: clamp(12px,1.2cqw,40px); }
+  .dialogue .actor-body,.kex-peer { padding: clamp(16px,2cqw,40px); }
+}
+@media(max-width:900px) { .practice-layout,.practice-layout.is-collapsed { grid-template-columns: minmax(0,1fr); gap: 20px; } .page-heading { padding-block: 28px; } }

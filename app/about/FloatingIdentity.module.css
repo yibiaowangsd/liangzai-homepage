@@ -2,9 +2,9 @@
   position: relative;
   min-width: 0;
   width: 100%;
-  height: 450px;
+  min-height: 420px;
   display: grid;
-  align-content: center;
+  place-items: center;
   perspective: 1400px;
   isolation: isolate;
 }
@@ -15,25 +15,17 @@
   background: radial-gradient(ellipse, #aec5db12, #8da5bf04 48%, transparent 70%);
   z-index: -1;
 }
-.shadow {
-  position: absolute;
-  width: 80%;
-  height: 28px;
-  left: 10%;
-  bottom: 0;
-  border-radius: 50%;
-  background: #000;
-  filter: blur(15px);
-  opacity: .85;
-  pointer-events: none;
-}
-.float { position: relative; transform: translateY(0); }
+.shadow { position: absolute; width: min(78%, 400px); height: 22px; left: 50%; bottom: 26px; transform: translateX(-50%); border-radius: 50%; background: #06101b; filter: blur(18px); opacity: .45; pointer-events: none; }
+.scale { --card-scale: 1; position: relative; width: calc(460px * var(--card-scale)); height: calc(356px * var(--card-scale)); }
+.float { position: absolute; inset: 0 auto auto 0; width: 460px; height: 356px; scale: var(--card-scale); transform-origin: top left; transform: translateY(0); }
 .card {
   --rotate-x: 0deg;
   --rotate-y: 0deg;
   --light-x: 24%;
   --light-y: 12%;
   position: relative;
+  width: 460px;
+  height: 356px;
   padding: 2px;
   border-radius: 15px;
   background: linear-gradient(135deg, #f4f8ff, #929fac 25%, #eaf3fc 42%, #667583 65%, #f7fbff 83%, #7c8b99);
@@ -44,7 +36,8 @@
 }
 .surface {
   position: relative;
-  padding: 32px 34px 22px;
+  height: 100%;
+  padding: 24px 26px 20px;
   border-radius: 13px;
   overflow: hidden;
   color: #172332;
@@ -73,7 +66,7 @@
 }
 .engraving {
   position: absolute;
-  width: 120px;
+  width: 90px;
   height: 100%;
   top: 0;
   right: 10px;
@@ -81,19 +74,19 @@
   pointer-events: none;
   filter: drop-shadow(0 1px 0 #fff8);
 }
-.content { position: relative; padding-right: 92px; }
+.content { position: relative; padding-right: 70px; }
 .topline { display: flex; align-items: center; min-height: 20px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; color: #475365; font-size: 10px; letter-spacing: .15em; }
 .brand i { width: 7px; height: 7px; transform: rotate(45deg); border: 1px solid #89703e; box-shadow: inset 0 1px 0 #faf0d5; }
-.identity { padding: 25px 0 26px; }
-.identity h2 { margin: 0; font-size: clamp(30px, 2.8vw, 44px); font-weight: 500; letter-spacing: -.055em; line-height: 1.15; color: #182638; text-shadow: 0 1px 0 #fff8; white-space: nowrap; }
-.identity p { margin: 12px 0 0; font-size: 13px; letter-spacing: .09em; color: #354457; }
-.details { display: grid; gap: 19px; margin: 0; padding: 23px 0 25px; border-top: 1px solid #354a602f; box-shadow: inset 0 1px 0 #ffffff45; }
+.identity { padding: 20px 0; }
+.identity h2 { margin: 0; font-size: 30px; font-weight: 500; letter-spacing: -.055em; line-height: 1.15; color: #182638; text-shadow: 0 1px 0 #fff8; white-space: nowrap; }
+.identity p { margin: 10px 0 0; font-size: 12px; letter-spacing: .09em; color: #354457; }
+.details { display: grid; gap: 16px; margin: 0; padding: 18px 0; border-top: 1px solid #354a602f; box-shadow: inset 0 1px 0 #ffffff45; }
 .details > div { display: grid; grid-template-columns: 38px 1fr; gap: 12px; }
 .details dt { padding-top: 2px; font-size: 10px; color: #516174; }
-.details dd { margin: 0; font-size: 14px; font-weight: 500; color: #202f42; line-height: 1.5; }
+.details dd { margin: 0; font-size: 13px; font-weight: 500; color: #202f42; line-height: 1.5; }
 .details dd span { display: block; margin-top: 4px; font-size: 10px; font-weight: 400; color: #4a596c; letter-spacing: .015em; }
-.bottomline { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #354a602f; box-shadow: inset 0 1px 0 #ffffff45; padding-top: 15px; font-size: 11px; }
+.bottomline { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #354a602f; box-shadow: inset 0 1px 0 #ffffff45; padding-top: 12px; font-size: 11px; }
 .bottomline a { display: inline-flex; align-items: center; gap: 8px; color: #344558; border-radius: 3px; padding: 4px 0; transition: color .2s; }
 .bottomline a:hover { color: #0b1624; }
 .bottomline a:focus-visible { outline: 2px solid #31475c; outline-offset: 5px; }
@@ -102,15 +95,5 @@
 .stage:hover .float, .stage:focus-within .float { animation-play-state: paused; }
 .stage:focus-within .card { transform: rotateX(0) rotateY(0); }
 @keyframes levitate { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-@media (max-width: 1100px) {
-  .stage { height: 420px; }
-  .surface { padding: 27px 24px 20px; }
-  .content { padding-right: 65px; }
-  .engraving { width: 85px; right: 4px; opacity: .75; }
-  .identity h2 { font-size: 30px; }
-  .identity p { font-size: 11px; }
-  .details > div { grid-template-columns: 30px 1fr; gap: 8px; }
-  .details dd { font-size: 12px; }
-}
-@media (max-width: 760px) { .stage { width: min(100%, 500px); justify-self: center; } }
+@media (max-width: 520px) { .stage { min-height: 340px; } .shadow { bottom: 16px; } }
 @media (prefers-reduced-motion: reduce) { .float { animation: none !important; } .card { transition: none; } }

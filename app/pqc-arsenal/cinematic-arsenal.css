@@ -515,3 +515,24 @@
  .algorithm-directory-grid p { min-height: 0; }
  .cinematic-arsenal .section-intro-grid { grid-template-columns: 1fr; }
 }
+
+/* The directory is a visual atlas; teaching consoles use the full frame. */
+.cinematic-arsenal .arsenal-hero { display: grid; grid-template-columns: 1fr 1fr; gap: 32px 7vw; padding: clamp(40px,5vw,130px) var(--site-gutter) 32px; }
+.arsenal-intro-art { margin: 0; overflow: hidden; aspect-ratio: 1.8; }
+.arsenal-intro-art img { width: 100%; height: 100%; object-fit: cover; }
+.cinematic-arsenal .hero-index { grid-column: 1/-1; margin-top: 12px; padding-block: 24px 8px; }
+.arsenal-index { margin-inline: var(--site-gutter); top: var(--site-header-height); }
+.algorithm-directory { padding: clamp(32px,4vw,100px) var(--site-gutter); }
+.algorithm-directory-grid { gap: 2vw; }
+.algorithm-directory-grid article { border-radius: 0; }
+.algorithm-directory-grid img { aspect-ratio: 1.2; }
+.algorithm-directory-grid article>div { padding: clamp(20px,2vw,50px); }
+.algorithm-directory-grid p { min-height: 0; }
+.algorithm-directory-heading { margin-bottom: 32px; }
+.cinematic-arsenal .arsenal-section { margin: 0; padding: var(--scene-space) var(--site-gutter); border-top: 1px solid var(--theme-border); }
+.cinematic-arsenal .section-intro-grid { grid-template-columns: 1fr 1fr; gap: 7vw; }
+.cinematic-arsenal :is(.legacy-lab,.crypto-demo,.weapon-console,.lattice-lab) { width: 100%; max-width: none; }
+.cinematic-arsenal .crypto-demo { grid-template-columns: minmax(70px,18%) minmax(0,1fr) minmax(70px,18%); gap: 4vw; padding: clamp(32px,4vw,100px); }
+.cinematic-arsenal .arsenal-sources { padding: 40px var(--site-gutter) var(--scene-space); }
+@media(max-width:1000px) { .cinematic-arsenal .arsenal-hero { grid-template-columns: 1fr; } .arsenal-intro-art { aspect-ratio: 2.4; } .algorithm-directory-grid { gap: 20px; } }
+@media(max-width:680px) { .algorithm-directory-grid { gap: 16px; } .algorithm-directory-grid img { height: 100%; aspect-ratio: auto; } .algorithm-directory-grid article>div { padding: 16px; } .cinematic-arsenal .section-intro-grid { grid-template-columns: 1fr; } .cinematic-arsenal .crypto-demo { padding: 32px 16px; gap: 10px; } .arsenal-intro-art { aspect-ratio: 1.8; } }

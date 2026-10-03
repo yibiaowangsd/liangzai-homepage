@@ -335,7 +335,7 @@
 }
 
 /* Persistent reading controls keep navigation available beside long chapters. */
-.cinema-reader { width: 100%; max-width: none; margin-inline: auto; padding-inline: 40px; }
+.cinema-reader { width: 100%; max-width: none; margin-inline: auto; padding-inline: var(--site-gutter); }
 .reader-bar { min-height: 72px; font-size: 13px; }
 .reader-stage { min-height: 500px; grid-template-columns: 1.15fr 1fr; border-radius: 16px 16px 0 0; overflow: hidden; background: var(--theme-surface); }
 .reader-art { min-height: 500px; }
@@ -351,7 +351,7 @@
 .reader-timeline strong { font-size: 12px; }
 .reader-note { font-size: 12px; }
 @media(max-width:800px) {
- .cinema-reader { padding-inline: 20px; }
+ .cinema-reader { padding-inline: var(--site-gutter); }
  .reader-stage { grid-template-columns: 1fr; }
  .reader-art { min-height: 0; aspect-ratio: 1.25; }
  .reader-copy { padding: 24px; }
@@ -360,3 +360,14 @@
  .reader-audio button { font-size: 12px; }
  .reader-audio .audio-icon { width: 32px; height: 32px; }
 }
+
+/* The picture and reading column share a frame rather than fixed heights. */
+.reader-stage { min-height: 0; grid-template-columns: 1.3fr 1fr; border-radius: 0; margin-top: clamp(24px,3vw,80px); }
+.reader-art { min-height: 0; aspect-ratio: 1.28; }
+.reader-copy { padding: clamp(28px,4vw,110px); }
+.reader-body { max-width: 54ch; }
+.reader-controls { border-radius: 0; }
+.reader-timeline { padding-block: clamp(28px,3vw,80px); gap: clamp(10px,1vw,30px); }
+.reader-timeline button>span { aspect-ratio: 1.4; border-radius: 0; }
+@media(max-width:1000px) { .reader-stage { grid-template-columns: 1fr; } .reader-art { aspect-ratio: 1.6; } .reader-copy { padding: 32px; } }
+@media(max-width:700px) { .reader-art { aspect-ratio: 1.25; } .reader-copy { padding: 28px 20px; } .reader-controls { flex-wrap: wrap; } }

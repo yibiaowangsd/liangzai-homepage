@@ -169,7 +169,7 @@
 }
 
 /* Gallery chrome follows the site palette; rendered art is never filtered. */
-.model-gallery-page { max-width: none; padding: 32px 40px 48px; }
+.model-gallery-page { max-width: none; padding: clamp(32px,4vw,100px) var(--site-gutter) var(--scene-space); }
 .model-gallery { border-color: var(--theme-border); background: var(--theme-bg); border-radius: 16px; }
 .model-gallery-toolbar,.model-gallery-controls { background: var(--theme-surface); border-color: var(--theme-border); }
 .model-page-heading p,.model-gallery-status,.model-gallery-number,.model-page-footer p { color: var(--theme-muted); }
@@ -179,10 +179,18 @@
 .model-page-footer a { color: var(--theme-accent); border-color: currentColor; }
 .model-gallery-controls>div { flex-wrap: wrap; }
 @media(max-width:700px) {
- .model-gallery-page { padding: 24px 20px 40px; }
+ .model-gallery-page { padding: 32px var(--site-gutter) 48px; }
  .model-gallery-toolbar>div { flex-wrap: wrap; }
  .model-gallery-controls { gap: 10px; }
  .model-gallery .model-zoom-controls button { min-width: 44px; }
 }
 
 .model-gallery-number { background: var(--theme-surface); color: var(--theme-ink); border: 1px solid var(--theme-border); border-radius: 8px; padding: 8px 12px; }
+
+/* A proportional exhibition stage with a quiet, narrow control rail. */
+.model-page-heading { margin-bottom: clamp(24px,3vw,72px); }
+.model-gallery { border-radius: 0; }
+.model-gallery-stage { height: max(340px,62svh); }
+.model-gallery-toolbar,.model-gallery-controls { padding-inline: clamp(16px,2vw,64px); }
+.model-page-footer { padding-top: 32px; line-height: 1.8; }
+@media(max-width:700px) { .model-gallery-stage { height: max(320px,52svh); } }

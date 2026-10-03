@@ -67,7 +67,8 @@
 }
 :root:root {
   --site-header-height: 72px;
-  --site-gutter: clamp(16px, 3vw, 40px);
+  --site-gutter: clamp(16px, 4vw, 160px);
+  --scene-space: clamp(56px, 7vw, 220px);
   --theme-soft: var(--theme-bg);
   --theme-accent-soft: var(--theme-bg);
   --theme-success-soft: var(--theme-bg);
