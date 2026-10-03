@@ -424,14 +424,14 @@
 }
 @media (max-width: 760px) {
   .observatory {
-    padding: 40px 5vw 50px;
+    padding: 24px 5vw 50px;
   }
   .observatory-heading {
     display: block;
     padding-bottom: 32px;
   }
   .observatory-heading h1 {
-    font-size: 11vw;
+    font-size: clamp(28px, 5vw, 36px);
   }
   .observatory-heading > p {
     max-width: none;
