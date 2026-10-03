@@ -86,8 +86,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          for url in             "https://api.wangyibiao.com/api/health"             "https://api.wangyibiao.com/api/news/featured?limit=6"             "https://api.wangyibiao.com/api/news/editions?page=1&pageSize=3"; do
+          for url in \
+            "https://api.wangyibiao.com/api/health" \
+            "https://api.wangyibiao.com/api/news/featured?limit=6" \
+            "https://api.wangyibiao.com/api/news/editions?page=1&pageSize=1"; do
             echo "Checking $url"
             response="$(curl --fail --silent --show-error --retry 3 --retry-all-errors --max-time 30 "$url")"
-            python3 -c 'import json,sys; json.loads(sys.stdin.read())' <<< "$response"
+            python3 -c '
+          import json, sys
+          payload = json.load(sys.stdin)
+          if "/api/news/editions" in sys.argv[1]:
+              assert payload["meta"]["pageSize"] == 1, "Expected one day per page"
+              assert len(payload["data"]) <= 1, "Multiple dates returned on one page"
+              assert payload["meta"]["totalPages"] == max(1, payload["meta"]["totalDays"]), "Page count must match edition dates"
+          ' "$url" <<< "$response"
           done

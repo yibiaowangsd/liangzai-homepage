@@ -8,14 +8,14 @@ test('laboratory responds to usable workspace width instead of prematurely stack
   assert.match(css, /container-name: laboratory/);
   assert.match(css, /@container laboratory \(min-width: 800px\)/);
   assert.match(css, /@container laboratory \(max-width: 799px\)/);
-  assert.match(css, /\.dialogue \{ grid-template-columns: minmax\(0, 1fr\) 186px minmax\(0, 1fr\)/);
+  assert.match(css, /\.dialogue \{ grid-template-columns: minmax\(0, 1fr\) 220px minmax\(0, 1fr\)/);
   const dialogue = await read('public/pqc-practice/dialogue.js');
   assert.doesNotMatch(dialogue, /中间通道/);
 });
 
 test('both laboratory entrypoints request updated styles and updated dialogue is versioned', async () => {
   for (const page of ['index.html', 'audit.html']) {
-    assert.match(await read('public/pqc-practice/' + page), /studio\.css\?v=20261002-usability/);
+    assert.match(await read('public/pqc-practice/' + page), /studio\.css\?v=20261003-transport/);
   }
   assert.match(await read('public/pqc-practice/app.js'), /dialogue\.js\?v=20261002-usability/);
 });

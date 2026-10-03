@@ -26,7 +26,7 @@ test("all news entry points round-trip their category and archive page", async (
     if (url.pathname === "/api/news/editions") {
       return Response.json({
         data: [{ date: "2026-10-02", total: stories.length, topics: { protocol: stories } }],
-        meta: { page: servedPage ?? Number(url.searchParams.get("page")), pageSize: 3, totalDays: 9, totalPages: 3 },
+        meta: { page: servedPage ?? Number(url.searchParams.get("page")), pageSize: 1, totalDays: 3, totalPages: 3 },
       });
     }
     return Response.json(stories.find((item) => url.pathname.endsWith(item.slug)));

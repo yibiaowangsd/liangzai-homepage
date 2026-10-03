@@ -65,7 +65,7 @@ function TopicDesk({
         </article>
 
         <div className="desk-briefs">
-          {rest.slice(0, 4).map((item, index) => (
+          {rest.map((item, index) => (
             <article className="brief-row" key={item.slug}>
               <span className="brief-no">
                 {String(index + 2).padStart(2, "0")}
@@ -104,7 +104,7 @@ export default async function NewsPage({
   let failed = false;
 
   try {
-    payload = await getNewsEditions(requestedPage, 3, category);
+    payload = await getNewsEditions(requestedPage, 1, category);
   } catch {
     failed = true;
   }
@@ -112,13 +112,16 @@ export default async function NewsPage({
   const editions = payload?.data || [];
   const meta = payload?.meta || {
     page: 1,
-    pageSize: 3,
+    pageSize: 1,
     totalDays: 0,
     totalPages: 1,
   };
   const newest = editions[0];
+  const editionCategories = newest
+    ? [...coreCategories, ...Object.keys(newest.topics).filter((key) => !coreCategories.includes(key as (typeof coreCategories)[number]))]
+    : [...coreCategories];
   const heroStories = newest
-    ? coreCategories.flatMap((key) => newest.topics[key] || []).slice(0, 6)
+    ? editionCategories.flatMap((key) => newest.topics[key] || []).slice(0, 6)
     : [];
   const heroLead = heroStories[0];
   const heroSide = heroStories.slice(1, 5);
@@ -212,13 +215,13 @@ export default async function NewsPage({
                   className="editorial-link"
                   href={newsStoryHref(heroLead.slug, listingHref)}
                 >
-                  阅读今日头条{" "}
+                  阅读本期头条{" "}
 
                 </Link>
               </div>
             </article>
 
-            <aside className="front-deck" aria-label="今日重点">
+            <aside className="front-deck" aria-label="本期重点">
               {heroSide.map((item, index) => (
                 <article key={item.slug}>
                   <Link
@@ -231,7 +234,7 @@ export default async function NewsPage({
                   <div>
                     <span>
                       {String(index + 2).padStart(2, "0")} /{" "}
-                      {categoryLabels[item.category]}
+                      {categoryLabels[item.category] || item.category}
                     </span>
                     <h3>
                       <Link href={newsStoryHref(item.slug, listingHref)}>{item.title}</Link>
@@ -249,10 +252,10 @@ export default async function NewsPage({
                   <div>
                     <h2>{formatEditionDate(edition.date)}</h2>
                   </div>
-                  <p>{edition.total} 条 · 五个方向各取最值得关注的更新</p>
+                  <p>{edition.total} 条 · {category ? categoryLabels[category] : "当日全部新闻"} · 一天一页</p>
                 </header>
 
-                {(category ? [category] : coreCategories).map((key) => (
+                {(category ? [category] : editionCategories).map((key) => (
                   <TopicDesk
                     key={key}
                     category={key}
@@ -264,14 +267,14 @@ export default async function NewsPage({
             ))}
           </div>
 
-          <nav className="news-pagination" aria-label="新闻分页">
+          <nav className="news-pagination" aria-label="新闻按日分页">
             <Link
               href={makeHref(Math.max(meta.page - 1, 1))}
               aria-disabled={meta.page <= 1}
               className={meta.page <= 1 ? "is-disabled" : undefined}
               tabIndex={meta.page <= 1 ? -1 : undefined}
             >
-              更新新闻
+              较新一天
             </Link>
             <div>
               {paginationPages.map((pageNumber) => (
@@ -292,7 +295,7 @@ export default async function NewsPage({
               }
               tabIndex={meta.page >= meta.totalPages ? -1 : undefined}
             >
-              历史新闻
+              较早一天
             </Link>
           </nav>
         </>

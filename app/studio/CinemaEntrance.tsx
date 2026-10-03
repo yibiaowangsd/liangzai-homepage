@@ -1,5 +1,6 @@
 "use client";
 import { useCallback, useEffect, useRef } from "react";
+import { shouldSkipCinema } from "./cinema-shortcut.ts";
 /** A self-contained opening sequence. No hardware scoring or reduced-quality branch. */
 export default function CinemaEntrance() {
     const dialog = useRef<HTMLDialogElement>(null);
@@ -49,12 +50,14 @@ export default function CinemaEntrance() {
     }, [play]);
     return <>
     <button className="portal-replay" type="button" onClick={play}>重看序幕</button>
-    <dialog ref={dialog} className="cinema-entrance" aria-label="量仔首页电影序幕" onCancel={e => { e.preventDefault(); finish(); }}>
+    <dialog ref={dialog} className="cinema-entrance" aria-label="量仔首页电影序幕" onCancel={e => { e.preventDefault(); finish(); }} onKeyDown={e => {
+      if (e.currentTarget.open && shouldSkipCinema(e)) { e.preventDefault(); finish(); }
+    }}>
       <img src="/assets/cinematic/vault-entrance-v2.webp" alt="" className="cinema-scene"/>
       <div className="cinema-shade"/>
       <div className="cinema-credit"><span>YIBIAO PRESENTS</span><strong>LIANGZAI</strong><p>从一个问题，走进无限可能。</p></div>
       <div className="cinema-matte cinema-matte-top"/><div className="cinema-matte cinema-matte-bottom"/>
-      <button className="cinema-skip" onClick={finish} type="button">跳过序幕 <small>ESC</small></button>
+      <button className="cinema-skip" onClick={finish} type="button" aria-label="跳过序幕（空格键或 Escape）" aria-keyshortcuts="Space Escape"><kbd>Space</kbd><span>跳过</span></button>
       <span className="cinema-progress" aria-hidden="true"/>
     </dialog>
   </>;

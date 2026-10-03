@@ -439,11 +439,11 @@ export default {
       }
 
       if (request.method === "GET" && url.pathname === "/api/news/editions") {
-        const page = Math.max(Number.parseInt(url.searchParams.get("page") || "1", 10) || 1, 1);
-        const pageSize = Math.min(
-          Math.max(Number.parseInt(url.searchParams.get("pageSize") || "3", 10) || 3, 1),
-          3,
-        );
+        const requestedPage = Number(url.searchParams.get("page") || "1");
+        const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
+        // One edition date per page. Keep accepting legacy pageSize query values,
+        // but never split a day or combine several dates into one archive page.
+        const pageSize = 1;
         const category = url.searchParams.get("category");
         if (category && !ALLOWED_CATEGORIES.has(category)) {
           return json(request, { error: "Unsupported category" }, 400);

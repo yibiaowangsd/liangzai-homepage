@@ -33,7 +33,7 @@
 3. `.github/workflows/publish-news.yml` 调用 `news/validate-edition.py`，检查25条、每类5条、日期与slug、原文地址，以及长文、来源日期和独立分析结构。
 4. Workflow 调用 `POST https://api.wangyibiao.com/api/admin/news/batch`。
 5. Worker 按 `slug` 幂等 upsert，并同步移除当天新版日报中已不存在的旧条目。
-6. `/news` 通过 `/api/news/editions?page=N&pageSize=3` 按日报展示，一页最多 3 天。
+6. `/news` 通过 `/api/news/editions?page=N&pageSize=1` 按日报展示，一天一页，完整展示所选日报的新闻；分类筛选与文章返回保留页码。API 默认且固定 `pageSize=1`，兼容旧查询参数但不再合并多天。
 
 ## Required repository secrets
 
