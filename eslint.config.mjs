@@ -14,6 +14,7 @@ const eslintConfig = defineConfig([
     ".sites-runtime/**",
     // Generated bundles and Emscripten glue; lint their source instead.
     "public/assets/about-push/**",
+    "public/pqc-practice/about-push/**",
     "public/pqc-practice/wasm/**",
     "next-env.d.ts",
   ]),
