@@ -7,8 +7,13 @@ class Style {
   setProperty(key, value) { this[key] = value; }
   getPropertyValue(key) { return this[key] ?? ''; }
   [Symbol.iterator]() { return Object.keys(this)[Symbol.iterator](); }
-  get cssText() { return JSON.stringify(this); }
-  set cssText(value) { Object.assign(this, JSON.parse(value)); }
+  get cssText() { return Object.entries(this).map(([key,value])=>`${key}:${value}`).join(';'); }
+  set cssText(value) {
+    for(const declaration of value.split(';')) {
+      const colon=declaration.indexOf(':');
+      if(colon!==-1)this[declaration.slice(0,colon)]=declaration.slice(colon+1);
+    }
+  }
 }
 class Element {
   constructor(id, computed = {}, rect = {}) {

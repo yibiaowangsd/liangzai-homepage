@@ -13,7 +13,9 @@ export function freezePage(source: HTMLElement) {
     // IDs drive the laboratory's grid, sidebar and material styling. Keeping
     // duplicate IDs breaks live updates; dropping them before freezing reflows
     // the page. Used styles also preserve inherited variables and route scopes.
-    for (const property of computed) copy.style.setProperty(property, computed.getPropertyValue(property));
+    // Assign once: thousands of per-property CSSOM mutations make large audit
+    // tables stall even though the clone is detached. Keep the full style set.
+    copy.style.cssText = Array.from(computed, property => `${property}:${computed.getPropertyValue(property)}`).join(";");
     copy.style.setProperty("animation", "none", "important");
     copy.style.setProperty("transition", "none", "important");
     for (const pseudo of ["::before", "::after"]) {
