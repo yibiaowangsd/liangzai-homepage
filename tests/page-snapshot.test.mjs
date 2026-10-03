@@ -21,10 +21,13 @@ class Element {
     this.rect = {left:0,top:0,width:100,height:20,...rect}; this.children = []; this.dataset = {};
     this.scrollTop = 0; this.scrollLeft = 0; this.attributes = {id};
   }
+  get parentElement() { return this.parent; }
+  get cells() { return this.children; }
+  remove() { this.parent.children.splice(this.parent.children.indexOf(this), 1); }
   append(child) { child.parent?.children.splice(child.parent.children.indexOf(child), 1); child.parent = this; this.children.push(child); }
   before(child) { child.parent = this.parent; this.parent.children.splice(this.parent.children.indexOf(this), 0, child); }
   querySelectorAll() { return this.children.flatMap(child => [child, ...child.querySelectorAll()]); }
-  cloneNode() { const copy = new this.constructor(this.id, this.computed, this.rect); for (const child of this.children) copy.append(child.cloneNode()); return copy; }
+  cloneNode() { const copy = new this.constructor(this.id, this.computed, this.rect); copy.tagName = this.tagName; for (const child of this.children) copy.append(child.cloneNode()); return copy; }
   getBoundingClientRect() { return this.rect; }
   removeAttribute(name) { delete this.attributes[name]; }
   setAttribute(name, value) { this.attributes[name] = value; }
@@ -39,7 +42,8 @@ class Canvas extends Element {
 function environment() {
   const originals = new Map();
   const replacements = {
-    document: {createElement: () => new Element('')}, HTMLInputElement: Input,
+    innerHeight: 900,
+    document: {createElement: tag => {const element = new Element('');element.tagName=tag.toUpperCase();return element;}}, HTMLInputElement: Input,
     HTMLTextAreaElement: TextArea, HTMLSelectElement: Select, HTMLCanvasElement: Canvas,
     getComputedStyle: (node, pseudo) => pseudo ? new Style({content:'none'}) : node.computed,
   };
@@ -108,5 +112,28 @@ test('snapshot preserves values, select state, scrolling and canvas frames', () 
     assert.equal(clone.children[1].scrollLeft,10);assert.equal(clone.children[2].selectedIndex,2);
     assert.equal(clone.children[3].drawn,canvas);assert.equal(clone.children[3].width,640);
     assert.equal(canvas.snapshotEvent.type,'liangzai:snapshot');
+  } finally {restore();}
+});
+
+
+test('large table snapshots preserve visible rows and exact offscreen space without freezing hidden cells', () => {
+  const restore=environment();
+  try {
+    const source=new Element('root');
+    const body=new Element('tbody');body.tagName='TBODY';source.append(body);
+    const hiddenStyle = new Style({position:'static'});
+    hiddenStyle[Symbol.iterator] = () => { throw new Error('Offscreen cell must not serialize computed styles'); };
+    for(let index=0;index<100;index++) {
+      const row=new Element(`row-${index}`,{}, {top:index*40-400,height:40}); row.tagName='TR';
+      const cell=new Element(`cell-${index}`,index>40?hiddenStyle:{}, {height:40});cell.colSpan=3;row.append(cell);body.append(row);
+    }
+    const {clone}=freezePage(source), rows=clone.children[0].children;
+    assert.equal(rows[0].style.height,'320px');
+    assert.equal(rows[0].cells[0].colSpan,3);
+    assert.equal(rows[1].id,'row-8');
+    assert.equal(rows.at(-2).id,'row-34');
+    assert.equal(rows.at(-1).style.height,'2600px');
+    assert.equal(rows.length,29);
+    assert.equal(rows.slice(1,-1).reduce((n,row)=>n+row.rect.height,0)+320+2600,4000);
   } finally {restore();}
 });

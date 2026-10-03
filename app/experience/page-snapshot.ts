@@ -7,7 +7,46 @@ export function freezePage(source: HTMLElement) {
   const positioned: { copy: HTMLElement; position: string; rect: DOMRect }[] = [];
   const pseudoRules: string[] = [];
 
+  // Audit tables can contain hundreds of rows. Only the visible rows can be
+  // painted by this viewport-sized overlay; preserve offscreen groups as exact
+  // height spacers rather than serializing thousands of invisible cells.
+  const omitted = new Set<HTMLElement>();
+  const copyByOriginal = new Map(originals.map((original, index) => [original, copies[index]]));
+  const bodies = originals.filter(original => original.tagName === "TBODY");
+  for (const body of bodies) {
+    const rows = Array.from(body.children).filter(child => child.tagName === "TR") as HTMLTableRowElement[];
+    // A spanning cell can begin outside the viewport but paint inside it.
+    if (rows.some(row => Array.from(row.cells).some(cell => cell.rowSpan > 1))) continue;
+    const columns = Math.max(1, ...rows.map(row => Array.from(row.cells).reduce((count, cell) => count + cell.colSpan, 0)));
+    let spacer: HTMLTableRowElement | undefined;
+    let spacerHeight = 0;
+    for (const row of rows) {
+      const rect = row.getBoundingClientRect();
+      // Small overscan keeps partially visible borders at the viewport edges.
+      const visible = rect.height > 0 && rect.top < innerHeight + 64 && rect.top + rect.height > -64;
+      if (visible) { spacer = undefined; spacerHeight = 0; continue; }
+      const copy = copyByOriginal.get(row)!;
+      if (!spacer) {
+        spacer = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = columns;
+        cell.style.cssText = "padding:0!important;border:0!important;line-height:0;font-size:0";
+        spacer.append(cell);
+        spacer.setAttribute("aria-hidden", "true");
+        spacer.style.cssText = "visibility:hidden;pointer-events:none";
+        copy.before(spacer);
+      }
+      spacerHeight += rect.height;
+      spacer.style.height = `${spacerHeight}px`;
+      spacer.cells[0].style.height = `${spacerHeight}px`;
+      copy.remove();
+      omitted.add(row);
+      for (const descendant of row.querySelectorAll<HTMLElement>("*")) omitted.add(descendant);
+    }
+  }
+
   originals.forEach((original, index) => {
+    if (omitted.has(original)) return;
     const copy = copies[index];
     const computed = getComputedStyle(original);
     // IDs drive the laboratory's grid, sidebar and material styling. Keeping
@@ -67,6 +106,7 @@ export function freezePage(source: HTMLElement) {
   clone.inert = true;
   return { clone, restoreScrollers() {
     originals.forEach((original, index) => {
+      if (omitted.has(original)) return;
       copies[index].scrollTop = original.scrollTop;
       copies[index].scrollLeft = original.scrollLeft;
     });
