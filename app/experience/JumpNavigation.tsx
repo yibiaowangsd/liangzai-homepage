@@ -85,7 +85,7 @@ export default function JumpNavigation({
         type="button"
         className="jump-trigger"
         disabled={blocked}
-        aria-label="打开跃迁导航，快捷键 Ctrl 或 Command 加 K"
+        aria-label="搜索全站，快捷键 Ctrl 或 Command 加 K"
         aria-haspopup="dialog"
         onClick={() => {
           onOpen();
@@ -93,7 +93,7 @@ export default function JumpNavigation({
           setOpen(true);
         }}
       >
-        <span>跃迁</span>
+        <span>搜索</span>
         <kbd>K</kbd>
       </button>
       {open && (
@@ -127,12 +127,12 @@ export default function JumpNavigation({
           <div className="jump-heading">
             <div>
               <p>找到下一个目的地</p>
-              <h2 id="jump-title">从好奇心，跃迁</h2>
+              <h2 id="jump-title">搜索全站</h2>
             </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              aria-label="关闭跃迁导航"
+              aria-label="关闭搜索"
             >
               关闭 <kbd>Esc</kbd>
             </button>

@@ -1,18 +1,11 @@
-/* Shared frame and cinematic home masthead. Each workspace keeps its controls. */
-html .site-chrome[data-scene="home"] { background: #07101bf2; color: #e5edfa; border-color: #b4cdef24; -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
-html .site-chrome[data-scene="home"] :is(.brand strong span,.motion-switch) { color: #b5c5dd; }
-html .site-chrome[data-scene="home"] .desktop-nav>a { color: #d0ddef; }
-html .site-chrome[data-scene="home"] .desktop-nav>a[aria-current] { color: #b4ceff; }
-html .site-chrome[data-scene="home"] .theme-picker select,
-html .site-chrome[data-scene="home"] .jump-trigger { background: #0d1b2c; color: #d9e7ff; border-color: #a4bfd14d; }
-html .site-chrome[data-scene="home"] .jump-trigger kbd { color: #b9cce5; background: #1c3048; }
-html .site-chrome[data-scene="home"] .menu-toggle { color: #d9e7ff; background: #152942; border-color: #a4bfd14d; }
-html .site-chrome[data-scene="home"] .theme-picker::after { border-color: #b9cce5; }
-html .studio-theme .studio-footer { --theme-bg: #07101b; --theme-ink: #e4ecf7; --theme-muted: #a2b6d0; --theme-accent: #b6cdff; --theme-on-accent: #07101b; --theme-control-border: #8ca9ce6e; padding-block: var(--scene-space) 24px; background: #07101b; color: #e4ecf7; border-top: 1px solid #aac2e22e; }
-html .studio-theme .studio-footer-top { gap: 4vw; }
-html .studio-theme .studio-footer-top p { font-size: clamp(24px,3vw,72px); line-height: 1.5; }
-html .studio-theme .studio-footer-cta { border-radius: 0; width: auto; height: auto; min-height: 52px; padding: 16px 24px; font-size: 14px; }
-html .studio-theme .studio-footer-word { font-size: clamp(64px,19vw,900px); letter-spacing: -.09em; line-height: 1.1; padding-block: 3vw; }
-html .studio-theme .studio-footer>nav { padding-block: 48px 28px; font-size: 13px; gap: 20px 3vw; }
-html .studio-theme .studio-footer-bottom { color: #a2b6d0; font-size: 11px; line-height: 1.8; }
-@media(max-width:700px) { html .studio-theme .studio-footer-top { align-items: start; flex-direction: column; gap: 28px; } html .studio-theme .studio-footer-cta { min-height: 48px; } html .studio-theme .studio-footer>nav { gap: 16px 24px; padding-top: 36px; } html .studio-theme .studio-footer-bottom { flex-wrap: wrap; gap: 12px; } }
+/* The surrounding frame follows the chosen palette; cinematic images retain their colors. */
+html .studio-theme .studio-footer { padding: clamp(36px,4vw,72px) var(--site-gutter) 24px; background: var(--theme-bg); color: var(--theme-ink); border-top: 1px solid var(--theme-border); }
+html .studio-theme .studio-footer-top { gap: 24px; align-items: center; }
+html .studio-theme .studio-footer-top p { font-size: clamp(22px,2.2vw,36px); line-height: 1.5; }
+html .studio-theme .studio-footer-cta { border-radius: 4px; width: auto; height: auto; min-height: 48px; padding: 12px 24px; font-size: 15px; }
+html .studio-theme .studio-footer .footer-groups { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); padding-block: 28px; gap: 24px; border: 0; }
+.footer-groups>div { display: flex; flex-wrap: wrap; align-content: start; gap: 8px 24px; }
+.footer-groups>div>span { flex-basis: 100%; font-size: 13px; color: var(--theme-muted); }
+.footer-groups a { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; }
+html .studio-theme .studio-footer-bottom { color: var(--theme-muted); font-size: 13px; line-height: 1.8; gap: 16px; flex-wrap: wrap; }
+@media(max-width:700px) { html .studio-theme .studio-footer-top { align-items: start; flex-direction: column; gap: 16px; } .footer-groups>div { flex-direction: column; gap: 4px; } }

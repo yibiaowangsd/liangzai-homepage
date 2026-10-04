@@ -14,9 +14,9 @@ import PageArrival from "./experience/PageArrival";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
 
 export const metadata: Metadata = {
-  title: "量仔 · 好奇心实验室",
+  title: "量仔 · 密码工程与实验",
   description:
-    "Yibiao 的好奇心实验室。探索密码工程、每日新闻、模型鉴赏与真实算法实验。",
+    "Yibiao 的密码工程与实验。探索密码工程、每日新闻、模型鉴赏与真实算法实验。",
   other: { "codex-preview": "development" },
   icons: {
     icon: "/assets/liangzai-mark.svg",
@@ -33,7 +33,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#F6F5EF" suppressHydrationWarning />
         {/* Synchronous by design: a saved theme must apply before the first paint. */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-        <script src="/theme/site-theme.js?v=20261003" />
+        <script src="/theme/site-theme.js?v=20261004-editorial" />
       </head>
       <body className="studio-theme">
         <HomeEffectsProvider>

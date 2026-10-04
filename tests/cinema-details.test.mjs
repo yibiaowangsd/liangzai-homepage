@@ -42,8 +42,8 @@ test('literal page headings omit sentence-ending full stops but preserve body pr
     }
   }
   const home = await read('app/QuantumHome.tsx');
-  assert.match(home, /在这里，想法可以运行。/);
-  assert.match(home, /如何值得信任？/);
+  assert.match(home, /让算法走向可用的连接。/);
+  assert.match(home, /验证一次密钥封装/);
 });
 
 test('all laboratory transports have contained opaque surfaces and no escaping wires', async () => {

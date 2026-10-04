@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import QuantumHome from "./QuantumHome";
 
+const title = "Yibiao · 后量子密码工程与实验";
+const description = "Yibiao 的个人技术实践：TLS / TLCP、SSH 与 IKE 抗量子协议、ML-KEM 混合密钥协商、密码敏捷，以及可在浏览器运行的算法实验与前沿技术简报。";
+const image = { url: "https://wangyibiao.com/assets/cinematic/vault-entrance-v2.webp", width: 1672, height: 941, alt: "蓝色光线照亮的密码之门 · Yibiao 后量子密码工程与实验" };
 export const metadata: Metadata = {
-  title: "量仔 · 探索与实践",
-  description:
-    "Yibiao 的好奇心实验室。密码工程、真实算法实验、每日新闻与角色故事。从数学原理到真实代码，让想法可以运行。",
+  title,
+  description,
+  alternates: { canonical: "https://wangyibiao.com/" },
+  openGraph: { title, description, url: "https://wangyibiao.com/", siteName: "Yibiao · 量仔", locale: "zh_CN", type: "website", images: [image] },
+  twitter: { card: "summary_large_image", title, description, images: [image.url] },
 };
 
 export default function Home() {

@@ -60,21 +60,19 @@ function browser({ saved = null, dark = false, storageBlocked = false, legacyMed
   };
 }
 
-test('bootstrap honors OS before paint without persisting an implicit choice', () => {
-  for (const dark of [false, true]) {
-    const page = browser({ dark });
-    assert.equal(page.root.dataset.theme, dark ? 'midnight' : 'paper');
-    assert.equal(page.root.dataset.themePreference, 'system');
-    assert.equal(page.root.style.colorScheme, dark ? 'dark' : 'light');
-    assert.equal(page.meta.content, dark ? '#101820' : '#F6F5EF');
-    assert.equal(page.writes.length, 0);
-    page.system(!dark);
-    assert.equal(page.root.dataset.theme, dark ? 'paper' : 'midnight');
+test('paper is the default and legacy themes safely migrate without touching application data', () => {
+  for (const saved of [null, 'system', 'mist', 'sand', 'unknown']) {
+    const page = browser({ saved, dark: true });
+    assert.equal(page.root.dataset.theme, 'paper');
+    assert.equal(page.root.dataset.themePreference, 'paper');
+    page.system(false);
+    assert.equal(page.root.dataset.theme, 'paper');
+    assert.equal(page.state.generatedKey, 'test-key');
   }
 });
 
-test('all four explicit palettes persist, ignore OS changes, and restore across documents', () => {
-  for (const theme of ['paper', 'midnight', 'mist', 'sand']) {
+test('both explicit palettes persist, ignore OS changes, and restore across documents', () => {
+  for (const theme of ['paper', 'midnight']) {
     const page = browser();
     const state = page.state;
     page.choose(theme);
@@ -89,72 +87,46 @@ test('all four explicit palettes persist, ignore OS changes, and restore across 
   }
 });
 
-test('system reset, React request event, native selection and late static controls all synchronize', () => {
-  const page = browser({ dark: true });
-  page.request('sand');
-  assert.equal(page.root.dataset.theme, 'sand');
-  page.changeSelect('mist');
-  assert.equal(page.root.dataset.theme, 'mist');
-  page.select.value = 'system';
-  page.ready();
-  assert.equal(page.select.value, 'mist');
-  page.choose('system');
+test('React, native controls, blocked storage, BFCache and cross-tab changes synchronize', () => {
+  const page = browser();
+  page.request('midnight');
   assert.equal(page.root.dataset.theme, 'midnight');
-  assert.equal(page.root.dataset.themePreference, 'system');
-  assert.equal(page.values.has('liangzai-theme'), false);
-  assert.equal(page.select.value, 'system');
-});
-
-test('blocked storage, invalid preferences and legacy media APIs fail safely', () => {
-  const invalid = browser({ saved: 'unknown', dark: true });
-  assert.equal(invalid.root.dataset.theme, 'midnight');
-  invalid.choose('__proto__');
-  invalid.choose({ paper: true });
-  assert.equal(invalid.root.dataset.theme, 'midnight');
-  const page = browser({ storageBlocked: true, legacyMedia: true });
-  page.system(true);
-  assert.equal(page.root.dataset.theme, 'midnight');
-  page.choose('mist');
-  page.restore();
-  assert.equal(page.root.dataset.theme, 'mist');
-  assert.equal(page.root.dataset.themePreference, 'mist');
-});
-
-test('cross-tab and BFCache changes synchronize only the theme preference', () => {
-  const page = browser({ saved: 'paper', dark: true });
-  page.storage('other-app-key', 'sand');
+  page.changeSelect('paper');
   assert.equal(page.root.dataset.theme, 'paper');
-  page.storage('liangzai-theme', 'sand');
-  assert.equal(page.root.dataset.theme, 'sand');
-  page.storage('liangzai-theme', null);
+  page.storage('liangzai-theme', 'midnight');
   assert.equal(page.root.dataset.theme, 'midnight');
-  page.values.set('liangzai-theme', 'mist');
+  page.values.set('liangzai-theme', 'paper');
   page.restore();
-  assert.equal(page.root.dataset.theme, 'mist');
-  page.storage(null, null);
-  assert.equal(page.root.dataset.themePreference, 'system');
+  assert.equal(page.root.dataset.theme, 'paper');
+  page.choose('__proto__');
+  page.choose({ paper: true });
+  assert.equal(page.root.dataset.theme, 'paper');
+  const blocked = browser({ storageBlocked: true });
+  blocked.choose('midnight');
+  blocked.restore();
+  assert.equal(blocked.root.dataset.theme, 'midnight');
 });
 
 test('both rendering paths load the same synchronous bootstrap and accessible native controls', async () => {
   const layout = await read('app/layout.tsx');
   assert.match(layout, /<html[^>]+suppressHydrationWarning/);
-  assert.match(layout, /<head>[\s\S]*<script src="\/theme\/site-theme\.js\?v=20261003"\s*\/>[\s\S]*<\/head>/);
+  assert.match(layout, /<head>[\s\S]*<script src="\/theme\/site-theme\.js\?v=20261004-editorial"\s*\/>[\s\S]*<\/head>/);
   assert.match(layout, /public\/theme\/site-theme\.css/);
   const picker = await read('app/theme/ThemePicker.tsx');
   assert.match(picker, /useSyncExternalStore/);
   assert.match(picker, /aria-label="页面主题"/);
-  for (const theme of ['paper', 'midnight', 'mist', 'sand', 'system']) assert.match(picker, new RegExp(`value="${theme}"`));
+  for (const theme of ['paper', 'midnight']) assert.match(picker, new RegExp(`value="${theme}"`));
   for (const path of ['index.html', 'audit.html']) {
     const html = await read('public/pqc-practice/' + path);
-    const script = html.match(/<script[^>]+src="\/theme\/site-theme\.js\?v=20261003"[^>]*>/)?.[0];
+    const script = html.match(/<script[^>]+src="\/theme\/site-theme\.js\?v=20261004-editorial"[^>]*>/)?.[0];
     assert.ok(script);
     assert.doesNotMatch(script, /async|defer|type="module"/);
     assert.ok(html.indexOf(script) < html.indexOf('<body'));
-    assert.match(html, /href="\/theme\/site-theme\.css\?v=20261004-design-audit"/);
+    assert.match(html, /href="\/theme\/site-theme\.css\?v=20261004-editorial"/);
     assert.match(html, /<select aria-label="页面主题" data-theme-select="static">/);
     assert.match(html, /\/pqc-practice\/about-push\/static\.js/);
     assert.doesNotMatch(html, /\/assets\/about-push\//);
-    for (const theme of ['paper', 'midnight', 'mist', 'sand', 'system']) assert.match(html, new RegExp(`value="${theme}"`));
+    for (const theme of ['paper', 'midnight']) assert.match(html, new RegExp(`value="${theme}"`));
   }
 });
 
@@ -170,7 +142,7 @@ function contrast(first, second) {
 
 test('vetted semantic palette text, accent labels and field boundaries meet contrast targets', async () => {
   const css = await read('public/theme/site-theme.css');
-  for (const theme of ['paper', 'midnight', 'mist', 'sand']) {
+  for (const theme of ['paper', 'midnight']) {
     const block = css.match(new RegExp(`:root\\[data-theme="${theme}"\\] \\{([^}]+)`))[1];
     const token = name => block.match(new RegExp(`--theme-${name}: (#[0-9a-f]+)`, 'i'))[1];
     for (const surface of ['bg', 'surface']) {
@@ -181,7 +153,6 @@ test('vetted semantic palette text, accent labels and field boundaries meet cont
     assert.ok(contrast(token('on-accent'), token('accent')) >= 4.5, `${theme}: button label`);
   }
   assert.match(css, /--theme-control-border: var\(--theme-muted\)/);
-  assert.match(css, /prefers-color-scheme: dark/);
   assert.match(css, /min-height: 44px/);
   assert.doesNotMatch(css, /filter:\s*(?:invert|hue-rotate)/);
 });
