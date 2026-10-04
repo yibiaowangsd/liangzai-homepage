@@ -15,7 +15,7 @@ test('laboratory responds to usable workspace width instead of prematurely stack
 
 test('both laboratory entrypoints request updated styles and updated dialogue is versioned', async () => {
   for (const page of ['index.html', 'audit.html']) {
-    assert.match(await read('public/pqc-practice/' + page), /studio\.css\?v=20261004-cinema/);
+    assert.match(await read('public/pqc-practice/' + page), /studio\.css\?v=20261004-design-audit/);
   }
   assert.match(await read('public/pqc-practice/app.js'), /dialogue\.js\?v=20261002-usability/);
 });
