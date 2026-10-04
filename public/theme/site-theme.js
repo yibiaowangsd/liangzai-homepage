@@ -8,11 +8,8 @@
   var palettes = {
     paper: "#F6F5EF",
     midnight: "#101820",
-    mist: "#EEF5F5",
-    sand: "#F4EEE5",
   };
   var root = document.documentElement;
-  var media = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 
   function isTheme(value) {
     return typeof value === "string" && Object.prototype.hasOwnProperty.call(palettes, value);
@@ -21,24 +18,24 @@
   function readPreference(fallback) {
     try {
       var saved = window.localStorage.getItem(storageKey);
-      return isTheme(saved) ? saved : null;
+      return isTheme(saved) ? saved : "paper";
     } catch {
-      return fallback || null;
+      return fallback || "paper";
     }
   }
 
-  var preference = readPreference(null);
+  var preference = readPreference("paper");
 
   function syncControls() {
     document.querySelectorAll('[data-theme-select="static"]').forEach(function (select) {
-      select.value = preference || "system";
+      select.value = preference;
     });
   }
 
   function apply() {
-    var theme = preference || (media && media.matches ? "midnight" : "paper");
+    var theme = preference;
     root.dataset.theme = theme;
-    root.dataset.themePreference = preference || "system";
+    root.dataset.themePreference = preference;
     root.style.colorScheme = theme === "midnight" ? "dark" : "light";
     var meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute("content", palettes[theme]);
@@ -47,11 +44,10 @@
   }
 
   function setPreference(value) {
-    if (value !== "system" && !isTheme(value)) return;
-    preference = value === "system" ? null : value;
+    if (!isTheme(value)) return;
+    preference = value;
     try {
-      if (preference) window.localStorage.setItem(storageKey, preference);
-      else window.localStorage.removeItem(storageKey);
+      window.localStorage.setItem(storageKey, preference);
     } catch {
       // Private/blocked storage still permits a theme for this document session.
     }
@@ -64,18 +60,13 @@
   });
   window.addEventListener("storage", function (event) {
     if (event.key !== storageKey && event.key !== null) return;
-    preference = isTheme(event.newValue) ? event.newValue : null;
+    preference = isTheme(event.newValue) ? event.newValue : "paper";
     apply();
   });
   window.addEventListener("pageshow", function () {
     preference = readPreference(preference);
     apply();
   });
-  if (media) {
-    var onSystemChange = function () { if (!preference) apply(); };
-    if (media.addEventListener) media.addEventListener("change", onSystemChange);
-    else if (media.addListener) media.addListener(onSystemChange);
-  }
   document.addEventListener("change", function (event) {
     var target = event.target;
     if (target && target.matches && target.matches('[data-theme-select="static"]')) {

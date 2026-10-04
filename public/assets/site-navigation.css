@@ -285,3 +285,21 @@
     display: none;
   }
 }
+
+/* Display controls live inside the directory; the header stays focused on navigation. */
+.site-preferences { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding-block: 24px; border-bottom: 1px solid var(--theme-border); }
+.settings-motion { min-height: 44px; padding: 10px 16px; border: 1px solid var(--theme-control-border); border-radius: 4px; background: var(--theme-surface); color: var(--theme-ink); font: inherit; cursor: pointer; }
+.settings-motion:focus-visible,.site-preferences :focus-visible { outline: 2px solid var(--theme-accent); outline-offset: 3px; }
+.practice-search { display: grid; gap: 8px; margin-top: 24px; color: var(--theme-ink); }
+.practice-search input { min-height: 44px; width: 100%; font: inherit; padding: 12px; border: 1px solid var(--theme-control-border); color: var(--theme-ink); background: var(--theme-bg); }
+@media (max-width: 700px) {
+  html:root:root { --site-header-height: 64px; }
+  html:root body .site-chrome { --header-height: 64px; grid-template-columns: minmax(0,1fr) auto; padding-block: 0; }
+  html:root body .site-chrome .chrome-actions { justify-self: end; gap: 8px; }
+  html:root body .site-chrome .jump-trigger { display: inline-flex; min-height: 44px; }
+  html:root body .site-chrome .menu-toggle { min-height: 44px; }
+}
+
+.practice-mobile-menu nav a[hidden] { display: none; }
+
+html .site-chrome .jump-trigger { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1px solid var(--theme-control-border); border-radius: 10px; background: var(--theme-surface); color: var(--theme-ink); font: 500 var(--type-caption)/1.4 var(--font-sans); cursor: pointer; }

@@ -17,7 +17,7 @@ test('searchable algorithm directory retains working lessons and clear lab navig
 
 test('navigation keeps practical home entry points after retiring the observatory', async () => {
  const home = await read('app/QuantumHome.tsx');
- assert.match(home, /aria-label="从这里开始"/);
+ assert.match(home, /href="\/pqc-practice"/);
  assert.doesNotMatch(home, /portal-observatory|href="\/observatory"/);
  assert.doesNotMatch(await read('app/experience/destinations.ts'), /href: "\/observatory"/);
  for (const page of ['index', 'audit']) assert.doesNotMatch(await read(`public/pqc-practice/${page}.html`), /href="\/observatory"/);

@@ -65,7 +65,7 @@ export function SiteHeader() {
             />
           </span>
           <strong>
-            量仔<span>好奇心实验室</span>
+            量仔<span>密码工程与实验</span>
           </strong>
         </Link>
         <nav className="desktop-nav" aria-label="主导航">
@@ -84,22 +84,7 @@ export function SiteHeader() {
             ))}
         </nav>
         <div className="chrome-actions">
-          <ThemePicker />
           <JumpNavigation blocked={open} onOpen={() => setOpen(false)} />
-          <button
-            className="motion-switch"
-            type="button"
-            onClick={toggle}
-            aria-pressed={paused}
-            aria-label={paused ? "开启动效" : "暂停动效"}
-          >
-            <span className="equalizer" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-            </span>
-            <span>{paused ? "静止" : "动态"}</span>
-          </button>
           <button
             className="menu-toggle"
             type="button"
@@ -107,9 +92,9 @@ export function SiteHeader() {
             aria-expanded={open}
             aria-controls="site-atlas"
             onClick={() => setOpen(true)}
-            aria-label="打开全站目录"
+            aria-label="打开设置与目录"
           >
-            <span>目录</span>
+            <span>设置</span>
             <i aria-hidden="true">＋</i>
           </button>
         </div>
@@ -119,12 +104,12 @@ export function SiteHeader() {
           ref={dialog}
           className="site-atlas"
           id="site-atlas"
-          aria-label="全站目录"
+          aria-label="设置与目录"
           onKeyDown={(event) => {
             if (event.key !== "Tab") return;
             const items = Array.from(
               event.currentTarget.querySelectorAll<HTMLElement>(
-                "button, a[href]",
+                "button, a[href], select",
               ),
             );
             const first = items[0],
@@ -143,7 +128,7 @@ export function SiteHeader() {
           }}
         >
           <div className="atlas-top">
-            <span>量仔 / 好奇心实验室</span>
+            <span>量仔 / 密码工程与实验</span>
             <button
               ref={close}
               type="button"
@@ -151,6 +136,12 @@ export function SiteHeader() {
               aria-label="关闭全站目录"
             >
               关闭 <span aria-hidden="true">×</span>
+            </button>
+          </div>
+          <div className="site-preferences" aria-label="显示设置">
+            <ThemePicker />
+            <button className="settings-motion" type="button" onClick={toggle} aria-pressed={paused}>
+              {paused ? "开启动效" : "暂停动效"}
             </button>
           </div>
           <div className="atlas-body">
@@ -200,28 +191,17 @@ export function SiteFooter() {
   return (
     <footer className="studio-footer">
       <div className="studio-footer-top">
-        <p>
-          探索没有终点。
-          <br />
-          下一个想法，会是什么？
-        </p>
-        <Link href="/about" className="studio-footer-cta">
-          一起保持好奇
-        </Link>
+        <p>Yibiao · 后量子密码工程</p>
+        <a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer" className="studio-footer-cta">GitHub</a>
       </div>
-      <nav aria-label="页脚导航">
-        {destinations.slice(1).map((item) => (
-          <NavigationLink href={item.href} key={item.href}>
-            {item.name}
-          </NavigationLink>
-        ))}
+      <nav className="footer-groups" aria-label="页脚导航">
+        <div><span>作品</span><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">本站源码</a><Link href="/models">角色模型</Link></div>
+        <div><span>阅读</span><Link href="/pqc-arsenal">算法原理</Link><Link href="/archive">量仔小传</Link></div>
+        <div><span>关于</span><Link href="/about#journey">个人经历</Link><Link href="/about#contact">联系与交流</Link></div>
       </nav>
-      <Link className="studio-footer-word" href="/" aria-label="量仔首页">
-        LIANGZAI<span></span>
-      </Link>
       <div className="studio-footer-bottom">
         <span>© 2026 量仔 · Yibiao</span>
-        <span>一份持续生长的个人实验</span>
+        <span>算法 · 协议 · 工程实践</span>
         <a href="#main-content">回到顶部 ↑</a>
       </div>
     </footer>

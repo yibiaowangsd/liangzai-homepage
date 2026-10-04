@@ -5,20 +5,34 @@ if (trigger && source) {
   const menu = document.createElement("dialog");
   menu.id = "practice-mobile-menu";
   menu.className = "practice-mobile-menu";
-  menu.setAttribute("aria-label", "全站目录");
+  menu.setAttribute("aria-label", "设置与目录");
   const heading = document.createElement("div");
   heading.className = "practice-menu-top";
   const name = document.createElement("span");
-  name.textContent = "量仔 / 好奇心实验室";
+  name.textContent = "量仔 / 密码工程与实验";
   const close = document.createElement("button");
   close.type = "button";
   close.textContent = "关闭 ×";
-  close.setAttribute("aria-label", "关闭全站目录");
+  close.setAttribute("aria-label", "关闭设置与目录");
   heading.append(name, close);
   const nav = source.cloneNode(true);
   nav.className = "";
   nav.setAttribute("aria-label", "全站导航");
-  menu.append(heading, nav);
+  const preferences = document.createElement("div");
+  preferences.className = "site-preferences";
+  preferences.append(document.querySelector("#practice-preferences").content.cloneNode(true));
+  const search = document.createElement("label");
+  search.className = "practice-search";
+  search.textContent = "搜索全站";
+  const input = document.createElement("input");
+  input.type = "search";
+  input.placeholder = "搜索算法、新闻或角色";
+  search.append(input);
+  input.addEventListener("input", () => {
+    const query = input.value.trim().toLowerCase();
+    nav.querySelectorAll("a").forEach(link => { link.hidden = !link.textContent.toLowerCase().includes(query); });
+  });
+  menu.append(heading, preferences, search, nav);
   document.body.append(menu);
   let opened = false,
     previousOverflow = "";
@@ -41,6 +55,12 @@ if (trigger && source) {
   }
   document.addEventListener("liangzai:close-directory", () => setOpen(false));
   trigger.addEventListener("click", () => setOpen(!opened));
+  document.querySelector(".jump-trigger")?.addEventListener("click", () => { setOpen(true); input.focus(); });
+  document.addEventListener("keydown", event => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k" && !document.querySelector("dialog[open]")) {
+      event.preventDefault(); setOpen(true); input.focus();
+    }
+  });
   close.addEventListener("click", () => setOpen(false));
   menu.addEventListener("cancel", (event) => {
     event.preventDefault();
@@ -55,7 +75,7 @@ if (trigger && source) {
       setOpen(false);
     }
     if (event.key !== "Tab") return;
-    const items = [close, ...nav.querySelectorAll("a")];
+    const items = [...menu.querySelectorAll("button, select, input, a:not([hidden])")];
     if (event.shiftKey && document.activeElement === items[0]) {
       event.preventDefault();
       items.at(-1).focus();

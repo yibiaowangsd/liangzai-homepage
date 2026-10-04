@@ -15,10 +15,6 @@ export default function CinemaEntrance() {
             return;
         el.close();
         document.body.style.overflow = overflow.current;
-        try {
-            sessionStorage.setItem("liangzai-cinema-v1", "seen");
-        }
-        catch { }
         previous.current?.focus({ preventScroll: true });
     }, []);
     const play = useCallback(() => {
@@ -34,22 +30,15 @@ export default function CinemaEntrance() {
     }, [finish]);
     useEffect(() => {
         const el = dialog.current;
-        let seen = false;
-        try {
-            seen = sessionStorage.getItem("liangzai-cinema-v1") === "seen";
-        }
-        catch { }
-        // Respect the visitor's explicit accessibility preference, not device performance.
-        if (!seen && !window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-            play();
+        // The entrance is opt-in: content is available on every first visit.
         return () => { if (timer.current)
             clearTimeout(timer.current); if (el?.open) {
             el.close();
             document.body.style.overflow = overflow.current;
         } };
-    }, [play]);
+    }, []);
     return <>
-    <button className="portal-replay" type="button" onClick={play}>重看序幕</button>
+    <button className="portal-replay" type="button" onClick={play}>播放序幕</button>
     <dialog ref={dialog} className="cinema-entrance" aria-label="量仔首页电影序幕" onCancel={e => { e.preventDefault(); finish(); }} onKeyDown={e => {
       if (e.currentTarget.open && shouldSkipCinema(e)) { e.preventDefault(); finish(); }
     }}>

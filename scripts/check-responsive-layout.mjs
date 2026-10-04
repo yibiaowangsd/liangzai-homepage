@@ -64,7 +64,7 @@ const viewports = [
 ];
 const routes = ['/', '/pqc-practice/index.html', '/pqc-practice/audit.html', '/news', `/news/${items[0].slug}`, '/about', '/models', '/storybook', '/archive', '/pqc-arsenal'];
 const contentSelectors = {
-  '/': '.portal-quickstart, .portal-tools, .portal-news, .portal-world',
+  '/': '.portal-tools, .portal-news, .portal-world',
   '/pqc-practice/index.html': '.practice-layout',
   '/pqc-practice/audit.html': '.audit-table-scroll',
   '/news': '.front-page, .edition, .news-pagination, .news-method-note',
@@ -146,7 +146,7 @@ try {
               if (layout.home) assert.ok(layout.heroInset <= layout.width * .055, 'home copy has oversized side gutters');
             }
             if (layout.home) {
-              assert.ok(layout.home.size >= 60 && layout.home.size <= 260, `home title size ${layout.home.size}`);
+              assert.ok(layout.home.size >= 35 && layout.home.size <= 128, `home title size ${layout.home.size}`);
               assert.ok(layout.home.actions.bottom + 12 <= layout.home.foot.top, 'hero footer overlaps actions');
               assert.ok(layout.home.foot.bottom <= layout.home.hero.bottom + 1, 'hero clips its footer');
               if (layout.editionNote) assert.ok(layout.editionNote.top >= layout.home.hero.bottom - 1, 'news prompt floats over the cinematic hero');
@@ -186,28 +186,30 @@ try {
           }
         }
         await page.setViewportSize({ width: 320, height: 568 });
-        await page.getByRole('button', { name: '打开全站目录', exact: true }).click();
+        await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
         const menu = page.locator('dialog[open]');
         await menu.waitFor();
         assert.equal(await menu.locator('a[href="/observatory"]').count(), 0);
         await page.keyboard.press('Escape');
         await menu.waitFor({ state: 'hidden' });
       }
-      // Native selectors and the React selector use the same four palettes.
+      // Native selectors and the React selector use the same two palettes.
       await page.goto(base, { waitUntil: 'networkidle' });
-      for (const theme of ['paper', 'midnight', 'mist', 'sand']) {
+      await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
+      for (const theme of ['paper', 'midnight']) {
         await page.getByLabel('页面主题', { exact: true }).selectOption(theme);
         await page.waitForFunction(theme => document.documentElement.dataset.theme === theme, theme);
       }
       // The redesign must preserve the entrance, navigation and real page controls.
       await page.getByLabel('页面主题', { exact: true }).selectOption('paper');
-      await page.getByRole('button', { name: '重看序幕', exact: true }).click();
+      await page.keyboard.press('Escape');
+      await page.getByRole('button', { name: '播放序幕', exact: true }).click();
       await page.locator('.cinema-entrance[open]').waitFor();
       await page.keyboard.press('Space');
       await page.locator('.cinema-entrance[open]').waitFor({ state: 'hidden' });
-      assert.equal(await page.evaluate(() => document.activeElement?.textContent), '重看序幕', 'replay restores keyboard focus');
+      assert.equal(await page.evaluate(() => document.activeElement?.textContent), '播放序幕', 'replay restores keyboard focus');
       assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', 'intro leaves the page locked');
-      await page.locator('.portal-quickstart a[href="#selected"]').click();
+      await page.locator('.portal-actions a[href="#selected"]').click();
       await page.waitForFunction(() => location.hash === '#selected');
       assert.ok(await page.locator('#selected').isVisible());
       await page.goto(base + '/pqc-arsenal', { waitUntil: 'networkidle' });
