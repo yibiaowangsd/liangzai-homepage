@@ -2,5 +2,11 @@
 :root {
   --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial,
     "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  /* Display type belongs to the cinematic home; reading and controls use this scale. */
+  --type-caption: .8125rem;
+  --type-ui: .875rem;
+  --type-body: 1rem;
+  --type-section: clamp(1.5rem, 1.25rem + .6vw, 2rem);
+  --type-page: clamp(1.875rem, 1.5rem + 1vw, 2.25rem);
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 }

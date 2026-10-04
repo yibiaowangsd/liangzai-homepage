@@ -536,3 +536,11 @@
 .cinematic-arsenal .arsenal-sources { padding: 40px var(--site-gutter) var(--scene-space); }
 @media(max-width:1000px) { .cinematic-arsenal .arsenal-hero { grid-template-columns: 1fr; } .arsenal-intro-art { aspect-ratio: 2.4; } .algorithm-directory-grid { gap: 20px; } }
 @media(max-width:680px) { .algorithm-directory-grid { gap: 16px; } .algorithm-directory-grid img { height: 100%; aspect-ratio: auto; } .algorithm-directory-grid article>div { padding: 16px; } .cinematic-arsenal .section-intro-grid { grid-template-columns: 1fr; } .cinematic-arsenal .crypto-demo { padding: 32px 16px; gap: 10px; } .arsenal-intro-art { aspect-ratio: 1.8; } }
+
+.cinematic-arsenal :is(.arsenal-hero h1,.big-question h2,.math-heading h2,.loadout-title h2) { letter-spacing: 0; line-height: 1.4; }
+.cinematic-arsenal .weapon-identity h2 { font-size: clamp(28px,3vw,42px); line-height: 1.2; letter-spacing: -.01em; }
+.cinematic-arsenal .arsenal-section-head, .cinematic-arsenal .hero-index { font-size: var(--type-caption); }
+.cinematic-arsenal .arsenal-index { font-size: var(--type-ui); }
+.cinematic-arsenal .arsenal-index a { display: inline-flex; align-items: center; min-height: 44px; }
+.algorithm-directory-grid p { font-size: var(--type-body); line-height: 1.8; }
+.algorithm-directory-grid a { font-size: var(--type-ui); }

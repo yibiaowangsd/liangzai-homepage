@@ -39,6 +39,9 @@ export function sourceCover(item: CoverStory): string | null {
     const src = item.cover_image?.trim();
     if (!src || /^(?:https:\/\/wangyibiao\.com)?\/news-covers\/(?:pqc|protocol|standards|security|ai)\.svg(?:\?.*)?$/.test(src))
         return null;
+    // Publisher logos identify a source, not an article. Keep source credit in text
+    // while using the existing topic artwork for these generic social/logo assets.
+    if (/arxiv[-_/]?(?:logo|logomark|logotype)|(?:^|[/_-])(?:logo|favicon)(?:[._/-]|$)|iacrlogo/i.test(src)) return null;
     // Only local root-relative or HTTPS images, never protocol-relative/script/data URLs.
     return /^(?:https:\/\/|\/(?!\/))/.test(src) ? src : null;
 }

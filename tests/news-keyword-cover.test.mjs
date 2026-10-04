@@ -14,7 +14,7 @@ test('keyword covers follow the subject, not just its broad category',()=>{
 test('real source images remain, old placeholders and invalid URLs fall back',()=>{
   const source='https://example.com/news-covers/pqc.svg';
   assert.equal(coverFor(story('ML-KEM',{cover_image:source})),source);
-  for(const cover_image of [null,'','  ','/news-covers/pqc.svg','https://wangyibiao.com/news-covers/security.svg','javascript:alert(1)','//other.example/cover']){
+  for(const cover_image of [null,'','  ','/news-covers/pqc.svg','https://wangyibiao.com/news-covers/security.svg','javascript:alert(1)','//other.example/cover','https://arxiv.org/static/browse/0.3.4/images/arxiv-logo-fb.png','https://eprint.iacr.org/img/iacrlogo.png']){
     assert.equal(sourceCover(story('ML-KEM',{cover_image})),null);
     assert.match(coverFor(story('ML-KEM',{cover_image})),/ml-kem-studio/);
   }

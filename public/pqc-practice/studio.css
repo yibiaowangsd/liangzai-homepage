@@ -557,3 +557,20 @@ button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-
   .dialogue .actor-body,.kex-peer { padding: clamp(16px,2cqw,40px); }
 }
 @media(max-width:900px) { .practice-layout,.practice-layout.is-collapsed { grid-template-columns: minmax(0,1fr); gap: 20px; } .page-heading { padding-block: 28px; } }
+
+/* Separate the task title from its explanation, at every workspace width. */
+.lab-heading { display: grid; grid-template-columns: minmax(0,1fr); gap: 6px; margin-bottom: 20px; }
+.lab-heading h2 { margin: 0; font-size: var(--type-section); line-height: 1.4; letter-spacing: 0; }
+.lab-heading p { margin: 0; max-width: 48em; font-size: var(--type-ui); line-height: 1.8; }
+.page-heading h1 { letter-spacing: 0; }
+.page-heading > div > p:last-child { font-size: var(--type-body); line-height: 1.8; }
+.heading-links { flex-wrap: wrap; }
+.heading-links a { min-height: 44px; display: inline-flex; align-items: center; font-size: var(--type-ui); }
+.library-pick, .algorithm-choice, .primary, .send-button, .quiet-button { font-size: var(--type-ui); }
+.library-pick small, .algorithm-choice small, .sidebar-status, .inline-hint,
+.guide p, .report-intro, .report-detail, .material-foot, .packet-details summary { font-size: var(--type-caption); line-height: 1.7; }
+.tool { font-size: var(--type-ui); }
+.configuration .select-field, .actor-status, .step-list { font-size: var(--type-caption); }
+@media (max-width: 600px) {
+  .material textarea, .message-input, .sidebar-body > input, .configuration select { font-size: 16px; }
+}

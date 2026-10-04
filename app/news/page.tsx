@@ -140,7 +140,7 @@ export default async function NewsPage({
       <section className="news-toolbar" aria-label="前沿新闻导航">
         <div className="news-toolbar-title">
           <h1>前沿新闻</h1>
-          <span>THE DAILY SIGNAL</span>
+
         </div>
         {newest && (
           <nav className="news-day-controls" aria-label="本期日期与日刊切换">

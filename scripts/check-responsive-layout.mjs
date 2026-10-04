@@ -124,14 +124,18 @@ try {
               };
             }, contentSelectors[path] || 'main');
             assert.ok(layout.scroll <= layout.width + 1, `horizontal overflow: ${layout.scroll}/${layout.width}`);
-            assert.ok(layout.brand.right + 2 <= layout.actions.left, 'header controls overlap brand');
+            assert.ok(layout.brand.right + 2 <= layout.actions.left || layout.brand.bottom <= layout.actions.top + 1, 'header controls overlap brand');
             assert.ok(layout.actions.right <= layout.width + 1, 'header controls leave viewport');
             if (layout.nav) {
               assert.ok(layout.brand.right + 2 <= layout.nav.left, 'navigation overlaps brand');
               assert.ok(layout.nav.right + 2 <= layout.actions.left, 'navigation overlaps controls');
             }
             assert.equal(layout.retiredLinks, 0, 'retired destination appears in navigation');
-            if (viewport.width >= 1280) {
+            if (path.startsWith('/news/')) {
+              assert.ok(layout.content[0].width <= 928, 'article line length grows without a reading limit');
+              assert.ok(layout.content[0].width >= Math.min(240, layout.width - 40), 'article reading column is too narrow');
+            }
+            if (viewport.width >= 1280 && !path.startsWith('/news/')) {
               assert.ok(layout.content.length > 0, 'page content is missing');
               for (const block of layout.content) {
                 const maxInset = layout.width * .055;

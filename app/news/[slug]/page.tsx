@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import StoryImage from "../StoryImage";
@@ -63,6 +64,11 @@ function NewsBody({ content }: { content: string }) {
   flushParagraph();
 
   return <div className="article-body">{blocks}</div>;
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const item = await getNewsDetail((await params).slug);
+  return item ? { title: `${item.title} · 量仔`, description: item.summary || undefined } : { title: "新闻未找到 · 量仔" };
 }
 
 export default async function NewsDetailPage({

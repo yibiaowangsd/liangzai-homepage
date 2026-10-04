@@ -150,7 +150,7 @@ test('both rendering paths load the same synchronous bootstrap and accessible na
     assert.ok(script);
     assert.doesNotMatch(script, /async|defer|type="module"/);
     assert.ok(html.indexOf(script) < html.indexOf('<body'));
-    assert.match(html, /href="\/theme\/site-theme\.css\?v=20261004-cinema"/);
+    assert.match(html, /href="\/theme\/site-theme\.css\?v=20261004-design-audit"/);
     assert.match(html, /<select aria-label="页面主题" data-theme-select="static">/);
     assert.match(html, /\/pqc-practice\/about-push\/static\.js/);
     assert.doesNotMatch(html, /\/assets\/about-push\//);

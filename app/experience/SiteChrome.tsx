@@ -119,7 +119,7 @@ export function SiteHeader() {
           ref={dialog}
           className="site-atlas"
           id="site-atlas"
-          aria-labelledby="atlas-title"
+          aria-label="全站目录"
           onKeyDown={(event) => {
             if (event.key !== "Tab") return;
             const items = Array.from(
