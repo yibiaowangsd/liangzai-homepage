@@ -4,8 +4,8 @@ html .studio-theme .studio-footer-top { gap: 24px; align-items: center; }
 html .studio-theme .studio-footer-top p { font-size: clamp(22px,2.2vw,36px); line-height: 1.5; }
 html .studio-theme .studio-footer-cta { border-radius: 4px; width: auto; height: auto; min-height: 48px; padding: 12px 24px; font-size: 15px; }
 html .studio-theme .studio-footer .footer-groups { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); padding-block: 28px; gap: 24px; border: 0; }
-.footer-groups>div { display: flex; flex-wrap: wrap; align-content: start; gap: 8px 24px; }
-.footer-groups>div>span { flex-basis: 100%; font-size: 13px; color: var(--theme-muted); }
+.footer-groups>div { display: grid; grid-template-columns: minmax(0,1fr); align-content: start; gap: 4px; min-width: 0; }
+.footer-groups>div>span { font-size: 13px; color: var(--theme-muted); }
 .footer-groups a { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; }
 html .studio-theme .studio-footer-bottom { color: var(--theme-muted); font-size: 13px; line-height: 1.8; gap: 16px; flex-wrap: wrap; }
-@media(max-width:700px) { html .studio-theme .studio-footer-top { align-items: start; flex-direction: column; gap: 16px; } .footer-groups>div { flex-direction: column; gap: 4px; } }
+@media(max-width:700px) { html .studio-theme .studio-footer-top { align-items: start; flex-direction: column; gap: 16px; } }
