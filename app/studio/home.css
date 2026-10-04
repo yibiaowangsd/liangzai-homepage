@@ -10,7 +10,7 @@
 .portal-caption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: clamp(22px,3vh,64px) var(--site-gutter); font: 11px/1.6 var(--font-mono-en); letter-spacing: .15em; color: #d2dff3b3; }
 .portal-hero-copy { margin-block: auto; padding: clamp(40px,6vh,140px) var(--site-gutter) clamp(48px,8vh,160px); }
 .portal-home .portal-eyebrow { font: 500 11px/1.6 var(--font-mono-en); letter-spacing: .13em; margin: 0 0 24px; color: var(--film-muted); }
-.portal-hero-copy h1 { font-size: clamp(60px,8.4vw,260px); line-height: 1.08; letter-spacing: -.06em; font-weight: 550; margin: 0 0 clamp(24px,3vw,68px); }
+.portal-hero-copy h1 { font-size: clamp(3.75rem,1rem + 7vw,16.25rem); line-height: 1.08; letter-spacing: -.025em; font-weight: 550; margin: 0 0 clamp(24px,3vw,68px); }
 .portal-hero-copy h1 em { font-style: normal; font-weight: 400; color: #b6cdff; }
 .portal-home .portal-hero-copy>p:not(.portal-eyebrow) { font-size: clamp(15px,1.15vw,22px); line-height: 1.9; color: #c5d2e4; }
 .portal-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 24px; margin-top: 32px; }
@@ -315,3 +315,9 @@ html .portal-film .portal-edition-slot .news-edition-note { position: relative; 
 html .portal-edition-slot .news-edition-note button:first-child>span { color: #9cb9e0; gap: 20px; margin: 0; font-size: 11px; }
 .portal-edition-slot .news-edition-note strong { font-size: 13px; }
 html .portal-edition-slot .news-edition-note button:last-child { width: 44px; height: 44px; color: #b2c8e5; }
+
+.portal-home .portal-eyebrow, .portal-caption, .portal-quickstart span,
+.portal-lab-meta, .portal-hero-foot small { font-size: var(--type-caption); }
+.portal-quickstart p, .portal-chapter-note p, .portal-world-card p,
+.portal-news-intro > p:not(.portal-eyebrow), .portal-dispatch-lead > p { font-size: var(--type-body); line-height: 1.85; }
+.portal-home .portal-chapter { scroll-margin-top: var(--site-header-height); }

@@ -21,7 +21,7 @@
 .hero h1 {
   margin: 0;
   font-size: clamp(36px, 4.5vw, 64px);
-  letter-spacing: -0.085em;
+  letter-spacing: 0;
   font-weight: 650;
   line-height: 0.9;
 }
@@ -82,7 +82,7 @@
   font-size: clamp(36px, 4.2vw, 64px);
   line-height: 1.1;
   font-weight: 500;
-  letter-spacing: -0.06em;
+  letter-spacing: 0;
   margin: 0;
 }
 .sectionHead > p:last-child {
@@ -126,7 +126,7 @@
   margin: 0;
   font-size: 28px;
   font-weight: 500;
-  letter-spacing: -0.045em;
+  letter-spacing: 0;
 }
 .place > span {
   color: var(--studio-blue);
@@ -176,7 +176,7 @@
   font-size: 36px;
   font-weight: 500;
   margin: 38px 0 20px;
-  letter-spacing: -0.045em;
+  letter-spacing: 0;
 }
 .focusCard p {
   color: #e1e6ff;
@@ -418,3 +418,9 @@
  .projectAction { grid-column: 2; justify-content: start; }
  .signature { position: static; margin-top: 40px; }
 }
+
+.sectionHead h2, .contact h2, .project h3 { letter-spacing: 0; line-height: 1.4; }
+.sectionHead > p:last-child, .project p, .focusCard p, .contact > p:not(.kicker) { font-size: var(--type-body); line-height: 1.85; }
+.index { font-size: var(--type-ui); }
+.index a { display: inline-flex; align-items: center; min-height: 44px; }
+.actions { flex-wrap: wrap; }

@@ -205,7 +205,7 @@ html .theme-picker select {
   border-radius: 10px;
   background: var(--theme-surface);
   color: var(--theme-ink);
-  font: 500 12px/1.4 var(--font-sans);
+  font: 500 14px/1.4 var(--font-sans);
   cursor: pointer;
 }
 .theme-picker::after {
@@ -383,3 +383,20 @@ html .cinematic-arsenal .lattice-visual {
 html .cinematic-arsenal .lattice-visual > span.target { background: var(--theme-success); border-color: var(--theme-ink); }
 html .dossier-chronicle-copy p { color: var(--theme-muted); }
 html .dossier-archive-log { border-color: var(--theme-border); }
+
+/* At 320 CSS px the navigation wraps its tools instead of clipping controls. */
+@media (max-width: 380px) {
+  :root:root { --site-header-height: 112px; }
+  html .site-chrome, html .topbar.site-chrome {
+    --header-height: 112px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-block: 6px;
+  }
+  html .site-chrome .brand { justify-self: start; }
+  html .site-chrome .chrome-actions { justify-self: stretch; justify-content: flex-end; }
+}
+html .site-chrome .motion-switch,
+html .site-chrome .jump-trigger,
+html .site-chrome .menu-toggle { font-size: var(--type-caption); }
+html:root body .site-chrome[data-scene="home"] :focus-visible { outline-color: #dce5ff; }

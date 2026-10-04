@@ -285,8 +285,8 @@
   margin: 0;
   font-size: clamp(26px, 2.25vw, 34px);
   font-weight: 720;
-  line-height: 1.2;
-  letter-spacing: -0.04em;
+  line-height: 1.4;
+  letter-spacing: 0;
   text-wrap: balance;
 }
 
@@ -357,7 +357,7 @@
   font-size: 16px;
   font-weight: 680;
   line-height: 1.5;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .edition {
@@ -387,8 +387,8 @@
   margin: 10px 0 0;
   font-size: clamp(26px, 3vw, 32px);
   font-weight: 720;
-  line-height: 1.2;
-  letter-spacing: -0.04em;
+  line-height: 1.4;
+  letter-spacing: 0;
 }
 
 .edition-head p {
@@ -449,8 +449,8 @@
   margin: 0;
   font-size: clamp(22px, 1.9vw, 28px);
   font-weight: 720;
-  line-height: 1.25;
-  letter-spacing: -0.03em;
+  line-height: 1.45;
+  letter-spacing: 0;
 }
 
 .desk-lead-copy > p:not(.desk-kicker) {
@@ -482,17 +482,17 @@
 }
 .brief-row h4 {
   margin: 0;
-  font-size: 17px;
-  font-weight: 680;
+  font-size: 18px;
+  font-weight: 650;
   line-height: 1.5;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
 }
 
 .brief-row p {
   margin: 8px 0;
   color: var(--soft);
-  font-size: 14px;
-  line-height: 1.7;
+  font-size: 15px;
+  line-height: 1.8;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
@@ -675,7 +675,7 @@
 .article-date-note {
   margin: 12px 0 0;
   color: var(--soft);
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.7;
 }
 
@@ -961,20 +961,30 @@
 .lead-story { grid-template-columns: minmax(0,1.15fr) minmax(0,1fr); gap: 5vw; }
 .lead-visual { width: 100%; min-width: 0; height: auto; aspect-ratio: 1.65; border-radius: 0; align-self: start; }
 .lead-copy { max-width: 70ch; }
-.front-deck { gap: 4vw; }
-.desk { padding-block: clamp(40px,5vw,120px); }
+.front-deck { column-gap: clamp(24px, 3vw, 64px); row-gap: 0; }
+.desk { padding-block: clamp(24px,3vw,56px); }
 .desk-layout { gap: 5vw; }
 .desk-lead-image { border-radius: 0; }
 .news-method-note { padding-block: clamp(32px,4vw,100px); }
-.article-shell { display: grid; grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); gap: 8vw; align-items: start; padding: clamp(32px,4vw,100px) var(--site-gutter) var(--scene-space); }
-.article-header { position: sticky; top: calc(var(--site-header-height) + 32px); padding: 0; }
-.article-header h1 { line-height: 1.35; max-width: 24ch; }
-.article-layout { max-width: 74ch; width: 100%; margin: 0; padding: 0; }
+.article-shell { display: block; width: 100%; max-width: 58rem; margin-inline: auto; padding: clamp(28px,4vw,64px) clamp(20px,4vw,48px) var(--scene-space); }
+.article-header { position: static; padding: 0 0 32px; border-bottom: 1px solid var(--rule); }
+.article-header h1 { line-height: 1.45; letter-spacing: 0; max-width: none; text-wrap: pretty; }
+.article-layout { max-width: none; width: 100%; margin: 0; padding-top: 32px; }
 .article-reading-start { border-radius: 0; padding: 20px 0; background: transparent; border-inline: 0; }
 .article-hero-image>.story-image-frame { border-radius: 0; }
 .article-takeaway .article-deck { color: var(--soft); }
 .article-body> :first-child { margin-top: 0; }
 .article-body h2 { font-size: 26px; }
-@media(max-width:1000px) { .article-shell { grid-template-columns: 1fr; gap: 40px; } .article-header { position: static; } .article-header h1 { max-width: 34ch; } .article-layout { max-width: 74ch; } }
+@media(max-width:1000px) { .article-shell { grid-template-columns: 1fr; gap: 40px; } .article-header { position: static; } .article-header h1 { max-width: none; } .article-layout { max-width: none; } }
 @media(max-width:780px) { .lead-story { grid-template-columns: 1fr; gap: 24px; } .lead-visual { grid-column: 1; grid-row: 2; aspect-ratio: 1.7; } .lead-copy { grid-row: 1; } .article-shell { padding-block: 28px 64px; gap: 32px; } }
 @media(max-height:800px) { .article-header { position: static; } }
+
+/* Chinese titles need natural tracking; publication metadata stays secondary. */
+.newsroom :is(.lead-kicker, .desk-kicker),
+.news-category-menu > nav small,
+.news-day-controls span, .edition-label { font-size: var(--type-caption); letter-spacing: 0; }
+.newsroom :is(h1,h2,h3,h4) { letter-spacing: 0; }
+.newsroom :is(h2,h3,h4) a:hover { text-decoration: underline; text-underline-offset: .2em; }
+.article-byline { font-size: var(--type-caption); line-height: 1.8; }
+.article-body :is(h2,h3) { letter-spacing: 0; }
+@media (max-width: 780px) { .news-toolbar { position: static; } }

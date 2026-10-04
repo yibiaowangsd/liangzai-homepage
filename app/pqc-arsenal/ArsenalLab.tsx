@@ -557,7 +557,7 @@ export default function ArsenalLab() {
       className="arsenal-shell cinematic-arsenal"
     >
       <nav className="arsenal-index" aria-label="PQC 内容章节">
-        <span>THE POST-QUANTUM ARSENAL</span>
+        <span>图鉴目录</span>
         <div>
           <a href="#break">01 失效</a>
           <a href="#math">02 数学</a>
@@ -569,7 +569,7 @@ export default function ArsenalLab() {
       <header className="arsenal-hero">
         <div className="arsenal-hero-copy">
           <p className="arsenal-eyebrow" data-intro>
-            <span>Q–∞ / ARMORY 004</span> 面向未来的密码学
+            面向未来的密码学
           </p>
           <h1 data-title>
             密码<em>图鉴</em>
@@ -601,7 +601,7 @@ export default function ArsenalLab() {
         <div className="algorithm-directory-grid">
           {weapons.filter((item) => `${item.name} ${item.role} ${item.principle} ${item.simple}`.toLowerCase().includes(catalogQuery.trim().toLowerCase())).map((item) => {
             const visual = heroWeapons.find((entry) => entry.name === item.name);
-            return <article key={item.id}><img src={visual?.image} alt={visual ? `${item.name} · ${visual.note}` : item.name} width="768" height="768" loading="lazy" /><div><span>{item.role}</span><h3>{item.name}</h3><p>{item.simple}</p><small>{item.status} · {item.id === "fn-dsa" ? "原理参考，未接入本地运行" : "可在浏览器运行"}</small><a href="#weapons" onClick={() => chooseWeapon(item.id)}>查看原理与参数 →</a>{item.id !== "fn-dsa" && <a href="/pqc-practice">进入实验室选择 {item.name} ↗</a>}</div></article>;
+            return <article key={item.id}><img src={visual?.image} alt={visual ? `${item.name} · ${visual.note}` : item.name} width="768" height="768" loading="lazy" /><div><span>{item.role}</span><h3>{item.name}</h3><p>{item.simple}</p><small>{item.status} · {item.id === "fn-dsa" ? "原理参考，未接入本地运行" : "可在浏览器运行"}</small><a href="#weapons" onClick={() => chooseWeapon(item.id)}>查看原理与参数</a>{item.id !== "fn-dsa" && <a href="/pqc-practice">进入实验室选择 {item.name}</a>}</div></article>;
           })}
         </div>
         {!weapons.some((item) => `${item.name} ${item.role} ${item.principle} ${item.simple}`.toLowerCase().includes(catalogQuery.trim().toLowerCase())) && <p role="status" className="algorithm-empty">没有匹配的算法。试试 ML-KEM、签名或哈希。</p>}
@@ -610,7 +610,7 @@ export default function ArsenalLab() {
       <section id="break" className="arsenal-section break-section">
         <header className="arsenal-section-head" data-reveal>
           <span>01 / 旧武器为何失效</span>
-          <span>SHOR ATTACK SURFACE</span>
+
         </header>
         <div className="section-intro-grid" data-reveal>
           <div className="big-question">
@@ -749,7 +749,7 @@ export default function ArsenalLab() {
       <section id="math" className="arsenal-section math-section">
         <header className="arsenal-section-head" data-reveal>
           <span>02 / 数学底座</span>
-          <span>FROM EQUATIONS TO ASSUMPTIONS</span>
+
         </header>
         <div className="math-heading" data-reveal>
           <p className="marker-note">PQC 不是一种算法</p>
@@ -842,7 +842,7 @@ export default function ArsenalLab() {
       <section id="weapons" className="arsenal-section weapons-section">
         <header className="arsenal-section-head" data-reveal>
           <span>03 / 四件武器</span>
-          <span>SELECT · DERIVE · VERIFY</span>
+
         </header>
         <div className="weapon-tabs" role="tablist" aria-label="选择 PQC 算法">
           {weapons.map((item, index) => (
@@ -990,7 +990,7 @@ export default function ArsenalLab() {
       <section id="loadout" className="arsenal-section loadout-section">
         <header className="arsenal-section-head" data-reveal>
           <span>04 / 工程选型</span>
-          <span>MISSION LOADOUT</span>
+
         </header>
         <div className="loadout-grid" data-reveal>
           <div className="loadout-title">

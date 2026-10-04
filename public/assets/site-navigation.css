@@ -43,11 +43,11 @@
   align-items: center;
   font-size: 21px;
   gap: 12px;
-  letter-spacing: -0.07em;
+  letter-spacing: 0;
 }
 .site-chrome .brand strong span {
   font:
-    10px/1.2 Arial,
+    12px/1.4 Arial,
     "Microsoft YaHei",
     sans-serif;
   letter-spacing: 0.04em;
@@ -65,7 +65,8 @@
   white-space: nowrap;
   position: relative;
   padding: 28px 0;
-  font-size: 12px;
+  font-size: var(--type-ui);
+  font-weight: 550;
   text-decoration: none;
 }
 .site-chrome .desktop-nav > a:after {
