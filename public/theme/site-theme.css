@@ -360,4 +360,4 @@ html .dossier-archive-log { border-color: var(--theme-border); }
 html .site-chrome .motion-switch,
 html .site-chrome .jump-trigger,
 html .site-chrome .menu-toggle { font-size: var(--type-caption); }
-html:root body .site-chrome[data-scene="home"] :focus-visible { outline-color: #dce5ff; }
+html:root body :is(.site-chrome, .site-atlas, .practice-mobile-menu) :focus-visible { outline: 2px solid var(--theme-accent); outline-offset: 3px; }

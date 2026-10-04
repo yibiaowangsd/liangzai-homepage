@@ -301,3 +301,5 @@
 }
 
 .practice-mobile-menu nav a[hidden] { display: none; }
+
+html .site-chrome .jump-trigger { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1px solid var(--theme-control-border); border-radius: 10px; background: var(--theme-surface); color: var(--theme-ink); font: 500 var(--type-caption)/1.4 var(--font-sans); cursor: pointer; }
