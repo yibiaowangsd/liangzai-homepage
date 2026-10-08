@@ -42,8 +42,14 @@ function records(buffer) {
   }
   return { count, handshake };
 }
-const median = (values) =>
-  [...values].sort((a, b) => a - b)[Math.floor(values.length / 2)];
+const median = (values) => {
+  const sorted = [...values].sort((a, b) => a - b);
+  return (
+    (sorted[Math.floor((sorted.length - 1) / 2)] +
+      sorted[Math.floor(sorted.length / 2)]) /
+    2
+  );
+};
 const cases = [
   {
     id: "classic",

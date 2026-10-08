@@ -15,7 +15,7 @@
       "kex": "curve25519-sha256",
       "status": "measured",
       "samples": 10,
-      "medianMs": 88.009,
+      "medianMs": 87.902,
       "p95Ms": 96.232,
       "timingsMs": [
         87.740882,
@@ -35,7 +35,7 @@
       "kex": "mlkem768x25519-sha256",
       "status": "measured",
       "samples": 10,
-      "medianMs": 88.549,
+      "medianMs": 88.541,
       "p95Ms": 92.102,
       "timingsMs": [
         88.03582099999994,
@@ -55,7 +55,7 @@
       "kex": "sntrup761x25519-sha512",
       "status": "measured",
       "samples": 10,
-      "medianMs": 144.297,
+      "medianMs": 144.14,
       "p95Ms": 153.83,
       "timingsMs": [
         147.83595000000014,

@@ -18,6 +18,33 @@ const input = {
   natT: true,
   ikeBytes: 6000,
 };
+test("published medians and P95 can be recomputed from the retained timing samples", async () => {
+  for (const file of [
+    "public/data/protocol-benchmarks.json",
+    "public/data/ssh-benchmarks.json",
+  ]) {
+    const report = JSON.parse(await read(file));
+    for (const result of report.results.filter(
+      (r) => r.status === "measured",
+    )) {
+      const sorted = [...result.timingsMs].sort((a, b) => a - b);
+      const center = sorted.length / 2;
+      const median =
+        sorted.length % 2
+          ? sorted[Math.floor(center)]
+          : (sorted[center - 1] + sorted[center]) / 2;
+      assert.equal(
+        result.medianMs,
+        Number(median.toFixed(3)),
+        result.group || result.kex,
+      );
+      assert.equal(
+        result.p95Ms,
+        Number(sorted[Math.ceil(sorted.length * 0.95) - 1].toFixed(3)),
+      );
+    }
+  }
+});
 test("wire budget accounts for the independent TLS length fields and IKE headers", () => {
   const result = packetModel(input);
   assert.equal(result.hello, 1426); // 200 + extension(4) + vector(2) + group/length(4) + key(1216)

@@ -165,7 +165,13 @@ try {
         kex,
         status: "measured",
         samples,
-        medianMs: Number(sorted[Math.floor(sorted.length / 2)].toFixed(3)),
+        medianMs: Number(
+          (
+            (sorted[Math.floor((sorted.length - 1) / 2)] +
+              sorted[Math.floor(sorted.length / 2)]) /
+            2
+          ).toFixed(3),
+        ),
         p95Ms: Number(sorted[Math.ceil(sorted.length * 0.95) - 1].toFixed(3)),
         timingsMs: timings,
         evidence,
