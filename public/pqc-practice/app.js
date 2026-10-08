@@ -44,6 +44,9 @@ let catalog = null, catalogPromise = null, reportIndex = null, nistFamily = 'mlk
 let aliceSecret = null, keyTime = null, actionTime = null;
 let flowOutcome = null;
 let expandedLibrary = 'nist';
+let labTab = new URLSearchParams(location.search).get('tab') || 'kem';
+if (!['kem', 'signature', 'candidates'].includes(labTab)) labTab = 'kem';
+let demoRunning = false;
 
 function renderSidebar() {
   const selectedLibrary = $('#library').value;
@@ -64,7 +67,7 @@ function renderSidebar() {
             ngccModule(candidate.id, index) || candidateModule(candidate, index)),
         }))]) : [] },
   ];
-  root.replaceChildren(...libraries.map(library => {
+  root.replaceChildren(...libraries.filter(library => labTab === "candidates" ? library.id === "ngcc" : library.id === "nist").map(library => {
     const section = document.createElement('section');
     section.className = 'library-section';
     const head = document.createElement('button');
@@ -97,7 +100,7 @@ function renderSidebar() {
       content.append(loading);
     }
     let visible = 0;
-    for (const [, title, algorithms] of library.groups) {
+    for (const [, title, algorithms] of library.groups.filter(group => labTab === "candidates" || group[0] === (labTab === "signature" ? "sig" : "kem"))) {
       const matches = algorithms.filter(algorithm =>
         `${algorithm.name} ${algorithm.id}`.toLocaleLowerCase().includes(query));
       if (!matches.length) continue;
@@ -162,24 +165,20 @@ $('#sidebar-toggle').addEventListener('click', () => {
   setSidebarCollapsed(!$('#practice-layout').classList.contains('is-collapsed'), true);
 });
 document.querySelectorAll('[data-library-shortcut]').forEach(button => button.addEventListener('click', async () => {
-  if (busy) return;
+  if (busy || demoRunning) return;
   setSidebarCollapsed(false);
-  const library = button.dataset.libraryShortcut;
-  expandedLibrary = library;
-  if ($('#library').value !== library) {
-    $('#sidebar-search').value = '';
-    $('#library-list').scrollTop = 0;
-    $('#library').value = library;
-    await switchLibrary();
-  } else renderSidebar();
+  $('#sidebar-search').value = '';
+  await selectLabTab(button.dataset.libraryShortcut === 'ngcc' ? 'candidates' : 'kem');
 }));
 
 function refresh() { renderDialogue({ kem: isKem(), sizes, busy, ready: ready && isRunnable(),
   ngccSig: isNgcc() && !isKem(), outcome: flowOutcome, decode: decodeInput }); }
 function status(value, kind = '') { $('#message').textContent = value; $('#message').className = `message ${kind}`; refresh(); }
-function runtime(value, kind = '') { $('#runtime').className = `runtime ${kind}`; $('#runtime').lastElementChild.textContent = value; }
+function runtime(value, kind = '') { $('#runtime').setAttribute('aria-busy', String(!kind && /加载|载入/.test(value))); $('#runtime').className = `runtime ${kind}`; $('#runtime').lastElementChild.textContent = value; }
 function setBusy(value) {
   busy = value;
+  $('#run-example').disabled = value || !ready || !sizes || !isRunnable() || (isNgcc() && !['kem','sig'].includes(selectedCandidate()?.type));
+  document.querySelectorAll('[data-lab-tab]').forEach(button => { button.disabled = value; });
   document.querySelectorAll('[data-work]').forEach(control => { control.disabled = value || !ready || !sizes || !isRunnable(); });
   document.querySelectorAll('select, [data-field], [data-import], [data-copy], .message-input').forEach(control => { control.disabled = value; });
   $('#clear-all').disabled = value;
@@ -188,7 +187,7 @@ function setBusy(value) {
   refresh();
 }
 function request(type, payload = {}) {
-  if (!isRunnable() || !ready || busy || active) throw new Error('当前配置没有可运行的浏览器实现，或任务仍在执行');
+  if (!isRunnable() || !ready || (busy && !demoRunning) || active) throw new Error('当前配置没有可运行的浏览器实现，或任务仍在执行');
   const requestId = ++serial;
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
@@ -293,7 +292,7 @@ function showSizes() {
   for (const [id, key] of Object.entries(FIELD_SIZES)) $(`#size-${id}`).textContent = `${sizes[key]} B`;
   $('#kem-flow').classList.toggle('hidden', !isKem());
   $('#sig-flow').classList.toggle('hidden', isKem());
-  $('#flow-title').textContent = isKem() ? '密钥封装实战' : '签名验证';
+  $('#flow-title').textContent = isKem() ? '密钥封装验证' : '签名验证';
   $('#fact-one-label').textContent = isKem() ? (isNgcc() ? '密钥配套情况' : '公私钥对应关系') : '签名状态';
   $('#fact-two-label').textContent = isKem() ? '共享密钥逐字节比较' : '签名验证结果';
 }
@@ -651,6 +650,70 @@ document.querySelectorAll('[data-copy]').forEach(button => button.addEventListen
   }
   catch { status('复制失败：请检查浏览器剪贴板权限。', 'error'); }
 }));
+async function selectLabTab(tab) {
+  if (busy || demoRunning) return;
+  labTab = tab;
+  document.querySelectorAll('[data-lab-tab]').forEach(button => { button.setAttribute('aria-selected', String(button.dataset.labTab === tab)); button.tabIndex = button.dataset.labTab === tab ? 0 : -1; });
+  const url = new URL(location.href); url.searchParams.set('tab', tab); history.replaceState(null, '', url);
+  $('#library').value = tab === 'candidates' ? 'ngcc' : 'nist';
+  const requested = new URLSearchParams(location.search).get('algorithm');
+  nistFamily = tab === 'signature' && requested === 'slh-dsa' ? 'slhdsa' : tab === 'signature' ? 'mldsa' : 'mlkem';
+  expandedLibrary = $('#library').value;
+  await switchLibrary();
+}
+document.querySelectorAll('[data-lab-tab]').forEach(button => {
+  button.addEventListener('click', () => { void selectLabTab(button.dataset.labTab); });
+  button.addEventListener('keydown', event => {
+    const tabs = [...document.querySelectorAll('[data-lab-tab]')];
+    if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+    event.preventDefault();
+    const i = tabs.indexOf(button);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (i + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+    tabs[next].focus(); void selectLabTab(tabs[next].dataset.labTab);
+  });
+});
+$('#run-example').addEventListener('click', async () => {
+  if (busy || demoRunning || !ready || !sizes || !isRunnable()) return;
+  demoRunning = true;
+  try {
+    resetFields();
+    setBusy(true);
+    $('#example-status').textContent = '正在运行示例…';
+    const prefix = isKem() ? 'kem' : 'sig';
+    const keys = await request('generate');
+    write(prefix + '-public', keys.publicKey); write(prefix + '-private', keys.privateKey); keyTime = keys.ms;
+    if (isKem()) {
+      write('kem-alice-public', keys.publicKey);
+      const encapsulated = await request('encapsulate', { publicKey: keys.publicKey });
+      write('kem-cipher', encapsulated.ciphertext); write('kem-bob-cipher', encapsulated.ciphertext);
+      const decapsulated = await request('decapsulate', { privateKey: keys.privateKey, ciphertext: encapsulated.ciphertext, publicKey: keys.publicKey });
+      aliceSecret = encapsulated.sharedSecret;
+      $('#kem-alice-secret').textContent = hex(aliceSecret); $('#kem-bob-secret').textContent = hex(decapsulated.sharedSecret);
+      const valid = equal(aliceSecret, decapsulated.sharedSecret);
+      flowOutcome = valid ? 'pass' : 'fail';
+      $('#fact-one').textContent = '示例生成的配套密钥'; $('#fact-two').textContent = valid ? `${sizes.ss} / ${sizes.ss} 字节一致` : '密钥不同';
+      $('#fact-time').textContent = `生成 ${elapsed(keys.ms)} · 封装 ${elapsed(encapsulated.ms)} · 解封装 ${elapsed(decapsulated.ms)}`;
+      $('#manual-summary').textContent = valid ? '验证通过 · 双方得到相同的共享密钥' : '验证失败 · 双方共享密钥不同';
+      decapsulated.sharedSecret.fill(0);
+    } else {
+      $('#sign-message').value = 'Yibiao cryptography lab example';
+      const message = new TextEncoder().encode($('#sign-message').value);
+      const signed = await request('sign', { privateKey: keys.privateKey, message });
+      write('signature', signed.signature); write('verify-signature', signed.signature); write('sig-verifier-public', keys.publicKey); $('#verify-message').value = $('#sign-message').value;
+      const checked = await request('verify', { publicKey: keys.publicKey, signature: signed.signature, message });
+      flowOutcome = checked.valid ? 'pass' : 'fail';
+      $('#fact-one').textContent = '示例生成的签名'; $('#fact-two').textContent = checked.valid ? '有效' : '无效';
+      $('#fact-time').textContent = `生成 ${elapsed(keys.ms)} · 签名 ${elapsed(signed.ms)} · 验签 ${elapsed(checked.ms)}`;
+      $('#manual-summary').textContent = checked.valid ? '验证通过 · 签名与公钥、消息匹配' : '验证失败 · 签名与公钥或消息不匹配';
+    }
+    keys.privateKey.fill(0);
+    $('#manual-result').classList.add(flowOutcome);
+    $('#example-status').textContent = $('#manual-summary').textContent;
+    status($('#manual-summary').textContent, flowOutcome === 'pass' ? 'success' : 'error');
+  } catch (error) { status(error.message, 'error'); $('#example-status').textContent = error.message; }
+  finally { demoRunning = false; setBusy(false); }
+});
+void selectLabTab(labTab);
 const missing = missingBrowserFeatures();
 if (missing.length) {
   runtime('浏览器环境不可用', 'error');

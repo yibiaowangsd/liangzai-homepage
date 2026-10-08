@@ -42,7 +42,7 @@ export const categoryLabels: Record<string, string> = {
   security: "网络安全",
   ai: "AI 前沿",
   industry: "产业动态",
-  daily: "每日前沿",
+  daily: "前沿新闻",
 };
 
 export const categoryEnglish: Record<string, string> = {
@@ -63,7 +63,7 @@ export const categoryCovers: Record<string, string> = {
   daily: "/news-covers/pqc.svg",
 };
 
-export { coverFor } from "./keyword-cover";
+export { coverFor } from "./keyword-cover.ts";
 
 export function parseTags(tags: string | null): string[] {
   if (!tags) return [];
@@ -115,6 +115,7 @@ export async function getNewsEditions(
   const response = await fetch(url, {
     cache: "no-store",
     headers: { Accept: "application/json" },
+    signal: AbortSignal.timeout(5000),
   });
   if (!response.ok) {
     throw new Error("News API returned " + response.status);

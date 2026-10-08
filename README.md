@@ -1,4 +1,4 @@
-# 量仔主页
+# Yibiao · 密码工程与实验
 
 Yibiao 的个人密码工程与实验网站，围绕后量子密码、TLS / TLCP、SSH 与 IKE 展示技术方向，并提供浏览器算法实验、前沿新闻和量仔／奶龙的角色故事。
 
@@ -27,7 +27,11 @@ npm run dev
 | `/pqc-practice` | 转到独立 HTML 实验室，执行 WASM 密钥封装、签名、密钥交换与哈希 |
 | `/pqc-practice/audit.html` | 国内征集候选的逐参数接入记录、来源与 CSV 导出 |
 | `/news`、`/news/[slug]` | 按日报和分类浏览技术新闻及正文 |
-| `/about` | 作者经历与技术方向 |
+| `/about` | 作者公开经历、工程项目与公开版简历 |
+| `/pqc/[algorithm]` | 每种算法的独立参考页 |
+| `/en/about`、`/en/pqc`、`/en/lab` | 英文简介、图鉴与实验室 |
+| `/universe` | 关于目录下的量仔宇宙 |
+| `/sitemap.xml`、`/robots.txt`、`/rss.xml` | 收录与订阅 |
 
 旧 `/observatory` 地址重定向到首页。3D 模型在模型页加载，首页不挂载旧星云展台。
 
@@ -40,3 +44,5 @@ npm run dev
 新闻前端读取 `https://api.wangyibiao.com`；本地运行前端无需 Cloudflare 密钥或本地数据库。`main` 是 [wangyibiao.com](https://wangyibiao.com) 的 Cloudflare 部署来源，`.openai/hosting.json` 是仓库已有的独立 Sites 配置。
 
 全部专题和历史记录见 [文档索引](docs/README.md)。
+
+导航配置来自 `app/site/navigation.ts`，独立实验室页在构建前由 `scripts/sync-site-shell.mjs` 同步。英文实验室由中文源文件与 `app/site/lab-en.json` 生成，新增文案应同时维护词典。

@@ -1,12 +1,8 @@
 import Link from "next/link";
 import "./dossier.css";
-import type { Metadata } from "next";
+import { pageMetadata } from "../site/metadata";
 import { MotionSurface } from "../experience/Motion";
-export const metadata: Metadata = {
-  title: "量仔小传",
-  description:
-    "测量、连接、守护。认识来自量子星的小小探索者，与奶龙共同守护秘密的旅程。",
-};
+export const metadata = pageMetadata("量仔小传", "Yibiao 的吉祥物量仔：角色故事与档案。", "/archive", "archive");
 const chapters = [
   {
     no: "01",

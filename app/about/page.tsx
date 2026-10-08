@@ -1,28 +1,25 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "../site/metadata";
 import Link from "next/link";
 import { MotionSurface } from "../experience/Motion";
 import styles from "./profile.module.css";
 import FloatingIdentity from "./FloatingIdentity";
 
-export const metadata: Metadata = {
-  title: "关于我 Wang Yibiao",
-  description: "Yibiao 的个人主页。2018 至 2025 年在山东大学学习网络空间安全，现就职于中电信量子集团，关注抗量子密码、安全协议与密码工程。",
-};
+export const metadata = pageMetadata("关于我", "Yibiao 的公开经历、密码工程项目与联系入口。", "/about", "about");
 
 const journey = [
-  { period: "2025 至今", type: "工作", place: "中电信量子集团", detail: "抗量子密码与安全协议", body: "将对密码与安全的研究延伸到工程实践，关注抗量子协议改造、密码敏捷，以及 PQC 与 QKD 的融合应用。", current: true },
+  { period: "2025 至今", type: "工作", place: "中电信量子集团", detail: "抗量子密码与安全协议", body: "将对密码与安全的研究延伸到工程实践，关注抗量子协议改造、密码敏捷，以及密码工程的实现与验证。", current: true },
   { period: "2022—2025", type: "硕士", place: "山东大学", detail: "网络空间安全", body: "继续在网络空间安全领域学习与研究，从本科阶段的专业积累走向更深入的探索。", current: false },
   { period: "2018—2022", type: "本科", place: "山东大学", detail: "网络空间安全", body: "在山大开启网络空间安全的学习之路，也是我走近密码学与安全技术的起点。", current: false },
 ];
 const focus = [
   { n: "01", title: "抗量子密码", text: "关注后量子算法实现、测试验证与性能优化，让密码算法在真实系统中运行起来。", tags: ["算法实现", "测试验证", "性能优化"] },
   { n: "02", title: "安全协议", text: "围绕 TLS、TLCP、SSH 与 IKE 协议，探索抗量子迁移、混合密钥协商与密码敏捷。", tags: ["协议改造", "混合协商", "密码敏捷"] },
-  { n: "03", title: "密码工程", text: "关心 PQC 与 QKD 如何协同，也关心算法库、接口与跨平台适配如何衔接成可用的能力。", tags: ["PQC 与 QKD", "算法库", "系统集成"] },
+  { n: "03", title: "密码工程", text: "关注抗量子密码、安全协议与密码工程，研究算法库、接口与跨平台适配如何衔接成可用的能力。", tags: ["抗量子密码", "算法库", "系统集成"] },
 ];
 const projects = [
-  { no: "01", title: "量仔的数字世界", text: "用角色、故事和交互，把抽象的技术变成一个可以探索的世界。", href: "/", action: "探索首页" },
-  { no: "02", title: "密码图鉴", text: "从直觉走向原理，用可视化理解后量子密码背后的数学问题。", href: "/pqc-arsenal", action: "阅读图鉴" },
-  { no: "03", title: "密码实验室", text: "把算法带进浏览器，亲手完成一次密钥封装或签名验证。", href: "/pqc-practice", action: "开始实验" },
+  { no: "01", title: "Yibiao 密码工程与实验", text: "开源个人技术站：工程、学习、前沿、关于四组入口；代码与实现记录均可查阅。", href: "/", action: "探索首页" },
+  { no: "02", title: "密码图鉴", text: "4 种算法的原理与参数：ML-KEM、ML-DSA、SLH-DSA、FN-DSA；独立地址便于引用。", href: "/pqc-arsenal", action: "阅读图鉴" },
+  { no: "03", title: "密码实验室", text: "3 种 NIST 标准算法、18 组参数组合；119 个国内征集候选、586 组参数按实现状态记录。", href: "/pqc-practice", action: "开始实验" },
 ];
 
 export default function About() {
@@ -32,11 +29,12 @@ export default function About() {
         <section className={styles.hero} aria-labelledby="profile-title">
           <div className={styles.heroCopy}>
             <p className={styles.kicker} data-intro>关于我</p>
-            <h1 id="profile-title" data-title><span>你好 我是</span>Yibiao</h1>
+            <h1 id="profile-title" data-title><span>关于我</span>Yibiao</h1>
             <p className={styles.intro} data-intro>从山大出发<br />在密码与安全的世界里继续探索</p>
             <p className={styles.bio} data-intro>我在山东大学完成了网络空间安全专业的本科与硕士学习，现在中电信量子集团工作。这里记录我的技术探索，也收藏一些关于代码、设计与好奇心的尝试。</p>
             <div className={styles.actions} data-intro>
               <a className="silver-button" href="#journey">我的经历<i aria-hidden="true" /></a>
+              <a className="line-link" href="/downloads/yibiao-public-profile.pdf" download>公开版简历 PDF</a>
               <a className="line-link" href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">GitHub</a>
             </div>
           </div>
@@ -47,7 +45,7 @@ export default function About() {
           <div><a href="#journey">我的经历</a><a href="#focus">技术方向</a><a href="#projects">个人项目</a><a href="#contact">找到我</a></div>
         </nav>
         <section id="journey" className={styles.section} aria-labelledby="journey-title">
-          <div className={styles.sectionHead} data-reveal><p className={styles.kicker}>01 我的经历</p><h2 id="journey-title">一路走来</h2><p>七年山大学习时光<br />从网络空间安全走向量子安全实践</p></div>
+          <div className={styles.sectionHead} data-reveal><p className={styles.kicker}>01 我的经历</p><h2 id="journey-title">一路走来</h2><p>七年山大学习时光<br />从网络空间安全走向密码工程实践</p></div>
           <ol className={styles.timeline}>
             {journey.map((item) => <li key={item.period} data-reveal>
               <div className={styles.period}><span>{item.period}</span><small>{item.type}</small></div>
@@ -63,7 +61,7 @@ export default function About() {
           <div className={styles.focusGrid}>{focus.map((item) => <article className={styles.focusCard} key={item.n} data-reveal><span className={styles.number}>{item.n}</span><h3>{item.title}</h3><p>{item.text}</p><ul>{item.tags.map((tag) => <li key={tag}>{tag}</li>)}</ul></article>)}</div>
         </section>
         <section id="projects" className={styles.section} aria-labelledby="projects-title">
-          <div className={styles.sectionHead} data-reveal><p className={styles.kicker}>03 个人项目</p><h2 id="projects-title">工作之外的创造</h2><p>把好奇心写进代码<br />把想法做成可以体验的作品</p></div>
+          <div className={styles.sectionHead} data-reveal><p className={styles.kicker}>03 个人项目</p><h2 id="projects-title">可公开的工程实践</h2><p>把好奇心写进代码<br />把想法做成可以体验的作品</p></div>
           <div className={styles.projects}>{projects.map((item) => <Link href={item.href} className={styles.project} key={item.no} data-reveal><span className={styles.number}>{item.no}</span><div><h3>{item.title}</h3><p>{item.text}</p></div><span className={styles.projectAction}>{item.action}<i aria-hidden="true" /></span></Link>)}</div>
         </section>
         <section id="contact" className={styles.contact} aria-labelledby="contact-title" data-reveal><p className={styles.kicker}>04 找到我</p><h2 id="contact-title">很高兴在这里遇见你</h2><p>如果你也对密码、安全或有趣的技术表达感兴趣<br />欢迎来 GitHub 看看我的代码与项目</p><a className="silver-button" href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">访问我的 GitHub<i aria-hidden="true" /></a><span className={styles.signature}>WANG YIBIAO</span></section>

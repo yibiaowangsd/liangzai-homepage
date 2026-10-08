@@ -4,6 +4,17 @@ on:
   push:
     branches: [main]
     paths:
+      - 'app/site/**'
+      - 'app/en/**'
+      - 'app/pqc/**'
+      - 'app/universe/**'
+      - 'app/rss.xml/**'
+      - 'app/robots.txt/**'
+      - 'app/sitemap.xml/**'
+      - 'public/share/**'
+      - 'scripts/sync-site-shell.mjs'
+      - 'scripts/build-english-lab.mjs'
+      - 'tests/public-site.test.mjs'
       - 'app/news/**'
       - 'app/QuantumHome.tsx'
       - 'app/studio/**'
@@ -48,6 +59,17 @@ on:
       - '.github/workflows/news-frontend-check.yml'
   pull_request:
     paths:
+      - 'app/site/**'
+      - 'app/en/**'
+      - 'app/pqc/**'
+      - 'app/universe/**'
+      - 'app/rss.xml/**'
+      - 'app/robots.txt/**'
+      - 'app/sitemap.xml/**'
+      - 'public/share/**'
+      - 'scripts/sync-site-shell.mjs'
+      - 'scripts/build-english-lab.mjs'
+      - 'tests/public-site.test.mjs'
       - 'app/news/**'
       - 'app/QuantumHome.tsx'
       - 'app/studio/**'
@@ -110,7 +132,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs tests/site-theme.test.mjs tests/site-typography.test.mjs tests/layout-redesign.test.mjs tests/mobile-sidebar.test.mjs tests/reading-workspaces.test.mjs
+      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs tests/site-theme.test.mjs tests/site-typography.test.mjs tests/layout-redesign.test.mjs tests/mobile-sidebar.test.mjs tests/reading-workspaces.test.mjs tests/public-site.test.mjs
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:layout
       - uses: actions/upload-artifact@v4

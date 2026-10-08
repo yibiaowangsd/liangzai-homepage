@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { pages, narrationTracks } from "./storyData";
+import { transcripts } from "./transcripts";
 import { gsap, useGSAP, useExperience } from "../experience/Motion";
 import "./cinema-reader.css";
 
@@ -193,6 +194,7 @@ export default function StoryBook() {
           <p className="eyebrow">{page.chapter}</p>
           <h1>{page.title}</h1>
           <p className="reader-body">{page.body}</p>
+          <details className="reader-transcript"><summary>本页故事文字稿</summary><p style={{whiteSpace:"pre-line"}}>{transcripts[current]}</p></details>
           <blockquote>{page.quote}</blockquote>
           {current === 0 && (
             <button className="silver-button" onClick={() => turn(1)}>
@@ -264,7 +266,7 @@ export default function StoryBook() {
       </nav>
       <div className="reader-note">
         <span>共 11 页 · 支持左右方向键与触屏滑动</span>
-        <span>科学幻想故事 · 算法原理请参阅武器库</span>
+        <span>科学幻想故事 · 算法知识请参阅密码图鉴</span>
       </div>
     </main>
   );

@@ -9,13 +9,13 @@ if (trigger && source) {
   const heading = document.createElement("div");
   heading.className = "practice-menu-top";
   const name = document.createElement("span");
-  name.textContent = "量仔 / 密码工程与实验";
+  name.textContent = "Yibiao / 密码工程与实验";
   const close = document.createElement("button");
   close.type = "button";
   close.textContent = "关闭 ×";
   close.setAttribute("aria-label", "关闭设置与目录");
   heading.append(name, close);
-  const nav = source.cloneNode(true);
+  const nav = document.querySelector("#practice-directory").content.firstElementChild.cloneNode(true);
   nav.className = "";
   nav.setAttribute("aria-label", "全站导航");
   const preferences = document.createElement("div");

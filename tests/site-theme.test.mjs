@@ -114,7 +114,7 @@ test('both rendering paths load the same synchronous bootstrap and accessible na
   assert.match(layout, /public\/theme\/site-theme\.css/);
   const picker = await read('app/theme/ThemePicker.tsx');
   assert.match(picker, /useSyncExternalStore/);
-  assert.match(picker, /aria-label="页面主题"/);
+  assert.match(picker, /aria-label=\{en \? "Page theme" : "页面主题"\}/);
   for (const theme of ['paper', 'midnight']) assert.match(picker, new RegExp(`value="${theme}"`));
   for (const path of ['index.html', 'audit.html']) {
     const html = await read('public/pqc-practice/' + path);

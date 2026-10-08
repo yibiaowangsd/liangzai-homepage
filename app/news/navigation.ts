@@ -1,11 +1,12 @@
-import { coreCategories } from "./news-api";
+import { coreCategories } from "./news-api.ts";
 
 export type NewsSearchParams = {
   page?: string | string[];
   category?: string | string[];
+  tag?: string | string[];
 };
 
-type NewsContext = { page: number; category?: string };
+type NewsContext = { page: number; category?: string; tag?: string };
 
 // Only carry supported listing state, never an arbitrary return URL.
 export function parseNewsContext(params: NewsSearchParams): NewsContext {
@@ -15,13 +16,15 @@ export function parseNewsContext(params: NewsSearchParams): NewsContext {
     coreCategories.includes(params.category as (typeof coreCategories)[number])
     ? params.category
     : undefined;
-  return { page: Number.isSafeInteger(page) && page > 0 ? page : 1, category };
+  const tag = typeof params.tag === "string" && ["ML-KEM", "ML-DSA", "SLH-DSA", "TLS 1.3", "IKEv2", "SSH", "国密"].includes(params.tag) ? params.tag : undefined;
+  return { page: Number.isSafeInteger(page) && page > 0 ? page : 1, category, tag };
 }
 
-export function newsListingHref({ page, category }: NewsContext): string {
+export function newsListingHref({ page, category, tag }: NewsContext): string {
   const query = new URLSearchParams();
   if (page > 1) query.set("page", String(page));
   if (category) query.set("category", category);
+  if (tag) query.set("tag", tag);
   const suffix = query.toString();
   return suffix ? "/news?" + suffix : "/news";
 }

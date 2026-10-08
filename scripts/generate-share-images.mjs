@@ -1,0 +1,13 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import sharp from 'sharp';
+const pages={default:['Yibiao','Cryptography Engineering'],about:['Wang Yibiao','Experience / Engineering / Public Projects'],guide:['Algorithm Guide','ML-KEM / ML-DSA / SLH-DSA / FN-DSA'],lab:['Cryptography Lab','Generate / Encapsulate / Sign / Verify'],audit:['Implementation Index','119 Candidates / 586 Parameter Instances'],news:['Frontier News','PQC / Protocols / Standards'],universe:['Liangzai Universe','Models / Stories / Imagination'],models:['Model Gallery','Liangzai and Milk Dragon'],archive:['Liangzai Profile','A Curious Explorer'],storybook:['Space Journey','An Illustrated Adventure'],'ml-kem':['ML-KEM','FIPS 203 / Key Establishment'],'ml-dsa':['ML-DSA','FIPS 204 / Digital Signatures'],'slh-dsa':['SLH-DSA','FIPS 205 / Hash-Based Signatures'],'fn-dsa':['FN-DSA','Falcon / Standardization Underway']};
+await mkdir('public/share',{recursive:true});
+for(const [id,[title,subtitle]] of Object.entries(pages)){
+const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#F6F5EF"/><path d="M80 140H1120M80 514H1120" stroke="#A0ADB8"/><text x="80" y="100" fill="#485E70" font-family="Arial" font-size="28">YIBIAO</text><text x="80" y="320" fill="#142531" font-family="Arial" font-size="72" font-weight="bold">${title}</text><text x="80" y="390" fill="#485E70" font-family="Arial" font-size="28">${subtitle}</text><text x="80" y="568" fill="#485E70" font-family="Arial" font-size="24">wangyibiao.com</text><circle cx="1090" cy="87" r="20" fill="#8BA3B5"/></svg>`;
+await writeFile('public/share/'+id+'.png',await sharp(Buffer.from(svg)).png().toBuffer());
+}
+const categories={pqc:['PQC','Post-Quantum Cryptography'],protocol:['PROTOCOL','Secure Protocols'],standards:['STANDARDS','Standardization'],security:['SECURITY','Security Research'],ai:['AI','Artificial Intelligence']};
+for(const [id,[title,subtitle]] of Object.entries(categories)){
+const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900"><rect width="1600" height="900" fill="#E9EEF1"/><path d="M110 160H1490M110 730H1490" stroke="#9BAFBF"/><text x="110" y="110" fill="#3E586C" font-family="Arial" font-size="30" letter-spacing="8">YIBIAO / FRONTIER</text><text x="100" y="490" fill="#183345" font-family="Arial" font-size="145" font-weight="bold">${title}</text><text x="110" y="580" fill="#3E586C" font-family="Arial" font-size="44">${subtitle}</text><text x="110" y="810" fill="#3E586C" font-family="Arial" font-size="28">wangyibiao.com</text></svg>`;
+await writeFile('public/news-covers/'+id+'.svg',svg);
+}

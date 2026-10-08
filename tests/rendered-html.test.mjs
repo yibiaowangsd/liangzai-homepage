@@ -29,12 +29,12 @@ test("renders the homepage with the integrated practice destination", async () =
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
-  assert.match(html, developmentPreviewMeta);
-  assert.match(html, /量仔小传/);
-  assert.match(html, /星际漫游/);
+  assert.doesNotMatch(html, developmentPreviewMeta);
+  assert.match(html, /量仔宇宙/);
+  assert.match(html, /工程项目/);
   for (const route of [
-    "/storybook",
-    "/archive",
+    "/universe",
+    "/about",
     "/pqc-arsenal",
     "/pqc-practice",
     "/about",
@@ -46,7 +46,7 @@ test("renders the homepage with the integrated practice destination", async () =
   assert.match(html, /把后量子密码/);
   assert.match(html, /播放序幕/);
   assert.match(html, /cinema-entrance/);
-  assert.match(html, /href="\/models"/);
+  assert.match(html, /href="\/universe"/);
   assert.doesNotMatch(html, /href="\/observatory"/);
   assert.match(html, /今日信号/);
   assert.doesNotMatch(html, /guardian-static|guardian-image-burst|随指针转动的蓝色数学纽结/);
@@ -133,7 +133,7 @@ test("renders the PQC arsenal route with all four algorithms", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /密码图鉴/);
-  assert.match(html, /旧武器为何失效/);
+  assert.match(html, /旧算法为何失效/);
   assert.match(html, /Module-LWE 核心样本/);
   assert.match(html, /Implicit reject/);
   assert.match(html, /HASH TREES/);
@@ -156,7 +156,7 @@ test("renders the human profile without invented credentials or private contact 
   const html = await response.text();
   assert.match(html, /关于我/);
   assert.match(html, /WANG YIBIAO/);
-  assert.match(html, /PQC 与 QKD/);
+  assert.doesNotMatch(html, /QKD|量子密钥分发/);
   assert.match(html, /https:\/\/github.com\/yibiaowangsd/);
   assert.doesNotMatch(html, /foxmail|博士|首席|教授/);
 });

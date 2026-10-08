@@ -1,10 +1,7 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "../site/metadata";
 import ArsenalLab from "./ArsenalLab";
 
-export const metadata: Metadata = {
-  title: "密码图鉴",
-  description: "跟随量仔从零理解 ML-KEM、ML-DSA、SLH-DSA 与 FN-DSA。",
-};
+export const metadata = pageMetadata("密码图鉴", "ML-KEM、ML-DSA、SLH-DSA、FN-DSA 的数学原理、参数与工程关注。", "/pqc-arsenal", "guide");
 
 export default function PqcArsenalPage() {
   return <ArsenalLab />;

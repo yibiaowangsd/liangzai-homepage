@@ -3,26 +3,20 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 const read = path => readFile(new URL('../' + path, import.meta.url), 'utf8');
 
-test('article places a compact source mark and date caveat with one takeaway before the body', async () => {
-  const page = await read('app/news/[slug]/page.tsx');
-  const css = await read('app/news/news.css');
-  assert.equal((page.match(/className="article-deck"/g) || []).length, 1);
-  assert.ok(page.indexOf('className="article-reading-start"') < page.indexOf('<NewsBody content={item.content}'));
-  assert.match(page, /日报日期 ·/);
-  assert.match(page, /原始发布日期见正文/);
-  assert.match(page, /原文编译与「量仔观察」分别呈现/);
-  assert.match(css, /\.article-hero-image > \.story-image-frame\s*\{\s*height: 80px/);
-  assert.match(css, /font-size: clamp\(28px, 3\.4vw, 40px\)/);
-  assert.doesNotMatch(css, /height: clamp\(280px, 34vw, 460px\)/);
+test('article introduces the observation and collapses a short source synopsis', async () => {
+ const page = await read('app/news/[slug]/page.tsx');
+ assert.ok(page.indexOf('className="article-observation"') < page.indexOf('className="article-source-excerpt"'));
+ assert.match(page, /<details className="article-source-excerpt">/);
+ assert.match(page, /日报日期 ·/);
+ assert.match(page, /阅读原文/);
+ assert.doesNotMatch(page, /article-hero-image|NewsBody content=\{item.content\}/);
 });
-
-test('daily toolbar contains date navigation without replacing archive pagination', async () => {
-  const page = await read('app/news/page.tsx');
-  assert.match(page, /className="news-day-controls" aria-label="本期日期与日刊切换"/);
-  assert.match(page, /className="news-category-menu"/);
-  assert.match(page, /className="news-pagination" aria-label="新闻按日分页"/);
-  assert.match(page, /href=\{makeHref\(Math\.max\(meta\.page - 1, 1\)\)\}/);
-  assert.match(page, /href=\{makeHref\(Math\.min\(meta\.page \+ 1, meta\.totalPages\)\)\}/);
+test('news keeps day pagination and a category selector with tag context', async () => {
+ const page = await read('app/news/page.tsx');
+ assert.match(page, /className="news-category-menu"/);
+ assert.match(page, /className="news-pagination" aria-label="新闻按日分页"/);
+ assert.match(page, /className="news-tags" aria-label="标签筛选"/);
+ assert.match(page, /newsListingHref\(\{page, category, tag\}\)/);
 });
 
 test('audit table scrolling is bounded and keyboard reachable without changing data or exports', async () => {

@@ -8,7 +8,7 @@
   "scripts": {
     "install:ci": "bash scripts/install-ci.sh",
     "dev": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vite",
-    "build": "bash scripts/build-verified.sh",
+    "build": "node --experimental-strip-types scripts/sync-site-shell.mjs && node scripts/build-english-lab.mjs && node scripts/generate-home-signals.mjs && bash scripts/build-verified.sh",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "npm run build && node --experimental-strip-types --test tests/*.test.mjs",
     "validate:artifact": "bash scripts/validate-artifact.sh",
@@ -48,5 +48,5 @@
     "wrangler": "4.92.0"
   },
   "type": "module",
-  "displayName": "量仔 · Shor 大魔王档案"
+  "displayName": "Yibiao · 密码工程与实验"
 }

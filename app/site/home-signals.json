@@ -1,0 +1,47 @@
+{
+  "edition_date": "2026-10-08",
+  "data": [
+    {
+      "slug": "20261008-ble-nfc-pq-pairing",
+      "title": "医疗植入设备用NFC完成后量子BLE配对：无需改动蓝牙协议栈",
+      "summary": "10月6日论文把后量子KEM完全放入NFC带外通道，为缺少屏幕和键盘的植入式设备建立BLE配对秘密。作者在原型上报告Kyber-1024与FireSABER相对Just Works模式的预计电池寿命影响不足0.57%，但结论仍受设备与使用模型限制。",
+      "content": "原始来源日期：2026年10月6日。本文依据最近72小时内发布的一手资料编译。\n\n## 原文编译\n\n论文讨论植入式医疗设备的BLE配对难题。Numeric Comparison和Passkey Entry需要屏幕、键盘或人工确认，而植入设备天然缺少这些界面；常见Just Works模式又不能抵抗中间人，因此团队把近场NFC用作带外认证与密钥建立通道。\n\n作者指出，既有NFC辅助方案往往只认证经典BLE密钥交换，长期机密性仍会受到未来量子计算威胁；若把秘密直接经NFC传输，较强攻击模型下还要面对窃听和主动注入。新方案让后量子KEM的交互完全在NFC侧完成，NFC上传递的是公钥和密文而不是共享秘密。\n\n协议被设计成“即插即用”：它不要求修改BLE协议栈，并减少配对阶段长距离射频暴露。作者还主张，攻击者难以仅靠远距离RF持续触发高成本密码操作，因此方案天然缓和电池耗尽攻击；这项性质依赖NFC接近性和实现中的会话控制。\n\n在面向植入设备的原型平台上，作者评估Kyber-1024和FireSABER，按论文给定使用模型，相对存在MITM风险的Just Works配对，预计电池寿命下降分别低于0.57%和0.56%。这些数字不是所有植入设备的统一结论，实际开销还取决于配对频率、NFC控制器、随机数与防侧信道实现。\n\n## 量仔观察\n\n本站认为，方案的工程价值在于绕开BLE核心协议改造，把PQC迁移边界压缩到可控的OOB模块；这适合固化协议栈、却能升级外围固件的医疗设备。评审时应把NFC距离假设、重放保护、会话绑定和配对失败回退写进威胁模型。\n\n若要进入产品，还需用ML-KEM标准参数替换或对齐论文中的候选实现，补做功耗实测、故障注入、密钥清零和人体场景的射频测试。电池影响很小的作者结果值得复现，但不能代替医疗安全认证和全生命周期密钥管理。",
+      "category": "pqc",
+      "tags": "[\"PQC\",\"BLE\",\"医疗设备\"]",
+      "source_name": "arXiv",
+      "source_url": "https://arxiv.org/abs/2610.07870",
+      "cover_image": null,
+      "published_at": "2026-10-08T08:00:00+08:00",
+      "status": "published",
+      "id": 1
+    },
+    {
+      "slug": "20261008-cloudflare-pq-tls-visibility",
+      "title": "Cloudflare把TLS后量子协商暴露到域名日志：迁移终于可逐连接核查",
+      "summary": "9月29日Cloudflare在HTTP流量分析、Log Explorer与Logpush中加入TLS密钥交换组字段，可按连接查看X25519MLKEM768是否真正协商。其网络观察显示约70%浏览器流量使用混合ML-KEM，但连接源站仅约15%；产品统计不是全互联网普查，却揭示客户端与源站迁移差距。",
+      "content": "原始来源日期：2026年9月29日。本文为研发价值回顾，不代表该资料于今日首次发布。\n\n## 原文编译\n\nCloudflare宣布在HTTP Traffic Analytics、Log Explorer和Logpush中提供TLS密钥交换组可见性。管理员不再只能确认“启用了TLS 1.3”，而能观察每条入站连接实际协商X25519MLKEM768、经典X25519、P-256或其他组。\n\n新增ClientTLSKeyExchangeGroup记录访客到边缘的协商组，OriginTLSKeyExchangeGroup记录边缘到源站的协商组。两段链路必须分别查看，因为浏览器支持PQC并不意味着源站已升级，反向代理可能在边界重新终止TLS。\n\nCloudflare基于自身网络观察称，约70%的浏览器生成流量在访客侧使用混合ML-KEM，而其连接的源站约15%使用混合ML-KEM。这是平台流量口径，不是全互联网无偏抽样；不同地区、客户端和Cloudflare客户结构会影响比例。\n\n文章说明TLS 1.3中的X25519MLKEM768同时执行X25519 ECDHE和ML-KEM，两份共享秘密共同进入派生。旧X25519Kyber768Draft00仍有极少连接，为避免破坏遗留客户端暂未立即删除；这也表明迁移需要观测旧代码点的真实尾部。\n\n## 量仔观察\n\n本站判断，可观测性是协议迁移从“配置完成”到“证据完成”的分水岭。研发团队应把协商组、TLS版本、失败重试和经典回退写入遥测，并按客户端、出口代理和源站分别统计，而不是只检查密码库是否支持ML-KEM。\n\n对TLCP、SSH和IKE也应建立相同机制：记录提议、选中算法、是否混合、回退原因与对端版本。日志不得泄露会话秘密，但必须足以发现中间盒或旧客户端让PQC覆盖率长期停留在表面值。",
+      "category": "protocol",
+      "tags": "[\"TLS 1.3\",\"ML-KEM\",\"可观测性\"]",
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/post-quantum-visibility/",
+      "cover_image": null,
+      "published_at": "2026-10-08T08:00:00+08:00",
+      "status": "published",
+      "id": 2
+    },
+    {
+      "slug": "20261008-rfc9852-new-protocols-tls13",
+      "title": "RFC 9852要求新协议默认TLS 1.3：PQC扩展不再为TLS 1.2预留",
+      "summary": "2026年7月发布的RFC 9852属于最佳当前实践并更新RFC 9325，要求所有新协议把TLS 1.3设为默认；TLS 1.2只能作为非默认兼容选项。规范明确IETF的后量子工作聚焦TLS 1.3及以后，因此新应用若继续绑定TLS 1.2，会失去标准化PQC演进路径。",
+      "content": "原始来源日期：2026年7月。本文为研发价值回顾，不代表该资料于今日首次发布。\n\n## 原文编译\n\n本文为标准回顾。RFC 9852是IETF最佳当前实践BCP 195的一部分，标题为“New Protocols Using TLS Must Require TLS 1.3”，并更新RFC 9325。它不是建议性博客，而是经过IETF流程发布的BCP。\n\n规范要求新协议使用TLS时必须把TLS 1.3作为默认。若部署条件确有需要，可以额外支持TLS 1.2，但不能让它继续成为默认；该要求仅适用于TLS，不自动扩展到任何版本的DTLS。\n\nPQC是修改的重要理由之一。文件指出TLS工作组把混合算法和其他后量子能力集中在TLS 1.3及以后，TLS 1.2不会获得相应标准化支持，因此新协议绑定旧版本会制造未来无法升级的结构性债务。\n\nRFC还回顾TLS 1.2的重协商、旧密钥交换、RC4/CBC与握手可见性等问题。TLS 1.2可以经过严格配置获得较好安全性，但需要大量专门限制；TLS 1.3通过协议设计减少这些配置陷阱。\n\n## 量仔观察\n\n本站认为，国内新协议和行业规范引用TLS时，应把“支持TLS 1.3”提升为明确基线，而不是把TLS 1.2与1.3并列。只有这样，ML-KEM混合组、后续PQC认证和密码敏捷扩展才有一致承载层。\n\n现有TLCP系统不必因该RFC被简单否定，但迁移方案应说明与TLS 1.3并行或演进的路径。招标和检测条款最好要求默认版本、降级策略和真实协商证据，避免实现声称支持TLS 1.3却仍长期默认旧版本。",
+      "category": "standards",
+      "tags": "[\"RFC 9852\",\"TLS 1.3\",\"BCP\"]",
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/html/rfc9852",
+      "cover_image": null,
+      "published_at": "2026-10-08T08:00:00+08:00",
+      "status": "published",
+      "id": 3
+    }
+  ]
+}

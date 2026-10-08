@@ -7,7 +7,7 @@ test('searchable algorithm directory retains working lessons and clear lab navig
  const source = await read('app/pqc-arsenal/ArsenalLab.tsx');
  assert.match(source, /type="search" value=\{catalogQuery\}/);
  assert.match(source, /没有匹配的算法/);
- assert.match(source, /href="#weapons" onClick=\{\(\) => chooseWeapon\(item.id\)\}/);
+ assert.ok(source.includes("href={`/pqc/${item.id}`}"));
  assert.match(source, /原理参考，未接入本地运行/);
  assert.match(source, /item.id !== "fn-dsa"/);
  assert.match(source, /进入实验室选择 \{item.name\}/);
