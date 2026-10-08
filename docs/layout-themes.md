@@ -1,74 +1,31 @@
-# Coherent layouts and background themes
+# 布局与主题
 
-## Scope
+## 主题契约
 
-This redesign starts from `ca4a185` and is independent of the separately pending
-static transition cache-path change. It does not edit cryptographic runtimes,
-algorithm parameters, news collection, character assets, or cinematic sequences.
+当前支持纸白（`paper`）和午夜（`midnight`）两种主题，默认纸白。`public/theme/site-theme.js` 在 React 页面和独立实验室的 head 中同步加载，使保存的配色在首帧前生效。
 
-- Home: responsive cinematic introduction, three direct task entries, enlarged main heading
-- Algorithm atlas: searchable four-algorithm catalog, honest local-run/reference labels,
-  compact teaching sections, retained parameter and explanation interactions
-- News: dated navigation grouped near categories; compact source visual and takeaway
-  before the reading column; existing return context and content retained
-- Profile/archive: consistent content width, shorter timeline and character dossier
-- Gallery/story: readable control bars, touch targets, persistent story navigation
-- Standalone laboratory/audit: matching palette, usable workspace and bounded audit table
+主题代码只使用 `liangzai-theme` 存储键。无效偏好回退到纸白；存储受限时仍可在本页切换。BFCache 返回和跨标签页 storage 事件同步状态。当前没有跟随系统配色、Mist 或 Sand 选项。
 
-## Theme contract
+React 的 `app/theme/ThemePicker.tsx` 和独立 HTML 选择器共用 bootstrap 及事件。切换主题更新语义 `--theme-*` 变量，不重建 React 子树，也不读写密码会话。图片和画布保留素材本色，控件跟随主题。
 
-`public/theme/site-theme.js` is loaded synchronously in document heads before paint.
-`liangzai-theme` is the only persistence key touched by theme code. No cryptographic
-session storage or React subtree identity changes when choosing a theme.
+## 布局职责
 
-Paper, Midnight, Mist and Sand share semantic `--theme-*` tokens. The system option
-follows OS light/dark until a user explicitly chooses a palette. Invalid preferences
-are ignored; blocked storage still permits an in-page choice. Static HTML selectors
-and the React `useSyncExternalStore` selector use the same bootstrap. BFCache and
-cross-tab preference changes synchronize the choice. Illustrations/canvas artwork
-retain their actual colors; controls follow the palette.
+| 位置 | 职责 |
+| --- | --- |
+| `app/studio/system.css` | 全站框架和共享设计规则 |
+| `public/assets/site-typography.css` | 共享文字样式 |
+| `public/assets/site-navigation.css` | React 与独立 HTML 的导航样式 |
+| `public/theme/site-theme.css` | 配色变量及主题适配 |
+| 各页面 CSS、`public/pqc-practice/studio.css` | 局部内容、模型控件与实验室布局 |
 
-New theme assets live outside the immutable `/assets` directory. Existing generated
-about-push entry paths are intentionally unchanged by this patch.
+页面框架和工作区使用可用窗口宽度及边距，长文阅读列限制行长。模型、故事、新闻和独立实验室共用导航与主题规则；原观测站地址仅重定向到首页。
 
-## Verification boundary
+新增主题资源继续放在 `public/theme/`，避免沿用 `/assets` 的不可变资源策略。修改选项时同步 bootstrap、React 选择器、静态 HTML 和回归用例。
 
-Run `npm run typecheck`, `npm run lint`, `npm test`, and `npm run validate:artifact`.
-The full suite exercises real WASM algorithms; unsupported modules stay explicitly
-skipped rather than being called passing implementations.
+## 验证
 
-Automated tests cover palette selection, pre-paint bootstrap, storage denial, OS
-fallback, cross-document synchronization, source palette contrast, rendered route
-structure, news date/category return, model affordances and algorithm availability.
-These tests do not substitute for rendered contrast and browser interaction review.
+`tests/site-theme.test.mjs` 检查保存偏好、无效值、存储受限、跨文档同步和源码配色对比度；布局相关用例覆盖页面结构、模型控件及实验室侧栏。这些检查不能代替渲染后的对比度与交互审查。
 
-Before publication, visually review all route families at 390, 768 and 1440px with
-the four themes. Test theme change without lab reset, full ML-KEM round trip,
-lab → About → Back, news date/category/detail/back, model view/reset, story page
-navigation, dialogs/focus, and reduced-motion. A cloud
-browser cannot access the local development URL in this environment; authorized
-preview transport is required for this visual gate.
+`npm run test:layout` 服务生产产物，以已提交的新闻数据替代在线 API，运行 Chromium、Firefox 和 WebKit。十三种视口覆盖 320～3840px 的竖屏、横屏、短桌面、超宽和 4K 窗口；检查十类页面的溢出、导航碰撞、目录、主题选择及观测站重定向，并输出截图。依赖安装和运行顺序见 [开发指南](../DEVELOPMENT.md)。
 
-## Responsive browser checks
-
-`npm run test:layout` serves the production artifact with the committed news edition
-as a fixture and checks Chromium, Firefox and WebKit. Thirteen viewports from 320px
-to 3840px cover portrait, landscape, short desktop, ultrawide and 4K windows across ten route
-families. The checks measure actual overflow, masthead collisions, home action/footer
-overlap, the directory, theme selection and the retired `/observatory` redirect.
-Desktop checks also verify that page content, navigation controls and the homepage
-copy reach the window edges with at most 49px of inset, catching fixed-width layouts
-that leave large blank margins despite having no overflow. The frontend workflow
-installs the three browser engines and retains screenshots, including 4K home,
-laboratory and news views.
-
-Page frames and card/workspace grids use the available window width with bounded
-side gutters, without the former 1200–1360px caps. Individual long-form reading
-columns retain their line-length limit inside the expanded article frame.
-
-Only the homepage main heading is enlarged. It scales from 52px to 112px; its
-content-driven hero has no clipping height. Shared masthead styles own laboratory
-branding too. Gutters use the available document width, theme selects use a shared
-arrow, and viewport height and color mixing have CSS fallbacks. The retired
-Observatory's interface and navigation entries are removed; model assets stay in
-their existing directory because the gallery and transitions still use them.
+人工复核两种主题下的阅读和控件，尤其是主题切换后实验室会话保持、新闻分类与返回、模型视角、故事导航、dialog 焦点及减少动态效果。当前机器或既往任务的浏览器限制不作为永久环境要求。

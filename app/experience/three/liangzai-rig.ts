@@ -1,6 +1,5 @@
 import { Box3, Group, Vector3, type Object3D } from "three";
 
-export type GuardianAction = "wave" | "nod" | "look" | "stretch" | "march" | "antenna" | "blink";
 const rest = { headYaw:0, headPitch:0, headRoll:0, leftArm:0, rightArm:0, leftArmX:0, rightArmX:0, leftWrist:0, rightWrist:0, leftLeg:0, rightLeg:0, leftFoot:0, rightFoot:0, antenna:0, blink:1 };
 
 /** Rigid joints for the supplied robot's named parts; no remeshing or skinning. */
@@ -52,4 +51,3 @@ export function createLiangzaiRig(source: Group) {
   function reset(){Object.assign(pose,rest);look.x=look.y=0;apply(0,false);}
   return {pose,look,apply,reset,joints:{head,antenna,leftEye,rightEye,leftArm,rightArm,leftHand,rightHand,leftLeg,rightLeg,leftFoot,rightFoot}};
 }
-export type LiangzaiRig=ReturnType<typeof createLiangzaiRig>;

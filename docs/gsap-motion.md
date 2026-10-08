@@ -1,34 +1,31 @@
-# GSAP 全站动效与视觉规范
+# 动效与转场
 
-## 技能来源
+## 共享动效
 
-按 GSAP 官方技能仓库 https://github.com/greensock/gsap-skills 的 gsap-core、gsap-react、gsap-timeline、gsap-performance、gsap-scrolltrigger、gsap-plugins 实现。阅读基线：`aed9cfd3277740755f6bfc1155c7aa645403b760`。
+`app/experience/Motion.tsx` 提供 ExperienceProvider、useExperience 和页面动效。系统 `prefers-reduced-motion`、当前会话暂停和 `liangzai-motion` 保存状态共同决定是否启用动效；存储不可用时仍可在当前页面暂停。
 
-- `useGSAP` 绑定组件 scope，依赖更新时按需 revert，卸载清理动画和 ScrollTrigger。
-- `gsap.matchMedia` 管理桌面视差、横向 pin 和系统 reduced-motion。
-- `SplitText` 使用 autoSplit 和返回 tween 的 onSplit，字体或宽度变化后重排。
-- Timeline 编排标题、图像、阅读器与算法面板；连续动画优先 transform/opacity。
-- `quickTo` 驱动指针交互；Canvas 数值补间形态，ticker 仅在可见且未暂停时运行。
-- ResizeObserver 只调度下一帧尺寸更新，避免观察回调内布局写入循环。
+GSAP 插件只在浏览器注册。Cloudflare 求值 SSR 模块时不能启动 ticker 或顶层计时器；`tests/rendered-html.test.mjs` 会在禁止计时器的独立进程中导入实际构建的 Motion 模块。
 
-## 页面与内容边界
+`useGSAP` 使用组件 scope 和生命周期清理。页面滚动渐入只处理首屏下方尚未显示的 `data-reveal` 元素；首屏内容保持可读，偏好变化不会再次隐藏已经绘制的内容。matchMedia 管理桌面视差和细指针交互，卸载时清理动画、ScrollTrigger 及事件监听。
 
-五页共享深黑背景、银色金属、冰蓝高光、大字留白。原角色、11 页故事与旁白、武器库教学数据保留。个人页只使用姓名与已有公开研究方向，不添加学历、雇主、头衔、项目成果或私密联系方式。WY 字母为抽象身份图形，不是本人肖像。
+## 页面入场与序幕
 
-首页横向章节仅在大于 1100px 时 pin；较窄屏幕使用原生横向滑动。所有正文 SSR 可见，关闭动画不影响阅读或链接。
+`PageArrival.tsx` 与 `page-arrival.ts` 管理 React 路由和独立 HTML 页的短入场。关于我转场与实验室重定向中间页避免重复入场；快速换页、后台切换、卸载和关闭动效时清理动画。
 
-## 素材与播放
+首页 `CinemaEntrance` 由“播放序幕”按钮打开，不在首次访问自动播放。原生 dialog 播放约 4.8 秒，支持跳过、空格和 Escape；关闭恢复滚动与原焦点，卸载取消计时器。
 
-- `public/assets/cinematic/quantum-portal-v1.webp`：本次生成的金属量子门场景，约 124 KB。原量仔透明素材独立叠放，未生成替代角色。
-- 故事旁白无初始自动播放；用户开始收听后，当前章结束才连续下一章。
-- 粒子场为交互艺术，不表示真实量子态。DPR 限制为 1.6，离屏与后台移除 ticker；减少动效时只在尺寸/形态变化时重绘。
+故事旁白由用户开始播放，素材页序与音轨关系由 `app/storybook/storyData.ts` 维护。
 
-## 验证
+## 关于我转场
 
-执行 `npm run build`、`node --test tests/rendered-html.test.mjs`、`npm run lint`。五条渲染用例检查页面标题、主要入口、故事数据、算法内容与人物页；浏览器检查桌面和 390px 手机宽度、菜单、翻页/旁白、算法/参数、粒子形态及动效开关。
+`AboutPushTransition.tsx` 接管站内普通点击的 `/about` 链接；修饰键、新窗口和当前页链接保留原有行为。开启动效时可在悬停或键盘聚焦后预取角色分片；实际点击时冻结离开页视口，并等待路由就绪再推进转场。
 
-现有 `<img>` lint 提示保留；全仓 tsc 仍有既有 Cloudflare ambient types 缺口，构建和服务器渲染检查单独验证。
+`about-push.ts` 和 `three/about-push-scene.ts` 使用短生命周期的透明画布。跳过、Escape、返回、尺寸变化、后台切换或加载超时均清理遮罩和资源；减少动态效果或手动暂停时直接导航。
 
-## Cloudflare SSR 边界
+独立实验室和接入记录使用 `about-push-static.ts`，播放后进行顶层导航；避免 iframe 预览导致重复入场。BFCache 返回时恢复旧内容。`build/about-push-assets.ts` 生成独立页面所需的包，修改共享源码后重新启动开发服务。
 
-GSAP 插件只在 `typeof window !== "undefined"` 时注册。`useGSAP` 的 headless 注册会唤醒 ticker；SSR 模块求值阶段不得启动计时器。回归检查在独立进程中禁止计时器后加载实际构建的 Motion 模块，避免 Node 普通渲染检查遗漏该类 Worker 错误。
+## 验证边界
+
+常规构建、类型检查和测试命令见 [开发指南](../DEVELOPMENT.md)。相关回归包括 `tests/page-arrival.test.mjs`、`tests/about-push-image.test.mjs`、`tests/cinema-details.test.mjs` 和 SSR 的计时器检查。
+
+浏览器复核动效暂停、减少动态效果、快速导航、Escape、弹窗焦点和实验室返回。静态测试不能代替真实 WebGL、视觉或帧率测量。模型页的渲染实现另见 [模型说明](liangzai-3d.md)。
