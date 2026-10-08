@@ -35,7 +35,7 @@ export default async function QuantumHome() {
         <section className="portal-protocol portal-chapter" aria-labelledby="protocol-title">
           <div className="portal-section-heading"><p className="portal-eyebrow">02 / PROTOCOL MAP</p><h2 id="protocol-title">从算法，到协议</h2><p>一次运算只是起点。<br />每一层，都有需要回答的问题。</p></div>
           <ProtocolStack />
-          <Link className="portal-text-link" href="/pqc-arsenal">阅读算法原理 <span aria-hidden="true">↗</span></Link>
+          <Link className="portal-text-link" href="/pqc-arsenal">密码图鉴 <span aria-hidden="true">↗</span></Link>
         </section>
         <section className="portal-notes portal-chapter" aria-labelledby="notes-title">
           <div className="portal-section-heading"><p className="portal-eyebrow">03 / FIELD NOTES</p><h2 id="notes-title">实现之后，留下记录</h2><p>把材料、方法与验证边界写清楚。<br />每篇附英文摘要。</p></div>
@@ -43,9 +43,9 @@ export default async function QuantumHome() {
           <Link className="portal-text-link" href="/notes">全部技术笔记</Link>
         </section>
         <section className="portal-news portal-chapter" id="signal" aria-labelledby="signal-title">
-          <div className="portal-section-heading"><p className="portal-eyebrow">04 / SIGNALS</p><h2 id="signal-title">今日信号</h2><p>跟踪密码、协议与标准的新进展。<br />从简报回到原始来源。</p></div>
+          <div className="portal-section-heading"><p className="portal-eyebrow">04 / SIGNALS</p><h2 id="signal-title">前沿新闻</h2><p>跟踪密码、协议与标准的新进展。<br />从简报回到原始来源。</p></div>
           {signals}
-          <Link href="/news" className="portal-text-link portal-news-more">阅读完整技术简报 <span aria-hidden="true">↗</span></Link>
+          <Link href="/news" className="portal-text-link portal-news-more">前沿新闻 <span aria-hidden="true">↗</span></Link>
         </section>
         <aside className="portal-outside" aria-label="工程之外"><p className="portal-eyebrow">AFTER HOURS</p><div><h2>工程之外</h2><p>量仔是这里的吉祥物。故事与角色模型，留在量仔宇宙里。</p></div><Link className="portal-text-link" href="/universe">去看看 <span aria-hidden="true">↗</span></Link></aside>
       </main>

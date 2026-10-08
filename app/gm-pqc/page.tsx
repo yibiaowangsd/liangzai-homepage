@@ -37,7 +37,7 @@ export default function Page() {
           <a href="/downloads/ngcc-parameters.csv" download>
             下载 586 组参数记录 CSV
           </a>
-          <a href="/pqc-practice/audit.html">完整构建记录</a>
+          <a href="/pqc-practice/audit">完整构建记录</a>
           <a href="https://ngcc.dev/reports/index.html">安全报告索引</a>
         </div>
       </Section>

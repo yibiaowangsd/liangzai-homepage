@@ -27,6 +27,9 @@ export function resetTransfers() {
   timers.clear();
 }
 
+export function transferSnapshot() { return [...receipts.entries()]; }
+export function restoreTransfers(entries) { resetTransfers(); for(const [key,value] of entries)receipts.set(key,value); }
+
 export function animateTransfer(id, targets) {
   const [source, destination] = routes[id];
   receipts.set(id, {
@@ -63,7 +66,7 @@ function drawRoute(id, materials, state) {
     && (!bundle || (receipt.message === messageValue('sign-message') && receipt.message === messageValue('verify-message')));
   const modified = !!bytes && receipt?.source === value(source) && !received;
   route.dataset.state = received ? 'delivered' : modified ? 'modified' : bytes ? 'ready' : 'empty';
-  route.querySelector('.route-state').textContent = received ? 'Delivered' : modified ? 'Receiver modified the material' : bytes ? 'Ready to send' : 'Waiting for generation';
+  route.querySelector('.route-state').textContent = received ? '✓ Complete' : modified ? '✕ Failed' : bytes ? '◌ In progress' : '○ Not started';
   const message = bundle ? messageValue('sign-message') : '';
   const messageBytes = new TextEncoder().encode(message).length;
   route.querySelector('.packet-size').textContent = bytes ? (bytes.length + (bundle ? messageBytes : 0)) + ' B' : '';
@@ -77,7 +80,9 @@ function drawRoute(id, materials, state) {
     ? bundle ? 'Message · UTF-8 · ' + messageBytes + ' B\n' + message + '\n\nSignature · HEX · ' + bytes.length + ' B\n' + normalized
       : 'HEX · ' + bytes.length + ' B\n\n' + normalized
     : 'No material yet';
-  route.querySelector('.send-button').disabled = state.busy || !state.ready || !bytes;
+  const send=route.querySelector('.send-button');
+  send.disabled = state.busy || !state.ready || !bytes;
+  send.title = !bytes ? 'Generate or import valid '+route.querySelector('.packet-head strong').textContent : state.busy ? 'Computing, please wait' : 'Send public material';
 }
 
 export function renderDialogue(state) {
@@ -102,7 +107,7 @@ export function renderDialogue(state) {
     'kem-encapsulate': has('kem-alice-public'), 'kem-decapsulate': has('kem-private') && has('kem-bob-cipher'),
     'sign-button': has('sig-private'), 'verify-button': has('sig-verifier-public') && has('verify-signature'),
   };
-  for (const [id, available] of Object.entries(prerequisites)) $('#' + id).disabled = state.busy || !state.ready || !available;
+  for (const [id, available] of Object.entries(prerequisites)) { const button=$('#'+id);button.disabled=state.busy||!state.ready||!available;button.title=!available ? ({'kem-encapsulate':'Receive a valid public key first','kem-decapsulate':'Prepare a private key and receive ciphertext first','sign-button':'Prepare a private key first','verify-button':'Receive a public key and signature first'})[id] : state.busy?'Computing, please wait':''; }
   const passed = state.outcome === 'pass', failed = state.outcome === 'fail';
   let stage;
   if (state.kem) {
@@ -127,11 +132,11 @@ export function renderDialogue(state) {
     li.querySelector('.step-dot').textContent = index < stage ? '✓' : String(index + 1).padStart(2, '0');
   });
   const guidance = state.kem ? [
-    ['Prepare keys for Bob', 'Generate temporary test keys or import Bob’s matching public and private keys.'],
-    ['Send the public key to Alice', 'Choose Send public key in the channel. Only the public key is transferred.'],
-    ['Alice can encapsulate', 'Use the received public key to generate ciphertext and Alice’s local shared secret.'],
-    ['Return ciphertext to Bob', 'Choose Send ciphertext in the second channel. Alice’s shared secret stays local.'],
-    [has('kem-private') ? 'Bob can decapsulate' : 'Import Bob’s private key', has('kem-private') ? 'Decapsulate the received ciphertext with the local private key, then compare all bytes.' : 'Ciphertext is ready. Import the matching private key to decapsulate.'],
+    ['Prepare Alice’s keys', 'Generate temporary test keys or import Alice’s matching public and private keys.'],
+    ['Send the public key to Bob', 'Choose Send public key in the channel. Only the public key is transferred.'],
+    ['Bob can encapsulate', 'Use the received public key to generate ciphertext and Bob’s local shared secret.'],
+    ['Return ciphertext to Alice', 'Choose Send ciphertext in the second channel. Bob’s shared secret stays local.'],
+    [has('kem-private') ? 'Alice can decapsulate' : 'Import Alice’s private key', has('kem-private') ? 'Decapsulate the received ciphertext with the local private key, then compare all bytes.' : 'Ciphertext is ready. Import the matching private key to decapsulate.'],
     ['Both parties derived the same shared secret', `Both copies contain ${state.sizes?.ss ?? 32} identical bytes. Only the public key and ciphertext crossed the channel.`],
   ] : [
     ['Prepare Alice’s keys', 'Generate temporary test keys or import Alice’s matching keys.'],
@@ -146,8 +151,8 @@ export function renderDialogue(state) {
     title = state.kem ? 'Shared secrets differ' : 'Signature verification failed';
     detail = state.kem ? 'Check the key and ciphertext, and match both parties’ algorithm, parameters and hash.' : 'Check the public key, message and signature. Editing the message also causes verification to fail.';
   } else if (state.outcome === 'partial') {
-    title = 'Bob completed decapsulation';
-    detail = 'Bob’s secret is ready. Alice’s encapsulation result is missing, so comparison is unavailable.';
+    title = 'Alice completed decapsulation';
+    detail = 'The local shared secret is ready. Bob has not encapsulated yet, so comparison is pending.';
   }
   $('#guide-number').textContent = passed ? '✓' : String(Math.min(stage + 1, 5)).padStart(2, '0');
   $('#guide-title').textContent = title;
@@ -156,7 +161,7 @@ export function renderDialogue(state) {
   for (const id of ['kem-bob', 'kem-alice', 'sig-alice', 'sig-bob']) {
     const current = id === activeActor || (state.kem && passed && id.startsWith('kem-'));
     $('#' + id).classList.toggle('is-active', current);
-    $('#' + id + '-status').textContent = current ? state.busy ? 'Computing' : passed ? 'Complete' : 'Current step' : 'Waiting for the other party';
+    $('#' + id + '-status').textContent = failed ? '✕ Failed' : passed ? '✓ Complete' : current && (state.busy || stage>0) ? '◌ In progress' : '○ Not started';
   }
   document.querySelectorAll('.is-next').forEach(button => button.classList.remove('is-next'));
   if (!passed) {
@@ -170,8 +175,8 @@ export function renderDialogue(state) {
     $('#box-' + id).classList.toggle('has-secret', present);
     $('#box-' + id).classList.toggle('matched', present && passed && state.kem);
     $('#box-' + id).classList.toggle('mismatched', present && failed && state.kem);
-    $('#state-' + id).textContent = !present ? `Not established · ${sharedSize} B` : passed && state.kem
-      ? `Matched · ${sharedSize} / ${sharedSize} bytes match` : failed && state.kem ? 'Comparison failed: shared secrets differ' : 'Derived; waiting for comparison';
+    $('#state-' + id).textContent = !present ? `○ Not started · ${sharedSize} B` : passed && state.kem
+      ? `✓ Complete · ${sharedSize} / ${sharedSize} bytes match` : failed && state.kem ? '✕ Failed · Shared secrets differ' : '◌ In progress · Comparison pending';
   }
   const verdict = $('#signature-verdict');
   verdict.classList.toggle('pass', !state.kem && passed);

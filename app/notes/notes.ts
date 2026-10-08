@@ -35,7 +35,7 @@ const implementationNotes = [
       { title: "保留一条可追溯的路径", paragraphs: ["接入记录按候选与参数组织，提供来源、模块状态和功能验证信息，并支持 CSV 导出。使用某个结果前，应核对对应参数、来源版本和验证条件。", "未接入可能来自来源不可用、接口不兼容或编译限制。本站另行维护不可运行清单与已发布安全发现索引，将工程障碍和已确认的安全发现分别记录。"] },
       { title: "怎样使用这些记录", paragraphs: ["先在记录页定位候选与参数，再查看是否有可运行模块及相应验证结果。对需要继续评估的实现，保存来源版本、构建方式和输入输出，重新执行正常与异常路径。", "目录不是安全排名。浏览器功能验证不能替代密码分析、侧信道评估或生产协议审查；接入数量也不能作为算法安全性的分数。"] },
     ],
-    links: [{ label: "查看逐参数接入记录", href: "/pqc-practice/audit.html" }, { label: "不可运行清单", href: "https://github.com/yibiaowangsd/liangzai-homepage/blob/main/docs/pqc-unavailable.md" }, { label: "安全发现索引", href: "https://github.com/yibiaowangsd/liangzai-homepage/blob/main/docs/pqc-security-index.md" }],
+    links: [{ label: "查看逐参数接入记录", href: "/pqc-practice/audit" }, { label: "不可运行清单", href: "https://github.com/yibiaowangsd/liangzai-homepage/blob/main/docs/pqc-unavailable.md" }, { label: "安全发现索引", href: "https://github.com/yibiaowangsd/liangzai-homepage/blob/main/docs/pqc-security-index.md" }],
   },
 ] as const;
 

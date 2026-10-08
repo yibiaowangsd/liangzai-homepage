@@ -1,4 +1,5 @@
-import { renderDialogue, animateTransfer, resetTransfers } from './dialogue.js?v=20261002-usability';
+import { setupUsability } from './usability.js';
+import { renderDialogue, animateTransfer, resetTransfers, transferSnapshot, restoreTransfers } from './dialogue.js?v=20261002-usability';
 import { copyText, missingBrowserFeatures } from './browser-compat.js';
 import { ngccModule } from './ngcc-runtime.js';
 import { candidateModule, setCandidateProvider, showCandidateWork, stopCandidateWork } from './candidate-workbench.js';
@@ -40,13 +41,19 @@ const hex = bytes => Array.from(bytes, value => value.toString(16).padStart(2, '
 const equal = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
 const elapsed = value => value == null ? '—' : `${value.toFixed(2)} ms`;
 let worker, ready = false, busy = false, active = null, serial = 0, resetSerial = 0, sizes = null;
-let catalog = null, catalogPromise = null, reportIndex = null, nistFamily = 'mlkem';
+let catalog = null, catalogPromise = null, reportIndex = null, catalogError = '', nistFamily = 'mlkem';
 let aliceSecret = null, keyTime = null, actionTime = null;
 let flowOutcome = null;
 let expandedLibrary = 'nist';
 let labTab = new URLSearchParams(location.search).get('tab') || 'kem';
 if (!['kem', 'signature', 'candidates'].includes(labTab)) labTab = 'kem';
 let demoRunning = false;
+let usability, finalTime = null, loadTimer = null;
+const parameterLabels = {
+ mlkem: {512:[1,800,1632,768],768:[3,1184,2400,1088],1024:[5,1568,3168,1568]},
+ mldsa: {44:[2,1312,2560,2420],65:[3,1952,4032,3309],87:[5,2592,4896,4627]},
+ slhdsa: {"128f":[1,32,64,17088],"128s":[1,32,64,7856],"192f":[3,48,96,35664],"192s":[3,48,96,16224],"256f":[5,64,128,49856],"256s":[5,64,128,29792]}
+};
 
 function renderSidebar() {
   const selectedLibrary = $('#library').value;
@@ -96,13 +103,14 @@ function renderSidebar() {
     content.className = 'library-choices';
     if (library.id === 'ngcc' && !catalog) {
       const loading = document.createElement('p');
-      loading.className = 'sidebar-empty'; loading.textContent = '正在读取征集目录…';
+      loading.className = catalogError ? 'sidebar-empty' : 'sidebar-empty loading-placeholder'; loading.textContent = catalogError || '正在读取征集目录…';
       content.append(loading);
+      if(catalogError){const retry=document.createElement('button');retry.type='button';retry.textContent='重试加载';retry.onclick=()=>$('#retry-runtime').click();content.append(retry);}
     }
     let visible = 0;
     for (const [, title, algorithms] of library.groups.filter(group => labTab === "candidates" || group[0] === (labTab === "signature" ? "sig" : "kem"))) {
       const matches = algorithms.filter(algorithm =>
-        `${algorithm.name} ${algorithm.id}`.toLocaleLowerCase().includes(query));
+        `${algorithm.name} ${algorithm.id}`.toLocaleLowerCase().includes(query) && (!$('#runnable-only').checked || algorithm.ready));
       if (!matches.length) continue;
       visible += matches.length;
       const group = document.createElement('details');
@@ -128,7 +136,7 @@ function renderSidebar() {
         choice.addEventListener('click', () => {
           if (busy || $('#family').value === algorithm.id) return;
           $('#family').value = algorithm.id;
-          $('#family').dispatchEvent(new Event('change'));
+          $('#family').dispatchEvent(new CustomEvent('change', {detail:{internal:true}}));
           root.querySelector('[aria-current="true"][data-select-family]')?.focus({ preventScroll: true });
         });
         group.append(choice);
@@ -172,9 +180,10 @@ document.querySelectorAll('[data-library-shortcut]').forEach(button => button.ad
 }));
 
 function refresh() { renderDialogue({ kem: isKem(), sizes, busy, ready: ready && isRunnable(),
-  ngccSig: isNgcc() && !isKem(), outcome: flowOutcome, decode: decodeInput }); }
+  ngccSig: isNgcc() && !isKem(), outcome: flowOutcome, decode: decodeInput }); usability?.update(uiState()); }
+function uiState() { return {kem:isKem(), sizes, busy, outcome:flowOutcome, name:name(), timings:[{label:"密钥生成",ms:keyTime},{label:isKem()?"封装":"签名",ms:actionTime},{label:isKem()?"解封装":"验签",ms:finalTime}]}; }
 function status(value, kind = '') { $('#message').textContent = value; $('#message').className = `message ${kind}`; refresh(); }
-function runtime(value, kind = '') { $('#runtime').setAttribute('aria-busy', String(!kind && /加载|载入/.test(value))); $('#runtime').className = `runtime ${kind}`; $('#runtime').lastElementChild.textContent = value; }
+function runtime(value, kind = '') { $('#runtime').setAttribute('aria-busy', String(!kind && /加载|载入/.test(value))); $('#runtime').className = `runtime ${kind}`; $('#runtime').lastElementChild.classList.remove('lab-skeleton'); $('#runtime').lastElementChild.textContent = value; $('#retry-runtime').hidden = kind !== 'error'; }
 function setBusy(value) {
   busy = value;
   $('#run-example').disabled = value || !ready || !sizes || !isRunnable() || (isNgcc() && !['kem','sig'].includes(selectedCandidate()?.type));
@@ -194,8 +203,8 @@ function request(type, payload = {}) {
       if (active?.requestId !== requestId) return;
       active = null;
       worker?.terminate(); ready = false;
-      reject(new Error('该参考实现运行超过 45 秒，已停止；正在重新加载工作线程'));
-      startWorker();
+      runtime('运行超时', 'error');
+      reject(new Error('该参考实现运行超过 45 秒，已停止；请重试加载工作线程。'));
     }, 45000);
     active = { requestId, resolve, reject, timer };
     try { worker.postMessage({ type, requestId, library: $('#library').value,
@@ -204,14 +213,17 @@ function request(type, payload = {}) {
   });
 }
 function startWorker() {
+  worker?.terminate(); ready = false; clearTimeout(loadTimer);
+  runtime('正在加载算法模块…');
+  loadTimer = setTimeout(() => { worker?.terminate(); runtime('算法模块加载超时', 'error'); status('模块在 15 秒内未就绪，请重试加载。', 'error'); setBusy(false); }, 15000);
   try {
     worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
     worker.onmessage = ({ data }) => {
       if (data.type === 'ready') {
-        ready = true;
+        clearTimeout(loadTimer); ready = true;
         if (isRunnable()) { runtime('本地运行', 'ready'); configureVariant(); }
       } else if (data.type === 'error' && !ready && !active) {
-        runtime('加载失败', 'error'); status(data.message, 'error');
+        clearTimeout(loadTimer); runtime('加载失败', 'error'); status(data.message, 'error');
       } else if ((data.type === 'result' || data.type === 'error') && data.requestId === active?.requestId) {
         const pending = active;
         active = null;
@@ -221,7 +233,7 @@ function startWorker() {
       }
     };
     worker.onerror = event => {
-      ready = false;
+      clearTimeout(loadTimer); ready = false;
       const pending = active; active = null;
       clearTimeout(pending?.timer);
       pending?.reject(new Error(event.message || '工作线程失败'));
@@ -230,7 +242,7 @@ function startWorker() {
       setBusy(false);
     };
     worker.postMessage({ type: 'init' });
-  } catch (error) { runtime('浏览器环境不可用', 'error'); status(error.message, 'error'); }
+  } catch (error) { clearTimeout(loadTimer); runtime('浏览器环境不可用', 'error'); status(error.message, 'error'); }
 }
 function decodeInput(input, expected, label) {
   const raw = input.trim();
@@ -263,14 +275,15 @@ function read(id) {
     return bytes;
   } catch (error) { input.setAttribute('aria-invalid', 'true'); input.focus(); throw error; }
 }
-function write(id, bytes) { $(`#${id}`).value = hex(bytes); $(`#${id}`).removeAttribute('aria-invalid'); }
-function result(label = '等待双方操作') {
+function write(id, bytes) { $(`#${id}`).value = hex(bytes).match(/.{1,8}/g)?.join(' ') || ''; $(`#${id}`).removeAttribute('aria-invalid'); }
+function result(label = '○ 未开始') {
+  finalTime = null;
   flowOutcome = null;
   $('#manual-result').classList.remove('pass', 'fail');
   $('#manual-summary').textContent = label;
-  $('#fact-one').textContent = '待检查'; $('#fact-one').className = '';
-  $('#fact-two').textContent = '待比较'; $('#fact-two').className = '';
-  $('#fact-time').textContent = '—';
+  $('#fact-one').textContent = '○ 未开始'; $('#fact-one').className = '';
+  $('#fact-two').textContent = '○ 未开始'; $('#fact-two').className = '';
+  $('#fact-time').textContent = '未开始';
   refresh();
 }
 function resetKem() {
@@ -282,11 +295,12 @@ function resetKem() {
 function resetSig() { actionTime = null; $('#signature').value = ''; $('#verify-signature').value = ''; $('#verify-message').value = ''; result(); }
 function resetFields({ blankMessage = false } = {}) {
   resetSerial++;
+  usability?.hidePrivate();
   resetTransfers();
   document.querySelectorAll('[data-field]').forEach(input => { input.value = ''; input.removeAttribute('aria-invalid'); });
   document.querySelectorAll('[data-import]').forEach(input => { input.value = ''; });
   $('#sign-message').value = blankMessage ? '' : '这是一条测试消息。'; $('#verify-message').value = '';
-  keyTime = null; resetKem(); resetSig();
+  keyTime = null; finalTime = null; resetKem(); resetSig();
 }
 function showSizes() {
   for (const [id, key] of Object.entries(FIELD_SIZES)) $(`#size-${id}`).textContent = `${sizes[key]} B`;
@@ -307,7 +321,7 @@ async function configureVariant() {
     showSizes();
     status(isNgcc() ? '已载入征集参考实现；请使用与此参数实例配套的密钥。'
       : '请使用与当前算法、参数和哈希配套的密钥。');
-  } catch (error) { status(error.message, 'error'); }
+  } catch (error) { runtime('模块加载失败', 'error'); status(error.message, 'error'); }
   finally { setBusy(false); }
 }
 async function operation(type, payload, onSuccess) {
@@ -317,7 +331,7 @@ async function operation(type, payload, onSuccess) {
     setBusy(true);
     status(`正在执行 ${name()} ${({ generate: '密钥生成', encapsulate: '封装', decapsulate: '解封装', sign: '签名', verify: '验签' })[type]}…`);
     onSuccess(await pending);
-  } catch (error) { status(error.message, 'error'); }
+  } catch (error) { flowOutcome='fail'; status(error.message, 'error'); }
   finally { setBusy(false); }
 }
 function attempt(callback) { try { callback(); } catch (error) { status(error.message, 'error'); } }
@@ -328,13 +342,14 @@ function configureVariants(preferDefault = false) {
   const previous = $('#variant').value;
   const selected = !preferDefault && variants.includes(previous) ? previous : DEFAULT_VARIANT[family];
   $('#variant').replaceChildren(...variants.map(variant => {
-    const option = new Option(`${NAMES[family]}-${variant.toUpperCase()}`, variant);
+    const [level,pk,sk,out] = parameterLabels[family][variant];
+    const option = new Option(`${NAMES[family]}-${variant.toUpperCase()} · 安全等级 ${level} · 公钥 ${pk} B · 私钥 ${sk} B · ${family==='mlkem'?'密文':'签名'} ${out} B${family==='mlkem'?' · 共享密钥 32 B':''}`, variant);
     option.selected = variant === selected;
     return option;
   }));
 }
 async function loadCatalog() {
-  if (!catalogPromise) catalogPromise = fetch('./ngcc-catalog.json').then(async response => {
+  if (!catalogPromise) catalogPromise = fetch('./ngcc-catalog.json', {signal:AbortSignal.timeout(10000)}).then(async response => {
     if (!response.ok) throw new Error(`无法载入候选目录（HTTP ${response.status}）`);
     const data = await response.json();
     if (!Array.isArray(data.candidates) || data.candidates.length !== 119) throw new Error('征集目录数据不完整');
@@ -343,7 +358,7 @@ async function loadCatalog() {
   catalog = await catalogPromise;
   if (!reportIndex) {
     try {
-      const response = await fetch('./ngcc-reports-zh.json');
+      const response = await fetch('./ngcc-reports-zh.json', {signal:AbortSignal.timeout(10000)});
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const index = await response.json();
       if (index.findings?.length !== 166 || index.active_findings !== 164 || index.findings.some(item => !item.title || !item.summary || !item.source_url)) throw new Error('报告快照数据不完整');
@@ -368,6 +383,7 @@ function showReports(candidate) {
     list.replaceChildren(document.createElement('p'));
     list.firstChild.className = 'report-empty';
     list.firstChild.textContent = '可前往报告原站查看全部候选。';
+    const retry=document.createElement('button');retry.type='button';retry.textContent='重试读取报告';retry.onclick=async()=>{reportIndex=null;await loadCatalog();showReports(candidate);};list.append(retry);
     return;
   }
   if (!reports.length) {
@@ -458,6 +474,8 @@ async function switchLibrary() {
     $(selector).classList.toggle('hidden', directory);
   }
   if (directory) {
+    catalogError='';
+    $('#catalog-notice').textContent='正在读取候选的参考实现信息。';
     $('#family').replaceChildren(new Option('正在加载征集目录…', ''));
     $('#variant').replaceChildren();
     runtime('候选资料 · 加载中');
@@ -473,7 +491,7 @@ async function switchLibrary() {
         return group;
       }));
       configureCatalogParameters(); showCatalog(); renderSidebar();
-    } catch (error) { status(error.message, 'error'); runtime('候选目录加载失败', 'error'); }
+    } catch (error) { catalogError=error.message; $('#catalog-notice').textContent=error.message; $('#report-intro').textContent='候选目录读取失败，请重试加载。'; status(error.message, 'error'); runtime('候选目录加载失败', 'error'); renderSidebar(); }
   } else {
     $('#family').replaceChildren(...[
       ['密钥封装', ['mlkem']], ['数字签名', ['mldsa', 'slhdsa']],
@@ -483,7 +501,7 @@ async function switchLibrary() {
       return group;
     }));
     $('#family').value = nistFamily;
-    $('#family').dispatchEvent(new Event('change'));
+    $('#family').dispatchEvent(new CustomEvent('change', {detail:{internal:true}}));
     runtime(ready ? '本地运行' : '正在加载…', ready ? 'ready' : '');
   }
 }
@@ -507,8 +525,9 @@ $('#hash').addEventListener('change', () => { if (!isNgcc()) { configureVariants
 $('#variant').addEventListener('change', () => isNgcc() ? showCatalog() : configureVariant());
 $('#clear-all').addEventListener('click', () => {
   if (busy || !isRunnable()) return;
+  usability.beforeClear();
   resetFields({ blankMessage: true });
-  status('已清空所有输入与结果；算法库、算法和参数集保持当前选择。', 'success');
+  status('已清空全部输入与结果。可点击“撤销清空”恢复；继续编辑或运行后撤销失效。', 'success');
 });
 document.querySelectorAll('[data-field]').forEach(input => input.addEventListener('input', () => {
   input.removeAttribute('aria-invalid');
@@ -526,7 +545,7 @@ $('#verify-message').addEventListener('input', () => result());
 
 for (const [button, prefix] of [['kem-generate', 'kem'], ['sig-generate', 'sig']]) {
   $(`#${button}`).addEventListener('click', () => operation('generate', {}, generated => {
-    resetTransfers();
+    resetTransfers(); usability?.hidePrivate();
     write(`${prefix}-public`, generated.publicKey); write(`${prefix}-private`, generated.privateKey);
     generated.privateKey.fill(0); keyTime = generated.ms;
     if (prefix === 'kem') {
@@ -546,7 +565,7 @@ for (const [button, from, to, clear] of [
     write(to, read(from)); clear();
     const route = { 'kem-send-public': 'kem-route-pk', 'kem-send-cipher': 'kem-route-ct', 'sig-send-public': 'sig-route-pk' }[button];
     animateTransfer(route, [to]);
-    status(button === 'kem-send-cipher' ? 'Alice 的密文已送达 Bob。' : '公钥已送达另一端，私钥仍留在本地。', 'success');
+    status(button === 'kem-send-cipher' ? 'Bob 的密文已送达 Alice。' : '公钥已送达另一端，私钥仍留在本地。', 'success');
   }));
 }
 $('#sig-send-result').addEventListener('click', () => attempt(() => {
@@ -561,7 +580,7 @@ $('#kem-encapsulate').addEventListener('click', () => attempt(() => {
     resetKem(); write('kem-cipher', output.ciphertext);
     aliceSecret = output.sharedSecret; actionTime = output.ms;
     $('#kem-alice-secret').textContent = hex(aliceSecret);
-    status('Alice 已生成密文与本地共享密钥。', 'success');
+    status('Bob 已生成密文与本地共享密钥。', 'success');
   });
 }));
 $('#kem-decapsulate').addEventListener('click', () => attempt(() => {
@@ -570,7 +589,7 @@ $('#kem-decapsulate').addEventListener('click', () => attempt(() => {
   operation('decapsulate', { privateKey, ciphertext, publicKey }, output => {
     $('#kem-bob-secret').textContent = hex(output.sharedSecret);
     $('#fact-one').textContent = isNgcc() ? '通过双方共享密钥比对' : output.pairMatches === null
-      ? '未提供甲方公钥' : output.pairMatches ? '关联一致' : '关联不一致';
+      ? '未提供 Alice 公钥' : output.pairMatches ? '关联一致' : '关联不一致';
     $('#fact-one').className = output.pairMatches === false ? 'bad' : output.pairMatches ? 'good' : '';
     if (aliceSecret) {
       const matches = equal(aliceSecret, output.sharedSecret);
@@ -583,10 +602,11 @@ $('#kem-decapsulate').addEventListener('click', () => attempt(() => {
       status($('#manual-summary').textContent, matches ? 'success' : 'error');
     } else {
       flowOutcome = 'partial';
-      $('#manual-summary').textContent = 'Bob 已得到共享密钥，等待 Alice 的结果用于比较';
-      $('#fact-two').textContent = '缺少甲方结果';
+      $('#manual-summary').textContent = 'Alice 已得到共享密钥，等待 Bob 的结果用于比较';
+      $('#fact-two').textContent = '缺少 Bob 结果';
       status($('#manual-summary').textContent);
     }
+    finalTime = output.ms;
     $('#fact-time').textContent = `生成 ${elapsed(keyTime)} · 封装 ${elapsed(actionTime)} · 解封装 ${elapsed(output.ms)}`;
     output.sharedSecret.fill(0);
   });
@@ -614,13 +634,14 @@ $('#verify-button').addEventListener('click', () => attempt(() => {
     $('#fact-one').textContent = $('#signature').value ? '本页或外部签名' : '外部签名';
     $('#fact-two').textContent = output.valid ? '有效' : '无效';
     $('#fact-two').className = output.valid ? 'good' : 'bad';
+    finalTime = output.ms;
     $('#fact-time').textContent = `生成 ${elapsed(keyTime)} · 签名 ${elapsed(actionTime)} · 验签 ${elapsed(output.ms)}`;
     status($('#manual-summary').textContent, output.valid ? 'success' : 'error');
   });
 }));
 
-document.querySelectorAll('[data-import]').forEach(input => input.addEventListener('change', async () => {
-  const file = input.files?.[0]; if (!file) return;
+async function importFile(input, file) {
+  if (!file || !sizes) return;
   const id = input.dataset.import, selected = `${$('#library').value}/${$('#family').value}/${$('#variant').value}/${$('#hash').value}`, currentReset = resetSerial;
   try {
     if (file.size > 256 * 1024) throw new Error('文件超过 256 KiB，请导入单个原始密钥或签名');
@@ -639,14 +660,16 @@ document.querySelectorAll('[data-import]').forEach(input => input.addEventListen
     status(`${file.name} 已导入。`, 'success');
   } catch (error) { status(error.message, 'error'); }
   finally { input.value = ''; }
-}));
+}
+document.querySelectorAll('[data-import]').forEach(input => input.addEventListener('change', () => importFile(input, input.files?.[0])));
 document.querySelectorAll('[data-copy]').forEach(button => button.addEventListener('click', async () => {
   const target = $(`#${button.dataset.copy}`);
   const value = (target.value ?? target.textContent).trim();
-  if (!value || value.startsWith('等待')) return status('当前没有可复制的结果', 'error');
+  if (!value || /^(等待|未开始)/.test(value)) return status('当前没有可复制的结果', 'error');
   try {
     await copyText(value);
-    status('已复制到剪贴板。', 'success');
+    button.textContent='✓'; setTimeout(()=>{button.textContent='⧉';},1500);
+    status(button.dataset.copy.includes('private') ? '私钥已复制，请勿分享；使用后清理剪贴板。' : '已复制到剪贴板。', 'success');
   }
   catch { status('复制失败：请检查浏览器剪贴板权限。', 'error'); }
 }));
@@ -689,7 +712,7 @@ $('#run-example').addEventListener('click', async () => {
       write('kem-cipher', encapsulated.ciphertext); write('kem-bob-cipher', encapsulated.ciphertext);
       animateTransfer('kem-route-ct', ['kem-bob-cipher']);
       const decapsulated = await request('decapsulate', { privateKey: keys.privateKey, ciphertext: encapsulated.ciphertext, publicKey: keys.publicKey });
-      aliceSecret = encapsulated.sharedSecret;
+      aliceSecret = encapsulated.sharedSecret; actionTime=encapsulated.ms; finalTime=decapsulated.ms;
       $('#kem-alice-secret').textContent = hex(aliceSecret); $('#kem-bob-secret').textContent = hex(decapsulated.sharedSecret);
       const valid = equal(aliceSecret, decapsulated.sharedSecret);
       flowOutcome = valid ? 'pass' : 'fail';
@@ -705,6 +728,7 @@ $('#run-example').addEventListener('click', async () => {
       animateTransfer('sig-route-pk', ['sig-verifier-public']);
       animateTransfer('sig-route-bundle', ['verify-signature']);
       const checked = await request('verify', { publicKey: keys.publicKey, signature: signed.signature, message });
+      actionTime=signed.ms; finalTime=checked.ms;
       flowOutcome = checked.valid ? 'pass' : 'fail';
       $('#fact-one').textContent = '示例生成的签名'; $('#fact-two').textContent = checked.valid ? '有效' : '无效';
       $('#fact-time').textContent = `生成 ${elapsed(keys.ms)} · 签名 ${elapsed(signed.ms)} · 验签 ${elapsed(checked.ms)}`;
@@ -717,6 +741,32 @@ $('#run-example').addEventListener('click', async () => {
   } catch (error) { status(error.message, 'error'); $('#example-status').textContent = error.message; }
   finally { demoRunning = false; setBusy(false); }
 });
+usability = setupUsability({state:uiState, renderSidebar, decode:decodeInput, expectedSize, importFile,
+  snapshot:()=>({fields:Object.fromEntries([...document.querySelectorAll('[data-field],.message-input')].map(input=>[input.id,input.value])), aliceSecret:aliceSecret?.slice(), keyTime, actionTime, finalTime, outcome:flowOutcome, transfers:transferSnapshot(), texts:Object.fromEntries(['kem-alice-secret','kem-bob-secret','manual-summary','fact-one','fact-two','fact-time'].map(id=>[id,$('#'+id).textContent]))}),
+  restore:snapshot=>{resetSerial++;for(const [id,value] of Object.entries(snapshot.fields))$('#'+id).value=value;aliceSecret=snapshot.aliceSecret?.slice()||null;keyTime=snapshot.keyTime;actionTime=snapshot.actionTime;finalTime=snapshot.finalTime;flowOutcome=snapshot.outcome;restoreTransfers(snapshot.transfers);for(const [id,value] of Object.entries(snapshot.texts))$('#'+id).textContent=value;status('✓ 已撤销清空，恢复输入与结果。','success');}
+});
+$('#retry-runtime').addEventListener('click',()=>{if(busy)return;if(isNgcc()&&!catalog)void switchLibrary();else startWorker();});
+$('#tamper-one-bit').addEventListener('click',()=>attempt(()=>{
+  if(busy)return;
+  if(isKem()){
+    const bytes=read('kem-bob-cipher');bytes[0]^=1;write('kem-bob-cipher',bytes);$('#kem-bob-cipher').dispatchEvent(new Event('input'));
+    $('#tamper-note').textContent='已翻转收到密文的第 1 个比特，正在重新解封装。ML-KEM 对无效密文采用隐式拒绝，派生不同的共享密钥。';
+    $('#kem-decapsulate').click();
+  } else {
+    const message=new TextEncoder().encode($('#verify-message').value);
+    if(!message.length)throw new Error('空消息没有可翻转的比特，请先签署非空消息。');
+    message[message.length-1]^=1;
+    $('#verify-message').value=new TextDecoder().decode(message);
+    $('#verify-message').dispatchEvent(new Event('input'));
+    // Flipping the lowest bit of the final UTF-8 byte preserves encoding.
+    $('#tamper-note').textContent='已翻转消息最后一个字节的最低位，使用修改后的原始字节重新验签。';
+    operation('verify',{publicKey:read('sig-verifier-public'),signature:read('verify-signature'),message},output=>{
+      finalTime=output.ms;flowOutcome=output.valid?'pass':'fail';
+      $('#manual-result').classList.remove('pass','fail');$('#manual-result').classList.add(flowOutcome);
+      $('#fact-two').textContent=output.valid?'✓ 完成':'✕ 失败';status(output.valid?'签名仍有效':'✕ 篡改消息后验签失败',output.valid?'success':'error');
+    });
+  }
+}));
 void selectLabTab(labTab);
 const missing = missingBrowserFeatures();
 if (missing.length) {

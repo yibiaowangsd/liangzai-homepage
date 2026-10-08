@@ -60,6 +60,7 @@ try {
     const browser = await engine.launch();
     try {
       const context = await browser.newContext({ reducedMotion: 'reduce' });
+      context.setDefaultTimeout(30000);
       await context.route('https://api.wangyibiao.com/api/news/**', async route => {
         const response = newsResponse(route.request().url());
         await route.fulfill({ status: response.status, contentType: 'application/json', body: await response.text() });
@@ -136,7 +137,7 @@ try {
             }
             if (viewport.width === 320 || viewport.width === 1440) {
               const slug = path === '/' ? 'home' : path.replaceAll('/', '-').replace(/^-/, '');
-              await page.screenshot({ path: `${output}/${name}-${slug}-${viewport.width}.png` });
+              await page.screenshot({ path: `${output}/${name}-${slug}-${viewport.width}.png`, timeout:60000 });
               if (path === '/') {
                 // A full-page screenshot must contain loaded art, including the
                 // scenes beyond the viewport that intentionally use lazy images.
@@ -158,10 +159,11 @@ try {
               .filter(el => { const r = el.getBoundingClientRect(); return r.width > 0 && r.right > document.documentElement.clientWidth + 1; })
               .slice(0, 10).map(el => ({ tag: el.tagName, id: el.id, class: el.className, right: el.getBoundingClientRect().right, width: el.getBoundingClientRect().width, position: getComputedStyle(el).position })));
             const slug = path === '/' ? 'home' : path.replaceAll('/', '-').replace(/^-/, '');
-            await page.screenshot({ path: `${output}/failed-${name}-${slug}-${viewport.width}.png` });
+            await page.screenshot({ path: `${output}/failed-${name}-${slug}-${viewport.width}.png`, timeout:60000 }).catch(() => {});
             failures.push(`${label}: ${error.message}; overflow=${JSON.stringify(overflow)}`);
           }
         }
+        console.log(`${name} ${path}: all viewport widths checked`);
         await page.setViewportSize({ width: 320, height: 568 });
         await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
         const menu = page.locator('dialog[open]');

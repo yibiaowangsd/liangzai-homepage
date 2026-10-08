@@ -37,7 +37,7 @@ function controls(){
 }
 function route(side,message){
   const r=$('kex-route');r.classList.toggle('to-left',side===1);r.dataset.state=message?'ready':'empty';
-  $('kex-direction').textContent=`${NAMES[side]} → ${NAMES[1-side]}`;$('kex-route-state').textContent=message?'待发送 · 未送达':'等待本地计算';
+  $('kex-direction').textContent=`${NAMES[side]} → ${NAMES[1-side]}`;$('kex-route-state').textContent=message?'◌ 进行中':'○ 未开始';
   $('kex-packet-title').textContent=message?`${message.label} · 待发送`:'待发送区';
   if(message){const card=materialCard(message);card.open=true;$('kex-outbox').replaceChildren(card);}
   else $('kex-outbox').textContent=`${NAMES[side]} 还没有生成 msg${pass}。先点击左／右侧本地计算。`;
@@ -48,7 +48,7 @@ function prepareKex(candidate,index){
   $('kex-exchange').dataset.state='idle';$('kex-messages').replaceChildren();$('kex-messages').parentElement.open=false;
   for(const side of SIDES){
     $(`kex-${side}-material`).textContent='公钥可公开 · 私钥与状态留在本地';$(`kex-${side}-inventory`).replaceChildren();
-    $(`kex-${side}-inbox`).textContent='尚未收到消息';$(`kex-${side}-state`).textContent='等待生成本地材料';
+    $(`kex-${side}-inbox`).textContent='尚未收到消息';$(`kex-${side}-state`).textContent='○ 未开始';
     $(`kex-${side}-recipe`).textContent='开始后，各自生成公钥、私钥和本地状态。';$(`kex-${side}-fingerprint`).textContent='尚未派生共享密钥';
     $(`kex-${side}`).classList.remove('is-speaking','is-receiving');$(`kex-${side}-inbox`).classList.remove('incoming');
   }
@@ -63,8 +63,8 @@ function packet(side,message,title){
   const inbox=$(`kex-${SIDES[1-side]}-inbox`);if(!inbox.querySelector('details'))inbox.replaceChildren();
   inbox.append(materialCard(message));inbox.classList.remove('incoming');void inbox.offsetWidth;inbox.classList.add('incoming');
   traffic+=message.bytes;$('kex-traffic').textContent=`已传输 ${traffic.toLocaleString('zh-CN')} B（含公钥）`;
-  $(`kex-${SIDES[1-side]}-state`).textContent=`已收到 ${message.label} · ${message.bytes} B`;
-  $(`kex-${SIDES[side]}-state`).textContent=`${message.label} 已送达 ${NAMES[1-side]}`;
+  $(`kex-${SIDES[1-side]}-state`).textContent='◌ 进行中';
+  $(`kex-${SIDES[side]}-state`).textContent='◌ 进行中';
 }
 function computeGuide(){
   const side=(pass-1)%2,from=NAMES[side],to=NAMES[1-side];
@@ -72,25 +72,25 @@ function computeGuide(){
   $(`kex-${SIDES[side]}-recipe`).textContent=recipe;$(`kex-${SIDES[1-side]}-recipe`).textContent=`等待 ${from} 计算并发送 msg${pass}；当前还没有收到这条消息。`;
   guide(`轮到 ${from} 本地计算 msg${pass}`,`${recipe} 点击 ${from} 卡片内的计算按钮；此操作不会发送消息。`);
 }
-function fail(message){stopCandidateWork();phase='error';controls();$('kex-exchange').dataset.state='error';guide('本次交换停止',`${message}。点击“重新开始”创建新会话。`);$('candidate-status').textContent=message;}
+function fail(message){stopCandidateWork();phase='error';controls();$('kex-exchange').dataset.state='error';guide('本次交换停止',`${message}。点击“重新开始”创建新会话。`);$('candidate-status').textContent='✕ 失败 · '+message;$('kex-reset').textContent='重试密钥交换';}
 function complete(data){
-  busy=false;kexStep++;$('candidate-status').textContent=`本步完成 · ${data.ms.toFixed(2)} ms`;controls();
+  busy=false;kexStep++;$('candidate-status').textContent=`${phase==='done'?'✓ 完成':'◌ 进行中'} · ${data.ms.toFixed(2)} ms`;controls();
 }
 function receive(data){
   clearTimeout(timer);if(data.error){fail(data.error);return;}
   if(data.action==='init'){
     for(const [i,side] of SIDES.entries()){
       $(`kex-${side}-inventory`).replaceChildren(...data.materials.slice(i*3,i*3+3).map(materialCard));
-      $(`kex-${side}-state`).textContent='本地材料已生成，尚未发送';$(`kex-${side}-recipe`).textContent='只共享公钥，私钥与状态不离开本地保险箱。';
+      $(`kex-${side}-state`).textContent='◌ 进行中';$(`kex-${side}-recipe`).textContent='只共享公钥，私钥与状态不离开本地保险箱。';
     }
     publicMaterials=[data.materials[0],data.materials[3]];phase='public-a';route(0,publicMaterials[0]);
     guide('先把 Alice 的公钥交给 Bob','Alice 的公钥已经放入中间待发送区。点击“发送给 Bob”，Bob 的收件箱才会出现它；然后反向发送 Bob 的公钥。');complete(data);
   }else if(data.action==='public'||data.action==='send'){
     const side=data.action==='public'?data.side:(data.pass-1)%2;
-    $('kex-route').classList.add('sending');$('kex-route-state').textContent='传输中…';
+    $('kex-route').classList.add('sending');$('kex-route-state').textContent='◌ 进行中';
     guide(`${NAMES[side]} → ${NAMES[1-side]}：正在发送 ${data.message.label}`,'发送过程中暂时不能执行下一步。消息到达后会出现在接收方的收件箱。');
     const deliver=()=>{
-      arrival=null;$('kex-route').classList.remove('sending');$('kex-route').dataset.state='delivered';$('kex-route-state').textContent='已送达';
+      arrival=null;$('kex-route').classList.remove('sending');$('kex-route').dataset.state='delivered';$('kex-route-state').textContent='✓ 完成';
       $('kex-packet-title').textContent=`${data.message.label} · 已送达`;
       packet(side,data.message,`${NAMES[side]} → ${NAMES[1-side]} · ${data.message.label}`);
       if(data.action==='public'&&side===0){phase='public-b';route(1,publicMaterials[1]);guide('Bob 收到了 Alice 公钥，现在回送自己的公钥','左侧仍未收到 Bob 的公钥。点击中间“发送给 Alice”，完成双向公开输入准备。');}
@@ -106,11 +106,11 @@ function receive(data){
   }else if(data.action==='pass'){
     const side=(data.pass-1)%2,inventory=$(`kex-${SIDES[side]}-inventory`);
     inventory.querySelector(`[data-slot="${data.state.slot}"]`)?.remove();inventory.append(materialCard(data.state));
-    phase='send';route(side,data.message);$(`kex-${SIDES[side]}-state`).textContent=`msg${pass} 已计算 · 尚未发送`;
-    $(`kex-${SIDES[1-side]}-state`).textContent=`正在等待 msg${pass}，尚未收到`;
+    phase='send';route(side,data.message);$(`kex-${SIDES[side]}-state`).textContent='◌ 进行中';
+    $(`kex-${SIDES[1-side]}-state`).textContent='◌ 进行中';
     guide(`${NAMES[side]} 算出了 msg${pass}，但 ${NAMES[1-side]} 还没收到`,'真实输出已放入中间待发送区，可直接查看字节；传输总量没有变化。现在点击发送，把消息交给对方。');complete(data);
   }else if(data.action==='derive'){
-    const side=SIDES[data.side];$(`kex-${side}-inventory`).append(materialCard(data.secret));$(`kex-${side}-fingerprint`).textContent=`共享密钥 SHA-256：${data.secret.fingerprint}`;$(`kex-${side}-state`).textContent='已在本地派生共享密钥';
+    const side=SIDES[data.side];$(`kex-${side}-inventory`).append(materialCard(data.secret));$(`kex-${side}-fingerprint`).textContent=`共享密钥 SHA-256：${data.secret.fingerprint}`;$(`kex-${side}-state`).textContent='✓ 完成';
     if(data.side===0){phase='derive-b';guide('Alice 已算出密钥，现在让 Bob 独立计算','两人没有互传共享密钥。点击 Bob 卡片里的派生按钮，用 Bob 自己的秘密与已收到的材料计算，然后比较两份真实输出。');}
     else{
       phase=data.match?'done':'error';$('kex-exchange').dataset.state=data.match?'done':'error';
@@ -126,9 +126,9 @@ function execute(data){
   if(!active){
     if(data.action!=='init')return;
     active=new Worker('./kex-worker.js',{type:'module'});const worker=active;
-    worker.onmessage=({data})=>{if(active===worker)receive(data);};worker.onerror=()=>{if(active===worker)fail('WASM 加载或执行失败');};
+    worker.onmessage=({data})=>{if(active===worker)receive(data);};worker.onerror=()=>{if(active===worker)fail('✕ 失败 · WASM 加载或执行失败，可重试计算摘要。');};
   }
-  busy=true;controls();$('candidate-status').textContent=data.action==='send'||data.action==='public'?'正在发送公开材料…':'正在执行本地计算…';
+  busy=true;controls();$('candidate-status').textContent=data.action==='send'||data.action==='public'?'◌ 进行中 · 发送公开材料':'◌ 进行中 · 本地计算';
   timer=setTimeout(()=>fail('本步超过 30 秒'),30000);active.postMessage({...data,id:candidate.id,index});
 }
 $('kex-next').addEventListener('click',()=>{if(phase==='init')execute({action:'init'});});
@@ -137,7 +137,7 @@ for(const [side,key] of SIDES.entries())$(`kex-${key}-action`).addEventListener(
   if(side!==owner())return;
   if(phase==='compute')execute({action:'pass',pass});else if(phase.startsWith('derive'))execute({action:'derive',side});
 });
-$('kex-reset').addEventListener('click',()=>{stopCandidateWork();const c=currentCandidate();if(c?.type==='kex'){prepareKex(c,Number($('variant').value));$('candidate-output').textContent='等待运行';$('candidate-status').textContent='新会话尚未开始';}});
+$('kex-reset').addEventListener('click',()=>{stopCandidateWork();const c=currentCandidate();if(c?.type==='kex'){prepareKex(c,Number($('variant').value));$('candidate-output').textContent='○ 未开始';$('candidate-status').textContent='○ 未开始';}});
 export function showCandidateWork(candidate,index){
   stopCandidateWork();const hash=candidate?.type==='hash',runnable=Boolean(candidateModule(candidate,index));
   $('candidate-workbench').classList.toggle('hidden',!runnable);if(!runnable)return;
@@ -145,12 +145,12 @@ export function showCandidateWork(candidate,index){
   $('candidate-work-title').textContent=hash?'本地计算摘要':'Alice 与 Bob，一步一步建立共同秘密';
   $('candidate-work-description').textContent=hash?'输入按 UTF-8 编码，交给所选实现的 WASM 计算；最多 1 MiB。':'先共享公钥，再交替执行“本地计算 → 点击发送 → 对方接收”，最后各自派生同一把密钥。左右是本地保险箱，中间是公开通信通道。';
   $('candidate-message-field').classList.toggle('hidden',!hash);$('candidate-run').classList.toggle('hidden',!hash);$('candidate-run').textContent='计算摘要';
-  $('candidate-output-label').textContent=hash?'摘要（HEX）':'交换结论';$('candidate-status').textContent=hash?'等待输入':'等待生成双方材料';$('candidate-output').textContent='等待运行';
+  $('candidate-output-label').textContent=hash?'摘要（HEX）':'交换结论';$('candidate-status').textContent='○ 未开始';$('candidate-output').textContent='○ 未开始';
 }
 $('candidate-message').addEventListener('input', () => {
   if (active) stopCandidateWork();
-  $('candidate-status').textContent = '等待计算';
-  $('candidate-output').textContent = '等待计算';
+  $('candidate-status').textContent = '○ 未开始';
+  $('candidate-output').textContent = '○ 未开始';
 });
 
 $('candidate-run').addEventListener('click', () => {
@@ -169,20 +169,21 @@ $('candidate-run').addEventListener('click', () => {
   active = running;
   $('candidate-run').disabled = true;
   $('candidate-message').disabled = true;
-  $('candidate-status').textContent = isHash ? '正在计算…' : '正在交换…';
-  $('candidate-output').textContent = '运行中';
+  $('candidate-status').textContent = '◌ 进行中';
+  $('candidate-output').textContent = '◌ 进行中';
   timer = setTimeout(() => {
     if (active !== running) return;
     stopCandidateWork();
-    $('candidate-status').textContent = '超过 30 秒，已停止';
-    $('candidate-output').textContent = '未生成结果';
+    $('candidate-status').textContent = '✕ 失败 · 超过 30 秒，已停止。可重试计算摘要。';
+    $('candidate-output').textContent = '✕ 失败';
+    $('candidate-run').textContent = '重试计算摘要';
 
   }, 30000);
   running.onmessage = ({ data }) => {
     if (active !== running) return;
     stopCandidateWork();
-    $('candidate-status').textContent = data.error || (isHash
-      ? `完成 · ${data.bytes} B · ${data.ms.toFixed(2)} ms`
+    $('candidate-status').textContent = (data.error ? '✕ 失败 · '+data.error : null) || (isHash
+      ? `✓ 完成 · ${data.bytes} B · ${data.ms.toFixed(2)} ms`
       : `双方一致 · ${data.passes} 轮 · ${data.ms.toFixed(2)} ms`);
     $('candidate-output').textContent = data.error ? '未生成结果' : isHash
       ? data.digest : `共享密钥 ${data.bytes} B · 双方一致 · 耗时 ${data.ms.toFixed(2)} ms`;
@@ -190,8 +191,9 @@ $('candidate-run').addEventListener('click', () => {
   running.onerror = () => {
     if (active !== running) return;
     stopCandidateWork();
-    $('candidate-status').textContent = 'WASM 加载或执行失败';
-    $('candidate-output').textContent = '未生成结果';
+    $('candidate-status').textContent = '✕ 失败 · WASM 加载或执行失败，可重试计算摘要。';
+    $('candidate-output').textContent = '✕ 失败';
+    $('candidate-run').textContent = '重试计算摘要';
 
   };
   if (isHash) running.postMessage({ id: candidate.id, index, message: bytes }, [bytes.buffer]);

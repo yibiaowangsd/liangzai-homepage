@@ -22,7 +22,8 @@ test('intro keeps click/touch, Escape, focus restoration, replay and dialog-scop
   assert.match(source, /onCancel=.*?skip\(\)/);
   assert.match(source, /className="cinema-skip" onClick=\{skip\} type="button"/);
   assert.match(source, /aria-keyshortcuts="Space Escape"/);
-  assert.match(source, /<kbd>Space<\/kbd><span>跳过<\/span>/);
+  assert.match(source, /点按任意处跳过/);
+  assert.match(source, /onClick=\{skip\}/);
   assert.match(source, /previous\.current\?\.focus/);
   assert.doesNotMatch(source, /window\.addEventListener\("keydown"/);
   const css = await read('app/studio/cinema.css');

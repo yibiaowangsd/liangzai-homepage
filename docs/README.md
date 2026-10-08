@@ -25,3 +25,5 @@
 - [设计审查（2026-10-04）](design-audit-20261004/README.md)
 - [PQC 配图方案](pqc-weapon-art-v2.md)
 - [算法重建（2026-09-26）](pqc-rebuild-2026-09-26.md)、[接入修复（2026-09-27）](pqc-recovery-2026-09-27.md)
+
+- [2026-10-08 全站交互修复逐项验收](ux-remediation-2026-10-08.md)

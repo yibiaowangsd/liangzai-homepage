@@ -11,12 +11,12 @@ test('article introduces the observation and collapses a short source synopsis',
  assert.match(page, /阅读原文/);
  assert.doesNotMatch(page, /article-hero-image|NewsBody content=\{item.content\}/);
 });
-test('news keeps day pagination and a category selector with tag context', async () => {
+test('news keeps day pagination and sticky category anchors with tag context', async () => {
  const page = await read('app/news/page.tsx');
- assert.match(page, /className="news-category-menu"/);
+ assert.match(page, /className="section-index news-sections"/);
  assert.match(page, /className="news-pagination" aria-label="新闻按日分页"/);
  assert.match(page, /className="news-tags" aria-label="标签筛选"/);
- assert.match(page, /newsListingHref\(\{page, category, tag\}\)/);
+ assert.match(page, /newsListingHref\(\{page,tag\}\)/);
 });
 
 test('audit table scrolling is bounded and keyboard reachable without changing data or exports', async () => {

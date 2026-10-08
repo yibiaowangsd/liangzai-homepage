@@ -60,11 +60,11 @@ function browser({ saved = null, dark = false, storageBlocked = false, legacyMed
   };
 }
 
-test('paper is the default and legacy themes safely migrate without touching application data', () => {
+test('system is the default, follows OS changes, and preserves application data', () => {
   for (const saved of [null, 'system', 'mist', 'sand', 'unknown']) {
     const page = browser({ saved, dark: true });
-    assert.equal(page.root.dataset.theme, 'paper');
-    assert.equal(page.root.dataset.themePreference, 'paper');
+    assert.equal(page.root.dataset.theme, 'midnight');
+    assert.equal(page.root.dataset.themePreference, 'system');
     page.system(false);
     assert.equal(page.root.dataset.theme, 'paper');
     assert.equal(page.state.generatedKey, 'test-key');
@@ -115,7 +115,7 @@ test('both rendering paths load the same synchronous bootstrap and accessible na
   const picker = await read('app/theme/ThemePicker.tsx');
   assert.match(picker, /useSyncExternalStore/);
   assert.match(picker, /aria-label=\{en \? "Page theme" : "页面主题"\}/);
-  for (const theme of ['paper', 'midnight']) assert.match(picker, new RegExp(`value="${theme}"`));
+  for (const theme of ['system', 'paper', 'midnight']) assert.match(picker, new RegExp(`value="${theme}"`));
   for (const path of ['index.html', 'audit.html']) {
     const html = await read('public/pqc-practice/' + path);
     const script = html.match(/<script[^>]+src="\/theme\/site-theme\.js\?v=20261004-editorial"[^>]*>/)?.[0];
@@ -155,4 +155,12 @@ test('vetted semantic palette text, accent labels and field boundaries meet cont
   assert.match(css, /--theme-control-border: var\(--theme-muted\)/);
   assert.match(css, /min-height: 44px/);
   assert.doesNotMatch(css, /filter:\s*(?:invert|hue-rotate)/);
+});
+
+test('legacy media listeners and explicit return to system stay synchronized', () => {
+ const page=browser({saved:'paper',dark:true,legacyMedia:true});
+ page.choose('system');assert.equal(page.root.dataset.theme,'midnight');
+ page.system(false);assert.equal(page.root.dataset.theme,'paper');
+ assert.equal(page.values.get('liangzai-theme'),'system');
+ page.storage('liangzai-theme',null);assert.equal(page.root.dataset.themePreference,'system');
 });

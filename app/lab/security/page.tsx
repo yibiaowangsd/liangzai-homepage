@@ -59,7 +59,7 @@ export default function Page() {
           <a href="/data/wasm-manifest.json" download>
             JS / WASM 字节与 SHA-256 清单
           </a>
-          <a href="/pqc-practice/audit.html">候选接入与安全报告</a>
+          <a href="/pqc-practice/audit">候选接入与安全报告</a>
         </div>
         <p>
           清单核对仓库资源的完整性，不是签名构建证明、FIPS

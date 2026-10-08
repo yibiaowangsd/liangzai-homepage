@@ -2,12 +2,13 @@ import { pageMetadata } from "../site/metadata";
 import Link from "next/link";
 import { MotionSurface } from "../experience/Motion";
 import styles from "./profile.module.css";
+import { AboutIndex, ContactEmail } from "./AboutControls";
 import FloatingIdentity from "./FloatingIdentity";
 
 export const metadata = pageMetadata("关于我", "Yibiao 的公开经历、密码工程项目与联系入口。", "/about", "about");
 
 const journey = [
-  { period: "2025 至今", type: "工作", place: "中电信量子集团", detail: "抗量子密码与安全协议", body: "从事抗量子 TLS/TLCP 协议改造、抗量子算法库等工作。", current: true },
+  { period: "2025—至今", type: "工作", place: "中电信量子集团", detail: "抗量子密码与安全协议", body: "从事抗量子 TLS/TLCP 协议改造、抗量子算法库等工作。", current: true },
   { period: "2022—2025", type: "硕士", place: "山东大学", detail: "网络空间安全", body: "继续在网络空间安全领域学习与研究，从本科阶段的专业积累走向更深入的探索。", current: false },
   { period: "2018—2022", type: "本科", place: "山东大学", detail: "网络空间安全", body: "在山大开启网络空间安全的学习之路，也是我走近密码学与安全技术的起点。", current: false },
 ];
@@ -17,9 +18,9 @@ const focus = [
   { n: "03", title: "密码工程", text: "关注抗量子密码、安全协议与密码工程，研究算法库、接口与跨平台适配如何衔接成可用的能力。", tags: ["抗量子密码", "算法库", "系统集成"] },
 ];
 const projects = [
-  { no: "01", title: "Yibiao 密码工程与实验", text: "开源个人技术站：工程、学习、前沿、关于四组入口；代码与实现记录均可查阅。", href: "/", action: "探索首页" },
-  { no: "02", title: "密码图鉴", text: "4 种算法的原理与参数：ML-KEM、ML-DSA、SLH-DSA、FN-DSA；独立地址便于引用。", href: "/pqc-arsenal", action: "阅读图鉴" },
-  { no: "03", title: "密码实验室", text: "3 种 NIST 标准算法、18 组参数组合；119 个国内征集候选、586 组参数按实现状态记录。", href: "/pqc-practice", action: "开始实验" },
+  { no: "01", title: "Yibiao 密码工程与实验", text: "开源个人技术站：工程、学习、前沿、关于四组入口；代码与实现记录均可查阅。", href: "/storybook", action: "星际漫游" },
+  { no: "02", title: "密码图鉴", text: "4 种算法的原理与参数：ML-KEM、ML-DSA、SLH-DSA、FN-DSA；独立地址便于引用。", href: "/pqc-arsenal", action: "密码图鉴" },
+  { no: "03", title: "密码实验室", text: "3 种 NIST 标准算法、18 组参数组合；119 个国内征集候选、586 组参数按实现状态记录。", href: "/pqc-practice", action: "密码实验室" },
 ];
 
 export default function About() {
@@ -40,10 +41,7 @@ export default function About() {
           </div>
           <FloatingIdentity />
         </section>
-        <nav className={styles.index} aria-label="个人主页目录">
-          <span>一份仍在续写的个人记录</span>
-          <div><a href="#journey">我的经历</a><a href="#focus">技术方向</a><a href="#projects">个人项目</a><a href="#contact">找到我</a></div>
-        </nav>
+        <AboutIndex className={styles.index} />
         <section id="journey" className={styles.section} aria-labelledby="journey-title">
           <div className={styles.sectionHead} data-reveal><p className={styles.kicker}>01 我的经历</p><h2 id="journey-title">一路走来</h2><p>七年山大学习时光<br />从网络空间安全走向密码工程实践</p></div>
           <ol className={styles.timeline}>
@@ -64,7 +62,7 @@ export default function About() {
           <div className={styles.sectionHead} data-reveal><p className={styles.kicker}>03 个人项目</p><h2 id="projects-title">可公开的工程实践</h2><p>把好奇心写进代码<br />把想法做成可以体验的作品</p></div>
           <div className={styles.projects}>{projects.map((item) => <Link href={item.href} className={styles.project} key={item.no} data-reveal><span className={styles.number}>{item.no}</span><div><h3>{item.title}</h3><p>{item.text}</p></div><span className={styles.projectAction}>{item.action}<i aria-hidden="true" /></span></Link>)}</div>
         </section>
-        <section id="contact" className={styles.contact} aria-labelledby="contact-title" data-reveal><p className={styles.kicker}>04 找到我</p><h2 id="contact-title">很高兴在这里遇见你</h2><p>如果你也对密码、安全或有趣的技术表达感兴趣<br />欢迎来 GitHub 看看我的代码与项目</p><a className="silver-button" href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">访问我的 GitHub<i aria-hidden="true" /></a><p><a href="mailto:yibiao_wang@foxmail.com">yibiao_wang@foxmail.com</a> · <Link href="/contact">联系与订阅</Link></p><span className={styles.signature}>WANG YIBIAO</span></section>
+        <section id="contact" className={styles.contact} aria-labelledby="contact-title" data-reveal><p className={styles.kicker}>04 找到我</p><h2 id="contact-title">很高兴在这里遇见你</h2><p>如果你也对密码、安全或有趣的技术表达感兴趣<br />欢迎来 GitHub 看看我的代码与项目</p><a className="silver-button" href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">访问我的 GitHub<i aria-hidden="true" /></a><p><ContactEmail /> · <Link href="/contact">联系与订阅</Link></p><span className={styles.signature}>WANG YIBIAO</span></section>
       </MotionSurface>
     </main>
   );

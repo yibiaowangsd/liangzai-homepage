@@ -1,0 +1,106 @@
+import assert from 'node:assert/strict';
+import { mkdir, readFile } from 'node:fs/promises';
+import { chromium } from 'playwright';
+import { serveBuiltSite } from './lib/serve-built-site.mjs';
+const edition=JSON.parse(await readFile('news/inbox/2026-10-08.json','utf8'));
+const items=edition.items.map((item,id)=>({...item,id,tags:JSON.stringify(item.tags)}));
+const nativeFetch=globalThis.fetch;
+globalThis.fetch=(input,init)=>{
+  const url=new URL(typeof input==='string'||input instanceof URL?input:input.url);
+  if(url.hostname!=='api.wangyibiao.com')return nativeFetch(input,init);
+  if(url.pathname.endsWith('/featured'))return Promise.resolve(Response.json({edition_date:edition.date,data:items.slice(0,5)}));
+  if(url.pathname.endsWith('/editions')){const page=Number(url.searchParams.get('page')||1);return Promise.resolve(Response.json({data:[{date:page===1?edition.date:'2026-10-07',topics:Object.groupBy(items,item=>item.category),total:items.length}],meta:{page,pageSize:1,totalDays:9,totalPages:9}}));}
+  return Promise.resolve(Response.json(items.find(item=>url.pathname.endsWith(item.slug))||items[0]));
+};
+const served=process.env.USABILITY_BASE ? null : await serveBuiltSite();
+const base=process.env.USABILITY_BASE || served.base;
+await mkdir('outputs/usability',{recursive:true});
+const browser=await chromium.launch();
+try {
+  const context=await browser.newContext({viewport:{width:1440,height:900},reducedMotion:'reduce',colorScheme:'dark',permissions:['clipboard-read','clipboard-write']});
+  const page=await context.newPage(),errors=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.setDefaultTimeout(15000);
+  await page.goto(base+'/pqc-practice/index.html');
+  await page.waitForFunction(()=>!document.querySelector('#run-example').disabled);
+  assert.equal(await page.getAttribute('html','data-theme-preference'),'system');
+  assert.equal(await page.getAttribute('html','data-theme'),'midnight');
+  await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='paper');
+  const nav=await page.locator('header .nav-group-menu a').evaluateAll(links=>links.map(a=>[a.textContent,a.getAttribute('href')]));
+  assert.match(await page.locator('.jump-trigger').textContent(),/Ctrl K|⌘K/);
+  await page.setViewportSize({width:390,height:844});
+  assert.ok(await page.locator('#library-list').evaluate(el=>el.getBoundingClientRect().height>=144),'expanded mobile algorithm list remains usable');
+  await page.locator('#sidebar-toggle').click();await page.locator('#sidebar-toggle').click();
+  await page.locator('[data-lab-tab="signature"]').click();
+  await page.waitForFunction(()=>!document.querySelector('#run-example').disabled);
+  await page.locator('[data-select-family="slhdsa"]').click();
+  await page.waitForFunction(()=>document.querySelector('#family').value==='slhdsa'&&!document.querySelector('#run-example').disabled);
+  await page.locator('[data-flow-mode="free"]').click();
+  await page.locator('#verify-message').fill('只填写收到的消息');
+  page.once('dialog',dialog=>dialog.dismiss());await page.locator('[data-lab-tab="kem"]').click();
+  assert.equal(await page.locator('#family').inputValue(),'slhdsa','message-only edits also require confirmation');
+  assert.equal(await page.locator('#verify-message').inputValue(),'只填写收到的消息');
+  await page.locator('#verify-message').fill('');await page.locator('[data-flow-mode="guided"]').click();
+  await page.locator('[data-lab-tab="kem"]').click();
+  await page.waitForFunction(()=>!document.querySelector('#run-example').disabled);
+  await page.setViewportSize({width:1440,height:900});
+  for(let step=0;step<5;step++){
+    await page.locator('#guided-next').click();
+    await page.waitForFunction(()=>!document.querySelector('#guided-next').disabled||document.querySelector('#manual-result').dataset.status==='complete');
+  }
+  await page.waitForFunction(()=>document.querySelector('#manual-summary').textContent.includes('共享密钥一致'));
+  assert.equal(await page.locator('#manual-result .result-facts').isHidden(),true,'legacy status rows do not duplicate the verdict and timing chart');
+  assert.equal(await page.locator('#timing-bars meter').count(),3);
+  const key=await page.locator('#kem-public').inputValue();
+  await page.locator('[data-flow-mode="free"]').click();
+  assert.equal(await page.locator('#kem-public').inputValue(),key,'view changes preserve material');
+  assert.equal(await page.locator('#kem-private').isHidden(),true);
+  await page.locator('#material-kem-private button').filter({hasText:'显示'}).click();assert.equal(await page.locator('#kem-private').isVisible(),true);
+  await page.locator('[data-copy="kem-public"]').click();
+  await page.waitForFunction(()=>document.querySelector('[data-copy="kem-public"]').textContent==='✓');
+  assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),key,'clipboard contains the complete public key');
+  await page.waitForFunction(()=>document.querySelector('#material-kem-public .field-fingerprint').textContent.startsWith('SHA-256'));
+  page.once('dialog',dialog=>dialog.dismiss());await page.locator('#variant').selectOption('512');assert.equal(await page.locator('#variant').inputValue(),'768');assert.equal(await page.locator('#kem-public').inputValue(),key);
+  await page.locator('#clear-all').click();assert.equal(await page.locator('#kem-public').inputValue(),'');await page.locator('#undo-clear').click();assert.equal(await page.locator('#kem-public').inputValue(),key);assert.match(await page.locator('#manual-summary').textContent(),/共享密钥一致/);
+  await page.locator('#kem-alice-public').fill('00'.repeat(1183));assert.match(await page.locator('#error-kem-alice-public').textContent(),/1184.*1183/);assert.equal(await page.locator('#kem-encapsulate').isDisabled(),true);
+  const drop=await page.evaluateHandle(()=>{const transfer=new DataTransfer();transfer.items.add(new File([new Uint8Array(1184)],'public.bin',{type:'application/octet-stream'}));return transfer;});
+  await page.locator('#material-kem-alice-public').dispatchEvent('drop',{dataTransfer:drop});await page.waitForFunction(()=>!document.querySelector('#error-kem-alice-public').textContent);
+  assert.equal(await page.locator('#material-kem-alice-public .field-format').textContent(),'HEX');
+  await page.locator('#run-example').click();await page.waitForFunction(()=>document.querySelector('#manual-result').dataset.status==='complete');
+  await page.locator('#tamper-one-bit').click();await page.waitForFunction(()=>document.querySelector('#manual-result').dataset.status==='failed');assert.ok(await page.locator('.different-byte').count()>0);
+  assert.equal(await page.locator('#kem-private').isHidden(),true,'new runs conceal private material again');
+  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+  await page.screenshot({path:'outputs/usability/lab-free-1440.png',fullPage:true});
+  page.once('dialog',dialog=>dialog.accept());await page.locator('[data-lab-tab="signature"]').click();await page.waitForFunction(()=>!document.querySelector('#run-example').disabled);
+  await page.locator('#run-example').click();await page.waitForFunction(()=>document.querySelector('#manual-summary').textContent.includes('签名有效'));
+  await page.locator('#tamper-one-bit').click();await page.waitForFunction(()=>document.querySelector('#manual-summary').textContent.includes('签名无效'));
+  await page.locator('[data-flow-mode="guided"]').click();await page.setViewportSize({width:390,height:844});
+  assert.equal(await page.locator('#guided-next').evaluate(el=>getComputedStyle(el).position),'fixed');
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'mobile lab fits');
+  await page.screenshot({path:'outputs/usability/lab-guided-390.png',fullPage:true});
+  await page.goto(base+'/pqc-practice/audit?candidate=kem-01');assert.match(await page.title(),/接入|记录/);assert.equal(new URL(page.url()).searchParams.get('candidate'),'kem-01');
+  await page.goto(base+'/news');await page.locator('.news-sections').waitFor();
+  assert.deepEqual(await page.locator('header .nav-group-menu a').evaluateAll(links=>links.map(a=>[a.textContent,a.getAttribute('href')])),nav,'shared main navigation');
+  if(!process.env.USABILITY_BASE){
+    assert.equal(await page.locator('.news-card-link').count(),25);assert.equal(await page.locator('.news-card-link a').count(),0);assert.equal(await page.locator('.news-card-link img').count(),0);
+    assert.match(await page.locator('.news-item-meta').first().textContent(),/2026-10-06/);
+    assert.equal(await page.locator('.news-pagination').first().getByRole('link').count(),1);
+    const location=page.url();await page.locator('.news-sections a[href="#ai"]').click();assert.equal(page.url().split('#')[0],location);await page.waitForFunction(()=>document.querySelector('.news-sections a[aria-current="location"]')?.getAttribute('href')==='#ai');
+    await page.getByRole('button',{name:'详细',exact:true}).click();assert.equal(await page.locator('main').getAttribute('data-density'),'detailed');
+    await page.locator('.edition-picker select').selectOption('/news?page=9');await page.waitForURL('**/news?page=9');assert.match(await page.locator('.news-pagination').first().textContent(),/9 \/ 9/);
+  }
+  await page.setViewportSize({width:1440,height:900});await page.goto(base+'/news');await page.screenshot({path:'outputs/usability/news-1440.png',fullPage:true});
+  await page.getByRole('button',{name:'搜索全站，快捷键 Ctrl 或 Command 加 K'}).click();await page.locator('#jump-query').fill('ML-KEM');await page.locator('.jump-results .search-group').first().waitFor();assert.ok(await page.locator('.search-group').count()>=2);await page.keyboard.press('Escape');
+  await page.goto(base+'/about');await page.getByRole('button',{name:'复制邮箱 yibiao_wang@foxmail.com'}).click();await page.waitForFunction(()=>document.querySelector('.contact-email').textContent.includes('邮箱已复制'));
+  await page.locator('.section-index a[href="#projects"]').click();await page.waitForFunction(()=>document.querySelector('.section-index [aria-current="location"]')?.getAttribute('href')==='#projects');
+  await page.locator('.floating-top').click();await page.waitForFunction(()=>scrollY<100);
+  await page.getByRole('button',{name:'打开设置与目录',exact:true}).click();await page.getByRole('dialog').getByLabel('字号',{exact:true}).selectOption('large');assert.equal(await page.getAttribute('html','data-font-size'),'large');await page.keyboard.press('Escape');
+  await page.screenshot({path:'outputs/usability/about-1440.png',fullPage:true});
+  await page.goto(base+'/universe?intro=play');await page.locator('.cinema-entrance[open]').waitFor();await page.locator('.cinema-entrance').click({position:{x:20,y:20}});await page.waitForFunction(()=>!document.querySelector('dialog[open]'));assert.equal(await page.evaluate(()=>localStorage.getItem('yibiao-cinema-skipped')),'true');
+  await page.goto(base+'/universe');assert.equal(await page.locator('.cinema-entrance[open]').count(),0);await page.getByRole('button',{name:'重播序幕',exact:true}).click();await page.locator('.cinema-entrance[open]').waitFor();await page.keyboard.press('Escape');
+  // Network failures expose retry; successful retry restores the worker without reloading the page.
+  await page.route('**/pqc-practice/worker.js',route=>route.abort());await page.goto(base+'/pqc-practice/index.html');await page.locator('#retry-runtime').waitFor({state:'visible'});await page.unroute('**/pqc-practice/worker.js');await page.locator('#retry-runtime').click();await page.waitForFunction(()=>!document.querySelector('#run-example').disabled);
+  await page.route('**/ngcc-catalog.json',route=>route.abort());await page.locator('[data-lab-tab="candidates"]').click();await page.locator('#retry-runtime').waitFor({state:'visible'});await page.unroute('**/ngcc-catalog.json');await page.locator('#retry-runtime').click();await page.waitForFunction(()=>document.querySelectorAll('[data-select-family]').length>10);await page.locator('#runnable-only').check();assert.equal(await page.locator('.algorithm-choice').filter({hasText:'○ 资料'}).count(),0);
+  assert.deepEqual(errors,[],'no uncaught browser errors');
+  console.log('Usability checks passed: navigation, themes, guided/free crypto, undo, import, masking, tampering, dates, search, contact and recovery.');
+} finally {await browser.close();if(served){served.server.closeAllConnections();await new Promise(resolve=>served.server.close(resolve));}globalThis.fetch=nativeFetch;}

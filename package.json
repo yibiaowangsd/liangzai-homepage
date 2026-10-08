@@ -16,7 +16,8 @@
     "test:layout": "node scripts/check-responsive-layout.mjs",
     "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
     "models:prepare": "node scripts/prepare-character-models.mjs",
-    "test:engineering-browser": "node scripts/check-engineering-browser.mjs"
+    "test:engineering-browser": "node scripts/check-engineering-browser.mjs",
+    "test:usability": "node scripts/check-usability-browser.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

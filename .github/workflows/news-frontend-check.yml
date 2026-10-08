@@ -184,9 +184,12 @@ jobs:
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:layout
       - run: npm run test:engineering-browser
+      - run: npm run test:usability
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: responsive-browser-screenshots
-          path: outputs/responsive/
+          path: |
+            outputs/responsive/
+            outputs/usability/
           retention-days: 7

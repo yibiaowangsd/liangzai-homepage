@@ -18,13 +18,18 @@
   function readPreference(fallback) {
     try {
       var saved = window.localStorage.getItem(storageKey);
-      return isTheme(saved) ? saved : "paper";
+      return isPreference(saved) ? saved : "system";
     } catch {
-      return fallback || "paper";
+      return fallback || "system";
     }
   }
 
-  var preference = readPreference("paper");
+  var system = window.matchMedia("(prefers-color-scheme: dark)");
+  var preference = readPreference("system");
+  function isPreference(value) { return value === "system" || isTheme(value); }
+  function systemChanged() { if (preference === "system") apply(); }
+  if (system.addEventListener) system.addEventListener("change", systemChanged);
+  else if (system.addListener) system.addListener(systemChanged);
 
   function syncControls() {
     document.querySelectorAll('[data-theme-select="static"]').forEach(function (select) {
@@ -33,7 +38,7 @@
   }
 
   function apply() {
-    var theme = preference;
+    var theme = preference === "system" ? (system.matches ? "midnight" : "paper") : preference;
     root.dataset.theme = theme;
     root.dataset.themePreference = preference;
     root.style.colorScheme = theme === "midnight" ? "dark" : "light";
@@ -44,7 +49,7 @@
   }
 
   function setPreference(value) {
-    if (!isTheme(value)) return;
+    if (!isPreference(value)) return;
     preference = value;
     try {
       window.localStorage.setItem(storageKey, preference);
@@ -60,7 +65,7 @@
   });
   window.addEventListener("storage", function (event) {
     if (event.key !== storageKey && event.key !== null) return;
-    preference = isTheme(event.newValue) ? event.newValue : "paper";
+    preference = isPreference(event.newValue) ? event.newValue : "system";
     apply();
   });
   window.addEventListener("pageshow", function () {

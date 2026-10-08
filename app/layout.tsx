@@ -9,6 +9,7 @@ import "../public/theme/site-theme.css";
 import "./studio/scenes.css";
 import { ExperienceProvider } from "./experience/Motion";
 import AboutPushTransition from "./experience/AboutPushTransition";
+import { BackToTop } from "./site/SiteUtilities";
 import DocumentLanguage from "./site/DocumentLanguage";
 import PageArrival from "./experience/PageArrival";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
@@ -37,6 +38,8 @@ export default function RootLayout({
         {/* Synchronous by design: a saved theme must apply before the first paint. */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
         <script src="/theme/site-theme.js?v=20261004-editorial" />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src="/theme/site-utilities.js" />
       </head>
       <body className="studio-theme">
         <ExperienceProvider>
@@ -46,6 +49,7 @@ export default function RootLayout({
           <SiteHeader />
           {children}
           <SiteFooter />
+          <BackToTop />
         </ExperienceProvider>
       </body>
     </html>

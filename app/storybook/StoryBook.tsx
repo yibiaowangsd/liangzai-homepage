@@ -124,9 +124,7 @@ export default function StoryBook() {
         }}
       />
       <div className="reader-bar">
-        <Link href="/" className="reader-back">
-          星际漫游
-        </Link>
+        <h1 className="reader-back">星际漫游</h1>
         <span>INTERACTIVE STORY · 约 5 分钟</span>
         <button
           ref={tocButton}
@@ -192,7 +190,7 @@ export default function StoryBook() {
         </div>
         <div className="reader-copy" aria-live="polite" aria-atomic="true">
           <p className="eyebrow">{page.chapter}</p>
-          <h1>{page.title}</h1>
+          <h2>{page.title}</h2>
           <p className="reader-body">{page.body}</p>
           <details className="reader-transcript"><summary>本页故事文字稿</summary><p style={{whiteSpace:"pre-line"}}>{transcripts[current]}</p></details>
           <blockquote>{page.quote}</blockquote>
