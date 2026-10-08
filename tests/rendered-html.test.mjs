@@ -49,7 +49,7 @@ test("renders the homepage with the integrated practice destination", async () =
   assert.doesNotMatch(html, /cinema-entrance|vault-entrance-v2/);
   assert.match(html, /href="\/universe"/);
   assert.doesNotMatch(html, /href="\/observatory"/);
-  assert.match(html, /今日信号/);
+  assert.match(html, /前沿新闻/);
   assert.doesNotMatch(html, /guardian-static|guardian-image-burst|随指针转动的蓝色数学纽结/);
   assert.doesNotMatch(
     html,

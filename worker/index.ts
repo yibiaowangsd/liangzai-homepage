@@ -32,6 +32,12 @@ const worker = {
       return Response.redirect(new URL(laboratoryTarget(Object.fromEntries(url.searchParams), url.pathname.startsWith("/en/")), url).href, 307);
     }
 
+    if (url.pathname === "/pqc-practice/audit" || url.pathname === "/pqc-practice/audit/") {
+      const assetURL = new URL(request.url);
+      assetURL.pathname = "/pqc-practice/audit.html";
+      return env.ASSETS.fetch(new Request(assetURL, request));
+    }
+
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
       return handleImageOptimization(request, {

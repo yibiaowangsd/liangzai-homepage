@@ -6,6 +6,7 @@ import { flushSync } from "react-dom";
 import { useExperience } from "./Motion";
 import { destinations } from "./destinations";
 import JumpNavigation from "./JumpNavigation";
+import { FontSize, SearchShortcut } from "../site/SiteUtilities";
 import ThemePicker from "../theme/ThemePicker";
 import { navGroups, footerLinks, languageHref, localizedHref } from "../site/navigation";
 
@@ -140,8 +141,9 @@ export function SiteHeader() {
           </div>
           <div className="site-preferences" aria-label={en ? "Display settings" : "显示设置"}>
             <ThemePicker en={en} />
+            <FontSize en={en} />
             <button className="settings-motion" type="button" onClick={toggle} aria-pressed={paused}>
-              {en ? (paused ? "Enable motion" : "Pause motion") : (paused ? "开启动效" : "暂停动效")}
+              {en ? (paused ? "Enable motion" : "Pause motion") : (paused ? "开启动效" : "减少动效")}
             </button>
           </div>
           <div className="atlas-body">
@@ -180,7 +182,7 @@ export function SiteHeader() {
           </div>
           <div className="atlas-bottom">
             <span>{en ? "Stay thoughtful. Stay curious." : "保持认真。保持好奇。"}</span>
-            <span>{en ? "Esc to close / Ctrl + K to search" : "Esc 关闭 / Ctrl + K 搜索"}</span>
+            <span>{en ? "Esc to close / Search " : "Esc 关闭 / 搜索 "}<SearchShortcut /></span>
           </div>
         </dialog>
       )}
@@ -191,7 +193,7 @@ export function SiteFooter() {
   const en = usePathname().startsWith("/en");
   return <footer className="studio-footer">
     <div className="studio-footer-top"><p>Yibiao · {en ? "Cryptography Engineering" : "密码工程与实验"}</p><a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">GitHub</a></div>
-    <nav className="footer-links" aria-label={en ? "Footer navigation" : "页脚导航"}>{footerLinks.map(link => <NavigationLink key={link.href} href={localizedHref(link.href, en)}>{en ? link.en : link.name}</NavigationLink>)}<a href="/rss.xml">RSS</a><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">{en ? "Site source" : "本站源码"}</a></nav>
+    <nav className="footer-links" aria-label={en ? "Footer navigation" : "页脚导航"}>{footerLinks.map(link => <NavigationLink key={link.href} href={localizedHref(link.href, en)}>{en ? link.en : link.name}</NavigationLink>)}<a className="secondary-button" href="/universe?intro=play">{en ? "Play intro" : "播放序幕"}</a><a href="/rss.xml">RSS</a><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">{en ? "Site source" : "本站源码"}</a></nav>
     <div className="studio-footer-bottom"><span>© 2026 Yibiao</span><span>{en ? "Mascot: Liangzai" : "吉祥物：量仔"}</span><a href="#main-content">{en ? "Back to top" : "回到顶部"}</a></div>
   </footer>;
 }

@@ -424,3 +424,5 @@
 .index { font-size: var(--type-ui); }
 .index a { display: inline-flex; align-items: center; min-height: 44px; }
 .actions { flex-wrap: wrap; }
+.index { position:sticky; top:var(--site-header-height,72px); z-index:30; background:var(--theme-bg); padding-block:10px; justify-content:flex-start; flex-wrap:nowrap; }
+.section,.contact { scroll-margin-top:150px; }

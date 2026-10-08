@@ -70,7 +70,7 @@ export default function Dashboard() {
             : c.runnable
               ? "部分接入"
               : "未接入",
-          <a key={c.id} href={"/pqc-practice/audit.html?candidate=" + c.id}>
+          <a key={c.id} href={"/pqc-practice/audit?candidate=" + c.id}>
             接入记录
           </a>,
         ])}

@@ -27,6 +27,9 @@ export function resetTransfers() {
   timers.clear();
 }
 
+export function transferSnapshot() { return [...receipts.entries()]; }
+export function restoreTransfers(entries) { resetTransfers(); for(const [key,value] of entries)receipts.set(key,value); }
+
 export function animateTransfer(id, targets) {
   const [source, destination] = routes[id];
   receipts.set(id, {
@@ -63,7 +66,7 @@ function drawRoute(id, materials, state) {
     && (!bundle || (receipt.message === messageValue('sign-message') && receipt.message === messageValue('verify-message')));
   const modified = !!bytes && receipt?.source === value(source) && !received;
   route.dataset.state = received ? 'delivered' : modified ? 'modified' : bytes ? 'ready' : 'empty';
-  route.querySelector('.route-state').textContent = received ? '已送达' : modified ? '接收端已改' : bytes ? '待发送' : '等待生成';
+  route.querySelector('.route-state').textContent = received ? '✓ 完成' : modified ? '✕ 失败' : bytes ? '◌ 进行中' : '○ 未开始';
   const message = bundle ? messageValue('sign-message') : '';
   const messageBytes = new TextEncoder().encode(message).length;
   route.querySelector('.packet-size').textContent = bytes ? (bytes.length + (bundle ? messageBytes : 0)) + ' B' : '';
@@ -77,7 +80,9 @@ function drawRoute(id, materials, state) {
     ? bundle ? '消息 · UTF-8 · ' + messageBytes + ' B\n' + message + '\n\n签名 · HEX · ' + bytes.length + ' B\n' + normalized
       : 'HEX · ' + bytes.length + ' B\n\n' + normalized
     : '尚无数据';
-  route.querySelector('.send-button').disabled = state.busy || !state.ready || !bytes;
+  const send=route.querySelector('.send-button');
+  send.disabled = state.busy || !state.ready || !bytes;
+  send.title = !bytes ? '请先生成或导入有效的'+route.querySelector('.packet-head strong').textContent : state.busy ? '正在计算，请稍候' : '发送公开材料';
 }
 
 export function renderDialogue(state) {
@@ -102,7 +107,7 @@ export function renderDialogue(state) {
     'kem-encapsulate': has('kem-alice-public'), 'kem-decapsulate': has('kem-private') && has('kem-bob-cipher'),
     'sign-button': has('sig-private'), 'verify-button': has('sig-verifier-public') && has('verify-signature'),
   };
-  for (const [id, available] of Object.entries(prerequisites)) $('#' + id).disabled = state.busy || !state.ready || !available;
+  for (const [id, available] of Object.entries(prerequisites)) { const button=$('#'+id);button.disabled=state.busy||!state.ready||!available;button.title=!available ? ({'kem-encapsulate':'请先接收有效公钥','kem-decapsulate':'请先准备私钥并接收密文','sign-button':'请先准备私钥','verify-button':'请先接收公钥和签名'})[id] : state.busy?'正在计算，请稍候':''; }
   const passed = state.outcome === 'pass', failed = state.outcome === 'fail';
   let stage;
   if (state.kem) {
@@ -127,11 +132,11 @@ export function renderDialogue(state) {
     li.querySelector('.step-dot').textContent = index < stage ? '✓' : String(index + 1).padStart(2, '0');
   });
   const guidance = state.kem ? [
-    ['准备 Bob 的密钥', '生成测试密钥对，或在 Bob 端粘贴 / 导入已有的公钥和私钥。'],
-    ['把公钥发给 Alice', '点击传输区的“发送公钥”。只有公钥会到达另一端。'],
-    ['Alice 可以开始封装', '确认收到的公钥，生成密文和 Alice 的本地共享密钥。'],
-    ['把密文送回 Bob', '点击第二条通道的“发送密文”。共享密钥保留在 Alice 端。'],
-    [has('kem-private') ? '轮到 Bob 解封装' : '补入 Bob 的本地私钥', has('kem-private') ? '使用本地私钥处理收到的密文，再逐字节比较双方结果。' : '密文已经就绪；粘贴或导入配套私钥后，即可解封装。'],
+    ['准备 Alice 的密钥', '生成测试密钥对，或在 Alice 端粘贴 / 导入已有的公钥和私钥。'],
+    ['把公钥发给 Bob', '点击传输区的“发送公钥”。只有公钥会到达另一端。'],
+    ['Bob 可以开始封装', '确认收到的公钥，生成密文和 Bob 的本地共享密钥。'],
+    ['把密文送回 Alice', '点击第二条通道的“发送密文”。共享密钥保留在 Bob 端。'],
+    [has('kem-private') ? '轮到 Alice 解封装' : '补入 Alice 的本地私钥', has('kem-private') ? '使用本地私钥处理收到的密文，再逐字节比较双方结果。' : '密文已经就绪；粘贴或导入配套私钥后，即可解封装。'],
     ['双方已建立相同的共享密钥', `两端的 ${state.sizes?.ss ?? 32} 字节完全一致。传输区只传送了公钥和密文。`],
   ] : [
     ['准备 Alice 的密钥', '生成测试密钥对，或在 Alice 端粘贴 / 导入已有的密钥。'],
@@ -146,8 +151,8 @@ export function renderDialogue(state) {
     title = state.kem ? '双方的共享密钥不一致' : '这份签名未通过验证';
     detail = state.kem ? '检查私钥与密文是否配套，并确认双方使用相同的算法、参数和哈希。' : '检查公钥、消息与签名的对应关系；修改原文也会使验签失败。';
   } else if (state.outcome === 'partial') {
-    title = 'Bob 已完成解封装';
-    detail = '本地共享密钥已生成；当前没有 Alice 的封装结果，暂时无法比较。';
+    title = 'Alice 已完成解封装';
+    detail = '本地共享密钥已生成；当前没有 Bob 的封装结果，暂时无法比较。';
   }
   $('#guide-number').textContent = passed ? '✓' : String(Math.min(stage + 1, 5)).padStart(2, '0');
   $('#guide-title').textContent = title;
@@ -156,7 +161,7 @@ export function renderDialogue(state) {
   for (const id of ['kem-bob', 'kem-alice', 'sig-alice', 'sig-bob']) {
     const current = id === activeActor || (state.kem && passed && id.startsWith('kem-'));
     $('#' + id).classList.toggle('is-active', current);
-    $('#' + id + '-status').textContent = current ? state.busy ? '正在计算' : passed ? '已完成' : '当前步骤' : '等待对方';
+    $('#' + id + '-status').textContent = failed ? '✕ 失败' : passed ? '✓ 完成' : current && (state.busy || stage>0) ? '◌ 进行中' : '○ 未开始';
   }
   document.querySelectorAll('.is-next').forEach(button => button.classList.remove('is-next'));
   if (!passed) {
@@ -170,8 +175,8 @@ export function renderDialogue(state) {
     $('#box-' + id).classList.toggle('has-secret', present);
     $('#box-' + id).classList.toggle('matched', present && passed && state.kem);
     $('#box-' + id).classList.toggle('mismatched', present && failed && state.kem);
-    $('#state-' + id).textContent = !present ? `尚未建立 · ${sharedSize} B` : passed && state.kem
-      ? `已对齐 · ${sharedSize} / ${sharedSize} 字节一致` : failed && state.kem ? '对照失败 · 共享密钥不同' : '已建立 · 等待对照';
+    $('#state-' + id).textContent = !present ? `○ 未开始 · ${sharedSize} B` : passed && state.kem
+      ? `✓ 完成 · ${sharedSize} / ${sharedSize} 字节一致` : failed && state.kem ? '✕ 失败 · 共享密钥不同' : '◌ 进行中 · 等待对照';
   }
   const verdict = $('#signature-verdict');
   verdict.classList.toggle('pass', !state.kem && passed);

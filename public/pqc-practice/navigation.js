@@ -26,13 +26,35 @@ if (trigger && source) {
   search.textContent = "搜索全站";
   const input = document.createElement("input");
   input.type = "search";
-  input.placeholder = "搜索算法、新闻或角色";
+  input.placeholder = "搜索新闻、算法、页面";
+  input.setAttribute("aria-label", "搜索新闻、算法、页面");
   search.append(input);
-  input.addEventListener("input", () => {
-    const query = input.value.trim().toLowerCase();
-    nav.querySelectorAll("a").forEach(link => { link.hidden = !link.textContent.toLowerCase().includes(query); });
-  });
-  menu.append(heading, preferences, search, nav);
+  const feedback = document.createElement("p"); feedback.setAttribute("role", "status");
+  let entries = null;
+  async function loadSearch() {
+    feedback.textContent = "正在加载新闻、算法、页面索引…";
+    try {
+      const responses = await Promise.all([fetch('/site-search.json', {signal:AbortSignal.timeout(10000)}),fetch('/news-search.json', {signal:AbortSignal.timeout(10000)})]);
+      if (responses.some(response=>!response.ok)) throw new Error('索引不可用');
+      entries = (await Promise.all(responses.map(response=>response.json()))).flat(); renderSearch();
+    } catch { feedback.replaceChildren(document.createTextNode('搜索索引加载失败。')); const retry=document.createElement('button'); retry.type='button'; retry.textContent='重试'; retry.onclick=loadSearch; feedback.append(retry); }
+  }
+  function renderSearch() {
+    if (!entries) return;
+    const terms=input.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    nav.replaceChildren(); let total=0;
+    for (const [group,label] of [['page','页面'],['algorithm','算法'],['news','新闻']]) {
+      const matches=entries.filter(item=>item.group===group && terms.every(term=>(item.name+' '+item.description+' '+item.keywords).toLowerCase().includes(term))).slice(0,group==='news'?12:30);
+      if(!matches.length)continue;
+      total+=matches.length;
+      const section=document.createElement('section'),title=document.createElement('h3'); title.textContent=label; section.append(title);
+      for(const item of matches){const link=document.createElement('a');link.href=item.href;link.textContent=item.name;section.append(link);}
+      nav.append(section);
+    }
+    feedback.textContent=total ? total+' 条结果' : '没有匹配的结果';
+  }
+  input.addEventListener('input', renderSearch);
+  menu.append(heading, preferences, search, feedback, nav);
   document.body.append(menu);
   let opened = false,
     previousOverflow = "";
@@ -46,6 +68,7 @@ if (trigger && source) {
       if (typeof menu.showModal === "function") menu.showModal();
       else menu.setAttribute("open", "");
       close.focus();
+      if (!entries) void loadSearch();
     } else {
       if (typeof menu.close === "function") menu.close();
       else menu.removeAttribute("open");

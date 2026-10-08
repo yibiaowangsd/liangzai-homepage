@@ -26,13 +26,35 @@ if (trigger && source) {
   search.textContent = "Search the site";
   const input = document.createElement("input");
   input.type = "search";
-  input.placeholder = "Search algorithms, news or characters";
+  input.placeholder = "Search news, algorithms and pages";
+  input.setAttribute("aria-label", "Search news, algorithms and pages");
   search.append(input);
-  input.addEventListener("input", () => {
-    const query = input.value.trim().toLowerCase();
-    nav.querySelectorAll("a").forEach(link => { link.hidden = !link.textContent.toLowerCase().includes(query); });
-  });
-  menu.append(heading, preferences, search, nav);
+  const feedback = document.createElement("p"); feedback.setAttribute("role", "status");
+  let entries = null;
+  async function loadSearch() {
+    feedback.textContent = "Loading news, algorithm and page index…";
+    try {
+      const responses = await Promise.all([fetch('/site-search.json', {signal:AbortSignal.timeout(10000)}),fetch('/news-search.json', {signal:AbortSignal.timeout(10000)})]);
+      if (responses.some(response=>!response.ok)) throw new Error('Index unavailable');
+      entries = (await Promise.all(responses.map(response=>response.json()))).flat(); renderSearch();
+    } catch { feedback.replaceChildren(document.createTextNode('Search index failed to load.')); const retry=document.createElement('button'); retry.type='button'; retry.textContent='Retry'; retry.onclick=loadSearch; feedback.append(retry); }
+  }
+  function renderSearch() {
+    if (!entries) return;
+    const terms=input.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    nav.replaceChildren(); let total=0;
+    for (const [group,label] of [['page','Pages'],['algorithm','Algorithms'],['news','News']]) {
+      const matches=entries.filter(item=>item.group===group && terms.every(term=>(item.name+' '+item.description+' '+item.keywords).toLowerCase().includes(term))).slice(0,group==='news'?12:30);
+      if(!matches.length)continue;
+      total+=matches.length;
+      const section=document.createElement('section'),title=document.createElement('h3'); title.textContent=label; section.append(title);
+      for(const item of matches){const link=document.createElement('a');link.href=item.href;link.textContent=item.name;section.append(link);}
+      nav.append(section);
+    }
+    feedback.textContent=total ? total+' results' : 'No matching results';
+  }
+  input.addEventListener('input', renderSearch);
+  menu.append(heading, preferences, search, feedback, nav);
   document.body.append(menu);
   let opened = false,
     previousOverflow = "";
@@ -46,6 +68,7 @@ if (trigger && source) {
       if (typeof menu.showModal === "function") menu.showModal();
       else menu.setAttribute("open", "");
       close.focus();
+      if (!entries) void loadSearch();
     } else {
       if (typeof menu.close === "function") menu.close();
       else menu.removeAttribute("open");

@@ -1,4 +1,5 @@
-import { renderDialogue, animateTransfer, resetTransfers } from './dialogue-en.js?v=20261002-usability';
+import { setupUsability } from './usability-en.js';
+import { renderDialogue, animateTransfer, resetTransfers, transferSnapshot, restoreTransfers } from './dialogue-en.js?v=20261002-usability';
 import { copyText, missingBrowserFeatures } from './browser-compat.js';
 import { ngccModule } from './ngcc-runtime.js';
 import { candidateModule, setCandidateProvider, showCandidateWork, stopCandidateWork } from './candidate-workbench-en.js';
@@ -40,13 +41,19 @@ const hex = bytes => Array.from(bytes, value => value.toString(16).padStart(2, '
 const equal = (a, b) => a.length === b.length && a.every((value, index) => value === b[index]);
 const elapsed = value => value == null ? '—' : `${value.toFixed(2)} ms`;
 let worker, ready = false, busy = false, active = null, serial = 0, resetSerial = 0, sizes = null;
-let catalog = null, catalogPromise = null, reportIndex = null, nistFamily = 'mlkem';
+let catalog = null, catalogPromise = null, reportIndex = null, catalogError = '', nistFamily = 'mlkem';
 let aliceSecret = null, keyTime = null, actionTime = null;
 let flowOutcome = null;
 let expandedLibrary = 'nist';
 let labTab = new URLSearchParams(location.search).get('tab') || 'kem';
 if (!['kem', 'signature', 'candidates'].includes(labTab)) labTab = 'kem';
 let demoRunning = false;
+let usability, finalTime = null, loadTimer = null;
+const parameterLabels = {
+ mlkem: {512:[1,800,1632,768],768:[3,1184,2400,1088],1024:[5,1568,3168,1568]},
+ mldsa: {44:[2,1312,2560,2420],65:[3,1952,4032,3309],87:[5,2592,4896,4627]},
+ slhdsa: {"128f":[1,32,64,17088],"128s":[1,32,64,7856],"192f":[3,48,96,35664],"192s":[3,48,96,16224],"256f":[5,64,128,49856],"256s":[5,64,128,29792]}
+};
 
 function renderSidebar() {
   const selectedLibrary = $('#library').value;
@@ -96,13 +103,14 @@ function renderSidebar() {
     content.className = 'library-choices';
     if (library.id === 'ngcc' && !catalog) {
       const loading = document.createElement('p');
-      loading.className = 'sidebar-empty'; loading.textContent = 'Loading submission catalogue…';
+      loading.className = catalogError ? 'sidebar-empty' : 'sidebar-empty loading-placeholder'; loading.textContent = catalogError || 'Loading submission catalogue…';
       content.append(loading);
+      if(catalogError){const retry=document.createElement('button');retry.type='button';retry.textContent='Retry loading';retry.onclick=()=>$('#retry-runtime').click();content.append(retry);}
     }
     let visible = 0;
     for (const [, title, algorithms] of library.groups.filter(group => labTab === "candidates" || group[0] === (labTab === "signature" ? "sig" : "kem"))) {
       const matches = algorithms.filter(algorithm =>
-        `${algorithm.name} ${algorithm.id}`.toLocaleLowerCase().includes(query));
+        `${algorithm.name} ${algorithm.id}`.toLocaleLowerCase().includes(query) && (!$('#runnable-only').checked || algorithm.ready));
       if (!matches.length) continue;
       visible += matches.length;
       const group = document.createElement('details');
@@ -128,7 +136,7 @@ function renderSidebar() {
         choice.addEventListener('click', () => {
           if (busy || $('#family').value === algorithm.id) return;
           $('#family').value = algorithm.id;
-          $('#family').dispatchEvent(new Event('change'));
+          $('#family').dispatchEvent(new CustomEvent('change', {detail:{internal:true}}));
           root.querySelector('[aria-current="true"][data-select-family]')?.focus({ preventScroll: true });
         });
         group.append(choice);
@@ -172,9 +180,10 @@ document.querySelectorAll('[data-library-shortcut]').forEach(button => button.ad
 }));
 
 function refresh() { renderDialogue({ kem: isKem(), sizes, busy, ready: ready && isRunnable(),
-  ngccSig: isNgcc() && !isKem(), outcome: flowOutcome, decode: decodeInput }); }
+  ngccSig: isNgcc() && !isKem(), outcome: flowOutcome, decode: decodeInput }); usability?.update(uiState()); }
+function uiState() { return {kem:isKem(), sizes, busy, outcome:flowOutcome, name:name(), timings:[{label:"Key generation",ms:keyTime},{label:isKem()?"Encapsulate":"Signature",ms:actionTime},{label:isKem()?"Decapsulate":"Verify",ms:finalTime}]}; }
 function status(value, kind = '') { $('#message').textContent = value; $('#message').className = `message ${kind}`; refresh(); }
-function runtime(value, kind = '') { $('#runtime').setAttribute('aria-busy', String(!kind && /Loading|Loading/.test(value))); $('#runtime').className = `runtime ${kind}`; $('#runtime').lastElementChild.textContent = value; }
+function runtime(value, kind = '') { $('#runtime').setAttribute('aria-busy', String(!kind && /Loading|Loading/.test(value))); $('#runtime').className = `runtime ${kind}`; $('#runtime').lastElementChild.classList.remove('lab-skeleton'); $('#runtime').lastElementChild.textContent = value; $('#retry-runtime').hidden = kind !== 'error'; }
 function setBusy(value) {
   busy = value;
   $('#run-example').disabled = value || !ready || !sizes || !isRunnable() || (isNgcc() && !['kem','sig'].includes(selectedCandidate()?.type));
@@ -194,8 +203,8 @@ function request(type, payload = {}) {
       if (active?.requestId !== requestId) return;
       active = null;
       worker?.terminate(); ready = false;
-      reject(new Error('The reference implementation exceeded 45 seconds. Reloading the worker.'));
-      startWorker();
+      runtime('Operation timed out', 'error');
+      reject(new Error('The reference implementation exceeded 45 seconds and was stopped. Retry loading the worker.'));
     }, 45000);
     active = { requestId, resolve, reject, timer };
     try { worker.postMessage({ type, requestId, library: $('#library').value,
@@ -204,14 +213,17 @@ function request(type, payload = {}) {
   });
 }
 function startWorker() {
+  worker?.terminate(); ready = false; clearTimeout(loadTimer);
+  runtime('Loading algorithm module…');
+  loadTimer = setTimeout(() => { worker?.terminate(); runtime('Module load timed out', 'error'); status('The module did not become ready within 15 seconds. Retry loading.', 'error'); setBusy(false); }, 15000);
   try {
     worker = new Worker(new URL('./worker.js', import.meta.url), { type: 'module' });
     worker.onmessage = ({ data }) => {
       if (data.type === 'ready') {
-        ready = true;
+        clearTimeout(loadTimer); ready = true;
         if (isRunnable()) { runtime('Local execution', 'ready'); configureVariant(); }
       } else if (data.type === 'error' && !ready && !active) {
-        runtime('Load failed', 'error'); status(data.message, 'error');
+        clearTimeout(loadTimer); runtime('Load failed', 'error'); status(data.message, 'error');
       } else if ((data.type === 'result' || data.type === 'error') && data.requestId === active?.requestId) {
         const pending = active;
         active = null;
@@ -221,7 +233,7 @@ function startWorker() {
       }
     };
     worker.onerror = event => {
-      ready = false;
+      clearTimeout(loadTimer); ready = false;
       const pending = active; active = null;
       clearTimeout(pending?.timer);
       pending?.reject(new Error(event.message || 'Worker failed'));
@@ -230,7 +242,7 @@ function startWorker() {
       setBusy(false);
     };
     worker.postMessage({ type: 'init' });
-  } catch (error) { runtime('Required browser features unavailable', 'error'); status(error.message, 'error'); }
+  } catch (error) { clearTimeout(loadTimer); runtime('Required browser features unavailable', 'error'); status(error.message, 'error'); }
 }
 function decodeInput(input, expected, label) {
   const raw = input.trim();
@@ -263,14 +275,15 @@ function read(id) {
     return bytes;
   } catch (error) { input.setAttribute('aria-invalid', 'true'); input.focus(); throw error; }
 }
-function write(id, bytes) { $(`#${id}`).value = hex(bytes); $(`#${id}`).removeAttribute('aria-invalid'); }
-function result(label = 'Waiting for both parties') {
+function write(id, bytes) { $(`#${id}`).value = hex(bytes).match(/.{1,8}/g)?.join(' ') || ''; $(`#${id}`).removeAttribute('aria-invalid'); }
+function result(label = '○ Not started') {
+  finalTime = null;
   flowOutcome = null;
   $('#manual-result').classList.remove('pass', 'fail');
   $('#manual-summary').textContent = label;
-  $('#fact-one').textContent = 'Not checked'; $('#fact-one').className = '';
-  $('#fact-two').textContent = 'Not compared'; $('#fact-two').className = '';
-  $('#fact-time').textContent = '—';
+  $('#fact-one').textContent = '○ Not started'; $('#fact-one').className = '';
+  $('#fact-two').textContent = '○ Not started'; $('#fact-two').className = '';
+  $('#fact-time').textContent = 'Not started';
   refresh();
 }
 function resetKem() {
@@ -282,11 +295,12 @@ function resetKem() {
 function resetSig() { actionTime = null; $('#signature').value = ''; $('#verify-signature').value = ''; $('#verify-message').value = ''; result(); }
 function resetFields({ blankMessage = false } = {}) {
   resetSerial++;
+  usability?.hidePrivate();
   resetTransfers();
   document.querySelectorAll('[data-field]').forEach(input => { input.value = ''; input.removeAttribute('aria-invalid'); });
   document.querySelectorAll('[data-import]').forEach(input => { input.value = ''; });
   $('#sign-message').value = blankMessage ? '' : 'This is a test message.'; $('#verify-message').value = '';
-  keyTime = null; resetKem(); resetSig();
+  keyTime = null; finalTime = null; resetKem(); resetSig();
 }
 function showSizes() {
   for (const [id, key] of Object.entries(FIELD_SIZES)) $(`#size-${id}`).textContent = `${sizes[key]} B`;
@@ -307,7 +321,7 @@ async function configureVariant() {
     showSizes();
     status(isNgcc() ? 'Submission implementation loaded. Use keys matching this parameter instance.'
       : 'Use keys matching the selected algorithm, parameters and hash.');
-  } catch (error) { status(error.message, 'error'); }
+  } catch (error) { runtime('Module load failed', 'error'); status(error.message, 'error'); }
   finally { setBusy(false); }
 }
 async function operation(type, payload, onSuccess) {
@@ -317,7 +331,7 @@ async function operation(type, payload, onSuccess) {
     setBusy(true);
     status(`Running ${name()} ${({ generate: 'Key generation', encapsulate: 'Encapsulate', decapsulate: 'Decapsulate', sign: 'Signature', verify: 'Verify' })[type]}…`);
     onSuccess(await pending);
-  } catch (error) { status(error.message, 'error'); }
+  } catch (error) { flowOutcome='fail'; status(error.message, 'error'); }
   finally { setBusy(false); }
 }
 function attempt(callback) { try { callback(); } catch (error) { status(error.message, 'error'); } }
@@ -328,13 +342,14 @@ function configureVariants(preferDefault = false) {
   const previous = $('#variant').value;
   const selected = !preferDefault && variants.includes(previous) ? previous : DEFAULT_VARIANT[family];
   $('#variant').replaceChildren(...variants.map(variant => {
-    const option = new Option(`${NAMES[family]}-${variant.toUpperCase()}`, variant);
+    const [level,pk,sk,out] = parameterLabels[family][variant];
+    const option = new Option(`${NAMES[family]}-${variant.toUpperCase()} · Security level ${level} · Public key ${pk} B · Private key ${sk} B · ${family==='mlkem'?'Ciphertext':'Signature'} ${out} B${family==='mlkem'?' · Shared secret 32 B':''}`, variant);
     option.selected = variant === selected;
     return option;
   }));
 }
 async function loadCatalog() {
-  if (!catalogPromise) catalogPromise = fetch('./ngcc-catalog.json').then(async response => {
+  if (!catalogPromise) catalogPromise = fetch('./ngcc-catalog.json', {signal:AbortSignal.timeout(10000)}).then(async response => {
     if (!response.ok) throw new Error(`Cannot load the candidate catalogue (HTTP ${response.status}）`);
     const data = await response.json();
     if (!Array.isArray(data.candidates) || data.candidates.length !== 119) throw new Error('Incomplete submission catalogue');
@@ -343,7 +358,7 @@ async function loadCatalog() {
   catalog = await catalogPromise;
   if (!reportIndex) {
     try {
-      const response = await fetch('./ngcc-reports-zh.json');
+      const response = await fetch('./ngcc-reports-zh.json', {signal:AbortSignal.timeout(10000)});
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const index = await response.json();
       if (index.findings?.length !== 166 || index.active_findings !== 164 || index.findings.some(item => !item.title || !item.summary || !item.source_url)) throw new Error('Incomplete report snapshot');
@@ -368,6 +383,7 @@ function showReports(candidate) {
     list.replaceChildren(document.createElement('p'));
     list.firstChild.className = 'report-empty';
     list.firstChild.textContent = 'Visit the report source for all candidates.';
+    const retry=document.createElement('button');retry.type='button';retry.textContent='Retry reports';retry.onclick=async()=>{reportIndex=null;await loadCatalog();showReports(candidate);};list.append(retry);
     return;
   }
   if (!reports.length) {
@@ -458,6 +474,8 @@ async function switchLibrary() {
     $(selector).classList.toggle('hidden', directory);
   }
   if (directory) {
+    catalogError='';
+    $('#catalog-notice').textContent='Loading reference implementation information.';
     $('#family').replaceChildren(new Option('Loading submission catalogue…', ''));
     $('#variant').replaceChildren();
     runtime('Loading candidate information');
@@ -473,7 +491,7 @@ async function switchLibrary() {
         return group;
       }));
       configureCatalogParameters(); showCatalog(); renderSidebar();
-    } catch (error) { status(error.message, 'error'); runtime('Candidate catalogue failed to load', 'error'); }
+    } catch (error) { catalogError=error.message; $('#catalog-notice').textContent=error.message; $('#report-intro').textContent='Candidate catalog failed to load. Retry loading.'; status(error.message, 'error'); runtime('Candidate catalogue failed to load', 'error'); renderSidebar(); }
   } else {
     $('#family').replaceChildren(...[
       ['Key encapsulation', ['mlkem']], ['Digital signatures', ['mldsa', 'slhdsa']],
@@ -483,7 +501,7 @@ async function switchLibrary() {
       return group;
     }));
     $('#family').value = nistFamily;
-    $('#family').dispatchEvent(new Event('change'));
+    $('#family').dispatchEvent(new CustomEvent('change', {detail:{internal:true}}));
     runtime(ready ? 'Local execution' : 'Loading…', ready ? 'ready' : '');
   }
 }
@@ -507,8 +525,9 @@ $('#hash').addEventListener('change', () => { if (!isNgcc()) { configureVariants
 $('#variant').addEventListener('change', () => isNgcc() ? showCatalog() : configureVariant());
 $('#clear-all').addEventListener('click', () => {
   if (busy || !isRunnable()) return;
+  usability.beforeClear();
   resetFields({ blankMessage: true });
-  status('Inputs and results cleared. Algorithm and parameters remain selected.', 'success');
+  status('All inputs and results cleared. Use Undo clear to restore. Editing or running a new operation ends undo.', 'success');
 });
 document.querySelectorAll('[data-field]').forEach(input => input.addEventListener('input', () => {
   input.removeAttribute('aria-invalid');
@@ -526,7 +545,7 @@ $('#verify-message').addEventListener('input', () => result());
 
 for (const [button, prefix] of [['kem-generate', 'kem'], ['sig-generate', 'sig']]) {
   $(`#${button}`).addEventListener('click', () => operation('generate', {}, generated => {
-    resetTransfers();
+    resetTransfers(); usability?.hidePrivate();
     write(`${prefix}-public`, generated.publicKey); write(`${prefix}-private`, generated.privateKey);
     generated.privateKey.fill(0); keyTime = generated.ms;
     if (prefix === 'kem') {
@@ -546,7 +565,7 @@ for (const [button, from, to, clear] of [
     write(to, read(from)); clear();
     const route = { 'kem-send-public': 'kem-route-pk', 'kem-send-cipher': 'kem-route-ct', 'sig-send-public': 'sig-route-pk' }[button];
     animateTransfer(route, [to]);
-    status(button === 'kem-send-cipher' ? 'Alice’s ciphertext delivered to Bob.' : 'Public key delivered; private key stays local.', 'success');
+    status(button === 'kem-send-cipher' ? 'Bob’s ciphertext delivered to Alice.' : 'Public key delivered; private key stays local.', 'success');
   }));
 }
 $('#sig-send-result').addEventListener('click', () => attempt(() => {
@@ -561,7 +580,7 @@ $('#kem-encapsulate').addEventListener('click', () => attempt(() => {
     resetKem(); write('kem-cipher', output.ciphertext);
     aliceSecret = output.sharedSecret; actionTime = output.ms;
     $('#kem-alice-secret').textContent = hex(aliceSecret);
-    status('Alice generated ciphertext and a local shared secret.', 'success');
+    status('Bob generated ciphertext and a local shared secret.', 'success');
   });
 }));
 $('#kem-decapsulate').addEventListener('click', () => attempt(() => {
@@ -570,7 +589,7 @@ $('#kem-decapsulate').addEventListener('click', () => attempt(() => {
   operation('decapsulate', { privateKey, ciphertext, publicKey }, output => {
     $('#kem-bob-secret').textContent = hex(output.sharedSecret);
     $('#fact-one').textContent = isNgcc() ? 'Shared secrets compared' : output.pairMatches === null
-      ? 'Initiator public key missing' : output.pairMatches ? 'Consistent' : 'Inconsistent';
+      ? 'Alice public key not provided' : output.pairMatches ? 'Consistent' : 'Inconsistent';
     $('#fact-one').className = output.pairMatches === false ? 'bad' : output.pairMatches ? 'good' : '';
     if (aliceSecret) {
       const matches = equal(aliceSecret, output.sharedSecret);
@@ -583,10 +602,11 @@ $('#kem-decapsulate').addEventListener('click', () => attempt(() => {
       status($('#manual-summary').textContent, matches ? 'success' : 'error');
     } else {
       flowOutcome = 'partial';
-      $('#manual-summary').textContent = 'Bob derived a shared secret; waiting for Alice’s result.';
-      $('#fact-two').textContent = 'Alice’s result missing';
+      $('#manual-summary').textContent = 'Alice derived a shared secret; waiting for Bob’s result.';
+      $('#fact-two').textContent = 'Bob result missing';
       status($('#manual-summary').textContent);
     }
+    finalTime = output.ms;
     $('#fact-time').textContent = `Generate ${elapsed(keyTime)} · Encapsulate ${elapsed(actionTime)} · Decapsulate ${elapsed(output.ms)}`;
     output.sharedSecret.fill(0);
   });
@@ -614,13 +634,14 @@ $('#verify-button').addEventListener('click', () => attempt(() => {
     $('#fact-one').textContent = $('#signature').value ? 'Local or imported signature' : 'Imported signature';
     $('#fact-two').textContent = output.valid ? 'Valid' : 'Invalid';
     $('#fact-two').className = output.valid ? 'good' : 'bad';
+    finalTime = output.ms;
     $('#fact-time').textContent = `Generate ${elapsed(keyTime)} · Signature ${elapsed(actionTime)} · Verify ${elapsed(output.ms)}`;
     status($('#manual-summary').textContent, output.valid ? 'success' : 'error');
   });
 }));
 
-document.querySelectorAll('[data-import]').forEach(input => input.addEventListener('change', async () => {
-  const file = input.files?.[0]; if (!file) return;
+async function importFile(input, file) {
+  if (!file || !sizes) return;
   const id = input.dataset.import, selected = `${$('#library').value}/${$('#family').value}/${$('#variant').value}/${$('#hash').value}`, currentReset = resetSerial;
   try {
     if (file.size > 256 * 1024) throw new Error('File exceeds 256 KiB. Import one raw key or signature.');
@@ -639,14 +660,16 @@ document.querySelectorAll('[data-import]').forEach(input => input.addEventListen
     status(`${file.name} imported.`, 'success');
   } catch (error) { status(error.message, 'error'); }
   finally { input.value = ''; }
-}));
+}
+document.querySelectorAll('[data-import]').forEach(input => input.addEventListener('change', () => importFile(input, input.files?.[0])));
 document.querySelectorAll('[data-copy]').forEach(button => button.addEventListener('click', async () => {
   const target = $(`#${button.dataset.copy}`);
   const value = (target.value ?? target.textContent).trim();
-  if (!value || value.startsWith('Waiting')) return status('No result available to copy.', 'error');
+  if (!value || /^(Waiting|Not started)/.test(value)) return status('No result available to copy.', 'error');
   try {
     await copyText(value);
-    status('Copied to clipboard.', 'success');
+    button.textContent='✓'; setTimeout(()=>{button.textContent='⧉';},1500);
+    status(button.dataset.copy.includes('private') ? 'Private key copied. Do not share it; clear your clipboard after use.' : 'Copied to clipboard.', 'success');
   }
   catch { status('Copy failed: check clipboard permissions.', 'error'); }
 }));
@@ -689,7 +712,7 @@ $('#run-example').addEventListener('click', async () => {
       write('kem-cipher', encapsulated.ciphertext); write('kem-bob-cipher', encapsulated.ciphertext);
       animateTransfer('kem-route-ct', ['kem-bob-cipher']);
       const decapsulated = await request('decapsulate', { privateKey: keys.privateKey, ciphertext: encapsulated.ciphertext, publicKey: keys.publicKey });
-      aliceSecret = encapsulated.sharedSecret;
+      aliceSecret = encapsulated.sharedSecret; actionTime=encapsulated.ms; finalTime=decapsulated.ms;
       $('#kem-alice-secret').textContent = hex(aliceSecret); $('#kem-bob-secret').textContent = hex(decapsulated.sharedSecret);
       const valid = equal(aliceSecret, decapsulated.sharedSecret);
       flowOutcome = valid ? 'pass' : 'fail';
@@ -705,6 +728,7 @@ $('#run-example').addEventListener('click', async () => {
       animateTransfer('sig-route-pk', ['sig-verifier-public']);
       animateTransfer('sig-route-bundle', ['verify-signature']);
       const checked = await request('verify', { publicKey: keys.publicKey, signature: signed.signature, message });
+      actionTime=signed.ms; finalTime=checked.ms;
       flowOutcome = checked.valid ? 'pass' : 'fail';
       $('#fact-one').textContent = 'Generated example signature'; $('#fact-two').textContent = checked.valid ? 'Valid' : 'Invalid';
       $('#fact-time').textContent = `Generate ${elapsed(keys.ms)} · Signature ${elapsed(signed.ms)} · Verify ${elapsed(checked.ms)}`;
@@ -717,6 +741,32 @@ $('#run-example').addEventListener('click', async () => {
   } catch (error) { status(error.message, 'error'); $('#example-status').textContent = error.message; }
   finally { demoRunning = false; setBusy(false); }
 });
+usability = setupUsability({state:uiState, renderSidebar, decode:decodeInput, expectedSize, importFile,
+  snapshot:()=>({fields:Object.fromEntries([...document.querySelectorAll('[data-field],.message-input')].map(input=>[input.id,input.value])), aliceSecret:aliceSecret?.slice(), keyTime, actionTime, finalTime, outcome:flowOutcome, transfers:transferSnapshot(), texts:Object.fromEntries(['kem-alice-secret','kem-bob-secret','manual-summary','fact-one','fact-two','fact-time'].map(id=>[id,$('#'+id).textContent]))}),
+  restore:snapshot=>{resetSerial++;for(const [id,value] of Object.entries(snapshot.fields))$('#'+id).value=value;aliceSecret=snapshot.aliceSecret?.slice()||null;keyTime=snapshot.keyTime;actionTime=snapshot.actionTime;finalTime=snapshot.finalTime;flowOutcome=snapshot.outcome;restoreTransfers(snapshot.transfers);for(const [id,value] of Object.entries(snapshot.texts))$('#'+id).textContent=value;status('✓ Clear undone; inputs and results restored.','success');}
+});
+$('#retry-runtime').addEventListener('click',()=>{if(busy)return;if(isNgcc()&&!catalog)void switchLibrary();else startWorker();});
+$('#tamper-one-bit').addEventListener('click',()=>attempt(()=>{
+  if(busy)return;
+  if(isKem()){
+    const bytes=read('kem-bob-cipher');bytes[0]^=1;write('kem-bob-cipher',bytes);$('#kem-bob-cipher').dispatchEvent(new Event('input'));
+    $('#tamper-note').textContent='The first received ciphertext bit was flipped. Decapsulating again. ML-KEM implicitly rejects invalid ciphertext by deriving a different shared secret.';
+    $('#kem-decapsulate').click();
+  } else {
+    const message=new TextEncoder().encode($('#verify-message').value);
+    if(!message.length)throw new Error('An empty message has no bit to flip. Sign a nonempty message first.');
+    message[message.length-1]^=1;
+    $('#verify-message').value=new TextDecoder().decode(message);
+    $('#verify-message').dispatchEvent(new Event('input'));
+    // Flipping the lowest bit of the final UTF-8 byte preserves encoding.
+    $('#tamper-note').textContent='Flipped the lowest bit of the last message byte. Verifying the exact modified bytes.';
+    operation('verify',{publicKey:read('sig-verifier-public'),signature:read('verify-signature'),message},output=>{
+      finalTime=output.ms;flowOutcome=output.valid?'pass':'fail';
+      $('#manual-result').classList.remove('pass','fail');$('#manual-result').classList.add(flowOutcome);
+      $('#fact-two').textContent=output.valid?'✓ Complete':'✕ Failed';status(output.valid?'Signature is still valid':'✕ Verification failed after changing one message bit',output.valid?'success':'error');
+    });
+  }
+}));
 void selectLabTab(labTab);
 const missing = missingBrowserFeatures();
 if (missing.length) {

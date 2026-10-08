@@ -2,7 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 const dictionary=JSON.parse(await readFile("app/site/lab-en.json","utf8"));
 const terms=Object.entries(dictionary).sort((a,b)=>b[0].length-a[0].length);
 function translate(text){for(const [zh,en] of terms)text=text.split(zh).join(en);return text;}
-const files=["app.js","dialogue.js","candidate-workbench.js","navigation.js"];
+const files=["app.js","dialogue.js","candidate-workbench.js","navigation.js","usability.js"];
 for(const file of files){let source=translate(await readFile("public/pqc-practice/"+file,"utf8"));for(const name of files)source=source.replaceAll("./"+name,"./"+name.replace(".js","-en.js"));await writeFile("public/pqc-practice/"+file.replace(".js","-en.js"),source);}
 let html=translate(await readFile("public/pqc-practice/index.html","utf8"));
 html=html.replace('<html lang="zh-CN">','<html lang="en">').replace('src="./app.js','src="./app-en.js').replace('src="./navigation.js','src="./navigation-en.js').replaceAll('https://wangyibiao.com/pqc-practice/index.html','https://wangyibiao.com/pqc-practice/index-en.html');

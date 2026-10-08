@@ -17,3 +17,12 @@ export function articleSections(content: string, summary = "") {
   const excerpt = source.length <= 900 ? source : source.slice(0, 900).replace(/[^。！？.!?]*$/, "") + "…";
   return { intro, excerpt };
 }
+
+export function cleanSummary(summary: string | null) {
+  return (summary || "").replace(/^(?:\d{4}年)?\d{1,2}月\d{1,2}日(?:[—至]\d{1,2}日)?\s*/, "").replace(/^(?:研究|规范|近期)回顾[：:，,]?\s*/, "");
+}
+export function sourceDate(item: NewsItem, reviewed: Record<string,string>) {
+  const explicit = item.content?.match(/(?:原始(?:来源|发布)日期[：:]|原始资料发布于|原文发布日期[：:])\s*(\d{4})\s*[年-]\s*(\d{1,2})\s*[月-]\s*(\d{1,2})/);
+  if(explicit)return `${explicit[1]}-${explicit[2].padStart(2,"0")}-${explicit[3].padStart(2,"0")}`;
+  return reviewed[item.slug] || null;
+}

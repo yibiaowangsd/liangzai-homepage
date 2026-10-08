@@ -60,6 +60,7 @@ try {
     const browser = await engine.launch();
     try {
       const context = await browser.newContext({ reducedMotion: 'reduce' });
+      context.setDefaultTimeout(20000);
       await context.route('https://api.wangyibiao.com/api/news/**', async route => {
         const response = newsResponse(route.request().url());
         await route.fulfill({ status: response.status, contentType: 'application/json', body: await response.text() });
@@ -162,6 +163,7 @@ try {
             failures.push(`${label}: ${error.message}; overflow=${JSON.stringify(overflow)}`);
           }
         }
+        console.log(`${name} ${path}: all viewport widths checked`);
         await page.setViewportSize({ width: 320, height: 568 });
         await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
         const menu = page.locator('dialog[open]');

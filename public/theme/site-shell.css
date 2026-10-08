@@ -45,3 +45,22 @@ html .studio-theme .site-chrome .brand,html .studio-theme .site-chrome .language
 html .studio-theme .site-chrome .menu-toggle span,html .studio-theme .site-chrome .menu-toggle i{color:inherit;}
 
 html .studio-theme .site-chrome .brand strong{color:inherit;}
+
+/* Shared reading preferences and long-page navigation. */
+html { scroll-behavior: smooth; }
+html[data-font-size="large"] { font-size: 19px; }
+html[data-font-size="large"] :is(p,textarea,.compact-news-row h3,.material label) { font-size: 1.125rem; }
+html[data-reduced-motion="true"] { scroll-behavior: auto; }
+html[data-reduced-motion="true"] *, html[data-reduced-motion="true"] *::before, html[data-reduced-motion="true"] *::after { animation: none!important; transition: none!important; scroll-behavior:auto!important; }
+.floating-top { position:fixed; bottom:24px; right:20px; z-index:80; display:flex; align-items:center; gap:8px; min-height:44px; padding:10px 14px; border:1px solid var(--theme-control-border); border-radius:8px; color:var(--theme-ink); background:var(--theme-surface); box-shadow:0 3px 15px #0002; }
+[hidden] { display:none!important; }
+.section-index { position:sticky; top:var(--site-header-height,72px); z-index:30; background:var(--theme-bg); display:flex; gap:16px; overflow-x:auto; padding:12px 0; }
+.section-index a { white-space:nowrap; padding:8px; min-height:44px; border-bottom:2px solid transparent; }
+.section-index a[aria-current="location"] { border-color:var(--theme-accent); color:var(--theme-accent); font-weight:600; }
+:where(section[id]) { scroll-margin-top:160px; }
+.font-picker select,.contact-email button { font:inherit; padding:8px; min-height:44px; color:inherit; background:var(--theme-surface); border:1px solid var(--theme-control-border); border-radius:4px; }
+.contact-email { display:inline-flex; flex-wrap:wrap; align-items:center; gap:12px; }.contact-email small { width:100%; }
+.secondary-button { border:1px solid currentColor!important; border-radius:5px!important; padding:10px 16px!important; min-height:44px; }
+:is(.catalog-links, .report-panel, .footer, .studio-footer) a[target="_blank"]::after { content:" ↗"; font-size:.85em; }
+@media (max-width:600px) { .floating-top span { display:none; }.jump-trigger kbd {font-size:10px;} .chrome-actions{gap:4px;} }
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto;}}

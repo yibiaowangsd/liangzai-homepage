@@ -33,7 +33,7 @@ npm run dev
 | `/archive` | 量仔的角色档案 |
 | `/pqc-arsenal` | ML-KEM、ML-DSA、SLH-DSA、FN-DSA 的原理与教学交互 |
 | `/pqc-practice` | 转到独立 HTML 实验室，执行 WASM 密钥封装、签名、密钥交换与哈希 |
-| `/pqc-practice/audit.html` | 国内征集候选的逐参数接入记录、来源与 CSV 导出 |
+| `/pqc-practice/audit` | 国内征集候选的逐参数接入记录、来源与 CSV 导出 |
 | `/news`、`/news/[slug]` | 按日报和分类浏览技术新闻及正文 |
 | `/about` | 作者公开经历、工程项目与公开版简历 |
 | `/pqc/[algorithm]` | 每种算法的独立参考页 |

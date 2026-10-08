@@ -40,7 +40,7 @@ test('standalone English laboratory has matching shell and metadata before JavaS
  assert.match(html,/<html lang="en">/);assert.match(html,/<h1>Cryptography <em>Lab<\/em><\/h1>/);
  assert.match(html,/property="og:image"/);assert.match(html,/data-lab-tab="signature"/);
  assert.doesNotMatch(html.replace(">中文<", ">Chinese<"),/>[^<>]*[\u4e00-\u9fff][^<>]*</u); // The language-switch label is checked separately below.
- for (const script of ['app-en.js', 'dialogue-en.js', 'candidate-workbench-en.js', 'navigation-en.js']) {
+ for (const script of ['app-en.js', 'dialogue-en.js', 'candidate-workbench-en.js', 'navigation-en.js', 'usability-en.js']) {
   assert.doesNotMatch(await read('public/pqc-practice/' + script), /[\u4e00-\u9fff]/u, script + ' exposes English runtime instructions');
  }
 });

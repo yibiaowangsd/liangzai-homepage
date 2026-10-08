@@ -8,11 +8,11 @@ function subscribe(onChange: () => void) {
 }
 
 function getPreference() {
-  return document.documentElement.dataset.themePreference || "paper";
+  return document.documentElement.dataset.themePreference || "system";
 }
 
 // A stable server snapshot keeps hydration independent of browser preference.
-function getServerPreference() { return "paper"; }
+function getServerPreference() { return "system"; }
 
 export default function ThemePicker({ en = false }: { en?: boolean }) {
   const preference = useSyncExternalStore(subscribe, getPreference, getServerPreference);
@@ -28,6 +28,7 @@ export default function ThemePicker({ en = false }: { en?: boolean }) {
           detail: event.currentTarget.value,
         }))}
       >
+        <option value="system">{en ? "System" : "跟随系统"}</option>
         <option value="paper">{en ? "Paper" : "纸白"}</option>
         <option value="midnight">{en ? "Midnight" : "午夜"}</option>
       </select>

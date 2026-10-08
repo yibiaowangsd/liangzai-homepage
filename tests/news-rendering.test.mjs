@@ -110,7 +110,10 @@ test("news uses concise, unique entries and source-linked observations", async (
    assert.match(main,/<h1>前沿新闻<\/h1>/);
    for(const item of publishedItems){assert.ok(main.includes(escapeHtml(item.summary)));assert.equal(main.split('href="/news/'+item.slug+'"').length-1,1);}
    assert.doesNotMatch(main,/class="front-page"|class="story-image"|<img/);
-   assert.match(main,/<details class="news-extra">/);
+   assert.match(main,/aria-label="新闻方向"/);
+   assert.match(main,/aria-label="跳转到日期或期数"/);
+   assert.match(main,/aria-current="page">第一页/);
+   assert.match(main,/<span aria-disabled="true">较新/);
    assert.doesNotMatch(main,/<details class="news-extra"[^>]*open/);
   });
   await t.test("tag filters apply to this edition and persist in article links",async()=>{
@@ -122,10 +125,10 @@ test("news uses concise, unique entries and source-linked observations", async (
   });
   await t.test("category and archive page are retained through article navigation",async()=>{
    const items=publishedItems.filter(item=>item.category==='protocol');
-   upstream=url=>{assert.equal(url.searchParams.get('page'),'2');assert.equal(url.searchParams.get('category'),'protocol');return Response.json(editions(items,2));};
+   upstream=url=>{assert.equal(url.searchParams.get('page'),'2');assert.equal(url.searchParams.get('category'),null);return Response.json(editions(items,2));};
    const main=await render('/news?page=2&category=protocol');
    assert.ok(main.includes('href="/news/'+items[0].slug+'?page=2&amp;category=protocol"'));
-   assert.match(main,/href="\/news\?page=3&amp;category=protocol"/);
+   assert.match(main,/href="\/news\?page=3"/);
   });
   await t.test("observation is first, source synopsis is bounded and collapsed, text is escaped",async()=>{
    const item={...publishedItems[1],content:'## 原文编译\nSource & <script>alert(1)</script>\n\n## 量仔观察\nA protocol needs negotiation and a key schedule.'};

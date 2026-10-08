@@ -16,6 +16,7 @@
 | `npm run typecheck` | TypeScript 检查 |
 | `npm run lint` | 检查手写源码，排除构建产物和生成的胶水代码 |
 | `npm run test:engineering-browser` | Chromium 检查新增工程路由与真实混合实验 |
+| `npm run test:usability` | 检查全站交互修复、新闻归档、引导/自由流程、篡改、输入与重试 |
 | `npm run test:layout` | 使用 Chromium、Firefox、WebKit 检查生产页面布局 |
 
 生产产物在忽略目录 `dist/`。`npm test` 已包含构建，无需在它之前重复运行 `npm run build`。全量测试包含真实 WASM 密码运算，耗时高于普通静态检查；不支持的参数明确跳过，不能算作通过。

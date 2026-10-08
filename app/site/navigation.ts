@@ -44,7 +44,7 @@ export const navGroups = [
         "en": "Parameters"
       },
       {
-        "href": "/pqc-practice/audit.html",
+        "href": "/pqc-practice/audit",
         "name": "接入记录",
         "en": "Implementation Index"
       }
@@ -56,7 +56,7 @@ export const navGroups = [
     "links": [
       {
         "href": "/news",
-        "name": "技术简报",
+        "name": "前沿新闻",
         "en": "Technical Briefing"
       },
       {
@@ -87,7 +87,7 @@ export const navGroups = [
       },
       {
         "href": "/pqc-arsenal",
-        "name": "算法原理",
+        "name": "密码图鉴",
         "en": "Algorithm Guide"
       },
       {
@@ -108,7 +108,7 @@ export const navGroups = [
     "links": [
       {
         "href": "/about",
-        "name": "关于 Yibiao",
+        "name": "关于我",
         "en": "About Yibiao"
       },
       {

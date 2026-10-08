@@ -4,7 +4,8 @@ import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { flushSync } from "react-dom";
 import { usePathname } from "next/navigation";
-import { searchDestinations } from "./destinations";
+import { searchSite } from "../site/search";
+import { SearchShortcut } from "../site/SiteUtilities";
 import "./jump-navigation.css";
 
 export default function JumpNavigation({
@@ -20,7 +21,8 @@ export default function JumpNavigation({
   const input = useRef<HTMLInputElement>(null);
   const items = useRef<HTMLUListElement>(null);
   const path = usePathname();
-  const results = searchDestinations(query);
+  const groups = searchSite(query);
+  const results = groups.flatMap(group => group.items.map(item=>({...item,group:group.group})));
   const openRef = useRef(onOpen);
   const blockedRef = useRef(blocked);
   useEffect(() => {
@@ -98,7 +100,7 @@ export default function JumpNavigation({
         }}
       >
         <span>搜索</span>
-        <kbd>K</kbd>
+        <SearchShortcut />
       </button>
       {open && (
         <dialog
@@ -130,7 +132,7 @@ export default function JumpNavigation({
         >
           <div className="jump-heading">
             <div>
-              <p>找到下一个目的地</p>
+              <p>范围：新闻、算法、页面</p>
               <h2 id="jump-title">搜索全站</h2>
             </div>
             <button
@@ -148,7 +150,7 @@ export default function JumpNavigation({
               id="jump-query"
               type="search"
               value={query}
-              placeholder="试试「星空」「算法」「新闻」"
+              placeholder="搜索新闻、算法、页面"
               autoComplete="off"
               onChange={(event) => setQuery(event.target.value)}
               onKeyDown={move}
@@ -185,6 +187,7 @@ export default function JumpNavigation({
               };
               return (
                 <li key={item.href}>
+                  {(i === 0 || results[i - 1].group !== item.group) && <h3 className="search-group">{item.group}</h3>}
                   {item.href === "/pqc-practice" ? (
                     <a href={item.href} {...props}>
                       {content}
@@ -205,7 +208,7 @@ export default function JumpNavigation({
           )}
           <div className="jump-help">
             <span>↑ ↓ 选择 · Enter 进入</span>
-            <span>Ctrl / ⌘ K 随时打开</span>
+            <span>新闻索引随日报更新</span>
           </div>
         </dialog>
       )}

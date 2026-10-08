@@ -80,7 +80,7 @@
   letter-spacing: 0.12em;
   color: var(--studio-blue);
 }
-.reader-copy h1 {
+.reader-copy h2 {
   font-family: var(--studio-serif);
   font-size: clamp(38px, 4vw, 62px);
   font-weight: 500;
@@ -292,7 +292,7 @@
   .reader-copy {
     padding: 30px 4px 25px;
   }
-  .reader-copy h1 {
+  .reader-copy h2 {
     font-size: 36px;
     margin: 20px 0;
   }
@@ -340,7 +340,7 @@
 .reader-stage { min-height: 500px; grid-template-columns: 1.15fr 1fr; border-radius: 16px 16px 0 0; overflow: hidden; background: var(--theme-surface); }
 .reader-art { min-height: 500px; }
 .reader-copy { padding: 32px; }
-.reader-copy h1 { font-size: clamp(28px,3vw,36px); letter-spacing: -.04em; margin-block: 20px; }
+.reader-copy h2 { font-size: clamp(28px,3vw,36px); letter-spacing: -.04em; margin-block: 20px; }
 .reader-body { font-size: 16px; line-height: 1.9; }
 .reader-controls { position: sticky; bottom: 0; z-index: 5; padding: 16px 20px; background: var(--theme-surface); border: 1px solid var(--theme-border); border-radius: 0 0 16px 16px; }
 .reader-controls button,.reader-bar button { min-height: 44px; }
@@ -371,3 +371,5 @@
 .reader-timeline button>span { aspect-ratio: 1.4; border-radius: 0; }
 @media(max-width:1000px) { .reader-stage { grid-template-columns: 1fr; } .reader-art { aspect-ratio: 1.6; } .reader-copy { padding: 32px; } }
 @media(max-width:700px) { .reader-art { aspect-ratio: 1.25; } .reader-copy { padding: 28px 20px; } .reader-controls { flex-wrap: wrap; } }
+
+.reader-bar h1.reader-back {font-size:16px;font-weight:600;margin:0;}
