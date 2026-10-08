@@ -208,7 +208,7 @@ try {
         await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
         await page.locator(`dialog[open] a[href="${href}"]`).click();
         await page.waitForFunction(href => location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '') === href.replace(/\/$/, ''), href);
-        await page.locator('#main-content, body > .page').waitFor();
+        await page.locator('#main-content').waitFor();
         assert.equal(await page.locator('dialog[open]').count(), 0, `${name} ${href}: directory stays open after navigation`);
         assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', `${name} ${href}: scroll lock survives navigation`);
       }
