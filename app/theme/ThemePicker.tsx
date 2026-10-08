@@ -14,22 +14,22 @@ function getPreference() {
 // A stable server snapshot keeps hydration independent of browser preference.
 function getServerPreference() { return "paper"; }
 
-export default function ThemePicker() {
+export default function ThemePicker({ en = false }: { en?: boolean }) {
   const preference = useSyncExternalStore(subscribe, getPreference, getServerPreference);
   return (
     <label className="theme-picker">
       <span className="theme-picker-swatch" aria-hidden="true" />
-      <span className="theme-picker-label">主题</span>
+      <span className="theme-picker-label">{en ? "Theme" : "主题"}</span>
       <select
-        aria-label="页面主题"
+        aria-label={en ? "Page theme" : "页面主题"}
         data-theme-select="react"
         value={preference}
         onChange={(event) => window.dispatchEvent(new CustomEvent("liangzai:theme-request", {
           detail: event.currentTarget.value,
         }))}
       >
-        <option value="paper">纸白</option>
-        <option value="midnight">午夜</option>
+        <option value="paper">{en ? "Paper" : "纸白"}</option>
+        <option value="midnight">{en ? "Midnight" : "午夜"}</option>
       </select>
     </label>
   );

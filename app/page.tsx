@@ -8,10 +8,10 @@ export const metadata: Metadata = {
   title,
   description,
   alternates: { canonical: "https://wangyibiao.com/" },
-  openGraph: { title, description, url: "https://wangyibiao.com/", siteName: "Yibiao · 量仔", locale: "zh_CN", type: "website", images: [image] },
+  openGraph: { title, description, url: "https://wangyibiao.com/", siteName: "Yibiao", locale: "zh_CN", type: "website", images: [image] },
   twitter: { card: "summary_large_image", title, description, images: [image.url] },
 };
 
-export default function Home() {
+export default async function Home() {
   return <QuantumHome />;
 }

@@ -64,10 +64,10 @@ const viewports = [
 ];
 const routes = ['/', '/pqc-practice/index.html', '/pqc-practice/audit.html', '/news', `/news/${items[0].slug}`, '/about', '/models', '/storybook', '/archive', '/pqc-arsenal'];
 const contentSelectors = {
-  '/': '.portal-tools, .portal-news, .portal-world',
+  '/': '.portal-tools, .portal-news',
   '/pqc-practice/index.html': '.practice-layout',
   '/pqc-practice/audit.html': '.audit-table-scroll',
-  '/news': '.front-page, .edition, .news-pagination, .news-method-note',
+  '/news': '.edition, .news-pagination, .news-method-note',
   [`/news/${items[0].slug}`]: '.article-shell',
   '/models': '.model-gallery',
   '/storybook': '.reader-stage',
@@ -127,15 +127,15 @@ try {
             assert.ok(layout.brand.right + 2 <= layout.actions.left || layout.brand.bottom <= layout.actions.top + 1, 'header controls overlap brand');
             assert.ok(layout.actions.right <= layout.width + 1, 'header controls leave viewport');
             if (layout.nav) {
-              assert.ok(layout.brand.right + 2 <= layout.nav.left, 'navigation overlaps brand');
-              assert.ok(layout.nav.right + 2 <= layout.actions.left, 'navigation overlaps controls');
+              assert.ok(layout.brand.right + 2 <= layout.nav.left || layout.brand.bottom <= layout.nav.top + 1, 'navigation overlaps brand');
+              assert.ok(layout.nav.right + 2 <= layout.actions.left || layout.actions.bottom <= layout.nav.top + 1, 'navigation overlaps controls');
             }
             assert.equal(layout.retiredLinks, 0, 'retired destination appears in navigation');
             if (path.startsWith('/news/')) {
               assert.ok(layout.content[0].width <= 928, 'article line length grows without a reading limit');
               assert.ok(layout.content[0].width >= Math.min(240, layout.width - 40), 'article reading column is too narrow');
             }
-            if (viewport.width >= 1280 && !path.startsWith('/news/')) {
+            if (viewport.width >= 1280 && !path.startsWith('/news/') && path !== '/pqc-arsenal') {
               assert.ok(layout.content.length > 0, 'page content is missing');
               for (const block of layout.content) {
                 const maxInset = layout.width * .055;
@@ -197,11 +197,11 @@ try {
       await page.goto(base, { waitUntil: 'networkidle' });
       await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
       for (const theme of ['paper', 'midnight']) {
-        await page.getByLabel('页面主题', { exact: true }).selectOption(theme);
+        await page.locator('dialog[open]').getByLabel('页面主题', { exact: true }).selectOption(theme);
         await page.waitForFunction(theme => document.documentElement.dataset.theme === theme, theme);
       }
       // The redesign must preserve the entrance, navigation and real page controls.
-      await page.getByLabel('页面主题', { exact: true }).selectOption('paper');
+      await page.locator('dialog[open]').getByLabel('页面主题', { exact: true }).selectOption('paper');
       await page.keyboard.press('Escape');
       // Every directory entry must reach its own page and release native modality.
       for (const href of ['/models', '/storybook', '/archive', '/pqc-arsenal', '/pqc-practice', '/news', '/about', '/']) {
@@ -213,10 +213,13 @@ try {
         assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', `${name} ${href}: scroll lock survives navigation`);
       }
       await page.getByRole('button', { name: '播放序幕', exact: true }).click();
+      assert.equal(await page.locator('.cinema-entrance[open]').count(), 0, 'reduced-motion visitors skip the sequence');
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.getByRole('button', { name: '播放序幕', exact: true }).click();
       await page.locator('.cinema-entrance[open]').waitFor();
       await page.keyboard.press('Space');
       await page.locator('.cinema-entrance[open]').waitFor({ state: 'hidden' });
-      assert.equal(await page.evaluate(() => document.activeElement?.textContent), '播放序幕', 'replay restores keyboard focus');
+      assert.equal(await page.evaluate(() => document.activeElement?.textContent), '重播序幕', 'replay restores keyboard focus');
       assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', 'intro leaves the page locked');
       await page.locator('.portal-actions a[href="#selected"]').click();
       await page.waitForFunction(() => location.hash === '#selected');

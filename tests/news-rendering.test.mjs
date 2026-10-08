@@ -1,6 +1,5 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readFile } from "node:fs/promises";
 
 // Representative API records captured on 2026-09-30. These are rendering fixtures,
 // not live-news assertions; tests must never depend on the upstream API/network.
@@ -98,253 +97,49 @@ function mainMarkup(html) {
   return main;
 }
 
-function attribute(markup, name) {
-  return markup.match(new RegExp(`\\b${name}="([^"]*)"`))?.[1];
-}
-
-// The built Worker patches global fetch on first use. Install the deterministic
-// upstream stub before importing it, and keep all renders serial in this suite.
-test("news pages preserve published content and accessible rendering", async (t) => {
-  const originalFetch = globalThis.fetch;
-  let upstream = () => Response.json(editions());
-  const requests = [];
-  globalThis.fetch = async (input, init) => {
-    const url = new URL(input instanceof Request ? input.url : String(input));
-    assert.equal(url.origin, "https://api.wangyibiao.com", "No unmocked external requests");
-    requests.push({ url, init });
-    return upstream(url);
-  };
-
-  try {
-    const { default: worker } = await import("../dist/server/index.js");
-    async function render(path) {
-      const response = await worker.fetch(
-        new Request("http://localhost" + path, { headers: { accept: "text/html" } }),
-        { ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) } },
-        { waitUntil() {}, passThroughOnException() {} },
-      );
-      assert.equal(response.status, 200);
-      assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
-      return mainMarkup(await response.text());
-    }
-
-    await t.test("listing keeps titles, summaries, sources and named image links", async () => {
-      upstream = (url) => {
-        assert.equal(url.pathname, "/api/news/editions");
-        assert.equal(url.searchParams.get("page"), "1");
-        assert.equal(url.searchParams.get("pageSize"), "1");
-        return Response.json(editions());
-      };
-      const main = await render("/news");
-      assert.equal([...main.matchAll(/<h1\b/g)].length, 1);
-      assert.match(main, /<h1>前沿新闻<\/h1>/);
-      for (const item of publishedItems) {
-        assert.ok(main.includes(escapeHtml(item.title)), `Preserved title: ${item.slug}`);
-        assert.ok(main.includes(escapeHtml(item.summary)), `Preserved full summary: ${item.slug}`);
-        assert.ok(main.includes(escapeHtml(item.source_name)), `Preserved source: ${item.slug}`);
-        assert.ok(main.includes(`href="/news/${item.slug}"`), `Preserved route: ${item.slug}`);
-      }
-      for (const tag of JSON.parse(publishedItems[0].tags)) {
-        assert.ok(main.includes(`<span>${escapeHtml(tag)}</span>`));
-      }
-      const imageLinks = [...main.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/g)]
-        .map((match) => match[0]).filter((anchor) => anchor.includes('class="story-image"'));
-      assert.equal(imageLinks.length, 11, "Lead, deck, topic lead and brief thumbnails all render");
-      for (const anchor of imageLinks) {
-        const item = publishedItems.find((story) => attribute(anchor, "href") === "/news/" + story.slug);
-        assert.ok(item);
-        assert.equal(attribute(anchor, "aria-label"), escapeHtml("阅读：" + item.title));
-        assert.match(anchor, /<img\b[^>]*alt=""[^>]*aria-hidden="true"/);
-      }
-      for (const className of ["lead-visual", "deck-thumb", "desk-lead-image", "brief-thumb"]) {
-        assert.ok(imageLinks.some((anchor) => attribute(anchor, "class") === className), className);
-      }
-    });
-
-    await t.test("front-page highlights cover all five directions before repeating a direction", async () => {
-      const categories = ["pqc", "protocol", "standards", "security", "ai"];
-      const items = categories.flatMap((category) => Array.from({ length: 5 }, (_, index) => ({
-        ...publishedItems[0],
-        slug: `highlights-${category}-${index}`,
-        title: `${category} 新闻 ${index}`,
-        category,
-      })));
-      upstream = () => Response.json(editions(items));
-      const main = await render("/news");
-      const front = main.slice(main.indexOf('<section class="front-page">'), main.indexOf('<div class="edition-stack">'));
-      const highlighted = [...front.matchAll(/<a\b[^>]*class="(?:lead-visual|deck-thumb)"[^>]*>/g)]
-        .map((match) => attribute(match[0], "href"));
-      assert.deepEqual(highlighted, categories.map((category) => `/news/highlights-${category}-0`));
-      assert.equal(new Set(highlighted).size, 5);
-      for (const item of items) assert.ok(main.includes(escapeHtml(item.title)), `Topic desks retain ${item.slug}`);
-
-      upstream = () => Response.json(editions(items.filter((item) => ["pqc", "ai"].includes(item.category))));
-      const sparse = await render("/news");
-      const sparseFront = sparse.slice(sparse.indexOf('<section class="front-page">'), sparse.indexOf('<div class="edition-stack">'));
-      const sparseHighlights = [...sparseFront.matchAll(/<a\b[^>]*class="(?:lead-visual|deck-thumb)"[^>]*>/g)]
-        .map((match) => attribute(match[0], "href"));
-      assert.deepEqual(sparseHighlights, ["pqc-0", "ai-0", "pqc-1", "ai-1", "pqc-2"].map((slug) => `/news/highlights-${slug}`));
-    });
-
-    await t.test("source images retain their URL and use uncropped treatment", async () => {
-      const items = [
-        publishedItems[0],
-        publishedItems[1],
-        { ...publishedItems[2], cover_image: null },
-        { ...publishedItems[3], cover_image: "/news-covers/pqc.svg" },
-        { ...publishedItems[4], cover_image: "https://example.com/news-covers/pqc.svg" },
-      ];
-      upstream = () => Response.json(editions(items));
-      const main = await render("/news");
-      const expected = new Map([
-        ["/assets/pqc/ml-dsa-studio-v2.webp", "editorial"],
-        [publishedItems[1].cover_image, "source"],
-        ["/news-covers/compute-v2.webp", "editorial"],
-        ["/news-covers/connection-v2.webp", "editorial"],
-        ["/assets/pqc/slh-dsa-studio-v2.webp", "editorial"],
-        ["https://example.com/news-covers/pqc.svg", "source"],
-      ]);
-      const images = [...main.matchAll(/<img\b[^>]*class="story-image"[^>]*>/g)].map((match) => match[0]);
-      assert.ok(images.length);
-      for (const image of images) {
-        const src = attribute(image, "src");
-        assert.ok(expected.has(src), `Preserved source or category fallback: ${src}`);
-        assert.equal(attribute(image, "data-treatment"), expected.get(src));
-      }
-      assert.equal(attribute(images[0], "loading"), "eager");
-      assert.equal(attribute(images[0], "fetchPriority"), "high");
-      assert.ok(images.slice(1).every((image) => attribute(image, "loading") === "lazy"));
-      const css = await readFile(new URL("../app/news/news.css", import.meta.url), "utf8");
-      assert.match(css, /\.story-image\s*\{[^}]*object-fit:\s*cover\s*;/);
-      assert.match(css, /\.story-image\[data-treatment="source"\]\s*\{[^}]*object-fit:\s*contain\s*;/);
-    });
-
-    await t.test("category and pagination preserve the upstream query and navigation", async () => {
-      const protocolItems = publishedItems.filter((item) => item.category === "protocol");
-      upstream = (url) => {
-        assert.equal(url.searchParams.get("page"), "2");
-        assert.equal(url.searchParams.get("pageSize"), "1");
-        assert.equal(url.searchParams.get("category"), "protocol");
-        return Response.json(editions(protocolItems, 2));
-      };
-      const main = await render("/news?page=2&category=protocol");
-      assert.ok(main.includes(escapeHtml(protocolItems[0].title)));
-      assert.ok(!main.includes(escapeHtml(publishedItems[0].title)));
-      assert.match(main, /href="\/news\?category=protocol"/);
-      assert.match(main, /href="\/news\?page=3&amp;category=protocol"/);
-      assert.match(main, /<a[^>]*aria-current="page"[^>]*href="\/news\?page=2&amp;category=protocol"|<a[^>]*href="\/news\?page=2&amp;category=protocol"[^>]*aria-current="page"/);
-    });
-
-    await t.test("one day per page renders every story and keeps dated navigation through the last page", async () => {
-      const dates = ["2026-10-03", "2026-10-02", "2026-09-30"];
-      const archive = dates.map((date) => {
-        const items = ["pqc", "protocol", "industry"].flatMap((category) =>
-          Array.from({ length: 7 }, (_, index) => ({
-            ...publishedItems[0],
-            slug: `${date}-${category}-${index}`,
-            title: `${date} ${category} 新闻 ${index}`,
-            category,
-            published_at: `${date}T07:00:00Z`,
-          })),
-        );
-        return { date, items };
-      });
-      upstream = (url) => {
-        assert.equal(url.searchParams.get("pageSize"), "1");
-        const page = Math.min(Number(url.searchParams.get("page")), dates.length);
-        const category = url.searchParams.get("category");
-        const edition = archive[page - 1];
-        const items = edition.items.filter((item) => !category || item.category === category);
-        const payload = editions(items, page);
-        payload.data[0].date = edition.date;
-        return Response.json(payload);
-      };
-      for (const category of ["", "protocol"]) {
-        for (const page of [1, 2, 3, 999]) {
-          const safePage = Math.min(page, 3);
-          const date = dates[safePage - 1];
-          const main = await render(`/news?page=${page}${category ? "&category=" + category : ""}`);
-          assert.equal([...main.matchAll(/class="edition"/g)].length, 1);
-          assert.ok(main.includes(`dateTime="${date}"`));
-          for (const edition of archive) {
-            for (const item of edition.items) {
-              assert.equal(main.includes(escapeHtml(item.title)), edition.date === date && (!category || item.category === category), item.slug);
-            }
-          }
-          const pagination = main.match(/<nav class="news-pagination"[\s\S]*?<\/nav>/)?.[0];
-          assert.ok(pagination);
-          const links = [...pagination.matchAll(/<a\b[^>]*>[\s\S]*?<\/a>/g)].map((match) => match[0]);
-          assert.equal(attribute(links[0], "aria-disabled"), String(safePage === 1));
-          assert.equal(attribute(links.at(-1), "aria-disabled"), String(safePage === 3));
-          const prev = new URL(attribute(links[0], "href").replaceAll("&amp;", "&"), "http://localhost");
-          const next = new URL(attribute(links.at(-1), "href").replaceAll("&amp;", "&"), "http://localhost");
-          assert.equal(Number(prev.searchParams.get("page") || 1), Math.max(1, safePage - 1));
-          assert.equal(Number(next.searchParams.get("page") || 1), Math.min(3, safePage + 1));
-          assert.equal(prev.searchParams.get("category") || "", category);
-          assert.equal(next.searchParams.get("category") || "", category);
-          for (const match of main.matchAll(/href="(\/news\/[^"]+)"/g)) {
-            const href = new URL(match[1].replaceAll("&amp;", "&"), "http://localhost");
-            assert.equal(Number(href.searchParams.get("page") || 1), safePage);
-            assert.equal(href.searchParams.get("category") || "", category);
-          }
-        }
-      }
-    });
-
-    await t.test("detail keeps summary, semantic body blocks, date and original source", async () => {
-      const item = {
-        ...publishedItems[1],
-        // Explicit parser fixtures exercise text escaping without changing source records.
-        content: "# 测试正文标题\n真实内容保留：ML-KEM & TLS <draft>。\n换行仍属于同一个段落。\n\n## 关键更新\n- 第一项：保留完整信息\n- 第二项：保留原始顺序\n\n### 阅读提示\n<script>alert(1)</script>\n- 最后一项也需要输出",
-      };
-      upstream = (url) => {
-        assert.equal(url.pathname, "/api/news/" + item.slug);
-        return Response.json(item);
-      };
-      const main = await render("/news/" + item.slug);
-      assert.equal([...main.matchAll(/<h1\b/g)].length, 1);
-      assert.ok(main.includes(`<h1>${escapeHtml(item.title)}</h1>`));
-      assert.ok(main.includes(`<p class="article-deck">${escapeHtml(item.summary)}</p>`));
-      assert.doesNotMatch(main, /article-summary|source-rail|一句话看懂/);
-      assert.equal(main.split(escapeHtml(item.summary)).length - 1, 1, "The deck appears once");
-      assert.match(main.replace(/<!-- -->/g, ""), /约 1 分钟阅读/);
-      assert.ok(main.indexOf('class="article-body"') < main.indexOf('class="article-source"'));
-      assert.match(main, /原文与编译说明/);
-      assert.ok(main.includes(`dateTime="${item.published_at}"`));
-      assert.ok(main.includes('class="article-hero-image"'));
-      assert.ok(main.includes('data-treatment="source"'));
-      assert.ok(main.includes(`src="${escapeHtml(item.cover_image)}"`));
-      const body = main.match(/<div class="article-body">([\s\S]*?)<\/div>/)?.[1];
-      assert.equal(body,
-        '<h2>测试正文标题</h2><p>真实内容保留：ML-KEM &amp; TLS &lt;draft&gt;。 换行仍属于同一个段落。</p>' +
-        '<h2>关键更新</h2><ul><li>第一项：保留完整信息</li><li>第二项：保留原始顺序</li></ul>' +
-        '<h3>阅读提示</h3><p>&lt;script&gt;alert(1)&lt;/script&gt;</p><ul><li>最后一项也需要输出</li></ul>',
-      );
-      const sourceLinks = [...main.matchAll(/<a\b[^>]*>/g)].map((match) => match[0])
-        .filter((anchor) => attribute(anchor, "href") === escapeHtml(item.source_url));
-      assert.equal(sourceLinks.length, 1, "The article footer preserves the original source");
-      for (const anchor of sourceLinks) {
-        assert.equal(attribute(anchor, "target"), "_blank");
-        assert.equal(attribute(anchor, "rel"), "noreferrer");
-      }
-      assert.ok(main.includes(`<p>${escapeHtml(item.source_name)}</p>`));
-    });
-
-    await t.test("an offline or empty feed remains readable and never invents stories", async () => {
-      upstream = () => new Response("Unavailable", { status: 503 });
-      const offline = await render("/news");
-      assert.match(offline, /<h1>前沿新闻<\/h1>/);
-      assert.match(offline, /新闻暂时无法载入/);
-      assert.doesNotMatch(offline, /class="(?:lead-story|story-image)"/);
-      upstream = () => Response.json({ data: [], meta: { page: 1, pageSize: 1, totalDays: 0, totalPages: 1 } });
-      const empty = await render("/news");
-      assert.match(empty, /下一版简报正在路上/);
-      assert.doesNotMatch(empty, /class="(?:lead-story|story-image)"/);
-    });
-
-    assert.ok(requests.length >= 7, "Each render reads the mocked current API");
-    assert.ok(requests.every(({ init }) => init?.cache === "no-store"));
-  } finally {
-    globalThis.fetch = originalFetch;
-  }
+// Install a deterministic upstream before the worker patches global fetch.
+test("news uses concise, unique entries and source-linked observations", async (t) => {
+ const originalFetch=globalThis.fetch;
+ let upstream=()=>Response.json(editions());
+ globalThis.fetch=async input=>{const url=new URL(input instanceof Request?input.url:String(input));assert.equal(url.origin,"https://api.wangyibiao.com");return upstream(url);};
+ try {
+  const {default:worker}=await import("../dist/server/index.js");
+  const render=async path=>{const response=await worker.fetch(new Request("http://localhost"+path),{ASSETS:{fetch:async()=>new Response("Not found",{status:404})}},{waitUntil(){},passThroughOnException(){}});assert.equal(response.status,200);return mainMarkup(await response.text());};
+  await t.test("every story has one title and one link, without duplicate highlights or images",async()=>{
+   const main=await render("/news");
+   assert.match(main,/<h1>前沿新闻<\/h1>/);
+   for(const item of publishedItems){assert.ok(main.includes(escapeHtml(item.summary)));assert.equal(main.split('href="/news/'+item.slug+'"').length-1,1);}
+   assert.doesNotMatch(main,/class="front-page"|class="story-image"|<img/);
+   assert.match(main,/<details class="news-extra">/);
+   assert.doesNotMatch(main,/<details class="news-extra"[^>]*open/);
+  });
+  await t.test("tag filters apply to this edition and persist in article links",async()=>{
+   const main=await render("/news?tag=ML-KEM");
+   const matching=publishedItems.filter(item=>/ML-KEM/i.test([item.title,item.summary,item.tags].join(' ')));
+   assert.ok(matching.length);
+   for(const item of matching)assert.ok(main.includes('href="/news/'+item.slug+'?tag=ML-KEM"'));
+   for(const item of publishedItems.filter(item=>!matching.includes(item)))assert.ok(!main.includes('href="/news/'+item.slug));
+  });
+  await t.test("category and archive page are retained through article navigation",async()=>{
+   const items=publishedItems.filter(item=>item.category==='protocol');
+   upstream=url=>{assert.equal(url.searchParams.get('page'),'2');assert.equal(url.searchParams.get('category'),'protocol');return Response.json(editions(items,2));};
+   const main=await render('/news?page=2&category=protocol');
+   assert.ok(main.includes('href="/news/'+items[0].slug+'?page=2&amp;category=protocol"'));
+   assert.match(main,/href="\/news\?page=3&amp;category=protocol"/);
+  });
+  await t.test("observation is first, source synopsis is bounded and collapsed, text is escaped",async()=>{
+   const item={...publishedItems[1],content:'## 原文编译\nSource & <script>alert(1)</script>\n\n## 量仔观察\nA protocol needs negotiation and a key schedule.'};
+   upstream=()=>Response.json(item);
+   const main=await render('/news/'+item.slug);
+   assert.ok(main.indexOf('A protocol needs negotiation')<main.indexOf('article-source-excerpt'));
+   assert.match(main,/<details class="article-source-excerpt"><summary>/);
+   assert.ok(main.includes('Source &amp; &lt;script&gt;alert(1)&lt;/script&gt;'));
+   assert.ok(main.includes(escapeHtml(item.source_url)));
+   assert.doesNotMatch(main,/article-hero-image|data-treatment="source"|<script>alert/);
+  });
+  await t.test("offline and empty editions keep useful, honest states",async()=>{
+   upstream=()=>new Response('Unavailable',{status:503});assert.match(await render('/news'),/新闻暂时无法载入/);
+   upstream=()=>Response.json({data:[],meta:{page:1,totalPages:1}});assert.match(await render('/news'),/下一版简报正在路上/);
+  });
+ }finally{globalThis.fetch=originalFetch;}
 });

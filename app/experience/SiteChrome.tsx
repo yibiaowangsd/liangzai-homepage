@@ -7,6 +7,7 @@ import { useExperience } from "./Motion";
 import { destinations } from "./destinations";
 import JumpNavigation from "./JumpNavigation";
 import ThemePicker from "../theme/ThemePicker";
+import { navGroups, languageHref, localizedHref } from "../site/navigation";
 
 function NavigationLink({
   href,
@@ -32,6 +33,7 @@ export function SiteHeader() {
   const path = usePathname(),
     [open, setOpen] = useState(false),
     [preview, setPreview] = useState(destinations[0]);
+  const en = path.startsWith("/en");
   const dialog = useRef<HTMLDialogElement>(null),
     close = useRef<HTMLButtonElement>(null);
   const { paused, toggle } = useExperience();
@@ -57,10 +59,10 @@ export function SiteHeader() {
   return (
     <>
       <a className="skip-link" href="#main-content">
-        跳到主要内容
+        {en ? "Skip to content" : "跳到主要内容"}
       </a>
       <header className="site-chrome" data-scene={path === "/" ? "home" : "page"}>
-        <Link className="brand" href="/" aria-label="量仔首页">
+        <Link className="brand" href="/" aria-label={en ? "Yibiao Home" : "Yibiao 首页"}>
           <span className="brand-mark" aria-hidden="true">
             <img
               src="/assets/liangzai-mark.svg"
@@ -70,25 +72,18 @@ export function SiteHeader() {
             />
           </span>
           <strong>
-            量仔<span>密码工程与实验</span>
+            Yibiao<span>{en ? "Cryptography Engineering" : "密码工程与实验"}</span>
           </strong>
         </Link>
-        <nav className="desktop-nav" aria-label="主导航">
-          {destinations
-            .filter((item) =>
-              ["/", "/pqc-practice", "/news", "/about"].includes(item.href),
-            )
-            .map((item) => (
-              <NavigationLink
-                key={item.href}
-                href={item.href}
-                aria-current={path === item.href ? "page" : undefined}
-              >
-                {item.href === "/" ? "首页" : item.name}
-              </NavigationLink>
-            ))}
+        <nav className="desktop-nav" aria-label={en ? "Main navigation" : "主导航"}>
+          {navGroups.map(group => <details name="primary-navigation" className="nav-group" key={group.name}>
+            <summary>{en ? group.en : group.name}</summary>
+            <div className="nav-group-menu">{group.links.map(item => <NavigationLink key={item.href} href={localizedHref(item.href, en)} aria-current={path === localizedHref(item.href, en) ? "page" : undefined}>{en ? item.en : item.name}</NavigationLink>)}</div>
+          </details>)}
         </nav>
         <div className="chrome-actions">
+          <ThemePicker en={en} />
+          <a className="language-link" href={languageHref(path)} lang={en ? "zh-CN" : "en"}>{en ? "中文" : "EN"}</a>
           <JumpNavigation blocked={open} onOpen={() => setOpen(false)} />
           <button
             className="menu-toggle"
@@ -97,9 +92,9 @@ export function SiteHeader() {
             aria-expanded={open}
             aria-controls="site-atlas"
             onClick={() => setOpen(true)}
-            aria-label="打开设置与目录"
+            aria-label={en ? "Open settings and directory" : "打开设置与目录"}
           >
-            <span>设置</span>
+            <span>{en ? "Settings" : "设置"}</span>
             <i aria-hidden="true">＋</i>
           </button>
         </div>
@@ -109,7 +104,7 @@ export function SiteHeader() {
           ref={dialog}
           className="site-atlas"
           id="site-atlas"
-          aria-label="设置与目录"
+          aria-label={en ? "Settings and directory" : "设置与目录"}
           onKeyDown={(event) => {
             if (event.key !== "Tab") return;
             const items = Array.from(
@@ -133,28 +128,28 @@ export function SiteHeader() {
           }}
         >
           <div className="atlas-top">
-            <span>量仔 / 密码工程与实验</span>
+            <span>Yibiao / {en ? "Cryptography Engineering" : "密码工程与实验"}</span>
             <button
               ref={close}
               type="button"
               onClick={() => setOpen(false)}
-              aria-label="关闭全站目录"
+              aria-label={en ? "Close directory" : "关闭全站目录"}
             >
-              关闭 <span aria-hidden="true">×</span>
+              {en ? "Close" : "关闭"} <span aria-hidden="true">×</span>
             </button>
           </div>
-          <div className="site-preferences" aria-label="显示设置">
-            <ThemePicker />
+          <div className="site-preferences" aria-label={en ? "Display settings" : "显示设置"}>
+            <ThemePicker en={en} />
             <button className="settings-motion" type="button" onClick={toggle} aria-pressed={paused}>
-              {paused ? "开启动效" : "暂停动效"}
+              {en ? (paused ? "Enable motion" : "Pause motion") : (paused ? "开启动效" : "暂停动效")}
             </button>
           </div>
           <div className="atlas-body">
             <div className="atlas-preview">
               <h2 id="atlas-title">
-                去你想去
+                {en ? "Choose your" : "去你想去"}
                 <br />
-                的地方
+                {en ? "destination" : "的地方"}
               </h2>
               <div className="atlas-preview-image">
                 <img
@@ -164,28 +159,28 @@ export function SiteHeader() {
                   height="600"
                 />
               </div>
-              <p>{preview.description}</p>
+              <p>{en ? preview.descriptionEn : preview.description}</p>
             </div>
-            <nav className="atlas-links" aria-label="全站导航">
+            <nav className="atlas-links" aria-label={en ? "Site directory" : "全站导航"}>
               {destinations.map((item, i) => (
                 <NavigationLink
                   key={item.href}
-                  href={item.href}
+                  href={localizedHref(item.href, en)}
                   onPointerEnter={() => setPreview(item)}
                   onFocus={() => setPreview(item)}
                   onClick={() => setOpen(false)}
                   aria-current={path === item.href ? "page" : undefined}
                 >
                   <small>0{i + 1}</small>
-                  <span>{item.name}</span>
+                  <span>{en ? item.en : item.name}</span>
 
                 </NavigationLink>
               ))}
             </nav>
           </div>
           <div className="atlas-bottom">
-            <span>保持认真。保持好奇。</span>
-            <span>Esc 关闭 / Ctrl + K 搜索</span>
+            <span>{en ? "Stay thoughtful. Stay curious." : "保持认真。保持好奇。"}</span>
+            <span>{en ? "Esc to close / Ctrl + K to search" : "Esc 关闭 / Ctrl + K 搜索"}</span>
           </div>
         </dialog>
       )}
@@ -193,22 +188,10 @@ export function SiteHeader() {
   );
 }
 export function SiteFooter() {
-  return (
-    <footer className="studio-footer">
-      <div className="studio-footer-top">
-        <p>Yibiao · 后量子密码工程</p>
-        <a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer" className="studio-footer-cta">GitHub</a>
-      </div>
-      <nav className="footer-groups" aria-label="页脚导航">
-        <div><span>作品</span><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">本站源码</a><Link href="/models">角色模型</Link></div>
-        <div><span>阅读</span><Link href="/pqc-arsenal">算法原理</Link><Link href="/archive">量仔小传</Link></div>
-        <div><span>关于</span><Link href="/about#journey">个人经历</Link><Link href="/about#contact">联系与交流</Link></div>
-      </nav>
-      <div className="studio-footer-bottom">
-        <span>© 2026 量仔 · Yibiao</span>
-        <span>算法 · 协议 · 工程实践</span>
-        <a href="#main-content">回到顶部 ↑</a>
-      </div>
-    </footer>
-  );
+  const en = usePathname().startsWith("/en");
+  return <footer className="studio-footer">
+    <div className="studio-footer-top"><p>Yibiao · {en ? "Cryptography Engineering" : "密码工程与实验"}</p><a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">GitHub</a></div>
+    <nav className="footer-groups" aria-label={en ? "Footer navigation" : "页脚导航"}>{navGroups.map(group => <div key={group.name}><span>{en ? group.en : group.name}</span>{group.links.map(link => <NavigationLink key={link.href} href={localizedHref(link.href, en)}>{en ? link.en : link.name}</NavigationLink>)}</div>)}</nav>
+    <div className="studio-footer-bottom"><span>© 2026 Yibiao</span><span>{en ? "Mascot: Liangzai" : "吉祥物：量仔"}</span><a href="#main-content">{en ? "Back to top" : "回到顶部"}</a></div>
+  </footer>;
 }

@@ -19,8 +19,8 @@ test('Space skips the intro without hijacking editing or modified shortcuts', ()
 test('intro keeps click/touch, Escape, focus restoration, replay and dialog-scoped Space', async () => {
   const source = await read('app/studio/CinemaEntrance.tsx');
   assert.match(source, /e\.currentTarget\.open && shouldSkipCinema\(e\)/);
-  assert.match(source, /onCancel=.*?finish\(\)/);
-  assert.match(source, /className="cinema-skip" onClick=\{finish\} type="button"/);
+  assert.match(source, /onCancel=.*?skip\(\)/);
+  assert.match(source, /className="cinema-skip" onClick=\{skip\} type="button"/);
   assert.match(source, /aria-keyshortcuts="Space Escape"/);
   assert.match(source, /<kbd>Space<\/kbd><span>跳过<\/span>/);
   assert.match(source, /previous\.current\?\.focus/);

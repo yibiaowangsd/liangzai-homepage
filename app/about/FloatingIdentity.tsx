@@ -97,7 +97,7 @@ export default function FloatingIdentity() {
                 <p>抗量子密码与安全协议</p>
               </div>
               <dl className={styles.details}>
-                <div><dt>工作</dt><dd>中电信量子集团<span>PQC 与 QKD 融合应用</span></dd></div>
+                <div><dt>工作</dt><dd>中电信量子集团<span>抗量子密码与安全协议</span></dd></div>
                 <div><dt>教育</dt><dd>山东大学<span>网络空间安全 本科与硕士</span></dd></div>
               </dl>
             </div>

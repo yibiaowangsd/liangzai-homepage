@@ -1,8 +1,9 @@
 import Link from "next/link";
+import { pageMetadata } from "../../site/metadata";
+import { articleSections } from "../presentation";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import StoryImage from "../StoryImage";
 import { newsListingHref, parseNewsContext, type NewsSearchParams } from "../navigation";
 import {
   categoryLabels,
@@ -68,7 +69,7 @@ function NewsBody({ content }: { content: string }) {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const item = await getNewsDetail((await params).slug);
-  return item ? { title: `${item.title} · 量仔`, description: item.summary || undefined } : { title: "新闻未找到 · 量仔" };
+  return item ? pageMetadata(item.title, item.summary || item.title, "/news/" + encodeURIComponent(item.slug), "news") : { title: "新闻未找到 · Yibiao" };
 }
 
 export default async function NewsDetailPage({
@@ -84,7 +85,8 @@ export default async function NewsDetailPage({
   if (!item || !item.content) notFound();
 
   const tags = parseTags(item.tags);
-  const readingMinutes = Math.max(1, Math.ceil(item.content.replace(/\s/g, "").length / 350));
+  const { intro, excerpt } = articleSections(item.content, item.summary || "");
+  const readingMinutes = Math.max(1, Math.ceil((intro.length + excerpt.length) / 350));
 
   return (
     <main id="main-content" className="article-page">
@@ -101,23 +103,17 @@ export default async function NewsDetailPage({
             <span>约 {readingMinutes} 分钟阅读</span>
             {tags.map((tag) => <i key={tag}>{tag}</i>)}
           </div>
-          <div className="article-reading-start">
-            <figure className="article-hero-image">
-              <StoryImage item={item} eager />
-              <figcaption>{item.source_name || "原始来源"}</figcaption>
-            </figure>
-            <div className="article-takeaway">
-              <span className="article-takeaway-label">本篇要点</span>
-              {item.summary && <p className="article-deck">{item.summary}</p>}
-              <p className="article-date-note">原始发布日期见正文；上方日期为本站日报日期。原文编译与「量仔观察」分别呈现。</p>
-            </div>
-          </div>
+          <section className="article-observation" aria-label="量仔观察"><span className="article-takeaway-label">量仔观察</span><NewsBody content={intro} /></section>
+          {item.summary && item.summary !== intro && <p className="article-deck">{item.summary}</p>}
+          {item.source_url && <a className="editorial-link" href={item.source_url} target="_blank" rel="noreferrer">阅读原文 · {item.source_name}</a>}
         </header>
 
         <div className="article-layout">
-          <NewsBody content={item.content} />
+          <div>
+            <details className="article-source-excerpt"><summary>原文要点（展开）</summary><NewsBody content={excerpt} /></details>
+          </div>
           <footer className="article-source">
-            <h2>原文与编译说明</h2>
+            <h2>原始来源</h2>
             <p>{item.source_name || "原始来源"}</p>
             {item.source_url && (
               <a href={item.source_url} target="_blank" rel="noreferrer">
@@ -125,7 +121,7 @@ export default async function NewsDetailPage({
               </a>
             )}
             <p>
-              正文为原始资料的中文编译，长原文保留主要事实与论证；“量仔观察”是本站的独立总结与分析。原始发布日期见正文，页首日期为本站日报日期。
+              本站仅提供原始资料的简要要点与独立工程观察；完整论证请阅读原始链接。页首日期为本站日报日期。
             </p>
           </footer>
         </div>

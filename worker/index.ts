@@ -1,6 +1,7 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { laboratoryTarget } from "../app/site/lab-route";
 
 interface Env {
   ASSETS: { fetch(request: Request): Promise<Response> };
@@ -27,6 +28,9 @@ interface ExecutionContext {
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     const url = new URL(request.url);
+    if (["/pqc-practice", "/pqc-practice/", "/en/lab", "/en/lab/"].includes(url.pathname)) {
+      return Response.redirect(new URL(laboratoryTarget(Object.fromEntries(url.searchParams), url.pathname.startsWith("/en/")), url).href, 307);
+    }
 
     if (url.pathname === "/_vinext/image") {
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];

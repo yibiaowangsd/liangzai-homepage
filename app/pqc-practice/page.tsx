@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
+import { laboratoryTarget } from "../site/lab-route";
+export const dynamic = "force-dynamic";
 
-export default function PqcPracticePage() {
-  redirect("/pqc-practice/index.html");
+export default async function PqcPracticePage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  redirect(laboratoryTarget(await searchParams));
 }

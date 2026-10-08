@@ -49,7 +49,7 @@ test("all news entry points round-trip their category and archive page", async (
         const listing = await render("/news" + query);
         const links = [...listing.matchAll(/<a\b[^>]*href="(\/news\/[^\"]+)"[^>]*>/g)]
           .map((match) => decodeHref(match[1]));
-        assert.ok(links.length >= 20, "Hero, deck, topic, and brief links are all covered");
+        assert.equal(links.length, stories.length, "Each story has one entry point");
         for (const href of links) assert.equal(new URL(href, "http://localhost").search, query);
         const detail = await render(links[0]);
         const back = detail.match(/<a\b(?=[^>]*class="article-back")[^>]*href="([^"]+)"/);

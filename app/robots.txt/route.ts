@@ -1,0 +1,1 @@
+export function GET(){return new Response("User-agent: *\nAllow: /\nDisallow: /pqc-practice/modules/\nDisallow: /pqc-practice/wasm/\nSitemap: https://wangyibiao.com/sitemap.xml\n",{headers:{"content-type":"text/plain; charset=utf-8","cache-control":"public, max-age=3600"}});}

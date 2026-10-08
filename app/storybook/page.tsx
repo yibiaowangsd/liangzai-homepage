@@ -1,10 +1,7 @@
-import type { Metadata } from "next";
+import { pageMetadata } from "../site/metadata";
 import StoryBook from "./StoryBook";
 
-export const metadata: Metadata = {
-  title: "星际漫游 量子星守护者",
-  description: "翻开童话绘本，和量仔、奶龙一起迎战 Shor 大魔王。",
-};
+export const metadata = pageMetadata("星际漫游", "量仔与奶龙的插画故事，含逐页旁白与文字稿。", "/storybook", "storybook");
 
 export default function StorybookPage() {
   return <StoryBook />;

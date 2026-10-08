@@ -4,18 +4,21 @@ import "../public/assets/site-typography.css";
 import "./experience/cinematic.css";
 import "../public/assets/site-navigation.css";
 import "./studio/system.css";
+import "../public/theme/site-shell.css";
 import "../public/theme/site-theme.css";
 import "./studio/scenes.css";
 import { ExperienceProvider } from "./experience/Motion";
 import AboutPushTransition from "./experience/AboutPushTransition";
+import DocumentLanguage from "./site/DocumentLanguage";
 import PageArrival from "./experience/PageArrival";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
 
 export const metadata: Metadata = {
-  title: "量仔 · 密码工程与实验",
+  title: "Yibiao · 密码工程与实验",
   description:
-    "Yibiao 的密码工程与实验。探索密码工程、每日新闻、模型鉴赏与真实算法实验。",
-  other: { "codex-preview": "development" },
+    "Yibiao 的密码工程与实验。探索密码工程、前沿新闻与真实算法实验。",
+  metadataBase: new URL("https://wangyibiao.com"),
+  alternates: { types: { "application/rss+xml": "https://wangyibiao.com/rss.xml" } },
   icons: {
     icon: "/assets/liangzai-mark.svg",
     shortcut: "/assets/liangzai-mark.svg",
@@ -35,6 +38,7 @@ export default function RootLayout({
       </head>
       <body className="studio-theme">
         <ExperienceProvider>
+          <DocumentLanguage />
           <PageArrival />
           <AboutPushTransition />
           <SiteHeader />
