@@ -35,6 +35,12 @@ try {
   await page.waitForFunction(()=>!document.querySelector('#run-example').disabled);
   await page.locator('[data-select-family="slhdsa"]').click();
   await page.waitForFunction(()=>document.querySelector('#family').value==='slhdsa'&&!document.querySelector('#run-example').disabled);
+  await page.locator('[data-flow-mode="free"]').click();
+  await page.locator('#verify-message').fill('只填写收到的消息');
+  page.once('dialog',dialog=>dialog.dismiss());await page.locator('[data-lab-tab="kem"]').click();
+  assert.equal(await page.locator('#family').inputValue(),'slhdsa','message-only edits also require confirmation');
+  assert.equal(await page.locator('#verify-message').inputValue(),'只填写收到的消息');
+  await page.locator('#verify-message').fill('');await page.locator('[data-flow-mode="guided"]').click();
   await page.locator('[data-lab-tab="kem"]').click();
   await page.waitForFunction(()=>!document.querySelector('#run-example').disabled);
   await page.setViewportSize({width:1440,height:900});

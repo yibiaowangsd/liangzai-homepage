@@ -19,7 +19,7 @@ export function setupUsability(api) {
   $('runnable-only').onchange=api.renderSidebar;
   function discardUndo() { if (undo?.aliceSecret) undo.aliceSecret.fill(0); undo=null; $('undo-clear').hidden=true; }
   function confirmChange() {
-    const populated=[...document.querySelectorAll('[data-field]')].some(input=>input.value.trim()) || ($('sign-message').value && $('sign-message').value !== '这是一条测试消息。');
+    const populated=[...document.querySelectorAll('[data-field]')].some(input=>input.value.trim()) || [...document.querySelectorAll('.message-input')].some(input=>input.value!==input.defaultValue);
     return !populated || window.confirm('切换算法或参数将清空当前输入与结果。是否继续？');
   }
   document.addEventListener('click', event=>{

@@ -19,7 +19,7 @@ export function setupUsability(api) {
   $('runnable-only').onchange=api.renderSidebar;
   function discardUndo() { if (undo?.aliceSecret) undo.aliceSecret.fill(0); undo=null; $('undo-clear').hidden=true; }
   function confirmChange() {
-    const populated=[...document.querySelectorAll('[data-field]')].some(input=>input.value.trim()) || ($('sign-message').value && $('sign-message').value !== 'This is a test message.');
+    const populated=[...document.querySelectorAll('[data-field]')].some(input=>input.value.trim()) || [...document.querySelectorAll('.message-input')].some(input=>input.value!==input.defaultValue);
     return !populated || window.confirm('Changing algorithms or parameters clears current inputs and results. Continue?');
   }
   document.addEventListener('click', event=>{
