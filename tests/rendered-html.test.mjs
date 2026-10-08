@@ -31,7 +31,7 @@ test("renders the homepage with the integrated practice destination", async () =
   const html = await response.text();
   assert.doesNotMatch(html, developmentPreviewMeta);
   assert.match(html, /量仔宇宙/);
-  assert.match(html, /工程项目/);
+  assert.match(html, /工程实践/);
   for (const route of [
     "/universe",
     "/about",
@@ -44,8 +44,8 @@ test("renders the homepage with the integrated practice destination", async () =
   assert.match(html, /进入密码实验室/);
   assert.match(html, /打开设置与目录/);
   assert.match(html, /把后量子密码/);
-  assert.match(html, /播放序幕/);
-  assert.match(html, /cinema-entrance/);
+  assert.match(html, /运行 ML-KEM 实验/);
+  assert.doesNotMatch(html, /cinema-entrance|vault-entrance-v2/);
   assert.match(html, /href="\/universe"/);
   assert.doesNotMatch(html, /href="\/observatory"/);
   assert.match(html, /今日信号/);

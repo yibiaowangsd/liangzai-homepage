@@ -1,6 +1,6 @@
 # Yibiao · 密码工程与实验
 
-Yibiao 的个人密码工程与实验网站，围绕后量子密码、TLS / TLCP、SSH 与 IKE 展示技术方向，并提供浏览器算法实验、前沿新闻和量仔／奶龙的角色故事。
+Yibiao 的个人密码工程与实验网站，围绕后量子密码、TLS / TLCP、SSH 与 IKE 展示技术方向，并提供浏览器算法实验、技术笔记与前沿简报。量仔作为站点吉祥物，故事和模型收在「工程之外」。
 
 技术栈：Next.js App Router、React 19、TypeScript、Vinext/Vite、Cloudflare Worker、Three.js 与 GSAP。
 
@@ -19,7 +19,7 @@ npm run dev
 
 | 路由 | 内容 |
 | --- | --- |
-| `/` | 密码工程方向、实验室入口、新闻简报与角色故事入口；序幕由访客点击播放 |
+| `/` | 真实 ML-KEM 迷你实验、工程实践、协议层图、技术笔记与服务端简报 |
 | `/models` | 量仔／奶龙 3D 模型，支持旋转、缩放、视角切换及图片回退 |
 | `/storybook` | 11 页插画故事、章节目录与逐页旁白 |
 | `/archive` | 量仔的角色档案 |
@@ -27,6 +27,7 @@ npm run dev
 | `/pqc-practice` | 转到独立 HTML 实验室，执行 WASM 密钥封装、签名、密钥交换与哈希 |
 | `/pqc-practice/audit.html` | 国内征集候选的逐参数接入记录、来源与 CSV 导出 |
 | `/news`、`/news/[slug]` | 按日报和分类浏览技术新闻及正文 |
+| `/notes`、`/notes/[slug]` | 算法材料、签名参数和接入记录笔记，均附英文摘要 |
 | `/about` | 作者公开经历、工程项目与公开版简历 |
 | `/pqc/[algorithm]` | 每种算法的独立参考页 |
 | `/en/about`、`/en/pqc`、`/en/lab` | 英文简介、图鉴与实验室 |

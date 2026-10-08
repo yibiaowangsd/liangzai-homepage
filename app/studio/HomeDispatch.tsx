@@ -1,26 +1,27 @@
 import fallbackSignals from "../site/home-signals.json";
 import Link from "next/link";
 import { newsStoryHref } from "../news/navigation";
-import StoryImage from "../news/StoryImage";
-import { categoryLabels, formatEditionDate, getFeaturedNews } from "../news/news-api";
+import { categoryLabels, formatEditionDate, formatNewsDate, getFeaturedNews } from "../news/news-api";
+import { selectHomeSignals, signalSummary } from "../site/home-signals";
 
 export default async function HomeDispatch() {
-  let edition: Awaited<ReturnType<typeof getFeaturedNews>> | null = null;
+  let edition: Awaited<ReturnType<typeof getFeaturedNews>> = fallbackSignals;
+  let snapshot = false;
   try {
     edition = await getFeaturedNews(5, AbortSignal.timeout(800));
+    if (!edition || !selectHomeSignals(edition.data).length) throw new Error("Empty briefing");
   } catch {
     edition = fallbackSignals; // The dated build snapshot keeps first content useful during an upstream outage.
+    snapshot = true;
   }
-  const items = ["pqc", "protocol", "standards"].flatMap(category => edition?.data.find(item => item.category === category) || []).slice(0, 3);
-  if (!items.length) return <div className="portal-dispatch-empty"><p>暂时无法读取最新简报，请稍后重试。</p><Link href="/news">前往新闻页</Link></div>;
+  const items = selectHomeSignals(edition.data);
   return <div className="portal-dispatch">
-    <div className="portal-dispatch-date"><span>最新一期</span><time dateTime={edition?.edition_date || undefined}>{edition?.edition_date ? formatEditionDate(edition.edition_date) : "前沿技术简报"}</time></div>
+    <div className="portal-dispatch-date"><span>{snapshot ? "最新接口暂不可用 · 显示构建快照" : "简报更新于"}</span><time dateTime={edition.edition_date || undefined}>{edition.edition_date ? formatEditionDate(edition.edition_date) : "日期待确认"}</time><p>AI 辅助选编，按主题汇集一手来源。下方为本站收录时间，原文日期见详情。</p></div>
     <div className="portal-signal-grid">{items.map(item => <article key={item.slug} className="portal-signal-card">
-      <Link href={newsStoryHref(item.slug, "/news")}>
-        <div className="portal-dispatch-image"><StoryImage item={item} /></div>
-        <p className="portal-signal-meta">{categoryLabels[item.category] || item.category} · {item.source_name || "原始来源"}</p>
-        <h3>{item.title}</h3><p className="portal-signal-summary">{item.summary}</p>
-      </Link>
+      <span className="portal-signal-category">{categoryLabels[item.category] || item.category}</span>
+      <h3><Link href={newsStoryHref(item.slug, "/news")}>{item.title}</Link></h3>
+      <p className="portal-signal-summary">{signalSummary(item.summary)}</p>
+      <p className="portal-signal-meta"><span>{item.source_url && /^https?:\/\//.test(item.source_url) ? <a href={item.source_url} target="_blank" rel="noreferrer">{item.source_name || "原始来源"} ↗</a> : item.source_name || "原始来源"}</span><time dateTime={item.published_at}>收录 {formatNewsDate(item.published_at)}</time></p>
     </article>)}</div>
   </div>;
 }

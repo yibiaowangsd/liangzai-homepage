@@ -25,7 +25,7 @@ test('intro keeps click/touch, Escape, focus restoration, replay and dialog-scop
   assert.match(source, /<kbd>Space<\/kbd><span>跳过<\/span>/);
   assert.match(source, /previous\.current\?\.focus/);
   assert.doesNotMatch(source, /window\.addEventListener\("keydown"/);
-  const css = await read('app/studio/home.css');
+  const css = await read('app/studio/cinema.css');
   const skip = css.match(/\.cinema-skip \{([^}]+)\}/)[1];
   assert.match(skip, /min-height: 44px/);
   assert.match(skip, /background: transparent/);
@@ -43,7 +43,7 @@ test('literal page headings omit sentence-ending full stops but preserve body pr
   }
   const home = await read('app/QuantumHome.tsx');
   assert.match(home, /让算法走向可用的连接。/);
-  assert.match(home, /验证一次密钥封装/);
+  assert.match(await read("app/studio/HandshakeDemo.tsx"), /验证一次密钥封装/);
 });
 
 test('all laboratory transports have contained opaque surfaces and no escaping wires', async () => {

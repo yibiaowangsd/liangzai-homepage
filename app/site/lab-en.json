@@ -482,5 +482,17 @@
   "加载": "Loading",
   "载入": "Loading",
   "、": ", ",
-  "签名验证结果": "Signature verification result"
+  "签名验证结果": "Signature verification result",
+  "技术笔记": "Engineering Notes",
+  "工程实践": "Selected Work",
+  "算法原理": "Algorithm Guide",
+  "技术简报": "Technical Briefing",
+  "密钥封装材料": "KEM Materials",
+  "签名参数验证": "Signature Parameters",
+  "关于 Yibiao": "About Yibiao",
+  "工程之外": "After Hours",
+  "本站源码": "Site source",
+  ">实验<": ">Experiments<",
+  ">简报<": ">Briefing<",
+  ">笔记<": ">Notes<"
 }

@@ -8,5 +8,6 @@
   --type-body: 1rem;
   --type-section: clamp(1.5rem, 1.25rem + .6vw, 2rem);
   --type-page: clamp(1.875rem, 1.5rem + 1vw, 2.25rem);
+  --font-editorial: "Noto Serif SC", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "STSong", "SimSun", Georgia, serif;
   --font-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
 }

@@ -62,7 +62,7 @@ const viewports = [
   { width: 2560, height: 1440 },
   { width: 3440, height: 1440 }, { width: 3840, height: 2160 },
 ];
-const routes = ['/', '/pqc-practice/index.html', '/pqc-practice/audit.html', '/news', `/news/${items[0].slug}`, '/about', '/models', '/storybook', '/archive', '/pqc-arsenal'];
+const routes = ['/', '/pqc-practice/index.html', '/pqc-practice/audit.html', '/news', `/news/${items[0].slug}`, '/about', '/models', '/storybook', '/archive', '/pqc-arsenal', '/notes', '/notes/ml-kem-materials'];
 const contentSelectors = {
   '/': '.portal-tools, .portal-news',
   '/pqc-practice/index.html': '.practice-layout',
@@ -79,7 +79,11 @@ await mkdir(output, { recursive: true });
 const failures = [];
 let checked = 0;
 try {
-  for (const [name, engine] of Object.entries({ chromium, firefox, webkit })) {
+  const engines = { chromium, firefox, webkit };
+  const requested = process.env.LAYOUT_BROWSERS?.split(',') || Object.keys(engines);
+  for (const name of requested) {
+    assert.ok(engines[name], 'Unknown browser: ' + name);
+    const engine = engines[name];
     const browser = await engine.launch();
     try {
       const context = await browser.newContext({ reducedMotion: 'reduce' });
@@ -88,7 +92,7 @@ try {
         await route.fulfill({ status: response.status, contentType: 'application/json', body: await response.text() });
       });
       const page = await context.newPage();
-      for (const path of routes) {
+      for (const path of process.env.LAYOUT_INTERACTIONS_ONLY === '1' ? [] : routes) {
         await page.setViewportSize({ width: 1440, height: 900 });
         const response = await page.goto(base + path, { waitUntil: 'networkidle' });
         assert.equal(response.status(), 200, `${name} ${path} loads`);
@@ -135,7 +139,7 @@ try {
               assert.ok(layout.content[0].width <= 928, 'article line length grows without a reading limit');
               assert.ok(layout.content[0].width >= Math.min(240, layout.width - 40), 'article reading column is too narrow');
             }
-            if (viewport.width >= 1280 && !path.startsWith('/news/') && path !== '/pqc-arsenal') {
+            if (viewport.width >= 1280 && !path.startsWith('/news/') && path !== '/pqc-arsenal' && !path.startsWith('/notes')) {
               assert.ok(layout.content.length > 0, 'page content is missing');
               for (const block of layout.content) {
                 const maxInset = layout.width * .055;
@@ -193,6 +197,8 @@ try {
         await page.keyboard.press('Escape');
         await menu.waitFor({ state: 'hidden' });
       }
+      assert.deepEqual(failures, [], failures.join('\n'));
+      await page.setViewportSize({ width: 320, height: 568 });
       // Native selectors and the React selector use the same two palettes.
       await page.goto(base, { waitUntil: 'networkidle' });
       await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
@@ -212,15 +218,21 @@ try {
         assert.equal(await page.locator('dialog[open]').count(), 0, `${name} ${href}: directory stays open after navigation`);
         assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', `${name} ${href}: scroll lock survives navigation`);
       }
-      await page.getByRole('button', { name: '播放序幕', exact: true }).click();
-      assert.equal(await page.locator('.cinema-entrance[open]').count(), 0, 'reduced-motion visitors skip the sequence');
-      await page.emulateMedia({ reducedMotion: 'no-preference' });
-      await page.getByRole('button', { name: '播放序幕', exact: true }).click();
-      await page.locator('.cinema-entrance[open]').waitFor();
-      await page.keyboard.press('Space');
-      await page.locator('.cinema-entrance[open]').waitFor({ state: 'hidden' });
-      assert.equal(await page.evaluate(() => document.activeElement?.textContent), '重播序幕', 'replay restores keyboard focus');
-      assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', 'intro leaves the page locked');
+      assert.equal(await page.locator('.cinema-entrance').count(), 0, 'homepage has no blocking intro');
+      await page.getByRole('button', { name: '运行 ML-KEM 实验' }).click();
+      await page.getByRole('status').filter({ hasText: '验证通过' }).waitFor();
+      assert.equal(await page.locator('.handshake-steps [data-complete="true"]').count(), 3);
+      const firstKey = await page.locator('.handshake-preview code').textContent();
+      await page.getByRole('button', { name: '再运行一次' }).click();
+      await page.getByRole('status').filter({ hasText: '验证通过' }).waitFor();
+      assert.notEqual(await page.locator('.handshake-preview code').textContent(), firstKey, 'repeated runs generate fresh random keys');
+      await page.route('**/pqc-practice/worker.js', route => route.abort());
+      await page.getByRole('button', { name: '再运行一次' }).click();
+      await page.getByRole('button', { name: '重试实验' }).waitFor();
+      await page.unroute('**/pqc-practice/worker.js');
+      await page.getByRole('button', { name: '重试实验' }).click();
+      await page.getByRole('status').filter({ hasText: '验证通过' }).waitFor();
+      await page.screenshot({ path: output + '/' + name + '-home-experiment-320.png', fullPage: true });
       await page.locator('.portal-actions a[href="#selected"]').click();
       await page.waitForFunction(() => location.hash === '#selected');
       assert.ok(await page.locator('#selected').isVisible());
@@ -236,6 +248,16 @@ try {
       await page.goto(base + '/observatory?form=wave', { waitUntil: 'networkidle' });
       assert.equal(new URL(page.url()).pathname, '/');
       await context.close();
+      const plainContext = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+      try {
+        const plainPage = await plainContext.newPage();
+        await plainPage.goto(base, { waitUntil: 'load' });
+        assert.equal(await plainPage.locator('.portal-project-card').count(), 3);
+        assert.ok(await plainPage.locator('.portal-signal-card').count() > 0);
+        await plainPage.locator('noscript .handshake-note').waitFor({ state: 'visible' });
+        await plainPage.goto(base + '/notes/ml-kem-materials', { waitUntil: 'load' });
+        assert.ok(await plainPage.locator('#abstract').isVisible());
+      } finally { await plainContext.close(); }
       // Run with motion enabled: reduced-motion-only checks miss capture interception.
       const animatedContext = await browser.newContext({ reducedMotion: 'no-preference' });
       try {
@@ -246,6 +268,14 @@ try {
         // A deterministic image actor exercises transitions even without a GPU.
         await animatedContext.route('**/*.glb', route => route.abort());
         const animatedPage = await animatedContext.newPage();
+        const homeRequests = [];
+        animatedPage.on('request', request => homeRequests.push(request.url()));
+        await animatedPage.goto(base, { waitUntil: 'networkidle' });
+        assert.ok(!homeRequests.some(url => url.includes('/wasm/') || url.includes('vault-entrance')), 'homepage loads no crypto module or retired hero image before interaction');
+        await animatedPage.getByRole('button', { name: '运行 ML-KEM 实验' }).click();
+        await animatedPage.getByRole('status').filter({ hasText: '验证通过' }).waitFor();
+        assert.ok(homeRequests.some(url => url.endsWith('.wasm')), 'experiment loads actual WASM on demand');
+
         for (const entry of ['settings', 'search', 'laboratory']) {
           await animatedPage.goto(base + (entry === 'laboratory' ? '/pqc-practice/index.html' : '/news'), { waitUntil: 'networkidle' });
           await animatedPage.waitForFunction(() => document.querySelector('.experience')?.dataset.motion === 'active' || !document.querySelector('.experience'));
@@ -270,7 +300,7 @@ try {
       } finally {
         await animatedContext.close();
       }
-      console.log(`${name}: responsive routes, fixed card, directory, themes, intro, chapter anchors, catalog, story and model controls checked`);
+      console.log(`${name}: requested layouts, directory, themes, real KEM runs and failure recovery, no-JS content, on-demand WASM, chapter anchors and page controls checked`);
     } finally {
       await browser.close();
     }
@@ -280,5 +310,5 @@ try {
   await new Promise(resolve => server.close(resolve));
   globalThis.fetch = nativeFetch;
 }
-console.log(`${checked} viewport/route/engine combinations passed`);
+console.log(checked ? `${checked} viewport/route/engine combinations passed` : 'Interaction-only checks passed; viewport grid was explicitly skipped.');
 assert.deepEqual(failures, [], failures.join('\n'));

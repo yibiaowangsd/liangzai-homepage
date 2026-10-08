@@ -47,7 +47,7 @@ bash scripts/sites-env.sh -- bash scripts/validate-artifact.sh
 | 新闻后端 | `news-worker/`；日报 JSON 与验证器位于 `news/` |
 | Worker 与构建 | `worker/index.ts`、`vite.config.ts`、`build/` |
 
-`app/layout.tsx` 装配导航、动效、转场和共享样式。`app/experience/destinations.ts` 维护 React 导航名称与搜索入口；独立实验室和接入记录使用自己的 HTML 导航，调整入口时同步核对。
+`app/layout.tsx` 装配导航、动效、转场和共享样式。`app/site/navigation.ts` 维护主导航与页脚，`app/experience/destinations.ts` 维护全站目录和搜索入口；独立实验室和接入记录的 HTML 导航由 `scripts/sync-site-shell.mjs` 同步。
 
 共享视觉由 `app/studio/system.css`、`public/assets/site-typography.css`、`public/assets/site-navigation.css` 和 `public/theme/` 管理，各页面 CSS 负责局部布局。主题和响应式规则见 [布局与主题](docs/layout-themes.md)，转场生命周期见 [动效说明](docs/gsap-motion.md)。
 
@@ -97,7 +97,7 @@ npm run build
 npm run test:layout
 ```
 
-该脚本用已提交的新闻日报作固定数据，覆盖十类页面和 320～3840px 视口，截图写入 `outputs/responsive/`。它不依赖新闻后端在线，也不替代真实设备的 WebGL、视觉及辅助技术检查。
+该脚本用已提交的新闻日报作固定数据，覆盖 12 个路由和 320～3840px 视口，截图写入 `outputs/responsive/`。可用 `LAYOUT_BROWSERS=webkit npm run test:layout` 定向复查浏览器；`LAYOUT_INTERACTIONS_ONLY=1 npm run test:layout` 跳过已验证的布局网格，仅复查交互、无脚本内容与 WASM 按需加载。它不依赖新闻后端在线，也不替代真实设备的 WebGL、视觉及辅助技术检查。
 
 人工检查重点：模型切换／缩放／图片回退、故事翻页与音轨、完整 ML-KEM 往返、新闻分类与返回、主题切换不重置实验室、目录和弹窗焦点、减少动态效果、资源 404 与 hydration 错误。
 

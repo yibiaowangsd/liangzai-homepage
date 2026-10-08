@@ -1,4 +1,5 @@
 "use client";
+import "./cinema.css";
 import { useCallback, useEffect, useRef, useSyncExternalStore } from "react";
 import { shouldSkipCinema } from "./cinema-shortcut.ts";
 const subscribeSkip = (notify: () => void) => { window.addEventListener("yibiao:cinema-skip", notify); window.addEventListener("storage", notify); return () => { window.removeEventListener("yibiao:cinema-skip", notify); window.removeEventListener("storage", notify); }; };

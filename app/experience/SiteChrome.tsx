@@ -7,7 +7,7 @@ import { useExperience } from "./Motion";
 import { destinations } from "./destinations";
 import JumpNavigation from "./JumpNavigation";
 import ThemePicker from "../theme/ThemePicker";
-import { navGroups, languageHref, localizedHref } from "../site/navigation";
+import { navGroups, footerLinks, languageHref, localizedHref } from "../site/navigation";
 
 function NavigationLink({
   href,
@@ -27,6 +27,7 @@ const previews: Record<string, string> = {
   "/pqc-arsenal": "/assets/pqc/ml-kem-studio-v2.webp",
   "/pqc-practice": "/assets/pqc/ml-dsa-studio-v2.webp",
   "/news": "/news-covers/security.svg",
+  "/notes": "/news-covers/standards.svg",
   "/about": "/assets/characters-v2/archive-after.webp",
 };
 export function SiteHeader() {
@@ -94,8 +95,7 @@ export function SiteHeader() {
             onClick={() => setOpen(true)}
             aria-label={en ? "Open settings and directory" : "打开设置与目录"}
           >
-            <span>{en ? "Settings" : "设置"}</span>
-            <i aria-hidden="true">＋</i>
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M4 7h16M4 17h16" /><circle cx="9" cy="7" r="2.5" fill="currentColor" /><circle cx="15" cy="17" r="2.5" fill="currentColor" /></svg>
           </button>
         </div>
       </header>
@@ -191,7 +191,7 @@ export function SiteFooter() {
   const en = usePathname().startsWith("/en");
   return <footer className="studio-footer">
     <div className="studio-footer-top"><p>Yibiao · {en ? "Cryptography Engineering" : "密码工程与实验"}</p><a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">GitHub</a></div>
-    <nav className="footer-groups" aria-label={en ? "Footer navigation" : "页脚导航"}>{navGroups.map(group => <div key={group.name}><span>{en ? group.en : group.name}</span>{group.links.map(link => <NavigationLink key={link.href} href={localizedHref(link.href, en)}>{en ? link.en : link.name}</NavigationLink>)}</div>)}</nav>
+    <nav className="footer-links" aria-label={en ? "Footer navigation" : "页脚导航"}>{footerLinks.map(link => <NavigationLink key={link.href} href={localizedHref(link.href, en)}>{en ? link.en : link.name}</NavigationLink>)}<a href="/rss.xml">RSS</a><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">{en ? "Site source" : "本站源码"}</a></nav>
     <div className="studio-footer-bottom"><span>© 2026 Yibiao</span><span>{en ? "Mascot: Liangzai" : "吉祥物：量仔"}</span><a href="#main-content">{en ? "Back to top" : "回到顶部"}</a></div>
   </footer>;
 }

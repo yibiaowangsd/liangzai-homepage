@@ -21,7 +21,8 @@ test('navigation keeps practical home entry points after retiring the observator
  assert.doesNotMatch(home, /portal-observatory|href="\/observatory"/);
  assert.doesNotMatch(await read('app/experience/destinations.ts'), /href: "\/observatory"/);
  for (const page of ['index', 'audit']) assert.doesNotMatch(await read(`public/pqc-practice/${page}.html`), /href="\/observatory"/);
- assert.match(home, /<CinemaEntrance/);
+ assert.match(home, /<HandshakeDemo/);
+ assert.doesNotMatch(home, /<CinemaEntrance/);
 });
 
 test('reader and model controls remain reachable in compact responsive layouts', async () => {

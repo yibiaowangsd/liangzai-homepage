@@ -49,6 +49,14 @@ export const destinations = [
     keywords: "wasm 实验 lab 密钥 签名 哈希 验证 sm2 测试",
   },
   {
+    href: "/notes",
+    name: "技术笔记",
+    en: "Engineering Notes",
+    descriptionEn: "Implementation notes with English abstracts.",
+    description: "算法材料、参数验证与实现记录，附英文摘要。",
+    keywords: "notes writing 笔记 写作 验证 记录",
+  },
+  {
     href: "/news",
     name: "前沿新闻",
     en: "Frontier News",
