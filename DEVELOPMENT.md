@@ -15,6 +15,7 @@
 | `npm test` | 先构建，再运行全部 `tests/*.test.mjs` |
 | `npm run typecheck` | TypeScript 检查 |
 | `npm run lint` | 检查手写源码，排除构建产物和生成的胶水代码 |
+| `npm run test:engineering-browser` | Chromium 检查新增工程路由与真实混合实验 |
 | `npm run test:layout` | 使用 Chromium、Firefox、WebKit 检查生产页面布局 |
 
 生产产物在忽略目录 `dist/`。`npm test` 已包含构建，无需在它之前重复运行 `npm run build`。全量测试包含真实 WASM 密码运算，耗时高于普通静态检查；不支持的参数明确跳过，不能算作通过。
@@ -38,6 +39,8 @@ bash scripts/sites-env.sh -- bash scripts/validate-artifact.sh
 | 功能 | 主要位置 |
 | --- | --- |
 | 首页 | `app/page.tsx`、`app/QuantumHome.tsx`、`app/studio/` |
+| 协议 / 作品 / 性能 / 看板 / 笔记 / 工具 | `app/engineering/` 共享模型与各 App Router 页面；详见协议工程说明 |
+| 混合 KEM | `app/lab/hybrid/`、`public/pqc-practice/hybrid-engine.mjs` 与 Worker |
 | 模型鉴赏 | `app/models/ModelGallery.tsx`、`gallery-scene.ts` |
 | 故事书 | `app/storybook/StoryBook.tsx`、`storyData.ts` |
 | 角色档案与作者简介 | `app/archive/`、`app/about/` |
@@ -96,6 +99,8 @@ npx playwright install --with-deps chromium firefox webkit
 npm run build
 npm run test:layout
 ```
+
+新增工程路由另运行 `npm run test:engineering-browser`；只需 Chromium，截图写入 `outputs/engineering/`。数据生成、算法 / 尺寸边界与 TLS / SSH 重测说明见 [协议工程维护](docs/protocol-engineering.md)。
 
 该脚本用已提交的新闻日报作固定数据，覆盖 12 个路由和 320～3840px 视口，截图写入 `outputs/responsive/`。可用 `LAYOUT_BROWSERS=webkit npm run test:layout` 定向复查浏览器；`LAYOUT_INTERACTIONS_ONLY=1 npm run test:layout` 跳过已验证的布局网格，仅复查交互、无脚本内容与 WASM 按需加载。它不依赖新闻后端在线，也不替代真实设备的 WebGL、视觉及辅助技术检查。
 

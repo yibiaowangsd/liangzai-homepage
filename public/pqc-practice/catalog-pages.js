@@ -119,6 +119,8 @@ function auditPage(candidates, build) {
     link.href = url; link.download = 'ngcc-2026-参数接入记录.csv'; link.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
+  const requested = new URLSearchParams(location.search).get('candidate');
+  if (candidates.some(candidate => candidate.id === requested)) $('audit-query').value = requested;
   update();
 }
 

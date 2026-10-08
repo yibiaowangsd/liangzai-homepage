@@ -25,10 +25,11 @@ export default async function QuantumHome() {
           <div className="portal-hero-foot"><span>可运行的实验，可追溯的记录。</span><span lang="en">Run locally. Inspect the evidence.</span></div>
         </section>
         <section className="portal-tools portal-chapter" id="selected" aria-labelledby="work-title">
-          <div className="portal-section-heading"><p className="portal-eyebrow">01 / SELECTED WORK</p><h2 id="work-title">工程实践</h2><p>三个可核查的切面：<br />算法材料、参数覆盖与接入记录。</p></div>
+          <div className="portal-section-heading"><p className="portal-eyebrow">01 / SELECTED WORK</p><h2 id="work-title">工程实践</h2><p>可复现的协议实测、可运行的实验，<br />以及逐参数追踪的接入记录。</p></div>
           <div className="portal-projects">{engineeringProjects.map((project, index) => <article key={project.title} className="portal-project-card">
             <div className="project-label"><span>0{index + 1}</span><span>{project.status}</span></div><strong className="project-metric">{project.metric}</strong><h3>{project.title}</h3><p>{project.result}</p><small>{project.note}</small><Link className="portal-text-link" href={project.href}>{project.action} <span aria-hidden="true">↗</span></Link>
           </article>)}</div>
+          <div className="portal-actions"><Link className="portal-text-link" href="/projects">全部公开作品 ↗</Link><Link className="portal-text-link" href="/protocols">查看协议工程 ↗</Link></div>
           <a className="portal-text-link portal-lab-link" href="/pqc-practice">进入密码实验室 <span aria-hidden="true">↗</span></a>
         </section>
         <section className="portal-protocol portal-chapter" aria-labelledby="protocol-title">
@@ -38,7 +39,7 @@ export default async function QuantumHome() {
         </section>
         <section className="portal-notes portal-chapter" aria-labelledby="notes-title">
           <div className="portal-section-heading"><p className="portal-eyebrow">03 / FIELD NOTES</p><h2 id="notes-title">实现之后，留下记录</h2><p>把材料、方法与验证边界写清楚。<br />每篇附英文摘要。</p></div>
-          <div className="portal-note-list">{notes.map(note => <article key={note.slug}><time dateTime={note.date}>{note.date}</time><div><h3><Link href={`/notes/${note.slug}`}>{note.title} <span aria-hidden="true">↗</span></Link></h3><p>{note.summary}</p></div><span className="portal-note-category">{note.category}</span></article>)}</div>
+          <div className="portal-note-list">{notes.slice(0, 3).map(note => <article key={note.slug}><time dateTime={note.date}>{note.date}</time><div><h3><Link href={`/notes/${note.slug}`}>{note.title} <span aria-hidden="true">↗</span></Link></h3><p>{note.summary}</p></div><span className="portal-note-category">{note.category}</span></article>)}</div>
           <Link className="portal-text-link" href="/notes">全部技术笔记</Link>
         </section>
         <section className="portal-news portal-chapter" id="signal" aria-labelledby="signal-title">

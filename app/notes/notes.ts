@@ -1,5 +1,6 @@
+import { notes as protocolNotes } from "../engineering/notes.ts";
 /** Implementation notes grounded in this site's public code and parameter catalog. */
-export const notes = [
+const implementationNotes = [
   {
     slug: "ml-kem-materials", date: "2026-10-08", category: "密钥封装",
     title: "2,272 B，离一次真实握手还有多远",
@@ -37,3 +38,10 @@ export const notes = [
     links: [{ label: "查看逐参数接入记录", href: "/pqc-practice/audit.html" }, { label: "不可运行清单", href: "https://github.com/yibiaowangsd/liangzai-homepage/blob/main/docs/pqc-unavailable.md" }, { label: "安全发现索引", href: "https://github.com/yibiaowangsd/liangzai-homepage/blob/main/docs/pqc-security-index.md" }],
   },
 ] as const;
+
+const protocolAbstracts: Record<string, string> = {
+  "kat-is-not-enough": "Known-answer tests cover only one layer of evidence. This note separates algorithm vectors, negative paths, protocol interoperability and deployment acceptance, including the limits of local TLS and SSH measurements.",
+  "tlcp-mlkem": "Integrating ML-KEM into TLCP requires explicit certificate roles, authenticated negotiation, a defined hybrid KDF and downgrade policy. This note distinguishes raw algorithm material and implementation coverage from end-to-end protocol validation.",
+  "reading-handshake-benchmarks": "Handshake benchmarks depend on implementation versions, authentication choices, network conditions and measurement boundaries. This note explains how to interpret the site's reproducible local measurements without treating them as production guarantees.",
+};
+export const notes = [...implementationNotes, ...protocolNotes.map(note => ({ ...note, category: "协议工程", english: protocolAbstracts[note.slug] }))];

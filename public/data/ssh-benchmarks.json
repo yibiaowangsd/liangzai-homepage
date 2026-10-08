@@ -1,0 +1,75 @@
+{
+  "measuredAt": "2026-10-08T08:02:04.232Z",
+  "environment": {
+    "client": "OpenSSH_10.0p2 Debian-7+deb13u4, OpenSSL 3.5.7 9 Jun 2026",
+    "server": "Server listening on 127.0.0.1 ephemeral port.\r",
+    "platform": "linux",
+    "network": "127.0.0.1",
+    "authentication": "ephemeral Ed25519 test keys; host key pinned; current unprivileged account",
+    "filesystemPolicy": "StrictModes=no only for this disposable loopback daemon (cloud container root has nonstandard permissions); file mode 0600/0700; not a production sshd configuration",
+    "timing": "fresh SSH process through authenticated remote printf completion, not isolated KEX latency",
+    "wire": "wire byte sizes not captured; KEX material sizes in calculator are estimates"
+  },
+  "results": [
+    {
+      "kex": "curve25519-sha256",
+      "status": "measured",
+      "samples": 10,
+      "medianMs": 87.902,
+      "p95Ms": 96.232,
+      "timingsMs": [
+        87.740882,
+        87.79423499999996,
+        91.64629400000001,
+        88.00916900000004,
+        91.92302900000004,
+        96.23160899999993,
+        88.0928570000001,
+        87.24443799999995,
+        87.55873500000007,
+        87.75732399999993
+      ],
+      "evidence": "debug1: kex: algorithm: curve25519-sha256\r\ndebug1: Server host key: ssh-ed25519 SHA256:mws5PFWUckMYDMwiMfosaSkCUqo7u7fprqtvUzQFObk\r\nAuthenticated to 127.0.0.1 ([127.0.0.1]:40085) using \"publickey\".\r"
+    },
+    {
+      "kex": "mlkem768x25519-sha256",
+      "status": "measured",
+      "samples": 10,
+      "medianMs": 88.541,
+      "p95Ms": 92.102,
+      "timingsMs": [
+        88.03582099999994,
+        88.5486679999999,
+        92.04920800000014,
+        87.00767199999996,
+        88.532555,
+        92.10171800000012,
+        91.63691500000004,
+        91.61102900000014,
+        87.77529500000037,
+        88.30146300000024
+      ],
+      "evidence": "debug1: kex: algorithm: mlkem768x25519-sha256\r\ndebug1: Server host key: ssh-ed25519 SHA256:mws5PFWUckMYDMwiMfosaSkCUqo7u7fprqtvUzQFObk\r\nAuthenticated to 127.0.0.1 ([127.0.0.1]:40085) using \"publickey\".\r"
+    },
+    {
+      "kex": "sntrup761x25519-sha512",
+      "status": "measured",
+      "samples": 10,
+      "medianMs": 144.14,
+      "p95Ms": 153.83,
+      "timingsMs": [
+        147.83595000000014,
+        153.83038799999986,
+        144.29739500000005,
+        143.98216300000013,
+        143.21027300000014,
+        143.6398989999998,
+        145.28900599999997,
+        142.53612900000007,
+        144.38974300000018,
+        143.1885339999999
+      ],
+      "evidence": "debug1: kex: algorithm: sntrup761x25519-sha512\r\ndebug1: Server host key: ssh-ed25519 SHA256:mws5PFWUckMYDMwiMfosaSkCUqo7u7fprqtvUzQFObk\r\nAuthenticated to 127.0.0.1 ([127.0.0.1]:40085) using \"publickey\".\r"
+    }
+  ]
+}

@@ -39,3 +39,9 @@ html[data-theme="midnight"] .nav-group-menu,html[data-theme="midnight"] .studio-
 html body .site-chrome .menu-toggle { width:44px!important;min-width:44px!important;height:44px!important;padding:10px!important;background:transparent;color:var(--theme-ink);border:1px solid var(--theme-border);border-radius:4px; }
 html .studio-footer .footer-links { display:flex;flex-wrap:wrap;gap:8px 28px;margin:24px 0;font-size:13px; }
 html .studio-footer .footer-links a { display:inline-flex;align-items:center;min-height:44px; }
+.nav-group-menu{max-height:min(70vh,520px);overflow-y:auto;}
+
+html .studio-theme .site-chrome .brand,html .studio-theme .site-chrome .language-link{color:var(--theme-ink);}
+html .studio-theme .site-chrome .menu-toggle span,html .studio-theme .site-chrome .menu-toggle i{color:inherit;}
+
+html .studio-theme .site-chrome .brand strong{color:inherit;}

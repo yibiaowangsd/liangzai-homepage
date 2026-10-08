@@ -1,0 +1,72 @@
+{
+  "capturedAt": "2026-10-08T07:55:07.088633+00:00",
+  "repositories": [
+    {
+      "name": "liangzai-homepage",
+      "description": "liangzai",
+      "html_url": "https://github.com/yibiaowangsd/liangzai-homepage",
+      "language": "JavaScript",
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "archived": false,
+      "fork": false,
+      "pushed_at": "2026-10-08T07:38:59Z"
+    },
+    {
+      "name": "PQMagic",
+      "description": "Post-Quantum Magic Project. See more at https://pqcrypto.dev/ . We also open-sourced at https://gitee.com/pqcrypto/pqmagic.",
+      "html_url": "https://github.com/yibiaowangsd/PQMagic",
+      "language": "C",
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "archived": false,
+      "fork": true,
+      "pushed_at": "2026-05-07T08:59:39Z"
+    },
+    {
+      "name": "Tongsuo",
+      "description": "铜锁/Tongsuo is a Modern Cryptographic Primitives and Protocols Library",
+      "html_url": "https://github.com/yibiaowangsd/Tongsuo",
+      "language": null,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "archived": false,
+      "fork": true,
+      "pushed_at": "2026-03-23T07:54:17Z"
+    },
+    {
+      "name": "pqcrypto",
+      "description": "Rust Post-Quantum cryptography",
+      "html_url": "https://github.com/yibiaowangsd/pqcrypto",
+      "language": null,
+      "stargazers_count": 0,
+      "forks_count": 0,
+      "archived": false,
+      "fork": true,
+      "pushed_at": "2025-12-02T14:13:10Z"
+    }
+  ],
+  "pqmagicCompare": {
+    "ahead_by": 3,
+    "behind_by": 7,
+    "commits": [
+      {
+        "message": "feat: add standalone OpenSSL provider module scaffold for PQMagic\n\nAgent-Logs-Url: https://github.com/yibiaowangsd/PQMagic/sessions/f4195fae-5d41-4ea4-beff-685a41d14667\n\nCo-authored-by: yibiaowangsd <87059542+yibiaowangsd@users.noreply.github.com>",
+        "sha": "b996d6afab7eae8bc92b05cff22c1082068cd8a9",
+        "url": "https://github.com/yibiaowangsd/PQMagic/commit/b996d6afab7eae8bc92b05cff22c1082068cd8a9"
+      },
+      {
+        "message": "docs: make provider build instructions path-agnostic\n\nAgent-Logs-Url: https://github.com/yibiaowangsd/PQMagic/sessions/f4195fae-5d41-4ea4-beff-685a41d14667\n\nCo-authored-by: yibiaowangsd <87059542+yibiaowangsd@users.noreply.github.com>",
+        "sha": "604bdb853fb9fdda5fd7bb02ee40468c7b25cb90",
+        "url": "https://github.com/yibiaowangsd/PQMagic/commit/604bdb853fb9fdda5fd7bb02ee40468c7b25cb90"
+      },
+      {
+        "message": "Merge pull request #1 from yibiaowangsd/copilot/analyze-a-files-algorithms\n\nAdd standalone OpenSSL 3 provider module for PQMagic (ML-KEM-512 / ML-DSA-65)",
+        "sha": "e8bfec88f591c57ffa7681dde5667ac6ebb07341",
+        "url": "https://github.com/yibiaowangsd/PQMagic/commit/e8bfec88f591c57ffa7681dde5667ac6ebb07341"
+      }
+    ],
+    "status": "diverged",
+    "total_commits": 3
+  }
+}

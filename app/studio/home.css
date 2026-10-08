@@ -14,7 +14,7 @@ html:root body .portal-home :focus-visible { outline: 2px solid var(--theme-acce
 .portal-home .portal-hero-description { max-width: 31em; font-size: clamp(16px,1.15vw,20px); line-height: 1.9; color: var(--theme-muted); margin: 0 0 28px; }
 .portal-trust { font-size: 13px; line-height: 2; margin: 0; }
 .portal-trust code { font-size: 15px; font-weight: 600; }.portal-trust>span { margin-inline: 8px; color: var(--theme-muted); }.portal-trust small { color: var(--theme-muted); font-size: 12px; }
-.portal-actions { display: flex; margin-top: 24px; }
+.portal-actions { display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 24px; }
 .portal-home .portal-text-link { display: inline-flex; align-items: center; gap: 18px; min-height: 44px; padding-block: 8px; border-bottom: 1px solid currentColor; font-size: 14px; color: var(--theme-accent); }
 .portal-home .portal-text-link:hover { text-decoration: underline; text-underline-offset: 5px; }
 .portal-hero-foot { grid-column: 1/-1; display: flex; justify-content: space-between; gap: 16px; padding-block: 20px; border-top: 1px solid var(--theme-border); font-size: 12px; line-height: 1.7; color: var(--theme-muted); }
