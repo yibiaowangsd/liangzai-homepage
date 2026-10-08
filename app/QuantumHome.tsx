@@ -19,7 +19,7 @@ export default async function QuantumHome() {
             <p className="portal-hero-description">围绕 TLS / TLCP、SSH 与 IKE，探索混合密钥协商、<br className="portal-wide-break" />密码敏捷与互通验证，让算法走向可用的连接。</p>
             <div className="portal-actions">
               <a className="portal-button" href="/pqc-practice">动手验证算法</a>
-              <Link className="portal-text-link" href="/protocols">了解协议工程方向</Link>
+              <a className="portal-text-link" href="#selected">了解协议工程方向</a>
             </div>
             <div className="portal-identity">
               <p>我是 Yibiao，在中电信量子集团从事抗量子密码与安全协议工作。</p>
@@ -33,7 +33,7 @@ export default async function QuantumHome() {
           <div className="portal-projects" data-reveal>{engineeringProjects.map(project => <article key={project.title} className="portal-project-card">
             <p className="project-protocol">{project.protocol}</p><span className="project-status">{project.status}</span><h3>{project.title}</h3><p>{project.result}</p><strong className="project-metric">{project.metric}</strong><small>{project.note}</small><a className="portal-text-link" href={project.href}>{project.action}</a>
           </article>)}</div>
-          <div className="portal-actions" data-reveal><Link className="portal-text-link" href="/projects">查看全部公开作品 →</Link><Link className="portal-text-link" href="/benchmarks">互通数据与复现脚本 →</Link></div>
+          <div className="portal-actions" data-reveal><Link className="portal-text-link" href="/projects">查看全部公开作品 →</Link><Link className="portal-text-link" href="/benchmarks">互通数据与复现脚本 →</Link><Link className="portal-text-link" href="/protocols">查看四条协议路径 →</Link></div>
           <div className="portal-lab-scene" data-reveal>
             <div className="portal-lab-art"><img src="/assets/pqc/ml-kem-studio-v2.webp" width="1200" height="800" alt="蓝色高光下的金属晶格结构，呼应基于格的后量子算法" loading="lazy" decoding="async" /></div>
             <div className="portal-lab-copy">
