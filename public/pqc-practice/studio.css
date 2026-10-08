@@ -593,3 +593,15 @@ button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-
 #manual-result { display:block; min-width:0; }#manual-result .result-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-block:20px;}#manual-result .result-heading {display:block;}.secret-comparison>div{min-width:0;}.secret-comparison code span {display:inline;}#manual-result .secret-comparison code{white-space:normal;word-break:normal;}.sidebar-shortcuts{display:flex!important;gap:6px;padding:8px 12px;}.sidebar-shortcuts button{white-space:normal;flex:1;min-width:0!important;font-size:12px!important;}.is-collapsed .sidebar-shortcuts{flex-direction:column;}.is-collapsed .sidebar-shortcuts button{min-height:44px;}
 @media(max-width:600px){#manual-result .result-facts{grid-template-columns:1fr;gap:12px;}.is-collapsed .sidebar-shortcuts{flex-direction:row;}}
 .loading-placeholder { background:linear-gradient(90deg,var(--theme-soft),var(--theme-border),var(--theme-soft));background-size:200% 100%;animation:lab-loading 1.6s infinite;border-radius:4px;min-height:32px;padding:8px; }
+/* Keep algorithm choices usable when the filter and full library names wrap. */
+.sidebar-body { overflow-y:auto; }
+#library-list { min-height:144px; }
+.sidebar-shortcuts button { width:auto;min-height:44px;height:auto;padding:6px; }
+/* WebKit includes the native option text in scrollable overflow. The full
+   material sizes remain readable in the paragraph below this control. */
+.configuration .select-field { overflow:hidden; }
+@media(max-width:900px){
+  .library-sidebar { max-height:none; }
+  #library-list { flex:none;max-height:320px; }
+  .is-collapsed .sidebar-shortcuts { flex-direction:row;margin-top:0; }
+}

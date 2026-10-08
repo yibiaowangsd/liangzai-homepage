@@ -28,6 +28,16 @@ try {
   await page.emulateMedia({colorScheme:'light'});await page.waitForFunction(()=>document.documentElement.dataset.theme==='paper');
   const nav=await page.locator('header .nav-group-menu a').evaluateAll(links=>links.map(a=>[a.textContent,a.getAttribute('href')]));
   assert.match(await page.locator('.jump-trigger').textContent(),/Ctrl K|⌘K/);
+  await page.setViewportSize({width:390,height:844});
+  assert.ok(await page.locator('#library-list').evaluate(el=>el.getBoundingClientRect().height>=144),'expanded mobile algorithm list remains usable');
+  await page.locator('#sidebar-toggle').click();await page.locator('#sidebar-toggle').click();
+  await page.locator('[data-lab-tab="signature"]').click();
+  await page.waitForFunction(()=>!document.querySelector('#run-example').disabled);
+  await page.locator('[data-select-family="slhdsa"]').click();
+  await page.waitForFunction(()=>document.querySelector('#family').value==='slhdsa'&&!document.querySelector('#run-example').disabled);
+  await page.locator('[data-lab-tab="kem"]').click();
+  await page.waitForFunction(()=>!document.querySelector('#run-example').disabled);
+  await page.setViewportSize({width:1440,height:900});
   for(let step=0;step<5;step++){
     await page.locator('#guided-next').click();
     await page.waitForFunction(()=>!document.querySelector('#guided-next').disabled||document.querySelector('#manual-result').dataset.status==='complete');
