@@ -1,34 +1,42 @@
 # 量仔主页
 
-以量仔和奶龙为主角的量子探索网站。当前主页为黑银与冰蓝配色，包含按需加载的 3D 展台、互动故事、角色档案和 PQC 教学页面。
+Yibiao 的个人密码工程与实验网站，围绕后量子密码、TLS / TLCP、SSH 与 IKE 展示技术方向，并提供浏览器算法实验、前沿新闻和量仔／奶龙的角色故事。
 
-| 路由 | 内容 |
-| --- | --- |
-| `/` | 量仔／奶龙 3D 展台、章节入口、粒子雕塑与短片 |
-| `/storybook` | 11 页动画书、章节切换和逐页旁白 |
-| `/archive` | 角色故事与档案 |
-| `/pqc-arsenal` | ML-KEM、ML-DSA、SLH-DSA、FN-DSA 的教学交互 |
-| `/pqc-practice` | PQC 武器实战：18 组 NIST 标准算法参数组合（ML-KEM、ML-DSA、SLH-DSA）；2026 年国内征集的 119 个候选和 586 个参数实例（含团队成员），其中 80 个候选、325 组参数已登记并收录可运行的提交源码 WASM；密钥封装、签名、密钥交换与哈希在同一工作台选择 |
-| `/news` | 每日前沿：由 Worker + D1 提供动态数据，展示 PQC、协议标准、网络安全、AI 与产业动态 |
-| `/about` | 项目作者简介 |
+技术栈：Next.js App Router、React 19、TypeScript、Vinext/Vite、Cloudflare Worker、Three.js 与 GSAP。
 
-技术栈：Next.js App Router、React 19、TypeScript、Vinext/Vite、Cloudflare Worker、Three.js 与 GSAP。武器库的教学交互是概念演示；武器实战页面在浏览器中使用保留来源说明的 WASM 执行真实算法运算。NIST 标准算法模块源自 PQMagic 项目，页面不宣称该实现经过 FIPS 验证。
+## 快速开始
 
-当前不可运行的候选、参数与原因见 [逐项清单](./docs/pqc-unavailable.md)；[安全报告索引](./docs/pqc-security-index.md)覆盖全部 119 个征集候选，页面保留已核对发现的中文详细说明。
-
-## 本地运行
-
-需要 Node.js ≥ 22.13。仓库根目录执行：
+需要 Node.js ≥ 22.13，在仓库根目录执行：
 
 ```bash
 npm ci
 npm run dev
-npm test
-npm run lint
 ```
 
-`npm test` 包含生产构建、主页现有路由的服务端渲染检查、3D 资源与帧调度检查。构建产物在 `dist/`，不提交到 Git。
+开发服务器默认监听 `0.0.0.0`。验证命令、资源维护与部署说明见 [开发指南](DEVELOPMENT.md)。
 
-开发入口、目录职责、模型生成、素材管理、验证与发布方式见 [DEVELOPMENT.md](./DEVELOPMENT.md)。3D 和动效细节分别见 [docs/liangzai-3d.md](./docs/liangzai-3d.md)、[docs/gsap-motion.md](./docs/gsap-motion.md)，验证台的资源来源见 [docs/pqc-practice.md](./docs/pqc-practice.md)。
+## 页面
 
-`main` 是现有 [wangyibiao.com](https://wangyibiao.com) 的 Cloudflare 部署代码源；`.openai/hosting.json` 属于仓库已有的另一条 Sites 托管配置。
+| 路由 | 内容 |
+| --- | --- |
+| `/` | 密码工程方向、实验室入口、新闻简报与角色故事入口；序幕由访客点击播放 |
+| `/models` | 量仔／奶龙 3D 模型，支持旋转、缩放、视角切换及图片回退 |
+| `/storybook` | 11 页插画故事、章节目录与逐页旁白 |
+| `/archive` | 量仔的角色档案 |
+| `/pqc-arsenal` | ML-KEM、ML-DSA、SLH-DSA、FN-DSA 的原理与教学交互 |
+| `/pqc-practice` | 转到独立 HTML 实验室，执行 WASM 密钥封装、签名、密钥交换与哈希 |
+| `/pqc-practice/audit.html` | 国内征集候选的逐参数接入记录、来源与 CSV 导出 |
+| `/news`、`/news/[slug]` | 按日报和分类浏览技术新闻及正文 |
+| `/about` | 作者经历与技术方向 |
+
+旧 `/observatory` 地址重定向到首页。3D 模型在模型页加载，首页不挂载旧星云展台。
+
+## 算法与数据来源
+
+密码图鉴提供概念教学；实验室使用实际 WASM 运算。NIST 算法组包含 ML-KEM、ML-DSA、SLH-DSA，模块源自 PQMagic；国内征集组使用带来源记录的候选目录和提交实现。功能测试不等于算法安全评估或 FIPS 实现认证。
+
+最新参数接入状态见 [不可运行清单](docs/pqc-unavailable.md)，已发布安全发现见 [报告索引](docs/pqc-security-index.md)。实现来源、适配与验证边界见 [实验室说明](docs/pqc-practice.md)。
+
+新闻前端读取 `https://api.wangyibiao.com`；本地运行前端无需 Cloudflare 密钥或本地数据库。`main` 是 [wangyibiao.com](https://wangyibiao.com) 的 Cloudflare 部署来源，`.openai/hosting.json` 是仓库已有的独立 Sites 配置。
+
+全部专题和历史记录见 [文档索引](docs/README.md)。

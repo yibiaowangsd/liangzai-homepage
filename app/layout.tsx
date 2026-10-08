@@ -3,12 +3,10 @@ import "./globals.css";
 import "../public/assets/site-typography.css";
 import "./experience/cinematic.css";
 import "../public/assets/site-navigation.css";
-import "./experience/news-gate.css";
 import "./studio/system.css";
 import "../public/theme/site-theme.css";
 import "./studio/scenes.css";
 import { ExperienceProvider } from "./experience/Motion";
-import { HomeEffectsProvider } from "./experience/HomeEffects";
 import AboutPushTransition from "./experience/AboutPushTransition";
 import PageArrival from "./experience/PageArrival";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
@@ -36,15 +34,13 @@ export default function RootLayout({
         <script src="/theme/site-theme.js?v=20261004-editorial" />
       </head>
       <body className="studio-theme">
-        <HomeEffectsProvider>
-          <ExperienceProvider>
-            <PageArrival />
-            <AboutPushTransition />
-            <SiteHeader />
-            {children}
-            <SiteFooter />
-          </ExperienceProvider>
-        </HomeEffectsProvider>
+        <ExperienceProvider>
+          <PageArrival />
+          <AboutPushTransition />
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </ExperienceProvider>
       </body>
     </html>
   );

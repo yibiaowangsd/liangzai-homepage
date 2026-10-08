@@ -10,7 +10,6 @@ export const CHARACTERS = {
   liangzai: { label: "量仔", height: 4.85 },
   nailong: { label: "奶龙", height: 4.12 },
 } as const;
-export const VIEW_ANGLES = { front: 0, side: Math.PI / 2, back: Math.PI, reset: -0.18 };
 
 /** A wrapper scales/centres the imported asset; its geometry and materials stay intact. */
 export function prepareCharacter(source: THREE.Group, id: CharacterId) {

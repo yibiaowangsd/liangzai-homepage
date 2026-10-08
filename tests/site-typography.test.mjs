@@ -11,7 +11,7 @@ test('React and both standalone laboratory documents load the shared system font
   assert.match(await read('app/layout.tsx'),/site-typography\.css/);
   for (const name of ['index','audit']) assert.match(await read(`public/pqc-practice/${name}.html`),/site-typography\.css/);
   assert.doesNotMatch(await read('public/pqc-practice/styles.css'),/@font-face|PQC Sans/);
-  for(const file of ['app/studio/system.css','app/news/news.css','app/storybook/StoryBook.module.css','app/globals.css']) {
+  for(const file of ['app/studio/system.css','app/news/news.css','app/storybook/cinema-reader.css','app/globals.css']) {
     const source=await read(file);assert.doesNotMatch(source,/Noto Serif|Source Han Serif|IBM Plex|SF Pro Display|"Inter"/,file);
   }
 });
