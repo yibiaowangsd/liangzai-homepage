@@ -1,0 +1,3677 @@
+{
+  "description": "SHA-256 of repository assets; integrity inventory, not a build attestation or security certification",
+  "pqmagicCommit": "b9ea5ce134966b8f90d637bab97178a92ae130f3",
+  "candidateRevision": "c5261784ef27e7363b1bbace3d687932fda35ccd",
+  "files": [
+    {
+      "path": "/pqc-practice/wasm/mldsa44shake.mjs",
+      "bytes": 7436,
+      "sha256": "66e3b5b1cfa0605c9ee85826d5c0dac061320e09bd6b0dbefba05a9b13dfae1b"
+    },
+    {
+      "path": "/pqc-practice/wasm/mldsa44shake.wasm",
+      "bytes": 30665,
+      "sha256": "f3ca1c790653de20df327095ad3b8906a8ace3fc050aab24d508a47668cfda93"
+    },
+    {
+      "path": "/pqc-practice/wasm/mldsa65shake.mjs",
+      "bytes": 7436,
+      "sha256": "d29faf486dfdad73f1ed498347302298ef8e2f2fa6eafd5c40f7f753577f1401"
+    },
+    {
+      "path": "/pqc-practice/wasm/mldsa65shake.wasm",
+      "bytes": 31998,
+      "sha256": "acdd3dd7ad0d5a68ac87d1142f0a44ef7e3aed96945438aefda3399f5fa53583"
+    },
+    {
+      "path": "/pqc-practice/wasm/mldsa87shake.mjs",
+      "bytes": 7436,
+      "sha256": "2f6cbd830cb3f9104f6bfa7559c4a5e6ea817e1eba9f1e547ed57ec52edeefeb"
+    },
+    {
+      "path": "/pqc-practice/wasm/mldsa87shake.wasm",
+      "bytes": 32950,
+      "sha256": "7d7eed1c7ab018656c7bf57ca0dc5d35d2dde6f28aeb02f673f589566f527b9d"
+    },
+    {
+      "path": "/pqc-practice/wasm/mlkem1024shake.mjs",
+      "bytes": 7428,
+      "sha256": "162a442678a28434adb316fff3f2193549d33a1eb7ecc041bac1b0a2d0c27b55"
+    },
+    {
+      "path": "/pqc-practice/wasm/mlkem1024shake.wasm",
+      "bytes": 25081,
+      "sha256": "a0361507a7fa4debf9bd9ae584b292429c96924318dbdf41bb67aa23d4b14db3"
+    },
+    {
+      "path": "/pqc-practice/wasm/mlkem512shake.mjs",
+      "bytes": 7426,
+      "sha256": "92292cafe2872011a2b2ff3a8d81f0eeb728801e85345d16d4e145ec3c48d712"
+    },
+    {
+      "path": "/pqc-practice/wasm/mlkem512shake.wasm",
+      "bytes": 25304,
+      "sha256": "3bc5b404118afccaec88071a84fc927751e981b04d8532b8c2e13895c0dd3da0"
+    },
+    {
+      "path": "/pqc-practice/wasm/mlkem768shake.mjs",
+      "bytes": 7426,
+      "sha256": "aa976fa1a65d90bd8132e50dd43af60224ff5bfaadf11fcab9f08d591827c951"
+    },
+    {
+      "path": "/pqc-practice/wasm/mlkem768shake.wasm",
+      "bytes": 25885,
+      "sha256": "8f6c52948d4c49108430261472fe5e1697d4e9141faf2c33242fa4ece16fc1b5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-01-0.mjs",
+      "bytes": 9283,
+      "sha256": "34d31cbadb5eff3292a85e08932431757deb8b1fce57fd3efb49c224e01b8046"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-01-0.wasm",
+      "bytes": 21968,
+      "sha256": "51c95382d197f4f3bdf45857bdbac688d7ccca745c9ba98296f5cf0b35a529f9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-01-1.mjs",
+      "bytes": 9283,
+      "sha256": "3b8ca9769d406f55d6c4f16335847891747c933c61eb961ea73b3d3ec47bb224"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-01-1.wasm",
+      "bytes": 22014,
+      "sha256": "9feb12fbac6e3c765c20ebe8f3724b246d49fb28393a05a402600752c4995cbe"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-01-2.mjs",
+      "bytes": 9283,
+      "sha256": "efc970fd8be9080a3c5cc799da8aded709b9933af86ff4b28fee2b1fc5b17c68"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-01-2.wasm",
+      "bytes": 21986,
+      "sha256": "e3cc14a14d5f357c0df85a56546b019697e51040155ace312d6b1c1f96608157"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-02-0.mjs",
+      "bytes": 9283,
+      "sha256": "6785e1f5baa63e60572d725f2bc4d05bb61658d07bbf01b4b3f236807b6e6068"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-02-0.wasm",
+      "bytes": 42334,
+      "sha256": "f2d98f16683b297f11a448dd5afb70308a1a30267b8e076d10faf2724fefcb73"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-02-1.mjs",
+      "bytes": 9283,
+      "sha256": "aff7c8d6bf608e73333dffd4a58bc4da0144a3f8214d260ea07205b4815f988e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-02-1.wasm",
+      "bytes": 42334,
+      "sha256": "f6eaa704a0b504986e9fadda7133f804131170b3d7c4c8a4783dfadcbd12b77d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-02-2.mjs",
+      "bytes": 9283,
+      "sha256": "f143a36a347782691e1122e7e6eb984057561a7bd23735fd25592fd594a0346a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-02-2.wasm",
+      "bytes": 42334,
+      "sha256": "6c1611d44d7f70d6843206d46c5a7cfd0fb9f0a3821518c818f79cadb3c4a0c7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-03-0.mjs",
+      "bytes": 9283,
+      "sha256": "57fdf2008f24eead880607118bb39b6a69e69256e99b2d79fe1f2dae7a096463"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-03-0.wasm",
+      "bytes": 21114,
+      "sha256": "b158378fb0485fb609303877ce4debe24fd35448aeb0d4afd64872b2d7e94e95"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-03-1.mjs",
+      "bytes": 9283,
+      "sha256": "eaf551e4db991a47281a34b40c88adc13063c29201442f6e3746cc7a388b591a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-03-1.wasm",
+      "bytes": 20601,
+      "sha256": "45dda3ff2540888482d978cd87e88348f7370f7ebdf9cf158bfb02b3d7c99c75"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-04-0.mjs",
+      "bytes": 9283,
+      "sha256": "6d1f32375b2ecf46fd6f5acf81bd1f587c8ca0255950264455a8f61d54a5bf1c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-04-0.wasm",
+      "bytes": 18215,
+      "sha256": "b2225017bdad07a9835b266c30de5be10e31e30135426ee7c4b5b0e2fe0414af"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-04-1.mjs",
+      "bytes": 9283,
+      "sha256": "6e3cf1097e97ff86fac0c6d00835518ac20ee74facbd02e22c6adc749369c21c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-04-1.wasm",
+      "bytes": 18279,
+      "sha256": "abe1e5dde2d9193bac4ae534697338dbc9c795f712bb09ebf2bbfa6395e72314"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-05-0.mjs",
+      "bytes": 9283,
+      "sha256": "2e5786d4efbc5b4751f85e2fd83c462028a0897b50500fece5f9f9b4a71586a5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-05-0.wasm",
+      "bytes": 22292,
+      "sha256": "bf9d0bebef41eefc0de52701b4ad96da92691d44de2e5918fafc420a28b82044"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-05-1.mjs",
+      "bytes": 9283,
+      "sha256": "0c8e2d17a8eb7cdd1cd7e461a2bd2c374c22056cf3085afd1e0dd747b5910ad4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-05-1.wasm",
+      "bytes": 21410,
+      "sha256": "6ce489029f1816e3e099686d76d66b7e78ca984def54706a6df9cc52af7f1ebe"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-05-2.mjs",
+      "bytes": 9283,
+      "sha256": "e7a2dd04369fa008c29dc031bd187e8f770bcd0acf6c8cc01f0a0d3c092264a7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-05-2.wasm",
+      "bytes": 21564,
+      "sha256": "0fbdc25b37a878928a577866a3cad2bc001e734ae5c9e0c8f1939a48a764158b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-06-0.mjs",
+      "bytes": 9283,
+      "sha256": "e6b753140e5a452faf0a2ef90a4daf8dc5d8c344fc2180bb8462bdb63e0c5b99"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-06-0.wasm",
+      "bytes": 18958,
+      "sha256": "5b9a23e50f39641a317e1889ba6faa2a1776a194472d4e5704be2c454e1cc499"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-06-1.mjs",
+      "bytes": 9283,
+      "sha256": "8507f9db2700bb0a5c03a85a43b5a9179584d633b449ca0a12a1cceff507b9b8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-06-1.wasm",
+      "bytes": 18304,
+      "sha256": "8b9c1f66f90c7c4f8f7ea29dbf391df61036da8fb4dafa1f9c159f9345a1cb23"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-06-2.mjs",
+      "bytes": 9283,
+      "sha256": "5ab65be43fb4bb8025aec8ff233eda3e18b22ff70415a476c6ed8f0b78d0374c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-06-2.wasm",
+      "bytes": 18958,
+      "sha256": "f7a2c87a963fcc1e6fecf52b9aeed0bfc98e7a31c1f00efba046fdbe5b88e569"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-0.mjs",
+      "bytes": 9283,
+      "sha256": "d1a1575378bda0a1b620e8572ad22fd330fe158be73749551b8aa32ec3d56d96"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-0.wasm",
+      "bytes": 18895,
+      "sha256": "c27090b0b5cced362b867d727afb48a34ee5ae32fe5ce8af4a3402ad3e8a4d3e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-1.mjs",
+      "bytes": 9283,
+      "sha256": "e1bf94083750f0cbdc7d79dd1eaa8338245639177275e938e9b4c829c7f6399f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-1.wasm",
+      "bytes": 18176,
+      "sha256": "e5c46e62670253ecca33a7d9ab74a591cfa799b35e36622630319eac8085c51d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-2.mjs",
+      "bytes": 9283,
+      "sha256": "66021bf7245a4e11e5b3f7baf1f22daaf8eed9bf3cc4dbe25df0ba73007adfeb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-2.wasm",
+      "bytes": 17549,
+      "sha256": "10f28f0de090820660575beef9a58451e60bafe688067371dfd7e738cbbcb551"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-3.mjs",
+      "bytes": 9283,
+      "sha256": "e291ea74fe127ca1a696ce96326c141c2946504427f3fed86abb26f70a4564fb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-3.wasm",
+      "bytes": 18031,
+      "sha256": "b527ae05fced59c8dbe0403b423488c9e1cb66ae76b2d277c5d3c43c13cf9a7c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-4.mjs",
+      "bytes": 9283,
+      "sha256": "1c626a07d47f5b813e3a3dc514e270122def40b46e3a0f92233f8d82f18058a7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-4.wasm",
+      "bytes": 17906,
+      "sha256": "f7cfc7f5b87f71c6340a2650d5417aea1503542984bbc006a1979de70bd55548"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-5.mjs",
+      "bytes": 9283,
+      "sha256": "b752e59bba2233f01ec03749c150115012ce2eb688fe7cf733819636685cf0e6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-07-5.wasm",
+      "bytes": 19271,
+      "sha256": "2a9814c31ece0f2a534d2d28e1af46eaa1f750ef35f3f8b14c3c26e5a20c023b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-08-0.mjs",
+      "bytes": 9283,
+      "sha256": "50855f82dc69dec216936e2bb5e00d79f3d2ca7fb84a0b58efd8976ee16db1fa"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-08-0.wasm",
+      "bytes": 18873,
+      "sha256": "f5e8e99bd8f8d482fb7efb8a0743a8a61efbf8fb4dd773456f2d0ed62704d3c6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-08-1.mjs",
+      "bytes": 9283,
+      "sha256": "24e809df77d229632761f34a396e63859b4271dfd97394dcf46dac56c469e0a0"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-08-1.wasm",
+      "bytes": 18453,
+      "sha256": "068b96385ed956e1112ebaf1b93284725cb6d53dfbda22acd7babda338300d82"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-08-2.mjs",
+      "bytes": 9283,
+      "sha256": "8a28795602d87490bc24c5956321c63c92a9a9d82e145b1fde1db4d00913038d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-08-2.wasm",
+      "bytes": 18857,
+      "sha256": "2f1cad235f5b1703f463485d9b8de62dc6a1b64a1f100084f4e2ed3b4f9b0b91"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-09-0.mjs",
+      "bytes": 9283,
+      "sha256": "563fa3c144960409293a5d24095a1854b05e9e40c1204cf9f931560957ac9a72"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-09-0.wasm",
+      "bytes": 17671,
+      "sha256": "c997b1edda29932dbd71134ae212a48ad38189bfc890fd1962f2a5b6152b9404"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-09-1.mjs",
+      "bytes": 9283,
+      "sha256": "88933270e0c6b89b10891614b885d0535b060082d4f6fc18454193b82f0f28b3"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-09-1.wasm",
+      "bytes": 17669,
+      "sha256": "445fe3366793f3ae50b9fe1ab495bdc547ec71d710975ac783f1e9940b4f61e8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-09-2.mjs",
+      "bytes": 9283,
+      "sha256": "f72e6b3f22e42d9d5239dc19ecfae54ae43c3df6f6c65df469bb8e28183f466b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-09-2.wasm",
+      "bytes": 17669,
+      "sha256": "650d856062c43bb4d94b5f4c31cb30815a68da7c871efe70c9e1da4271a63b34"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-09-3.mjs",
+      "bytes": 9283,
+      "sha256": "28d755df906eebaeb57162f7a574410177a95ba8d557b0fb470a4bcc91f06d46"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-09-3.wasm",
+      "bytes": 17670,
+      "sha256": "ca06c9e91e45ad3dee039f4e43c8f7bef37b78f0ddb3e78dfdd1185c1814d113"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-09-4.mjs",
+      "bytes": 9283,
+      "sha256": "00f5adf861e695ee2a92b2630f85c4c944ce2dad831715a04aa4fd8afd5696de"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-09-4.wasm",
+      "bytes": 17670,
+      "sha256": "a6a3c4ea8359c7ee505fd27ba1e4bbf1bc65ee3dc9672841d94901ff667e30e9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-10-0.mjs",
+      "bytes": 9283,
+      "sha256": "55dcbaae8143599d08a3dd8f06509d96c070afd9c5174de75d2a4824eaa357fd"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-10-0.wasm",
+      "bytes": 17225,
+      "sha256": "5171828795da0ca5996857eb583f5406efcfc6eac2b23e1526094f7267655e7d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-10-1.mjs",
+      "bytes": 9283,
+      "sha256": "4fa61a9f28ed7c8760fe9b900c0dd414d5b420849e0f35f21fe296f8ffb7f088"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-10-1.wasm",
+      "bytes": 17113,
+      "sha256": "5c78b5830032627d7a3b3a63d9b654a0db952edb7d66609c0f1b021e615318a9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-10-2.mjs",
+      "bytes": 9283,
+      "sha256": "a25f1d781bfeab208feb6719169a3299aad56467cd0bd677bb6d0a276edbad28"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-10-2.wasm",
+      "bytes": 17147,
+      "sha256": "3a48483bc7f4acedddcf68b60667b5e47c015f1ffaeab9d5ab1465994b205214"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-0.mjs",
+      "bytes": 9283,
+      "sha256": "3acea6525655ae31d6ed6f0df3de62e462d9c6f56ee6e0c301a8cc305fa96309"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-0.wasm",
+      "bytes": 36526,
+      "sha256": "c8f89b34f7a7409f5cea539f2964f73217c3a6a287dcfa5abb82dc10547ce0d6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-2.mjs",
+      "bytes": 9283,
+      "sha256": "0f10e6f875b13058c2cf6dfd152861e41f921a4a0ff2471c6bfbd40c031006ee"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-2.wasm",
+      "bytes": 34840,
+      "sha256": "ba5db9226356df3829662c2de3559fdab152089081bc9572f0ce3fa1c1eb8b22"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-3.mjs",
+      "bytes": 9283,
+      "sha256": "2abce97e6afd8e873e9c1b626a1c9736176e3d40b767723beb5ed50c2ef1e905"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-3.wasm",
+      "bytes": 34448,
+      "sha256": "307f4b70f57af089cd3554e0b4d463e66cbe62957e6820e622a137af9b35c359"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-4.mjs",
+      "bytes": 9283,
+      "sha256": "29575543814dfab4e2b19e09d7837aca9051219645e413a51376b4fa3103c231"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-4.wasm",
+      "bytes": 34513,
+      "sha256": "6acc981c9ca411fb3de89b654faf223a08408c4db57ca667a96d606053cd49f2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-5.mjs",
+      "bytes": 9283,
+      "sha256": "9da0f6efaf745b5c87231908164af1378be4242bfeace1fb2fe3d2f4328d0f4f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-5.wasm",
+      "bytes": 34627,
+      "sha256": "093d8972b6a45dbb6ade70096bf80d7fb651ba024647b77cd4bb289ee2350689"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-6.mjs",
+      "bytes": 9283,
+      "sha256": "0b0f542f9d2e86d1aac8cb1d105fae97b6060bf32a057b32fee057a774ff9998"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-6.wasm",
+      "bytes": 34739,
+      "sha256": "6416cff3efb96a7dc65f6bb4a6233d1dedcc00adc4ba0d002bfd9e9ead25d3cb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-7.mjs",
+      "bytes": 9283,
+      "sha256": "66a88572678bb15da17f4797554b34145d1924cb4c9d945ab453ea709984993f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-11-7.wasm",
+      "bytes": 34652,
+      "sha256": "eefa45f99898479a422348ee055e082b6a04be72509c60bf9866cc59d6ed6db8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-12-0.mjs",
+      "bytes": 9283,
+      "sha256": "5ca77ea5b8efca9c118421f20890616e9b467c0d5707c53d02a592df2a4a4f56"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-12-0.wasm",
+      "bytes": 17621,
+      "sha256": "9a766ced0db168f6b58b18b9ef8f81ec5afb8a48bbe57618a79af2b8ba93ba15"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-12-1.mjs",
+      "bytes": 9283,
+      "sha256": "e3817eb9fe7d547e7d7070c06931cc1de1b6042424a9f2fbde951922efbab393"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-12-1.wasm",
+      "bytes": 17327,
+      "sha256": "ea5f66a68179224d16a43f7d742bfac9e0badae17c0e59e58ee6b8f0c3f853c2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-12-2.mjs",
+      "bytes": 9283,
+      "sha256": "04ac98995adb6be550a21255d73e7beb429ea8fdb57ff314580ccf00ab3b6375"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-12-2.wasm",
+      "bytes": 17442,
+      "sha256": "bcad0b83e30b780bd0a24c48f24d2556b3d3bff64f2db035a952920b5739978c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-13-0.mjs",
+      "bytes": 9283,
+      "sha256": "8c092f37f9556b0a0e90d77e593915f0434f012620f2a9ddb1e34e327827875a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-13-0.wasm",
+      "bytes": 18720,
+      "sha256": "a3f3b311236709c30cc555ad6064a0c164f1b353a9e496e9db398f60998361da"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-13-1.mjs",
+      "bytes": 9283,
+      "sha256": "53e0236bce35ec2d692662e88d25ce2a6eb94af37b2a7ce1d452c559b34ba5cb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-13-1.wasm",
+      "bytes": 18299,
+      "sha256": "e8cfd2bb534f1caeda0d8dd76b78d445c726bf440076fd2cfa9f78984f464794"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-14-0.mjs",
+      "bytes": 9283,
+      "sha256": "b20f95e948a0db0cb1a1212348cf3818c353743d3bf39aa116619ab7f657220f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-14-0.wasm",
+      "bytes": 19302,
+      "sha256": "727550d2ddae3b87a3554efd302edef56c72fdc97b8bfdbb8fd1d307ec3eb01e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-14-1.mjs",
+      "bytes": 9283,
+      "sha256": "af94d4a0f5d3046cc4acc51d7f8392b7f2bec2b4b4dc6dbd58ec965939d3534c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-14-1.wasm",
+      "bytes": 19141,
+      "sha256": "9e30620e6cb237a438496e92d29ee4eab31bc0a239a96dbc15f4179ef91f6104"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-14-2.mjs",
+      "bytes": 9283,
+      "sha256": "2878e2de4e3a7e863f69253b8c11b7975d5342cd01635e396122d19eb577d064"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-14-2.wasm",
+      "bytes": 18930,
+      "sha256": "1b691b302158a8585d309ff692c467c44e34932c8a80d10e99eb37e079168646"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-14-3.mjs",
+      "bytes": 9283,
+      "sha256": "81c2cd475ab651ee70b8d400b3f8c6f6bcdb227c51b52f394f865ac6b2c74845"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-14-3.wasm",
+      "bytes": 19299,
+      "sha256": "379cb5a3954ef8ca30f235f5cd2b63ae46d3b634b58e79a25e3f2c8b4ddd0f4b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-15-0.mjs",
+      "bytes": 9283,
+      "sha256": "270acbc7e0a32254f1df6453342e542bdbec9bf6dd1d233a25f0b367b763e64e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-15-0.wasm",
+      "bytes": 18168,
+      "sha256": "6ab902ddf631fdc830523cf7a3b0746cc1c252d04d8d23473024c29f23c125c0"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-15-1.mjs",
+      "bytes": 9283,
+      "sha256": "53bcccf2e96d0afc3025a63ee385693c1f8b4a64eb606d4a6071b2af7dac6d63"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-15-1.wasm",
+      "bytes": 18105,
+      "sha256": "5103f0efe8f9ef43329796d14241bb17d615972123cf03f26b4e5ad5430fd03a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-15-2.mjs",
+      "bytes": 9283,
+      "sha256": "790287b634049d9fb2a2f7a6c1b86c6c1127e156c6330e6b07a1a9569f968e50"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-15-2.wasm",
+      "bytes": 18068,
+      "sha256": "d23220f60603c451c584260df5a180cd73e92d7b7ddf1e4fae28fe90891feb9a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-15-3.mjs",
+      "bytes": 9283,
+      "sha256": "d56aa9c08e118bad5ee25f9c1db5bf20aba671782cf39e64c1cfd4e0fd32e086"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-15-3.wasm",
+      "bytes": 18164,
+      "sha256": "19238712114685f3781c00b6ca94e2f6092477736d510afa486f7c93885899ca"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-16-0.mjs",
+      "bytes": 9283,
+      "sha256": "09293a77834068a2a29f2c69b33a6fa950e665717cbacbc350abdd94f6e93002"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-16-0.wasm",
+      "bytes": 19477,
+      "sha256": "100a6f1f59f0493ff32f25faafb2afca9c311b518e7155f542d4e64b538ed08d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-16-1.mjs",
+      "bytes": 9283,
+      "sha256": "888c581361d8d45d8e9850c535378e3fbe5d534fdac5ad78242fc78411a72671"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-16-1.wasm",
+      "bytes": 17467,
+      "sha256": "28d4fcf9ef20a932635492d5030654f7f275b466d7ab9d03ace120cc529e06c8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-16-2.mjs",
+      "bytes": 9283,
+      "sha256": "6b65bc2652c7985b89c6cc1260bc60ea04c7866e3d963a479c5357b6f1778836"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-16-2.wasm",
+      "bytes": 17645,
+      "sha256": "1300fb9a1d02726d1368c5fb3950fe304af52a5dc5c2ff89757267bd270ce585"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-16-3.mjs",
+      "bytes": 9283,
+      "sha256": "df16275e5dc2d84769cd3d79430af12053ed4d1089ca5c71ba00d186bbea88f4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-16-3.wasm",
+      "bytes": 19672,
+      "sha256": "a02181586c262abedce0ddd292da3dedfff886e8b09acd532694f15fb0749cda"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-17-0.mjs",
+      "bytes": 9283,
+      "sha256": "8f06be608d073a3e9b02a03b7b80f4f9d02a267f60632b584d6a6aa7936e92bd"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-17-0.wasm",
+      "bytes": 28813,
+      "sha256": "086ebc420f7c4563cc6a8bdc7d72e2c9a51b812a3ac780f2977dad95cd6048af"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-17-1.mjs",
+      "bytes": 9283,
+      "sha256": "d17fa13fdc72bd094c96721081400b2b0cea6215df908af0aeb8fa6f8068ae58"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-17-1.wasm",
+      "bytes": 28001,
+      "sha256": "365623c4f20f288950c439c7ac4b0a45d40fcc99027ac254b9878cd9514d698e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-17-2.mjs",
+      "bytes": 9283,
+      "sha256": "f9a34230996ae2fd007d772707743a06a5360055d5500d66a64b1ef881aa9e16"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-17-2.wasm",
+      "bytes": 28943,
+      "sha256": "badcb0d5f925fba82b55f6377ce9625f6171a0063b172ca5936a7cce5c2135b4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-0.mjs",
+      "bytes": 9283,
+      "sha256": "e4880751134780bc3462350f3b6807a52e5db0a35ce8008ce096e4af30739c66"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-0.wasm",
+      "bytes": 17369,
+      "sha256": "94f2c4f8ccea812c313f64d5a04e87b25deaa7565ff25fde717da63fd392b53a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-1.mjs",
+      "bytes": 9283,
+      "sha256": "5ec5fbbdf4c11fc4d9ba83d85b479c96153f4d3e791bd594ae9d92e6dfa18a4d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-1.wasm",
+      "bytes": 17172,
+      "sha256": "e2a2955f52c8e32aa21bf16eedf29e79b4aeb50f5862aebc892f72a4da3340c3"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-2.mjs",
+      "bytes": 9283,
+      "sha256": "de81964c54d64ccf57e0d6cb57874b66acb39a6dd7936a30dca20a6765330d63"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-2.wasm",
+      "bytes": 17155,
+      "sha256": "725c94e02ec7310c184808ee6eb90f459e495cfe725a2ff2c9b6b1f950ec4324"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-3.mjs",
+      "bytes": 9283,
+      "sha256": "bf8ff515b093ef1831cbd7f31e3248a595679d9206d5c370d2230db58f91f4c8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-3.wasm",
+      "bytes": 17155,
+      "sha256": "8fc2ff3ed498b8dd012f8bfb925f03da61e50fbdfed4547236e10c861ab4b273"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-4.mjs",
+      "bytes": 9283,
+      "sha256": "691d1158bcb9e1b38731ed29b8a28c921218af2f28b77f064d0d41f3b7efbcbc"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-4.wasm",
+      "bytes": 17153,
+      "sha256": "7acaa88b4f0ec5e4154512887a3607f0c3c337f19a8aff038202c0ae918e5a2c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-5.mjs",
+      "bytes": 9283,
+      "sha256": "6f0aa02b859516e09ffb3b9032b03afc913eb5a95d6af7392e628c0f1d0aea3a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-5.wasm",
+      "bytes": 17194,
+      "sha256": "4eb40bf7bd00e0f1f1fa6fe37d3a551ade64e773ec41364a9aab795462d81211"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-6.mjs",
+      "bytes": 9283,
+      "sha256": "4b4f07c0e41c292d6c060eb84fe7a3cd3610c3d79bb1b7e62a681cbeadaad04f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-6.wasm",
+      "bytes": 17150,
+      "sha256": "92a37ce40e017d3906f8dca7a725c2c30bbbe110cac4906e9b6648fa4f5b0434"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-7.mjs",
+      "bytes": 9283,
+      "sha256": "dbcd767e62dcb6b6360b239e2c96c2917682f27ccb8ef7602b6f27d5022de48a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-7.wasm",
+      "bytes": 17150,
+      "sha256": "1df90e086683e004d937f20952c776d39f4f0c7a813f78317b263d838d01458b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-8.mjs",
+      "bytes": 9283,
+      "sha256": "8726522bc4452908a1150a0419c3520e847137ee750c4d4fba547cade6630860"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-8.wasm",
+      "bytes": 17148,
+      "sha256": "1e3dbc62fdc6f5659cbdcdd354466ae616a12d211785e9c2d45c8555ed7b7eaf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-9.mjs",
+      "bytes": 9283,
+      "sha256": "e5ccc6015df36bb4219a04e640fff19766aa579590a0ba0528a0a15536f42cb4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-18-9.wasm",
+      "bytes": 17369,
+      "sha256": "563ff458f074e0316f60e77b44f4e9c0d92b4cf1b7c83e9b993d7c401f63ea0e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-0.mjs",
+      "bytes": 9283,
+      "sha256": "7d0cfe4ca26975e9ec57d91bfbb3790441510ed0e82813b46942b02af005b563"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-0.wasm",
+      "bytes": 19238,
+      "sha256": "417baf48eb37dd1126608428a250ed1225c6fdca583dc2512b7b0d581484b601"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-1.mjs",
+      "bytes": 9283,
+      "sha256": "9711fd6c003f07c2a6fb6b91b0866aac4267cfeec912e9deafaa376f79fd6ea6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-1.wasm",
+      "bytes": 17167,
+      "sha256": "2bbfccbe3cbdb5517d3b8c74ecba9f6786ccf0c763d7372fafcb6e6cd1ce55f5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-2.mjs",
+      "bytes": 9283,
+      "sha256": "b19c6483f5a01124fd8631ad90e178369c8640b98f4682041d70de291b023632"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-2.wasm",
+      "bytes": 17198,
+      "sha256": "40ad315ee821865a258f7291b380a3d888aab569397ec900e25db21e893e7e63"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-3.mjs",
+      "bytes": 9283,
+      "sha256": "30e597f5bd1218f20429311a50d558c109c220eafb1ac271ac29f4ebc9b072e7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-3.wasm",
+      "bytes": 17476,
+      "sha256": "b104010a59e3ae91489e64270f357d8287ee8ad1834c21af479562abf3a7b68f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-4.mjs",
+      "bytes": 9283,
+      "sha256": "af7a7a2e9dfd9aa79f85639a05efb2f4a9fd0eff10c714fb23be9e4f8b777322"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-4.wasm",
+      "bytes": 18918,
+      "sha256": "6f4faea66245f8f92354929e1205c9a8f6dc2e7e5dfc9821a67cf886376c371b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-5.mjs",
+      "bytes": 9283,
+      "sha256": "f670df0dca2ab06a95d124cb2f1fb6225f7ee7007f7d8d8ea41e36e3e474938d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-19-5.wasm",
+      "bytes": 19387,
+      "sha256": "3f5d634a098fef7c5d9f83f7f5b82e1eb1e5a15399f46b0d273738a56a371a4a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-0.mjs",
+      "bytes": 9283,
+      "sha256": "b882e3e4bdf27a9e181e0236c58e3ff8950ea273644cf45686ec7f4d9c56800b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-0.wasm",
+      "bytes": 17959,
+      "sha256": "590fbeb0cb18457449e421e1c18ed4db5bd7071c0ee2e92a5e6640eac72f9df4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-1.mjs",
+      "bytes": 9283,
+      "sha256": "0d206da52d04687687f3256d090af878158324531818af9affb65c7878e2b1d9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-1.wasm",
+      "bytes": 17762,
+      "sha256": "a05edb9c6f0f20debcf1d2341c6768e0c67b4eff64804f4625c41a57637f1925"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-2.mjs",
+      "bytes": 9283,
+      "sha256": "8234495df6975ece4064071c551822dc428693bb0f54d9ed596b7e408c930f7b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-2.wasm",
+      "bytes": 17705,
+      "sha256": "d4ce8728a7350fc911809a0e9d4c44ace0805e1021af89e15a59dba89b9acedf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-3.mjs",
+      "bytes": 9283,
+      "sha256": "721248b526a8a8e52194ef506415506cbd3d61a583a8988b3369d4588f41bc01"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-3.wasm",
+      "bytes": 17705,
+      "sha256": "3f0828eeeee83b2fe8f1957300892b88b3519a47999b3b1b392a832122438c2f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-4.mjs",
+      "bytes": 9283,
+      "sha256": "30a739ec40fe4011b73fc02a83f3ba0909fa3a532722a66cfef05af2fae396c7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-4.wasm",
+      "bytes": 17703,
+      "sha256": "b5275ee9b262eebf5bffa59eb5d8a3c2c21951d7752178d2a3150ba9873c976b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-5.mjs",
+      "bytes": 9283,
+      "sha256": "262a0ba5630294ed4855f7e6640950f04ceedb0006d688c567122e18887b0163"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-5.wasm",
+      "bytes": 17784,
+      "sha256": "a5a5ba6a02f09808f7e23fc602f1781740fadf639c0bf5888615b367b8643b2b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-6.mjs",
+      "bytes": 9283,
+      "sha256": "3b2f5dc30c15ab502a888795285b127218e7717614cee4919e1c1dd7abb855e1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-6.wasm",
+      "bytes": 17700,
+      "sha256": "f57016fbb3f3a7202ad6f730f6d9eeab25ba3f148304575e2165e96722d502a5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-7.mjs",
+      "bytes": 9283,
+      "sha256": "08bae06742b1d0b790f944175b8aa6939730d18e2372a8552218e43291a28bf4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-7.wasm",
+      "bytes": 17700,
+      "sha256": "23971cddaac2a816989796a3d1cf75d3c1a652ca03256265d76c250c6bbf60be"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-8.mjs",
+      "bytes": 9283,
+      "sha256": "1fc7b174fc4ebd4dc4d4f93119330cb2acbfb0d7499bc9b99c2287c19e80ab4f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-8.wasm",
+      "bytes": 17698,
+      "sha256": "d8b4c61ac2b8e542f4bd8fa86354487024863a6da590c68db8e0c08b8fa237d6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-9.mjs",
+      "bytes": 9283,
+      "sha256": "222577382175b301cd5d45fa4f240b28c34d3fd77fd01b3cca61bcaa62e657c5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-20-9.wasm",
+      "bytes": 17959,
+      "sha256": "32a0f4debeb88a883f0be117dac70fbf2ec91b06e4e906a9e0e202e3366711ac"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-21-0.mjs",
+      "bytes": 9283,
+      "sha256": "5ae8a4191bbad8d5572c4a34462d44d212e40196f468c56a95ee4e2af75cd3ea"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-21-0.wasm",
+      "bytes": 18691,
+      "sha256": "c3b7f553192c886560126c5d9f755c2c068e4a75bf8bb2e43ef7a1e703c7dcf7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-21-1.mjs",
+      "bytes": 9283,
+      "sha256": "0bd3eae7a6cf3fdd02b31f86be2a250a55cbbb428a1c34a9d852c7a15a32db8f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-21-1.wasm",
+      "bytes": 18548,
+      "sha256": "a71b0f70f534a1b6f7504d7e332ced42dad175d74aab3199fc5f91b6c2c2734a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-21-2.mjs",
+      "bytes": 9283,
+      "sha256": "c6e15360dce3256ad342739157453a90d6da27d14d27b9c2f38bf2c946398f46"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-21-2.wasm",
+      "bytes": 18586,
+      "sha256": "c2f123c9562a8674712c251b1d9bb54fdd091ad3c4de4dc8a17aaeb98f8a303d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-22-0.mjs",
+      "bytes": 9283,
+      "sha256": "c519b9cc9a51a188e6257b9dcb882854e31e38979e241a2ea0be713c52d6abd7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-22-0.wasm",
+      "bytes": 18007,
+      "sha256": "671cae9b3341db72fc1d6dae31f7e75dd6a878a2839b65e6a99d76a19dedc053"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-22-1.mjs",
+      "bytes": 9283,
+      "sha256": "40e475e8c38b5ab32e91854f4ba01ba2fbfe3546014214a4ed72e14965b715b3"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-22-1.wasm",
+      "bytes": 17938,
+      "sha256": "e4569ad67ab3e55c2afede8d31f2063760417637c575ef1e0efab112531c93df"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-22-2.mjs",
+      "bytes": 9283,
+      "sha256": "a312646e18a16b49f1903cf40f0f153da36e7bb73e466222d349caa2a3f02d86"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-22-2.wasm",
+      "bytes": 17936,
+      "sha256": "fd42dd433829bce0ef05ddf5654d103c52d133bfe9078cbb087e115abee89598"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-23-0.mjs",
+      "bytes": 9283,
+      "sha256": "ead92b4897c68fffb9384932997e952ccb0d50b1b6e345c5bf81bde3578c05fc"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-23-0.wasm",
+      "bytes": 17464,
+      "sha256": "320cfba51386d12ef43a04ff32c0634685d9b67986338fc85f7fb709b528114f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-23-1.mjs",
+      "bytes": 9283,
+      "sha256": "e655224f881c4bd171f80ca8abd8501a816057c2b22f6e0fe73d83217c0a4fc3"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-23-1.wasm",
+      "bytes": 17469,
+      "sha256": "6e1542d7e246c2732451f25109865d5c82f6564d0d30ec5b6749d423f9a3270d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-23-2.mjs",
+      "bytes": 9283,
+      "sha256": "915f8dd2d5342d8e192e71af37ce529e84f98a61d91d7aa4438292a7ff009de2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-23-2.wasm",
+      "bytes": 17469,
+      "sha256": "b6bcd94c54a7b374a9572d1ece4d0bd39741dc23dcad427c8b676596f5d1287f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-24-0.mjs",
+      "bytes": 9283,
+      "sha256": "1de1283c71f83f87a2b641406067d34f0c37cc06eee045c45a1d7f31d7f56788"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-24-0.wasm",
+      "bytes": 20002,
+      "sha256": "68e6d1b62e08a73ae33198c5b6ebeac476edecbe091e5ae425971eaf5bc73a11"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-24-1.mjs",
+      "bytes": 9283,
+      "sha256": "4107a6ae50c5bdf4f8b8f3d21be1f41a72454817904acbdfa451148bf6f2df55"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-24-1.wasm",
+      "bytes": 20005,
+      "sha256": "bf7df2181bdc18c7757f97a85d953a0d3ac54b115b47ffe3ab70007215dab21b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-24-2.mjs",
+      "bytes": 9283,
+      "sha256": "07dbc31f9620804dec1d5a5ce3c928110f953bd5245831db470e222288d08055"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-24-2.wasm",
+      "bytes": 20002,
+      "sha256": "849e43f6714f872f3e53324c0776edbb21cbb3bca8a0ca9a87e47f2e7a45ea82"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-25-0.mjs",
+      "bytes": 9283,
+      "sha256": "85dc623a04ececba802cce9e9aafc1cc0bf801abbefc1cdc985501210b174347"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-25-0.wasm",
+      "bytes": 17444,
+      "sha256": "c2e8f85aa507a90af2bb5164408190d33f14a8f2adbbf353fdf0bc8d9cfa3e2b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-25-1.mjs",
+      "bytes": 9283,
+      "sha256": "5b48db9d70ec496b71e38c232fc8a58149234b201e6da24b1cb87ef29e8da5b7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-25-1.wasm",
+      "bytes": 17395,
+      "sha256": "d0eba3d22b508afb6934b97b759f646f22fe7ec2dd4f7f43ed6dbddb68173383"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-25-2.mjs",
+      "bytes": 9283,
+      "sha256": "775d974973b14732c04d863a057dc1f71da2ccdc9a888d01a396dd123638d18f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-25-2.wasm",
+      "bytes": 17533,
+      "sha256": "37dec93a001933f1cd72f1914741a4495ebd4a57fbb01db9a0d138cc18d65be7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-26-0.mjs",
+      "bytes": 9283,
+      "sha256": "15759bb90cb15f4b24eabc6e343c711b747318304b90304efa8d024498b0c813"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-26-0.wasm",
+      "bytes": 18691,
+      "sha256": "7d4b39b06e4d8b6312ace4950b69dee747ce59bb48100250003a53f34c837fb9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-26-1.mjs",
+      "bytes": 9283,
+      "sha256": "1295bbe882b16f6b057428d68a6b935935a36e9fe90def418e2dfc329f4abf55"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-26-1.wasm",
+      "bytes": 18003,
+      "sha256": "d44d9af344e35285b5dc981b3283320525bad5da1d178d7e4a7ad3dfa1a41700"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-27-0.mjs",
+      "bytes": 9283,
+      "sha256": "d4b8da9ec1e0942752f57701ab5596e8f8f9960f395909f7b0ec22cb39fd6dd4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-27-0.wasm",
+      "bytes": 17931,
+      "sha256": "c7a1cb41019f974b196bd02bfc1ffe379906e97473261f35ebb6a7c9536d34f6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-27-1.mjs",
+      "bytes": 9283,
+      "sha256": "7172a6f2b57bbeecdeb67ddeee0e5516f158cb56878aea354420fc8e0d186760"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-27-1.wasm",
+      "bytes": 17933,
+      "sha256": "6f9e427ce500d99e1320ff6b7473ca56c8f2cab6d63b7918595e94bc1bb85292"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-27-2.mjs",
+      "bytes": 9283,
+      "sha256": "0a60cf0e3510195520980cddd01f1e17b82feffb0d4ce11dc2bfa0fe616543f6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-27-2.wasm",
+      "bytes": 17931,
+      "sha256": "cbc78d78f8d8d9aee89b9fe3a71fc336d064c7c5d438f2a27d5a3ee9dfa9cee1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-28-0.mjs",
+      "bytes": 9283,
+      "sha256": "93abd8b4152eb834afc7f03f03ad11d3254367bfa289a5a676416fe12673a060"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-28-0.wasm",
+      "bytes": 20428,
+      "sha256": "b9c4d34fb701666d7f41b2dd30a343e74562c4528c653d31d4d9f087f40dbd1a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-28-1.mjs",
+      "bytes": 9283,
+      "sha256": "39288c5b04e7518b4de5a4e3271f769f3fbceaaecc17687211d10ef664a2c1b9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-28-1.wasm",
+      "bytes": 20218,
+      "sha256": "612c2dd7aee86d28a8a9dde372c0d4dc07113861bf0d9d9adcca5744eb9bfce8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-28-2.mjs",
+      "bytes": 9283,
+      "sha256": "18c376e55c4a09ba2c159c54ebf5db4b9c839d40f2924879191645e8ff047850"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-28-2.wasm",
+      "bytes": 20320,
+      "sha256": "87a01f5d3707aafda7495fb01a9266025142954868fd4511966d25d10e65428c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-29-0.mjs",
+      "bytes": 9283,
+      "sha256": "9a5e2f3a04bb2439cfc3b147cd62c63784d0952d7b7f26ff15d17d8ec967cf1c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-29-0.wasm",
+      "bytes": 20481,
+      "sha256": "0ea817fee421e0a4406b4b1b5d9cffa3cb81251d3b22b52e8e83ff055078ef2d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-29-1.mjs",
+      "bytes": 9283,
+      "sha256": "a6788e0dde802dda735c30e6a293b1a5006a57ad30fc6dbe87214154e4586048"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-29-1.wasm",
+      "bytes": 20483,
+      "sha256": "76a5b2b0e31a2dcd4b01e4c8ff4aeae79375840382a656dd2c33037c7dd24828"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-29-2.mjs",
+      "bytes": 9283,
+      "sha256": "92caee424f6822c9b3207d083340f0375597b53aa97ad469bea6a4c7b6072e35"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-29-2.wasm",
+      "bytes": 20481,
+      "sha256": "3560146b6b5ff73a61c9d13fe3b65b9ca6cb53e6164d98bcf08939802173db0d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-0.mjs",
+      "bytes": 9283,
+      "sha256": "125a5cfa981d2b23280242fe78ff17efa94108e85f001e08195bce89b91b3136"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-0.wasm",
+      "bytes": 18052,
+      "sha256": "e77dd7752650d74d705b0f5f4023a976b59dcfc05ab59af5ff929af3de753914"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-1.mjs",
+      "bytes": 9283,
+      "sha256": "d33ce2cecd3647a423e502f1bdedae9a11ceaeefc17117bfaa05d3d6b12a27d1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-1.wasm",
+      "bytes": 17990,
+      "sha256": "5054cc3f7041feee03eb6cde3f55b1e1ff958c30034194569d1f2f7dae896336"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-2.mjs",
+      "bytes": 9283,
+      "sha256": "68e78651eca68d8e898e192def36b65e3ae7dae16e15d5aed4785b6f8fec3c72"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-2.wasm",
+      "bytes": 18052,
+      "sha256": "0b75fe15a93827ed972f4f2b7db925b7d4148a7c313377ef3d044a9a2bef4098"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-3.mjs",
+      "bytes": 9283,
+      "sha256": "164cb60803246119e47cebeb23d3fb7c86d4f0cae876c931932534cfd53648a5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-3.wasm",
+      "bytes": 18198,
+      "sha256": "ff7526f2313c52baaa1d087b22fb22758a4d2ec92703ea67142c723940f51c15"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-4.mjs",
+      "bytes": 9283,
+      "sha256": "720429aa148a786c001e996db12a8a81fda059e99590070d788cfbef221071b8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-4.wasm",
+      "bytes": 18136,
+      "sha256": "56e7b6e745acbdd22664f9c87193c59211b8648150445272d814c703f373a2a3"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-5.mjs",
+      "bytes": 9283,
+      "sha256": "00300bdb96a6dba2a09ffa73be1764f45a4d6d75c848445dd723663c0dc88453"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-30-5.wasm",
+      "bytes": 18212,
+      "sha256": "e25be4baa7ca6d60510d1a82146627d5a95c6e64aff5d7700c8ccedb4fe1943a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-0.mjs",
+      "bytes": 9283,
+      "sha256": "57f2a2ec20b9ea3955c91d763201492662a74aedd4b3254e9db0254680a93374"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-0.wasm",
+      "bytes": 17677,
+      "sha256": "ca35a41fe901ac40aecec3f42371ac91e4f4059c3e060abe46165f5ca8d03c1e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-1.mjs",
+      "bytes": 9283,
+      "sha256": "f9c4189076cd686faf44807fb4996335c413aea3072078541f7c870c0054a1b5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-1.wasm",
+      "bytes": 17701,
+      "sha256": "14e807532df07b5b6a0d3ee7be3461cc35fd41cd80bcd827f60e1cb701d45c32"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-2.mjs",
+      "bytes": 9283,
+      "sha256": "82d75e87550c6e68a17721dcb7f81c0b0e2681d680bb79db5eca262ae5feff78"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-2.wasm",
+      "bytes": 17677,
+      "sha256": "a21832016ca72e2e5ed376e9f6cda34e3d8e5cecf8d36ea2233297c33546f71f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-3.mjs",
+      "bytes": 9283,
+      "sha256": "95dd5faa34755b425e9f51dcb3cfc4c1f1eebfe187aad84e9d2254fc2f8cba7d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-3.wasm",
+      "bytes": 17823,
+      "sha256": "bb855a0622220e519ee6b8679dbf9b152b83a32c63cde4f09f43f40a1ef34b49"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-4.mjs",
+      "bytes": 9283,
+      "sha256": "3f5fa4cbad476d8ab3d013789002971bae4ac2d899a4df8dd771a192aca2c48a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-4.wasm",
+      "bytes": 17847,
+      "sha256": "b1ac9e3c6b44ee78f58e08efd250b57753c90eccb2ed2beaf6ec29804db805cb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-5.mjs",
+      "bytes": 9283,
+      "sha256": "e91a0b9663efd3deeba8b5de2975f6724cb95e051414b79d33b8abe12e9842d7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-31-5.wasm",
+      "bytes": 17847,
+      "sha256": "8c73a962b69c6b7b6ee87f1cc3924f3effd5855c59de18916511eb84b33443d7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-0.mjs",
+      "bytes": 9283,
+      "sha256": "1709ce18dd1e9e3b215c27ae6f1ddf981fd5bee2d49af61d58f08311b76b0f1d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-0.wasm",
+      "bytes": 17767,
+      "sha256": "c2f336780c80b7aba3ea55807efc73eafaa5ed45917cbd3c3dea1475090957c5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-1.mjs",
+      "bytes": 9283,
+      "sha256": "9f11b33260c6a8f9894bd70a7155a069fc3198ff45f46720c463bcc78d110d7c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-1.wasm",
+      "bytes": 17642,
+      "sha256": "4a598a25c148660a6224050103355291724cac55e05ee9e8cf15bc4bc7d5b728"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-2.mjs",
+      "bytes": 9283,
+      "sha256": "13b62b22c57e8ccd2d778c1d1193b957749500cb7a3b59633a9d9666a27dbfb4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-2.wasm",
+      "bytes": 17767,
+      "sha256": "2f9a189578493db87cae0fcb8867212b1a6ab5950d76eaec3a2b67ef42190405"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-3.mjs",
+      "bytes": 9283,
+      "sha256": "17bd43dfbb737080aca7c031b4c19755522a883b31d70b5a3a0c166c1c21d37c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-3.wasm",
+      "bytes": 17913,
+      "sha256": "9fcb97488924f0b6927b70dc6f23f80f18297433f6652b0d77dc1fcf2d961db4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-4.mjs",
+      "bytes": 9283,
+      "sha256": "9580d94dce4405e7842b0c95b980f5466ca8f309f4ecbc9e5edbf19561e079db"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-4.wasm",
+      "bytes": 17788,
+      "sha256": "f4fee1da969fe5ee155138d2a46a5c210414fde33e3fef7abea727763c473eaa"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-5.mjs",
+      "bytes": 9283,
+      "sha256": "61b13cb44114cbb16be23009565ac5ec33736cb06c87ec1830460ccd6486dfac"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-32-5.wasm",
+      "bytes": 17940,
+      "sha256": "c8b34dab1d674f8e32d02e68b9ef0bc9b522862124d63735cad5c0e7dc488d2f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-0.mjs",
+      "bytes": 9283,
+      "sha256": "e096b52db07a2dc7f84e428cceb11a59d0315603aa295e52f3edc84460b1adc6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-0.wasm",
+      "bytes": 19784,
+      "sha256": "076e7b4afe77a53785aadd51e3350d76858e9e62578084b01ed34b4aacbcc941"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-1.mjs",
+      "bytes": 9283,
+      "sha256": "4e828b663b046abb4d1284d627e9ef48fd296643fc492914e48aae05d2cc591c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-1.wasm",
+      "bytes": 19692,
+      "sha256": "d3990c4a2753116cc35fe73e7988ed2bdad07cf860d605189b29f6124b7452c7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-2.mjs",
+      "bytes": 9283,
+      "sha256": "084f46bfdb11fde5c8fb0ccdf6a1175cbd04b3ca5dd5959d00659c18a6016eef"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-2.wasm",
+      "bytes": 19454,
+      "sha256": "00c18cc2c7bf996ac8cb27ef382755fc702228778ae1f21d395480c168d08a16"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-3.mjs",
+      "bytes": 9283,
+      "sha256": "b2fb8258b231ee77112c69076ff4e12cd0420149c38c85244a02ae9636aeb127"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-3.wasm",
+      "bytes": 19922,
+      "sha256": "30dac5b7c8d3900143df0913e91c7c1bf59ba6e079dd8585d6872e0b12947f64"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-4.mjs",
+      "bytes": 9283,
+      "sha256": "1d9f322e61a0aa7e9f4ae4b47bb79b1b5f45e5ac1f7ef1a18dc7db67367925ba"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-4.wasm",
+      "bytes": 20334,
+      "sha256": "d9969344f62a3e70992d6acb4a69316b1b6c7ad35e18038972799699ccdd7183"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-5.mjs",
+      "bytes": 9283,
+      "sha256": "9467c58e917560af8042a726b68520fd99299fd3b10972f869ef3fd50b71df7d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-33-5.wasm",
+      "bytes": 20806,
+      "sha256": "fa818070beffee9866451d1f1bd2f1849044610d43184adabc2341afe606ddb5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-34-0.mjs",
+      "bytes": 9283,
+      "sha256": "61ec533b478eeafdd7df5f71116f073c55a84319db65b0b3e054392e9af97580"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-34-0.wasm",
+      "bytes": 23515,
+      "sha256": "2d97ad118aed323e60300e4cf32ed897327f8d9c93482bde8de7e7cd9a1ae931"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-34-1.mjs",
+      "bytes": 9283,
+      "sha256": "95ccaabb0d370bdc6761dd88dc71628ae4708f1f615474eb576f0c70863d161c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-34-1.wasm",
+      "bytes": 24337,
+      "sha256": "41f70400d87d7ffc372575a29567f34d33800284aabd88437a1d8a361cebf006"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-35-0.mjs",
+      "bytes": 9283,
+      "sha256": "6d88e3b059cb3bd1337517ea625617d97de4e42428a25451cdf5e5749074f0b6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-35-0.wasm",
+      "bytes": 20115,
+      "sha256": "cbaa78ae0fd825dcbac503aa56a211cc85b3185a950251ae31a3226037a111b4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-35-1.mjs",
+      "bytes": 9283,
+      "sha256": "80df0b3cbb5f37e5a5278ef84dd0e5a2abe5d205fb7999a171e1d2dc0f0b043d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-hash-35-1.wasm",
+      "bytes": 20112,
+      "sha256": "24ad7acd5d365ee7d6382d18e1df97e7cb7b488f4dbaa4684bb66842e714e91e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-01-0.mjs",
+      "bytes": 8611,
+      "sha256": "9b591459b257e6892bee3ac9b3190f75ffcbea468cd24d51301cacb46e9abebb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-01-0.wasm",
+      "bytes": 25616,
+      "sha256": "ac78de0a12706941a54fafe29d68df3f4852a94c70fd98244e11b1f6bdcc0933"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-01-1.mjs",
+      "bytes": 8611,
+      "sha256": "c867ed5485aa37ac77d58a28442fc55a7ca54a90b8bc715192c23e3e03f169f1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-01-1.wasm",
+      "bytes": 29316,
+      "sha256": "23299851816e7a391a2957b1752ebbb9642d0f74ded45f2302fb054af1d27b60"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-01-2.mjs",
+      "bytes": 8611,
+      "sha256": "55f3a96e76943c80652976526583458ac0000b0d8ea09f81778bff51b440334f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-01-2.wasm",
+      "bytes": 33902,
+      "sha256": "102b35b91ef6c1809cdfc837a9feac4e46d431150243f2882a5e775e511ec3a5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-02-0.mjs",
+      "bytes": 9705,
+      "sha256": "fd54a7b3839123c4cd5e93dc195bc20cc7df9a862c912c087fcc472e91a0f26a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-02-0.wasm",
+      "bytes": 39736,
+      "sha256": "40f16ad307b801a47beea93242d51e8566e5ec5a77fafea3542c387cbbe5f230"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-02-1.mjs",
+      "bytes": 9705,
+      "sha256": "e091e7a8d81e1b277d0237b54a86cdfab9044b7bf566f8015b7eaec223802464"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-02-1.wasm",
+      "bytes": 40167,
+      "sha256": "b2e6badba3f1e37e2452c3f9a6a46cba099247f821276622ad468b376fb60598"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-02-2.mjs",
+      "bytes": 9705,
+      "sha256": "486f74444a9b4f556ab75c1ea1bd43299cb94b9f17f24669587d1bce98a0e2d2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-02-2.wasm",
+      "bytes": 40589,
+      "sha256": "f066e7f48d9c23b3c441bd178757ebbea7b997e644cd314a8355ad6b721157d1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-02-3.mjs",
+      "bytes": 9705,
+      "sha256": "584f43c9d45ef123b2bf1441c4ab87807c93751bb59b10a24993628c355620b2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-02-3.wasm",
+      "bytes": 41259,
+      "sha256": "7f09e73e838e82654ad1fa69fd2426c07cbc21c644c25fbc1bb9f6cb6a3eb241"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-02-4.mjs",
+      "bytes": 9705,
+      "sha256": "a8a176a9a4841bae1d7cc275052286bfee11d3868e26514b1020f7b8c7107302"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-02-4.wasm",
+      "bytes": 42576,
+      "sha256": "77c365756685012b3f6df04a5c73b425e4cfd97f8f77a4cde7097bba7f68693e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-03-0.mjs",
+      "bytes": 9705,
+      "sha256": "39dd7066d4220fb9ae66cf68145f1bff5cc14f3a65456e972d942e1e351ce4e9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-03-0.wasm",
+      "bytes": 38041,
+      "sha256": "05dda5c3bc95c1e697026c91d626e90f441f15fc598024b343b665bd95d1b7f5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-03-1.mjs",
+      "bytes": 9705,
+      "sha256": "871d3890f0f6658d79b6fe771e7e19de8a2fee3bc984b6b986e47cbaae2399db"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-03-1.wasm",
+      "bytes": 37683,
+      "sha256": "75920a057c46919ff6d25eb296084b8ee9c00cf22d34d761b917ecfd46061705"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-03-2.mjs",
+      "bytes": 9705,
+      "sha256": "52040faac3a1234d4a5e55eb66beebe8a81bd63e54ea7ac33a0768f6d209d511"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-03-2.wasm",
+      "bytes": 37617,
+      "sha256": "3bd3a0dc3e927d65dc64b99674bba7793dda3c79d6ed2b47cf7a80ac4766f4f5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-03-3.mjs",
+      "bytes": 9705,
+      "sha256": "6265f5bbe45e2dfb1b39d9c5f3e27cbaa17786c51d24201b56895b14edcc220d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-03-3.wasm",
+      "bytes": 37820,
+      "sha256": "dc039180cb03be0392f109441c99acded3492fa6a3afb0834df2e577873a6386"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-04-0.mjs",
+      "bytes": 10095,
+      "sha256": "2e4b721ff6fc2743364990a2dfbbf742aa18ec322375a1e66dfcffedda8cef0c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-04-0.wasm",
+      "bytes": 38556,
+      "sha256": "ebd9ae36fe2ab4cbe0398fddfb5ab6adcaec4fea845c96924e658363d14c98ff"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-04-1.mjs",
+      "bytes": 10095,
+      "sha256": "e19262951d6b746867202561cb098d14346a1aaea0d25897777cb31b721f9375"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-04-1.wasm",
+      "bytes": 40336,
+      "sha256": "2684b66bd793be8ad4381a5c9478b62e6499b376276a36efab8aa22f376cd1e3"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-04-2.mjs",
+      "bytes": 10095,
+      "sha256": "9c4450bc0b6f228c9dfb1a03a608348d3f8b8a168c349045453ad2715d94e2c8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-04-2.wasm",
+      "bytes": 40599,
+      "sha256": "60b8db287eee10beeaf91548dbc2edf9afbefebfecbf7b053efd23220a0abc4b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-04-3.mjs",
+      "bytes": 10095,
+      "sha256": "677d8c713edbb22fa8ffbcf544ab10407dc33264bde81c1b0e27c1ac3c0af330"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-04-3.wasm",
+      "bytes": 42258,
+      "sha256": "bd82da75f7ab94908ffc597a4b62241de4908b36a7944a9596df6e9b89491666"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-06-0.mjs",
+      "bytes": 10045,
+      "sha256": "0b2e05183ce1fad225c475d7625eafd050028e41d07997b84ddef02c14b400f5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-06-0.wasm",
+      "bytes": 34251,
+      "sha256": "557d5c2617aa2566d3f11d3741ebc7f5f6f387314c6d9158e13f7fc12eb30a94"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-06-1.mjs",
+      "bytes": 10045,
+      "sha256": "c54964e5034ef09579597b0a47f8f59a0a740aaa6733c8d156cf248659cff5f8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-06-1.wasm",
+      "bytes": 34311,
+      "sha256": "61f078ce5b08bcba1793a925f7102907479b324008e78e3c09c546a7227cab87"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-06-2.mjs",
+      "bytes": 10045,
+      "sha256": "e708c8720cfd500a611d1419b8afb5ecffe14aba9ab680b6d2b71d8bcc41a920"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-06-2.wasm",
+      "bytes": 34606,
+      "sha256": "d6b137f80f4dacdddd8fc52efef0a92cf52f58b5cd6db8073079bde0033316b8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-07-0.mjs",
+      "bytes": 10045,
+      "sha256": "513c4e37152b3389ebf11f6c9c5fdbb8cc401f0855e868b3bf53c61760b8fc3d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-07-0.wasm",
+      "bytes": 34575,
+      "sha256": "740ad66456b4151167be32c360135f0397e58a5aefa4b8460157df669c0278b4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-07-1.mjs",
+      "bytes": 10045,
+      "sha256": "5d169c0291c766337ab9ee525e1a74544a9d0735f47b07800e1cb78791112f29"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-07-1.wasm",
+      "bytes": 35050,
+      "sha256": "b5feff1b4c8f73a9586a3e4770d31bc164661385d3e15d1915036ffc80c8cd49"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-07-2.mjs",
+      "bytes": 10045,
+      "sha256": "5b62409605b84913b5aecd8df3546cb1871d5f6959486e154e9c2f880a1f0f88"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-07-2.wasm",
+      "bytes": 35623,
+      "sha256": "8509057efe5e806ef32a5bc567c51aeaf345d69e985c7aa6531ff56723b157f6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-08-0.mjs",
+      "bytes": 8611,
+      "sha256": "b237285a5406706e803fa407dfe5f06d5646150c7a7aded018769d09a9b1e79b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-08-0.wasm",
+      "bytes": 24586,
+      "sha256": "d4f634c39a69931314a64ce4c2a059edb7b117723d81e113910bdd42b9143f4d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-08-1.mjs",
+      "bytes": 8611,
+      "sha256": "a73b035ee88a2c2a0e480c54c1166db380c0c783c86bab2a92fb168e5c9756fe"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-08-1.wasm",
+      "bytes": 34629,
+      "sha256": "8587c87afc164a92b5f20339e25228d6045b6ed318da15d24e2a0342bce924ab"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-08-2.mjs",
+      "bytes": 8611,
+      "sha256": "028ca001ae6c2453f0a485bbbe4f1e59a62e2ce143b6e9e3881011a151f2af8e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-08-2.wasm",
+      "bytes": 37603,
+      "sha256": "aacbb5cba1bf56dd916d5cd2d89e037de9a8eb7868d6059c12a6be5e4137ba9e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-09-0.mjs",
+      "bytes": 9705,
+      "sha256": "70a48e04288498a4329656a9d6d21d7f37877fed07c4bc8b1780e0a111719fbf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-09-0.wasm",
+      "bytes": 28201,
+      "sha256": "3486404f2e3c3b3a586f295fedbcde0da8b5d029fe97d0761b9a4014046ab644"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-09-1.mjs",
+      "bytes": 9705,
+      "sha256": "82554110ce75129df4e4a2c31fa418f914a01a5a3c8fb414a2a55a6d167a9510"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-09-1.wasm",
+      "bytes": 28517,
+      "sha256": "6f98a3ec334432a7fb61d20eeb989d83f920b72f1ddf522302d12a07f9afc504"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-09-2.mjs",
+      "bytes": 9705,
+      "sha256": "285565efa0d367a69b7d2fc9187c53cb0c547463991626d11f3c13d7da02e0c2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-09-2.wasm",
+      "bytes": 29123,
+      "sha256": "3e2a54396f6b28edc4aec117ae58799df43ae3b55ffb024dd2504d61b825f6fb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-09-3.mjs",
+      "bytes": 9705,
+      "sha256": "3f0133ccf99bb2f9b769f670763f37e7ce1cd9e25f35ad5ffc90d364a0b4ded2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-09-3.wasm",
+      "bytes": 29155,
+      "sha256": "213ad6b102ec273e6df599d017d14d4cd6b9ba7e7f845037ce2ae7f992d74c25"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-10-0.mjs",
+      "bytes": 9705,
+      "sha256": "c7f165c2579bff3f3dcb6d930bab49fb73dc451833364705b4f889e825148b35"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-10-0.wasm",
+      "bytes": 32957,
+      "sha256": "7229f4b187e30da9ec9780577fd04defed14741f02697f846a30222c9c5188e3"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-10-2.mjs",
+      "bytes": 9705,
+      "sha256": "9b03a9f92a3b97637ccfbf32991a16ded1401384bacbd2a62723b931c17257aa"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-10-2.wasm",
+      "bytes": 34227,
+      "sha256": "4e8a72d932b23e9ace28e0f7059b7e469275e5b55a90a5186455114802c1f9ee"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-11-0.mjs",
+      "bytes": 9705,
+      "sha256": "6e65ed692cf22e7ea03e8cf177e4fff4a2b083f8c7c3982afbafd4603de4184a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-11-0.wasm",
+      "bytes": 25183,
+      "sha256": "3eb92c37f22d4e74ae5377423758fcfac25ede6bfde881e956b6b0cc7b0f463a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-0.mjs",
+      "bytes": 9705,
+      "sha256": "db94dc9be5607467f785eb77acd88c4ed6a53db0ceb341df20af99bdf91c3b66"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-0.wasm",
+      "bytes": 29376,
+      "sha256": "33c7708bf74f019f557e6a54d589ff8a26f9c5772c72072d617872aba0f32036"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-10.mjs",
+      "bytes": 9707,
+      "sha256": "a0b6360aa45373064719aa67a368fc96f8f1e4f6d217da666abc2617ae4dacfd"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-10.wasm",
+      "bytes": 27296,
+      "sha256": "a363913f7646829b4cb07c92d0038f9e29b1387317f834943abeb6847ac419ae"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-11.mjs",
+      "bytes": 9707,
+      "sha256": "40ff4aa22267b67e950588c6c4ebe0cd312d829c3505c2b4dfc1b8961fcd4ad2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-11.wasm",
+      "bytes": 34875,
+      "sha256": "fe431450640ca2da8ed4cf2ef22356ba66afacd03d66b18e205c3d19d1135bd1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-2.mjs",
+      "bytes": 9705,
+      "sha256": "22f40fd0861e5aa403ad9a0332d4c35f47bca3e23bddbe1f07908d15cf600eb9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-2.wasm",
+      "bytes": 29744,
+      "sha256": "bd4bbf52cf326d80b9e5c3ff36712e0c8da8b455b3165058c713f91235a4c64b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-4.mjs",
+      "bytes": 9705,
+      "sha256": "224deee8852eb2dd7781a7dca07e7b93b04776de20a71ecb66169b1334c25452"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-4.wasm",
+      "bytes": 35447,
+      "sha256": "df254aff42ff781bd0da676b9a8e297bd25c1a2d107d79fc01c09cf81f9383c2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-6.mjs",
+      "bytes": 9705,
+      "sha256": "78e1671edbb2d5da3dacbaba1b83766c42bbe3064cfbda9269f3f127354bdf85"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-6.wasm",
+      "bytes": 28996,
+      "sha256": "c0a994183262b44ae3d8b4a99626ede81f810b1158b972b7635003cc4998500a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-8.mjs",
+      "bytes": 9705,
+      "sha256": "145b65b722bfa92e180eead5d4606c51b48ab897acb60c4ff62fe42ad9731da5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-14-8.wasm",
+      "bytes": 28972,
+      "sha256": "25b49d1cddfb06273a2b7117107eb3c9dedba83972ebd62586dc4004e44080b9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-15-0.mjs",
+      "bytes": 9705,
+      "sha256": "f4dd46b64c25429c950a5b9190896d6e2bc3e52864dfa3a6212af2fc3fc66821"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-15-0.wasm",
+      "bytes": 29520,
+      "sha256": "ffc93d472d5221829e0e355e78361489defa960d4ea0ed12d0e4d05640fb585c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-15-1.mjs",
+      "bytes": 9705,
+      "sha256": "b51ba934db27b086735ae8ccd69b38fb2a523f02f0228108aa57b3768ea2a7ef"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-15-1.wasm",
+      "bytes": 32211,
+      "sha256": "1711e907f3888c66c2dc6c9c576b9ecb32969b30a07cbf126b1bb547c7295e86"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-15-2.mjs",
+      "bytes": 9705,
+      "sha256": "82b39bbf87e78fcc8da7890a01c1e1920a4060becd539cfaac6f9c888ea791a7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-15-2.wasm",
+      "bytes": 35354,
+      "sha256": "05ce292131606cdc68a287ee9b856a3d74644a9060a4f1a792152defd042ba1f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-18-0.mjs",
+      "bytes": 9705,
+      "sha256": "013e988325cde59cb11dcaf43c70ab80e49649cec569fa5b9e7d14cac5ebba20"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-18-0.wasm",
+      "bytes": 25074,
+      "sha256": "da5eadca9fcc351248ce78fd4832731c1cb20172e353bbf933b98f42eeaccc5a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-18-1.mjs",
+      "bytes": 9705,
+      "sha256": "bd1bb1b034c0e08543d42d3611efba6a050383267c3aa5c7582afb4809cca358"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-18-1.wasm",
+      "bytes": 24240,
+      "sha256": "afb883a2790131b301aa71db14b29978605861d0fa466152889ba459b04fec50"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-18-2.mjs",
+      "bytes": 9705,
+      "sha256": "a44effbe79a4349b27221850313dd7a0c8025c8623ecceca3b7adf6e0b256c5f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-18-2.wasm",
+      "bytes": 24968,
+      "sha256": "f91e21f217d2bb00d6e159ba12878fe2827a539e365ab6dea19106386db08916"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-18-3.mjs",
+      "bytes": 9705,
+      "sha256": "9324f5e994d6566fccf97dfa96d312c6ad6651de4fb64a63cd8af7611dd3f742"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-18-3.wasm",
+      "bytes": 24913,
+      "sha256": "0e001fc88a1875fa4fbb9a4037a2638e3b7e4ac6bb64c19d8923e065b815173c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-21-0.mjs",
+      "bytes": 9705,
+      "sha256": "855be5ba3edf1ce356aedeb6d674040762ea67604860dfd461c0c09ab8fc5aa1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-21-0.wasm",
+      "bytes": 31228,
+      "sha256": "27652087bfb923f3661792f8c722f3e44c673a8d0e79085eee2fb1ca4cfe08ff"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-21-1.mjs",
+      "bytes": 9705,
+      "sha256": "ec706ad141e4ccd0f5700a9daf500cf641bb7c3f9d26250bc6e9afc2e9718956"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-21-1.wasm",
+      "bytes": 33159,
+      "sha256": "f2f43f8d2a2c0a8692b3bd379512a5dac26f9a7ac7ef694d5af29939ab520bfa"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-21-2.mjs",
+      "bytes": 9705,
+      "sha256": "3021422632495ab6edf2fd06ea94237bcb55eeb68495e6d1f260a77801a81272"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-21-2.wasm",
+      "bytes": 31475,
+      "sha256": "36b45118abae4abcee12c7804cb346bfdff82d9e300439551d3ba1fe03995218"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-21-3.mjs",
+      "bytes": 9705,
+      "sha256": "da9c2973ff126e10b2adfe2f921d53652368f3ba2f77470390cc984b6c916580"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-21-3.wasm",
+      "bytes": 36064,
+      "sha256": "40abe37ddedf8fee646a54b2e5a836c51bec5ceb14f262f3e6763a1cd84203e4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-21-4.mjs",
+      "bytes": 9705,
+      "sha256": "ef867d63ef415f977c0e77723548fed5582e94413b685a6aee77b74c4567a7c5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-21-4.wasm",
+      "bytes": 31317,
+      "sha256": "d12a38893088560552fb6ef761dec04bf93f0caf55f3e943528b1244046694ec"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-22-0.mjs",
+      "bytes": 9755,
+      "sha256": "73f9280deeddc60fbfcf8445dc654bf3a0830adfcc269231270a64005e7954a9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-22-0.wasm",
+      "bytes": 27979,
+      "sha256": "33705a2216b11506ce4c5722f3e074c0ef4ca1b0d36584638e718285198783a6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-22-1.mjs",
+      "bytes": 9755,
+      "sha256": "aee65b911f331660f60865587d29cfd3fae0cf1f123061d8ff93779cad001a03"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-22-1.wasm",
+      "bytes": 27907,
+      "sha256": "5b9043282fab14fa5c80051184177d4070ff9d2212a68f12461a83afb6fd09f7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-22-2.mjs",
+      "bytes": 9755,
+      "sha256": "4dcd5d3e43a2195d71898504bd0c2fb38cdb0409c520f874f1d1d0c2da458880"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-22-2.wasm",
+      "bytes": 29069,
+      "sha256": "06512aec1963dd3aec58f8b8054a4f1454f81df4072c8bc49073968208a5b911"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-0.mjs",
+      "bytes": 9705,
+      "sha256": "aa15cde61fd7d9e3fa397d957ac83d820508152c8f4cf1b5de8fae1e82278aea"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-0.wasm",
+      "bytes": 60874,
+      "sha256": "e074b4f7bfd7bacf1b7950f15defa0b136487c40e98a14d0ae72804de0d2a111"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-1.mjs",
+      "bytes": 9705,
+      "sha256": "435f1b39fad6b2f3e5066d78583ae43f575e1558fa3ea61533af4bdad0e63a53"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-1.wasm",
+      "bytes": 60613,
+      "sha256": "805e9a984f5fd6a391b2ac64a30529721299753ecc82b406f29ab247affb7e20"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-2.mjs",
+      "bytes": 9705,
+      "sha256": "2707b518228bdf650af4953d714be1b0144c5b80cd814d424e99bfc9b0dc15db"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-2.wasm",
+      "bytes": 60891,
+      "sha256": "d311de8771247e5327e2cc73c7d4e072d14c465c6f8eef8a1f1a97591a9117eb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-3.mjs",
+      "bytes": 9705,
+      "sha256": "459a51eb1dffa9c6efd8b56e1abee7fd39e97c8d13e88248be09c1dffeac807f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-3.wasm",
+      "bytes": 61179,
+      "sha256": "988a934727b32b38edc2181c6c5c0597b42a3e1ef9b7e2548a43cf75dc5411ea"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-4.mjs",
+      "bytes": 9705,
+      "sha256": "390151bc9684b639b204f9796360300b8290c430e418a7103acbb275d90d2eef"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-4.wasm",
+      "bytes": 61044,
+      "sha256": "2cad25cdbe0e90ad196a27d87bff1ccdde3c403f4c1d1e82a5ec521ca8af08aa"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-5.mjs",
+      "bytes": 9705,
+      "sha256": "55ab37d15a03805a4c25c95a13e673cfbcff1cb435cf03032b98c92dc887b138"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-5.wasm",
+      "bytes": 61516,
+      "sha256": "303a0fde72dd86aa3b2dcc6d049e83067f81d89c5c2e90ab564fdc775d2c42f7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-6.mjs",
+      "bytes": 9705,
+      "sha256": "03ff864fbac7723bfa774d9da10c775be81d86e27f319cde4bcbf13993b11110"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-6.wasm",
+      "bytes": 61721,
+      "sha256": "6ec5ed5d8e18eaaeeed5118256a4ff6de3f245efa99e8c818f747726f245626b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-7.mjs",
+      "bytes": 9705,
+      "sha256": "cb910a94cf421a3147e5fe9840ea34b0a661e7a4f44afb469651506e6b72b806"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-7.wasm",
+      "bytes": 61415,
+      "sha256": "46ddfec0feddbe9c0e1defa9f04d2bd82da5b78d738c3020f99edf522f16ce97"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-8.mjs",
+      "bytes": 9705,
+      "sha256": "60e4299c9107a32e23f82e04158dfc8c652f87440fe34090b1f7bb8fb13bf12e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-23-8.wasm",
+      "bytes": 62364,
+      "sha256": "5ca068da4b8207c2297f87a380f4d62a8df9a719bcef5bf40ab72143c41a633f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-24-0.mjs",
+      "bytes": 9705,
+      "sha256": "59b1ad7355b64e617635ae7aaa45f1591343140aaa63af6a541baf0db97ed5b7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-24-0.wasm",
+      "bytes": 27064,
+      "sha256": "447686497d965c84592ded86ed93f3c907342b6f913f1ffe1a2616d553d8c4cf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-24-1.mjs",
+      "bytes": 9705,
+      "sha256": "2f14d61abd28e04501fd7117b6af315441ee1d8339ff28f0e7ac726b923ec090"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-24-1.wasm",
+      "bytes": 26932,
+      "sha256": "ac09b221092dfc12ac9d4d6fbb99db872b3679d996af8ff4d7d070905316943a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-24-2.mjs",
+      "bytes": 9705,
+      "sha256": "c89b6521e7d1aaed7127bf1c547e9fcc9f9b42b9498715bc64ebe1738332b1c2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-24-2.wasm",
+      "bytes": 26934,
+      "sha256": "0d6d1fcb47fed605f2158ef85ad8d3a8da63ed02b49096cd5631a86dc2860743"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-26-0.mjs",
+      "bytes": 9705,
+      "sha256": "4b5d21d528d5dc10f8c262d305aa288720bbbee624d233abe083d93487687724"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-26-0.wasm",
+      "bytes": 29410,
+      "sha256": "2a337d6be400d5606a28f259cc598148a169e8219f006965e1e2956f4c1ecd6e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-26-1.mjs",
+      "bytes": 9705,
+      "sha256": "ece6b7821b8b9273af647b58ea9eef3dd16662d7a08d91fd9e545cf3a26ba296"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-26-1.wasm",
+      "bytes": 29511,
+      "sha256": "4f9656b4e9ce6d18aceb709cb6f024597c9cd0e52aba46b508d7a36086d44ce2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-26-2.mjs",
+      "bytes": 9705,
+      "sha256": "3b47903c2d3ed5d7d2279d150bc0705fc6996a65adc5fee9c16118a2e6b097bc"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-26-2.wasm",
+      "bytes": 29997,
+      "sha256": "fbbd9158cce6558d37d56e50205623df1f244f0506dfa4b99e0aeaa7f69b411e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-26-3.mjs",
+      "bytes": 9705,
+      "sha256": "463de7fbed09e31ca00afaf24ea3041b7029a67570af59881482a073571f459c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-26-3.wasm",
+      "bytes": 30386,
+      "sha256": "2ad3140613932e905fedab378dfffc64f5e3a07db10554407261615e9eef7659"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-27-0.mjs",
+      "bytes": 8611,
+      "sha256": "a772cb61f77abbd7e282e6648afc0be71cc993df7e1ba2bff9a04e7338d580ce"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-27-0.wasm",
+      "bytes": 24754,
+      "sha256": "a52447ca2b416249b2d74977a374de258d28e88584887bf1af0713b09806daae"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-27-1.mjs",
+      "bytes": 8611,
+      "sha256": "e4e8b81d931f55d89f4e0438e7d5123dd0b26c0dec45de4f6ab1f6ae2fcd1459"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-27-1.wasm",
+      "bytes": 25092,
+      "sha256": "893efc9c0b8d19e167dd72a5ea4ea4ae56b32543dc088c57cfb306e2c8a04e04"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-27-2.mjs",
+      "bytes": 8611,
+      "sha256": "17bbd7537231c055b4741313d4e2334bd8b278bd8e37e770f916bd0679368b16"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-27-2.wasm",
+      "bytes": 26158,
+      "sha256": "0671d2b43b8507245013687986dd95ecc8b32122dad2faaf3da327581ca9614e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-28-0.mjs",
+      "bytes": 9705,
+      "sha256": "62a8ab51d5e87bd5cd16d8b18e702ad3b90806155252ebe65b4b2688665b8c4e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-28-0.wasm",
+      "bytes": 30150,
+      "sha256": "40666a01b57ad23f90a6761ebf4905b487fee868d12f615950c0fc8ad6252d21"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-28-1.mjs",
+      "bytes": 9705,
+      "sha256": "954468b342328e7735edd9d4bda1ec17ffbcc63a172ed0c52bf1d1f5ccf4851c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-28-1.wasm",
+      "bytes": 33533,
+      "sha256": "cc4e4764c1e38ff0b5b375054330d110d9f8c7360e107fc758215d50a430a3a9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-28-2.mjs",
+      "bytes": 9705,
+      "sha256": "76c5ed42c1a2ee32e68674f2bef7f2fbb02f0e8e6795c6ed2827c332c109e231"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-28-2.wasm",
+      "bytes": 28452,
+      "sha256": "0a27f916d0a2908443fc79253e6276a1bb534e0a11b76215a36be92fe2029932"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-29-0.mjs",
+      "bytes": 9705,
+      "sha256": "4b7ed344aaee3ce89f0619423e27ce7087e0e91eb7b4460cfc88db495e779c7d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-29-0.wasm",
+      "bytes": 28320,
+      "sha256": "65def2c9d4ebeaff91e2122bc1c4cd8e4563f9bb8548c97b95e606eccb05f8df"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-29-1.mjs",
+      "bytes": 9705,
+      "sha256": "294874738ae43bf8233087881edf43d847821be1e32b00317f0acff6ebb9aebe"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-29-1.wasm",
+      "bytes": 27287,
+      "sha256": "a0368ea2353511a70804cf24dc78f986e6480b8b8c07dfa18ae7e85c09941907"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-29-2.mjs",
+      "bytes": 9705,
+      "sha256": "cfdf93171711884d5828ce9286db653ea278984e639b5d0216d14c36f5d5b489"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-29-2.wasm",
+      "bytes": 28067,
+      "sha256": "51f10dfc092f065d19e889a50ea9e44ff3362fddbf9d934441e43d4ca6035b62"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-36-0.mjs",
+      "bytes": 9705,
+      "sha256": "04f61f39bbb364934f2e15888b5563ce770c5518b2a2babd09054972e5d573a0"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-36-0.wasm",
+      "bytes": 35349,
+      "sha256": "44bb564548d50de365f505017d453b870859fcdc0172b70fe1c3d43b0e126981"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-36-1.mjs",
+      "bytes": 9705,
+      "sha256": "36d9cac35780553459d310fe812236d238494ea6b3e804b69e8341ced989458f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-36-1.wasm",
+      "bytes": 35364,
+      "sha256": "76545f87c617d27e6255fe0724fd0d634233b2651692d9759cb4508da111f674"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-36-2.mjs",
+      "bytes": 9705,
+      "sha256": "eda3ef61b30d635fe84038d5fb7dbf930f31f618a69d66e3f88adc819d6d1010"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-36-2.wasm",
+      "bytes": 36059,
+      "sha256": "1f7c0c548ed67d02e1a3028d412724fc98f4929a2ebb95586bb0fdf6e67466b8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-36-3.mjs",
+      "bytes": 9705,
+      "sha256": "7fa821bf2517caa072c1fd0eb944c2a7c8e98be84a2b1e4dd1ce365c522149cd"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-36-3.wasm",
+      "bytes": 36230,
+      "sha256": "b10c649f7caa7e7935c4393a3be038fa5fb4d73e089d68bdb340081924ad1da0"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-37-0.mjs",
+      "bytes": 9705,
+      "sha256": "59d053189058a68ac6ea9ec78b60fdb6cfc9fef9180dfa82cfe913b0d81a2c58"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-37-0.wasm",
+      "bytes": 40252,
+      "sha256": "0ef145cbb88b490c78b2f9b35fa5248635464c4b05ef461b1834035ccd1cf873"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-37-1.mjs",
+      "bytes": 9705,
+      "sha256": "08660acf13e533bd1411c34394efe421a8d500d23f8381c28233c5cec7e1fac9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-37-1.wasm",
+      "bytes": 46243,
+      "sha256": "af0ec9adde7365e26a5cc81485ef3192a87d5e79f098aebedd67fb8628ee8b16"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-37-2.mjs",
+      "bytes": 9705,
+      "sha256": "b13502a98b6104b21bc07d25815d265388847f70ef9087ff06e259865d739353"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-37-2.wasm",
+      "bytes": 55063,
+      "sha256": "f17d54cfd59d7c63c431a4a8da29c5535d1be607887038a47f11d29ee4c582f2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-37-3.mjs",
+      "bytes": 9705,
+      "sha256": "11d124c1b110ac3556c2762006900d39d013dbc332a5e5dae6422ffdbf7a7439"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-37-3.wasm",
+      "bytes": 62388,
+      "sha256": "6f89f40e1404da9ae9551844fc6e6dc9634f6b887992122076f846b13158a2a0"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-39-0.mjs",
+      "bytes": 8611,
+      "sha256": "8dec5cc0dbfb79989a3f598bfe6c84ae123eb5e3a11edb63f861818d88ec3ba8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-39-0.wasm",
+      "bytes": 31922,
+      "sha256": "a242b9f4e77e785e2ad4cb493ccbecdcdd9232ad82d911ebf05286a0420ac444"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-39-1.mjs",
+      "bytes": 8611,
+      "sha256": "ac4d7f65145539436273c7dcd754a84c69be16bb190abcb35e9ef0413604d287"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-39-1.wasm",
+      "bytes": 37488,
+      "sha256": "611472e8f378d8e722265a7179cfb5d6f48f0f72a54d0451e49187084b164660"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-39-2.mjs",
+      "bytes": 8611,
+      "sha256": "e251c11be007a23e821b759e514fc8a6d0954f11cf97c8b4ca74c5f143962ddc"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-39-2.wasm",
+      "bytes": 51045,
+      "sha256": "5d3e11a935d712bdb38ec833e02379585c77b0e40a73f90f491b20a79c3bcd74"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-40-0.mjs",
+      "bytes": 9946,
+      "sha256": "553deafbc667c0787ad7e5d734f0d61024e6340711ff63e0266edea306536092"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-40-0.wasm",
+      "bytes": 53649,
+      "sha256": "41eb5095be3ec985c18344ed5cdc2b776097385cc565969fe5f43bb909650993"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-40-1.mjs",
+      "bytes": 9946,
+      "sha256": "44b984e7db649213702d49cb8dfbe8b6270c05d76d1be08f3c3cec5b27fb5628"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-40-1.wasm",
+      "bytes": 62559,
+      "sha256": "895b017c28e855e9540c1a7aff4056989a822fa2b881331fd1822925161cd8aa"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-40-2.mjs",
+      "bytes": 9946,
+      "sha256": "06a219845f12f874edbf5925a5c029b9cca7487ca3d33ae90ad811ef608774c3"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-40-2.wasm",
+      "bytes": 49371,
+      "sha256": "578743610a02f132dd7aa5a0e56c9aa8211fefc12a8921f9bdd3aa4d531818fd"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-41-0.mjs",
+      "bytes": 9705,
+      "sha256": "d407bd768f9df0d44fcf7cd4ebdcded47fe238a34c1e4f0105f4ab3d1989d2c5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-41-0.wasm",
+      "bytes": 43061,
+      "sha256": "6d793f8eb1502ffdb60f7e757389120485c643860341cc53f2dac6d6b967f1b8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-41-1.mjs",
+      "bytes": 9705,
+      "sha256": "7e230ab3233dd1dde4087da22aa61e8ab6590ef3bc85266bcbef424ff71b2164"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-41-1.wasm",
+      "bytes": 48556,
+      "sha256": "3b7465790c93f70ae45abe927367dcaf98b73580046c52b6279d1e0617f7cd34"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-41-2.mjs",
+      "bytes": 9705,
+      "sha256": "41855c526e68c8ccae7b680e408cf82172066ac6ebaf8d807b89301a9c8e7404"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kem-41-2.wasm",
+      "bytes": 62188,
+      "sha256": "b18a863818da7bb08bfd9ff0358fa857608547ae588bc1c2e33aea57aae60b59"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-02-0.mjs",
+      "bytes": 10553,
+      "sha256": "81bfa0fff1d677aaa007fa470e7411bddd3d80bcfaf18ba04b135e4b7d643a38"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-02-0.wasm",
+      "bytes": 38937,
+      "sha256": "f107b4348e8a0269552087e4be13da2259db0e9825502f655c89d78352ff3ead"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-02-1.mjs",
+      "bytes": 10553,
+      "sha256": "117f004b3de1736fbfaf5c48aac4b3dad6fa3bd9814947e9558c6c46aefedf88"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-02-1.wasm",
+      "bytes": 41074,
+      "sha256": "2b7a0fbdb580d755e488f59f8fd45ac02267b4a0cbd8701c14ce4497bb180a46"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-02-2.mjs",
+      "bytes": 10553,
+      "sha256": "f8fe4685a28bd584caa028c88f0d91063350774681baa3330e4d052cb02bc7c7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-02-2.wasm",
+      "bytes": 56854,
+      "sha256": "661ca8fa074acaa735aaf041f843af87049bcfb836028758fd498ec32a0178ba"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-0.mjs",
+      "bytes": 10553,
+      "sha256": "7d5a14e57d276d178bf623d0292882f017bc605298f3321db4cd4745c1a904bb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-0.wasm",
+      "bytes": 50831,
+      "sha256": "ea58b640e9474da93fa0a5535eec504809c00e7e57375eb21088abe0c498ec63"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-1.mjs",
+      "bytes": 10553,
+      "sha256": "d5e0760b86348841dbb1508f7ccb72d92fdc09f90f1d2a7e4931e4ebec0655cc"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-1.wasm",
+      "bytes": 57083,
+      "sha256": "33c47ba4c73528289c5288342cddfdd7eee59aebfede8e6e6d65b5057d9cad6f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-10.mjs",
+      "bytes": 10555,
+      "sha256": "418f2fe2356c93a8019de652e2bb32d52826a0752559cfa5c7c4c971513c1b95"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-10.wasm",
+      "bytes": 72162,
+      "sha256": "4780796f013e8958e2021e9e59544a26aa90e979e12e6bb4fd4169a87349c515"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-11.mjs",
+      "bytes": 10555,
+      "sha256": "f1683cdd71b587cb7b89d966023a366dc4bdf6be1f60ff9a1127fcec5f8581ab"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-11.wasm",
+      "bytes": 83651,
+      "sha256": "f6f226dfa4acf6a8372d46b7b428707ef5dcfdb427c5836abc4a26e9f2b9a530"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-12.mjs",
+      "bytes": 10555,
+      "sha256": "50c6c9fe973c42d8804440c90d42e200406fbd6c71f9ae60aeb6af26751bcc7f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-12.wasm",
+      "bytes": 100885,
+      "sha256": "bac47ffadc2e9f4bcdd856f3767f44ca3a09b7fa511a2ee747c5f7e116af0cab"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-13.mjs",
+      "bytes": 10555,
+      "sha256": "46b393b1644c40559ccf4c85b0c7910133e96b7712782c7232e8332f035615dc"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-13.wasm",
+      "bytes": 74053,
+      "sha256": "9fd11069a276c5892161465c8b706decd14c0fe4607323d3402385a0941cc4c2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-14.mjs",
+      "bytes": 10555,
+      "sha256": "f148cdb3224debee01e802cb224afcb7c676d8873b6db5fd0695c4665ed8fba5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-14.wasm",
+      "bytes": 75983,
+      "sha256": "574ff9bf9eab51df62b9abb822fdbb1b53240a278d386c8e58315686c2ed0ded"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-15.mjs",
+      "bytes": 10555,
+      "sha256": "8d9fed0a1bca713b98d5bb68431a08abb43420b3f9c1c7886e459e58529d6442"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-15.wasm",
+      "bytes": 82601,
+      "sha256": "3e2ba8fb2b3907ae2e93fa2b71cd0fc4fe2822626ad20067dd78f73f95e5ea57"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-16.mjs",
+      "bytes": 10555,
+      "sha256": "3e9621cf5e71881225fb683a7dcda962403145502ec9b9ceb0190a5d3f9430a2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-16.wasm",
+      "bytes": 83829,
+      "sha256": "782f768416474ee4c99a00468c7238d617b0cd494104b18fa9b07214f2984726"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-17.mjs",
+      "bytes": 10555,
+      "sha256": "9ad958a0b2ef4f204f2d8238beedb1e01a7b08c916499dabda7a5eb228f476e8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-17.wasm",
+      "bytes": 98320,
+      "sha256": "783c011bdd2ea6a629f6a60d1d05fa36f2ab7ec0ed356f2804b519b0a3aeb7fb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-18.mjs",
+      "bytes": 10555,
+      "sha256": "709f3455f681d3b24b5f78f085497f0dda1b649bbad6d2e0b3dd385eda469ea6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-18.wasm",
+      "bytes": 101082,
+      "sha256": "2072835a2a513ae73323b02511973f1ce5cb7e541e8b3b0409a4e2f9f31eb2cc"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-19.mjs",
+      "bytes": 10555,
+      "sha256": "4451fb10544349d54a53c9bf7326f7bd7f47fc94c0b2a64cf822d87f92fbd725"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-19.wasm",
+      "bytes": 73416,
+      "sha256": "9d7ebfdf3b40c2645fbce5d0bc849042906c1e8a7204503e765ed81bcf8ee871"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-2.mjs",
+      "bytes": 10553,
+      "sha256": "a0cb48905a17ae6fddc494ec6330641d68cc6df3c32803575d12e968dbd81ab9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-2.wasm",
+      "bytes": 68637,
+      "sha256": "b5e56bef7b14f7fd78c7963481b7c310ac1aee92f2b927af19b030ea51b3b658"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-20.mjs",
+      "bytes": 10555,
+      "sha256": "568f2e3b6494b9c38a8c137bc45b30b518fa0b6a6d1c316befd013a97c0fe946"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-20.wasm",
+      "bytes": 71169,
+      "sha256": "d54dfa31f13708b197718f75376073e356b59ecb9dc8958819e1c872312dd98e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-21.mjs",
+      "bytes": 10555,
+      "sha256": "06be23ec0f8ea902a786921f88dbdbca96b54a2e72f7356f8e2dc4918b7db39e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-21.wasm",
+      "bytes": 82036,
+      "sha256": "d23943c5175bb63eeb388cf13c390d368cf26fb2d552dd1009343308891b2fc8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-22.mjs",
+      "bytes": 10555,
+      "sha256": "64a15e074d2a7e6b46a019537c10df42acff72ed7dd9917ca420a7fe458fb79c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-22.wasm",
+      "bytes": 79160,
+      "sha256": "8a28dcf864824dca0ef65c66afc1840439a6d1775d7be5b9689b0fc896b8e8d7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-23.mjs",
+      "bytes": 10555,
+      "sha256": "8b04143959f7227482df2f22bd6a08d6f352bf3c642e37c75d34927c507c400f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-23.wasm",
+      "bytes": 97338,
+      "sha256": "3a39425ceff3aec8a1f8f6a130db2b4f83cee5ac04d18a9cbb418233588d2c34"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-24.mjs",
+      "bytes": 10555,
+      "sha256": "018be84cc94028161337cb0bc5598559a5cb9c223a57c0a64a9483275bf2e985"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-24.wasm",
+      "bytes": 96212,
+      "sha256": "3f44900a90c42b59b5c323c6af30d33c1c5f9a4790923892ff711f8c0a02db71"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-3.mjs",
+      "bytes": 10553,
+      "sha256": "fbd2044df91c2437ba403d84335075f7318a09d33925a425554c98eeb5b74b82"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-3.wasm",
+      "bytes": 73689,
+      "sha256": "7f995d49a870b73756567d69f91e4e0968b3bb63f9ab4bc612f163a86904b20a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-4.mjs",
+      "bytes": 10553,
+      "sha256": "63d288321067d953d359a4b985addb60f24ca12e49ce794b806289face4148c5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-4.wasm",
+      "bytes": 52750,
+      "sha256": "a92ada933b4fa31e9ea29c47cd96b5299c81c6651e12ec36871fb13735fe4004"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-5.mjs",
+      "bytes": 10553,
+      "sha256": "b3d6528bad2d7a5e65ea6256411f53281d2a14b75be29d4807915311dd058019"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-5.wasm",
+      "bytes": 58448,
+      "sha256": "10d08442ce9b1e920948c5ada2f03b997321b9abc91b909ef61613e1a171e118"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-6.mjs",
+      "bytes": 10553,
+      "sha256": "77e0d095768dc1a798df22dde8bfa0a812646125b6adda5911bb647e977217cf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-6.wasm",
+      "bytes": 68530,
+      "sha256": "0c3843330342120e6d23b59b5462f667fe8a95a53797d42ac4a5163730bc3b23"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-7.mjs",
+      "bytes": 10553,
+      "sha256": "7701ef9b73eeeb35a66ec6fbb57c1312d2fe1781a97a5d7cdd135ef48488e65f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-7.wasm",
+      "bytes": 71583,
+      "sha256": "6028c82989f73e9ffbf98c5b96b75822bcfa401b3d61845faff43cddbb404c3f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-8.mjs",
+      "bytes": 10553,
+      "sha256": "5b264c3b3625230f21b8aa403a59d6ef90ddd93d6f2d7200acb5ec1b8a23a3f6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-8.wasm",
+      "bytes": 82431,
+      "sha256": "dc5c926bcd918fcf28a1ef222a66ff72cea194af6ec4b4ca77905ddc86516895"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-9.mjs",
+      "bytes": 10553,
+      "sha256": "1c18983a3a27b2d9a90365c59d4a508627eb50b438b6c242920e76c9969e38bd"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-03-9.wasm",
+      "bytes": 98152,
+      "sha256": "4fbf01b1284659eac002dc7da10568c5f16fc7b11e034b2caf7aa648ac79cf84"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-0.mjs",
+      "bytes": 10553,
+      "sha256": "d9a0df7bc9e07ad3ee7577321e9abba74d3293934eda48b7b4dabd1ac99ea97b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-0.wasm",
+      "bytes": 43957,
+      "sha256": "fd04dfbb659c5667d684a1850284a3226e0be9a7d631b551ce11ad1774ec6723"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-1.mjs",
+      "bytes": 10553,
+      "sha256": "97e6bec11f1d66acfc12e8e5132134270bf26ee37e2abb53fe41bac9c5658b90"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-1.wasm",
+      "bytes": 37089,
+      "sha256": "524591999c6fc18d8c5ea389eb0edaf24c5fcf315d821d3ccdc8e5fdfb12a7f6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-2.mjs",
+      "bytes": 10553,
+      "sha256": "b8b72fa15598dab78a8b8a0dbab7818332f7a5dbce25804b2b96e156024ddddb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-2.wasm",
+      "bytes": 36574,
+      "sha256": "667643f009512a994ae7a8638b22bc4f96e4ef374b4d21a1b36f0b7e87545b61"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-3.mjs",
+      "bytes": 10553,
+      "sha256": "71e4391f21126c50681983e93d0c78078e2b24e4975119ee924af4500e92d4f2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-3.wasm",
+      "bytes": 52472,
+      "sha256": "ddbb4c5d68c8a66587c5ca6886acc401e2cdd3b108903170073ee860fa837e4c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-4.mjs",
+      "bytes": 10553,
+      "sha256": "3650663efadfb6eb70bd14d4af707e8da44d3d1f5029b5c65fb460a0dacd2e2d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-4.wasm",
+      "bytes": 48607,
+      "sha256": "a1334109f4f18813b205c0c91fc922975588d98d002e6bb3182456a67a2f4b2d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-5.mjs",
+      "bytes": 10553,
+      "sha256": "4959a7db23c792d78a698d11ceae3da03e3bf06f297e0c961f503353c8948967"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-5.wasm",
+      "bytes": 48067,
+      "sha256": "3653f4334e4189b953976adbcc1dd78cc5073d556d7b276d10c7bee690925538"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-6.mjs",
+      "bytes": 10553,
+      "sha256": "0afce536d8b91f98e5ec732577fe4b8ed6edd171f828dd3c415a4625321de976"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-6.wasm",
+      "bytes": 35039,
+      "sha256": "44540040cac0fccdcbfa9b27599af33426ea5f3be2ecd8e4a95bf58584e02dc1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-7.mjs",
+      "bytes": 10553,
+      "sha256": "4235a1eb6db39d409c9c9459a6b383dcb297e9c92440d0e298f2fd5113fc00f0"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-7.wasm",
+      "bytes": 32151,
+      "sha256": "4858fc667020bb339b3821bf916b2bb322290a6fec63231dba0660e9be456fd0"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-8.mjs",
+      "bytes": 10553,
+      "sha256": "9092606d42c612ec019c4e98cc6d4c385c1eb6756a5e4ab9fc9ea8217b2f192b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-07-8.wasm",
+      "bytes": 31659,
+      "sha256": "9ddd3d1b99dc1ce9c805f6644f30dcf27bb6152510b0f014aa14950c79db9388"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-09-0.mjs",
+      "bytes": 10553,
+      "sha256": "5377390f45df7ce5619ae30a46bacbc1c762de008a20049a825764134158c89c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-09-0.wasm",
+      "bytes": 47749,
+      "sha256": "c218d163ef7a39307d9d7871da6bb06da4bf830a7d7aabf0c0b06ca02c2e08bf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-09-1.mjs",
+      "bytes": 10553,
+      "sha256": "e21cea47c9f78643442e6cc18fd99d2f06737ae65bc61d546a55f1523fe65d54"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-09-1.wasm",
+      "bytes": 53336,
+      "sha256": "72a9f7d2478b3d6c73fb2131446e55dc914bbe1deee1b9688761f68caa5c1dc7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-09-2.mjs",
+      "bytes": 10553,
+      "sha256": "29b64f21fbe5a8d3103db33bbeaeb436664f8412ac73df95e289e47021dedf00"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-09-2.wasm",
+      "bytes": 64186,
+      "sha256": "a04dcb31990c3cc5644b2b7e0e5e8024003ccefc170a3f5fa543f1abf0f92020"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-09-3.mjs",
+      "bytes": 10553,
+      "sha256": "2b9fa9d84b18e29b52109fe65842e8651b456da1fa238f62156a016d6863dc13"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-kex-09-3.wasm",
+      "bytes": 75943,
+      "sha256": "4a8918e8b53353786216db445ebb51ec6ff6c7e999cdc73cac319ab871d5242c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-01-0.mjs",
+      "bytes": 8583,
+      "sha256": "32092e4536a48ea2fa9786a8ade60d7db723b3cf70c9a84b5359864ccbf32fc1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-01-0.wasm",
+      "bytes": 34670,
+      "sha256": "c9e774974246631b8d20b2d127afa6e13eb1aa6467cb3df5776b24c5a2d3ef06"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-01-1.mjs",
+      "bytes": 8583,
+      "sha256": "fb49ffa3e6fe8bae60367ede27d53c9b992089aa68bfab1d490e417ad09dd5ad"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-01-1.wasm",
+      "bytes": 34851,
+      "sha256": "fd80da00b16e1279428410d7a769beae1ef1e01af5c49f304afcd4259acac57a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-01-2.mjs",
+      "bytes": 8583,
+      "sha256": "2c96136436f59ce19f001f64918c1edefbca0917ec671462a7015c23fa8f28fc"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-01-2.wasm",
+      "bytes": 38717,
+      "sha256": "286b8e08b22b6b8680a3d3e538941c572715dff9a9e6276726f17b3c3d13df21"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-02-0.mjs",
+      "bytes": 9627,
+      "sha256": "e5b0e60edb4863b3057771ff986e90b1029a45e1385d9106d915c324eb949657"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-02-0.wasm",
+      "bytes": 41639,
+      "sha256": "0c0f8f41b4c2986156caf033af3906a51b80872d10310c6f7d38eefcde5fd66f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-02-1.mjs",
+      "bytes": 9627,
+      "sha256": "6ec450e70db29ecf058a4ff6a6cee68cd78f72c2ad31cfe720cedd5a655710bf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-02-1.wasm",
+      "bytes": 46156,
+      "sha256": "f00afa784e13c0327f15d8542a66dc7f501f3cf07d65f3418a0a007c53e534bb"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-02-2.mjs",
+      "bytes": 9627,
+      "sha256": "babaf257a931919fd555a391240267e18efa032a1619c04cb5f451fe2b696bf6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-02-2.wasm",
+      "bytes": 53060,
+      "sha256": "03a3867ee480ed8d8202a9f169b1f3b637e4e29eb1ff8730898527dd60199848"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-0.mjs",
+      "bytes": 9627,
+      "sha256": "59ca98adb05572790c792307bd2a5931be00d7181e93f07c39139ce2df866154"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-0.wasm",
+      "bytes": 23982,
+      "sha256": "1b6e5b77e558b34a0fe024f76c69cdf2a4d3e5fc5657e8bac117d06bb3d8c108"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-1.mjs",
+      "bytes": 9627,
+      "sha256": "05fdd661b358b4215322ad0d0df5b475bd42637454b78a6f5414984d93dc9eaf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-1.wasm",
+      "bytes": 23904,
+      "sha256": "f7429d52ec75ba51c81e962d401f3e0971232c3d7534dcfcc1f8a47f854ccccd"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-2.mjs",
+      "bytes": 9627,
+      "sha256": "87bd033dea5b9002f9cde61ca4fc1e783586eda25e7cf037f4685cb7281ab099"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-2.wasm",
+      "bytes": 24257,
+      "sha256": "a94b922eef57b19a446b4de44ac69db66de31440293479a45e92ae1d2b2c954e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-3.mjs",
+      "bytes": 9627,
+      "sha256": "f82a5fd54ebeb1fd15719337590fa76fcfee0bf4fb3606938b0205e79c5c6f50"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-3.wasm",
+      "bytes": 24417,
+      "sha256": "00e8160e2d5198b19bb1a15ace689327da2639a1316690fd6bdad39d61841402"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-4.mjs",
+      "bytes": 9627,
+      "sha256": "cfc4e906146c2cb5bee3a542596657ec487348c198e32fa22a2bd33c5aca2f77"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-4.wasm",
+      "bytes": 24461,
+      "sha256": "7feb2ba65aae96a1c0ec3adc0299849c1cad1edce5d9daac162ccd7c2adecadf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-5.mjs",
+      "bytes": 9627,
+      "sha256": "d4c3a689dbbc79cd4fd21d746607c93635a25f9f80aaa8450abc9ac61147c863"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-5.wasm",
+      "bytes": 24662,
+      "sha256": "6047a1e0a5e9fc402edc35f9bb5608f5b2a80a429cd0c24c5356a5a9510a0be2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-6.mjs",
+      "bytes": 9627,
+      "sha256": "8b66d1ce14afcb2b5a20de34603a1a68f9107adf3daeb630f38afa8b8dc28960"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-03-6.wasm",
+      "bytes": 25705,
+      "sha256": "23b8df25d6c9377704f39d3c4ee3ec1481f296cbbcc2526fe8aa590221b5ebf9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-0.mjs",
+      "bytes": 9868,
+      "sha256": "695e7065e80e3e2969468d29f737a0bbaa2be7423e2c756ea362aef84e6b3285"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-0.wasm",
+      "bytes": 23764,
+      "sha256": "47fb4aa2a14d22ebc774a89d71c2715d3d043c3308a2144efd7f3ff6cc767190"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-1.mjs",
+      "bytes": 9868,
+      "sha256": "c3492ed50c8df4385931d7cf9aad837e0162fac90b869fb7ccc032f2c2901fab"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-1.wasm",
+      "bytes": 23834,
+      "sha256": "ac1c001b4fc41153da9cb5dc072f730a1e44c8da48e754cddb0e96674853b3ec"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-2.mjs",
+      "bytes": 9868,
+      "sha256": "91285fadf03c1939c6c2f28ba9f42ac45249e436aa1d5c785236be70e62c3d0c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-2.wasm",
+      "bytes": 24373,
+      "sha256": "d0790f8a6418ccec418a1b84bc68ca1fbf06750286f15795b9b88c636794480f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-3.mjs",
+      "bytes": 9868,
+      "sha256": "5100fe02f096ef484a2832f04dae93bf7c486e5f1dabb55d89edde3a2780f3dd"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-3.wasm",
+      "bytes": 24513,
+      "sha256": "b1fa5485a4564b8e6d8f0456cf350319eef8982ed9bab7789d97e19936ab0134"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-4.mjs",
+      "bytes": 9868,
+      "sha256": "fdb4393ea3b1704eecaf85c06a2835f25b585b2eda4783eddb32497e074f124e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-4.wasm",
+      "bytes": 25049,
+      "sha256": "a69785e2a16b0cffe2fffdec90d60b476ba7bdb08a3b315359ead2ce6ddd82f6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-5.mjs",
+      "bytes": 9868,
+      "sha256": "15ad93042c74fce554fbe77b855e0d22cdb709343fefd3e29761f3802c6f041a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-5.wasm",
+      "bytes": 25221,
+      "sha256": "6523633f365cc1a9a2c5e6848f2cbc9a76807f78c0961f40a18b708615c7e482"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-6.mjs",
+      "bytes": 9868,
+      "sha256": "f68b667265658243b0a8614d9ace5f057eb5b5c5f575f7d2cdf4fe3ebd73097e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-04-6.wasm",
+      "bytes": 25756,
+      "sha256": "2f8a67f79fbeffac2606ba4bfe38071fe35740b56af162ce0f3b7de02a3e6b06"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-06-1.mjs",
+      "bytes": 9627,
+      "sha256": "d9bbb029161dcc4a1985a459968c56374717d67df89e9e5b964f25779e66dec5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-06-1.wasm",
+      "bytes": 32917,
+      "sha256": "394f0ef01c80aaed1d5205daae69b41eecf9f78a8f245995f6ef8b877aa2fc73"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-07-0.mjs",
+      "bytes": 9967,
+      "sha256": "e5d38f8923e2ef3e49d3c4369cce1cb73928364ec1226a33b1eba292e646f318"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-07-0.wasm",
+      "bytes": 101500,
+      "sha256": "6b5c49e2b614fd1cf38d5af4d987132d8f494550958ec38d83fa87a4a05f5914"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-07-1.mjs",
+      "bytes": 9967,
+      "sha256": "c81b6d4d0fa7cfd7c6922babbd03b69e4bf3a70c7fc3fe7c7fc195bf25bb4683"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-07-1.wasm",
+      "bytes": 131195,
+      "sha256": "c5b5a0ccaf0d01630274976d1d743bff3f1628eed806801bbf0bd61bfdc5b384"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-07-2.mjs",
+      "bytes": 9967,
+      "sha256": "054da8a5f19fcb0c672a178111ec4f2064660cc293e80d2c5bffcf5d65ade8c2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-07-2.wasm",
+      "bytes": 268867,
+      "sha256": "057d3f79619e153d488e404079289bc58ca2a19dec9c9d8a4960ffec3b3c04b5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-08-0.mjs",
+      "bytes": 9627,
+      "sha256": "eed8978e0cf59bfe8ce01274265c823601b121883a135352ea3c0e4f1f92fedf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-08-0.wasm",
+      "bytes": 50236,
+      "sha256": "85dbd05d70d76c87e328e49980c3b5d5c71aaa3064be0ea503fbec1fa7a3204c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-08-1.mjs",
+      "bytes": 9627,
+      "sha256": "62f7c67bb5de0432401c69ac90f55675519a5ccc026d5721a7a34ab3d9ed3015"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-08-1.wasm",
+      "bytes": 54130,
+      "sha256": "3d072887297cb2dcf3850309047b157f858189679090bc5bba41a4f9be19768a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-08-2.mjs",
+      "bytes": 9627,
+      "sha256": "64602559117ff0f4c130dcb370aa57fa4f7d59b97a7a95f597636385c03159b2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-08-2.wasm",
+      "bytes": 61042,
+      "sha256": "8cb14401a0b2ccdd6c1cd2d3d33842df73702f589f70f44c625affa697d50190"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-10-0.mjs",
+      "bytes": 9627,
+      "sha256": "882b0235c051a0736577875b77bc707fe93584de1f1486edad4c9ad73fa963f6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-10-0.wasm",
+      "bytes": 42337,
+      "sha256": "bfdb27df44412ab4f37e877e1d9dab208671386326ee7f1dda0607e57d29ca53"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-10-1.mjs",
+      "bytes": 9627,
+      "sha256": "834db11136ab225ba4f7213ca5635d3d75ccb651616ca48d7643287aee52e747"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-10-1.wasm",
+      "bytes": 36486,
+      "sha256": "0658752ea35124121fdb2434a446233ce6da44fd8b1d0b23b5ab72eb8c242d7a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-11-0.mjs",
+      "bytes": 9627,
+      "sha256": "fc8056feb4e26e6155b4311235616fc689d98f0e13400dd40c28f7ff445d23d4"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-11-0.wasm",
+      "bytes": 3003276,
+      "sha256": "81e9c9503556a91fba52658171556833a1573831af5f81cf7f7168090bdf8023"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-11-1.mjs",
+      "bytes": 9627,
+      "sha256": "3f3decfd8ddec482dee29f69561f7ed125e521929b3bd60ab102917abedd5346"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-11-1.wasm",
+      "bytes": 1724557,
+      "sha256": "e9b6ee544f5c7d037434334854c01a32610ff4911826bfd72c01c77b0db03548"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-11-2.mjs",
+      "bytes": 9627,
+      "sha256": "2d48218677e72f1ab1dd3199aa57522768d2d6bde8d8194b5da66d661cce3610"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-11-2.wasm",
+      "bytes": 2669042,
+      "sha256": "18939f532a3ae564f44c26a908a40514dc6503d16ce4087640d2dde0f85e260a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-11-3.mjs",
+      "bytes": 9627,
+      "sha256": "271866f76f2f375bf88eadbe1350d5f1087c65a1181eaff54fcee9831f9f3eca"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-11-3.wasm",
+      "bytes": 14336028,
+      "sha256": "e976b57d35b94530cd477d20cdc2d2018060b91096da9c2211f95a6f03f6b35b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-11-4.mjs",
+      "bytes": 9627,
+      "sha256": "7cdec11a47c5f8db3b1ca4a415c72058e4aa0d1fbc12c440a5e1a81e9d1fcbc8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-11-4.wasm",
+      "bytes": 3879877,
+      "sha256": "5d9eb888d57a86b1b8fe12fefeaf208555323f3d2374fc233005e6b6a2f07da0"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-0.mjs",
+      "bytes": 9868,
+      "sha256": "c0b1d77e591efc7dade0374b34e07f3789a169be4df32df1877294947504766d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-0.wasm",
+      "bytes": 89484,
+      "sha256": "cdabf8016ab7b087a6ff9bb3c22a1c8da508cc96bdde9201fe34c9c672d4fef1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-1.mjs",
+      "bytes": 9868,
+      "sha256": "d134a9d8472cc8b3eea3b1345c49dae70ca5e3c6c11b06b993b9fb0ef06e00bf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-1.wasm",
+      "bytes": 91316,
+      "sha256": "84b9a6a761bd69b2bf0d7a42cc811ff19533229898c642649557303ef06382bf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-2.mjs",
+      "bytes": 9868,
+      "sha256": "4a326b9e7d1ec7611a93875753fe38e0a2d3da833e884ed02fbe46d0160ca9ad"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-2.wasm",
+      "bytes": 115389,
+      "sha256": "55c1366eac1644744025109ce191146bc4b2ba0b5aa84cf277f7638c8389330b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-3.mjs",
+      "bytes": 9868,
+      "sha256": "80a919f235abf439a011a92637c404d7db03b4454e40d2c30b3b0621c55630a3"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-3.wasm",
+      "bytes": 115579,
+      "sha256": "6861082cb69895fb4d17754ffa50b208fe03fb888e23c3f8d6c61e02ef852dda"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-4.mjs",
+      "bytes": 9868,
+      "sha256": "ef2c192bb810b49df895eddc52a4a16010f528d96e52126e343ef9f869ec4500"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-4.wasm",
+      "bytes": 144864,
+      "sha256": "af08f3b9bd6774c3230a96ed75ac761cf47c0a055b52f399ab66c490ed64329b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-5.mjs",
+      "bytes": 9868,
+      "sha256": "eb8d22b6379adb6593492db74f2b65a9169c66401a63f446b14b95605836090a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-5.wasm",
+      "bytes": 145145,
+      "sha256": "5e2902c0452b5fb726037fa2a9307312e8f2690168437c6603c32732eba367a8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-6.mjs",
+      "bytes": 9868,
+      "sha256": "a193bc3b2035462b102655c7d3b9d99190197e1bd0ac41aa6730b072ed61691c"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-13-6.wasm",
+      "bytes": 311681,
+      "sha256": "6c4152435bf105bcf75b6193b47652973526a51dcac980b76af12bde777de2bd"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-16-0.mjs",
+      "bytes": 9627,
+      "sha256": "141f4f29366b8261062c0c69ed24fc437fcce45ed8cf4014f53e45033fb062e1"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-16-0.wasm",
+      "bytes": 41065,
+      "sha256": "a2694b5d34d43879e55e80c2adf380f387fd6c7304a154ee5fa49cf81548c2f8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-16-1.mjs",
+      "bytes": 9627,
+      "sha256": "dde44a60880d846fafa3642aa54eeb585ec29cfc2872c6171dc0c6896cafda30"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-16-1.wasm",
+      "bytes": 51762,
+      "sha256": "605370eb6c82acc3e6295f06be838cdfcacbc2c7b09b9837a99a32c5224af86a"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-16-2.mjs",
+      "bytes": 9627,
+      "sha256": "0c1a22dcd601a59fcb3c662929b3e16ed97826f2df1bc96fc5765e4bf91347bd"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-16-2.wasm",
+      "bytes": 53407,
+      "sha256": "1a2a881e2b8a1a98b002c132c87cb89f4cabac119d612403b793819b6e4d6fa8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-17-0.mjs",
+      "bytes": 9627,
+      "sha256": "95c1961b318a3d1382ffd83ec00120387410a07e4359b01e87f50b3f3d0e9c65"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-17-0.wasm",
+      "bytes": 34173,
+      "sha256": "2c8cbe40d9706361cf5e6aaae8928dbaab5bc3c2a901667d9c0fe0a27360fdf9"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-17-1.mjs",
+      "bytes": 9627,
+      "sha256": "3314f343704affbe3e1aa9ca7f4f6f4381e7c507d8266632e4b46f2c83283d01"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-17-1.wasm",
+      "bytes": 38996,
+      "sha256": "225f77ec9c8a7d73e4e82b3b281f6ff0f66daec1fe85f1fd267ee85c8fac7ead"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-17-2.mjs",
+      "bytes": 9627,
+      "sha256": "a51b86eab2e2647ad726b020eb72dc5f73f64a261256bd8e91b8d9f87e6f7b25"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-17-2.wasm",
+      "bytes": 38428,
+      "sha256": "d84a6d927c5a810612f184017185a58498af034f889edac98b34f8e7ccc24d4e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-18-0.mjs",
+      "bytes": 9627,
+      "sha256": "970ab74d64fcf4e3948f6a3521c445cf6e2204393d18fb24188ece70722c8d6e"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-18-0.wasm",
+      "bytes": 35480,
+      "sha256": "ad474a8022b6a8dbfe0c33c00734dcf4ff12f52402a955689ef037d6c600833d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-18-1.mjs",
+      "bytes": 9627,
+      "sha256": "da33e892e45d54b10b25d54e7f860539d880c91b71ad4b23ce077c2b2383afe8"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-18-1.wasm",
+      "bytes": 36332,
+      "sha256": "0de0aa4bfe92cc006cad2cb844e38487340c67862716db91159af5206a97e669"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-18-2.mjs",
+      "bytes": 9627,
+      "sha256": "d44c9e5fb0143479dd0a80c53172817aae2e3fe691f27499634b2a9944d49b87"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-18-2.wasm",
+      "bytes": 37257,
+      "sha256": "8fd7a0cdfbfb177d55adc6fe21f964c3d6d54b6a704cdaf1a919d87c96254d6b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-20-0.mjs",
+      "bytes": 9677,
+      "sha256": "19e9e840425f17da40c1b0aaa60c2f74cefa9b4e4cd20b24dcca77637e6ae670"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-20-0.wasm",
+      "bytes": 26773,
+      "sha256": "779b9b9e24bbc6c071581b33b3b8cc760a86ee58a39ea97d21516a85f50314e5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-20-1.mjs",
+      "bytes": 9677,
+      "sha256": "cb91176b6809de0f4139e92ccb7b6344766d417570b5b27f08c3ac8509ac20da"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-20-1.wasm",
+      "bytes": 27472,
+      "sha256": "22ecf746eebf27ab6b5eca4388dca5e72443b7fc1fcc53ad3a85ce1e8b488d96"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-20-2.mjs",
+      "bytes": 9677,
+      "sha256": "00d50b4802e8d59b097166514e7bbfabb1382cee802ce42a8f828675386cec5b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-20-2.wasm",
+      "bytes": 26729,
+      "sha256": "d4e6f4167a14ac7f125a82453442f99e906a9cff57d672c463c5b9b6e7f09233"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-20-3.mjs",
+      "bytes": 9677,
+      "sha256": "0e6b7caca380633162ac90bed8fe666976238ac4f40c9b1f5218add99e083b76"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-20-3.wasm",
+      "bytes": 26782,
+      "sha256": "01ce137403e7474f2b4d65b937e223db778f85d768ae719d8859ff01ae29c386"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-0.mjs",
+      "bytes": 9677,
+      "sha256": "d1dcc81431644ba86fb76e75b32bd89dd0b7291042b47bcf8358081b690edf7f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-0.wasm",
+      "bytes": 82996,
+      "sha256": "996733b97c873c5bcc0e1c8c2417923b22baac415a5914f1aa407cc5be949dee"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-1.mjs",
+      "bytes": 9677,
+      "sha256": "6d61fa60ae2de337eeaa2d564ce7540cf8fdf2d735b7b66aaad40da276e0bd86"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-1.wasm",
+      "bytes": 85860,
+      "sha256": "e11b04314585f732f2f763b2946a6b7658c65d148524c0abedfd12c34adc5f45"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-2.mjs",
+      "bytes": 9677,
+      "sha256": "b11bb57addf820833cc1eb903ed46ddb74609891599e222e54355a2d849720f6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-2.wasm",
+      "bytes": 86622,
+      "sha256": "3c6ce8ebc03549931633b6831996d48cdb9295b60d25760bbe4c7f8ab7f9d93d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-3.mjs",
+      "bytes": 9677,
+      "sha256": "5ad03a75a21fe2a93b5b9368a8d2440d745cba943be6f8c1794f0266d3ee1079"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-3.wasm",
+      "bytes": 89801,
+      "sha256": "aa5f6b6f9153ea0b6046fa9cad34336c1b541bba3c26a8df2243bd28ea9a7341"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-4.mjs",
+      "bytes": 9677,
+      "sha256": "aa82820a0c241b2d5a312b55e59224ec1683561b339df3ae4784f43bac7237c6"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-4.wasm",
+      "bytes": 79029,
+      "sha256": "2705958c56f24a4a24b2a99bd7425137aaf88010764f7a9d4fbc968e18d0f5a7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-5.mjs",
+      "bytes": 9677,
+      "sha256": "76ce6852a758e60491d2241df6df29f2c555099ad2262365ce98ee8ed6e4a4ac"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-5.wasm",
+      "bytes": 81781,
+      "sha256": "eca9143ba49f42014c15b9b6656df48fd9358942d3cd916f6054eab90dd27518"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-6.mjs",
+      "bytes": 9677,
+      "sha256": "6b6f51926e7ce4750889d255bc3b43054c1d3a15e0ac5a84020afaca145d40a5"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-6.wasm",
+      "bytes": 82634,
+      "sha256": "766878465b3bb0961d119ea091d59dbc2ccff04946a6abf792c4d65f3558a4e2"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-7.mjs",
+      "bytes": 9677,
+      "sha256": "78940d1e3b9d08a4367153c7eb13111b6cabfefe3d4235098bf337fbfff4bf70"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-22-7.wasm",
+      "bytes": 85752,
+      "sha256": "13d8434a68a589bc0111297289f9c5cc340ecfb113f53a09e2768e14b0263564"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-23-0.mjs",
+      "bytes": 9627,
+      "sha256": "def5fc228d8a9c7a6896723e7d1a05f65b1926c0008779840372885a184420ea"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-23-0.wasm",
+      "bytes": 61617,
+      "sha256": "73c2e40a9eec49b5e91e77f17147d8fee1659c288f62f0b89dfc170aa8d14332"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-24-0.mjs",
+      "bytes": 9677,
+      "sha256": "6839e0de049168c49383ac05798749ce77960fdbd5c858721168311fb4cec795"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-24-0.wasm",
+      "bytes": 60101,
+      "sha256": "dbdcc422e936fe4d29410342e2823cbae1d16aa60c01ee9856cc97c9d245221d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-24-1.mjs",
+      "bytes": 9677,
+      "sha256": "191e34a69b7066950f490b25ad142817edc5087fa652f5837692291ad404c720"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-24-1.wasm",
+      "bytes": 68332,
+      "sha256": "19a515fc9f25f30705155170ddb8e084a79448005fe9c5eb759b49f2b77d6d07"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-24-2.mjs",
+      "bytes": 9677,
+      "sha256": "755afc1b1b5e419f739533c548ddc4dc64f1e2bf546bb387d87f6be140ceb2cf"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-24-2.wasm",
+      "bytes": 65848,
+      "sha256": "185bb06bc77759fd7ca01d66cb0e6808d38e3c9718b7bf0f2f61fcd8d2901aba"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-29-1.mjs",
+      "bytes": 9627,
+      "sha256": "20f8f893215558e0b515582e481e2aa4cc2141bf2cbccf86d0a78f2395df41de"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-29-1.wasm",
+      "bytes": 44946,
+      "sha256": "ea096dc3190930c2eb20eaddecffb2a79c391552ed91996af85539d2ba36d7fa"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-31-0.mjs",
+      "bytes": 9627,
+      "sha256": "33ff3a8016c56d9ddec115918351177295c5d8552d47583d3c94b79803f716f0"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-31-0.wasm",
+      "bytes": 48365,
+      "sha256": "91cf963213098270294f2a07e7508751a843cf1ec189ae367c64f5f83592105b"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-31-1.mjs",
+      "bytes": 9627,
+      "sha256": "951d6d8c28b0860897c772e9662b03a03cd20cf8a9d3c4000f1e1c4e8b770a36"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-31-1.wasm",
+      "bytes": 49687,
+      "sha256": "8918b70f6cf5bd32ed7a9797a17d2f22f12fd7e77a45972bd039a33a12971938"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-31-2.mjs",
+      "bytes": 9627,
+      "sha256": "e18463051da86b6b238d8801ecea1023965e0d2f7b81d1c719b6fc4a3d12ce7d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-31-2.wasm",
+      "bytes": 43839,
+      "sha256": "a69d4456221219597278dccb1a67d97536929d36e54fcb910910bb5a200448b7"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-33-0.mjs",
+      "bytes": 9627,
+      "sha256": "7d3e58c8e69bf436dc6ba49f6942afd659f79076976344ed9d4e865002fc61ca"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-33-0.wasm",
+      "bytes": 28468,
+      "sha256": "7224fe8cdf7fdd6fecfa9a088d6e184c522f19c9e80c6df88f8c3ea7c0febc0f"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-33-1.mjs",
+      "bytes": 9627,
+      "sha256": "748a82e2eea08655999467f7c705def7fa1e03f05d0a9c0739a38e1376a5e05d"
+    },
+    {
+      "path": "/pqc-practice/wasm/ngcc-sign-33-1.wasm",
+      "bytes": 26220,
+      "sha256": "7ef4d62fc436b67ef9977735eaa2fc815f0275582f2226840bc6bc53acef45b2"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2128f.mjs",
+      "bytes": 7434,
+      "sha256": "b3b8285b4e6f5b4a03c29201a18dfd646cc5b80acd89594e893acdbc74595446"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2128f.wasm",
+      "bytes": 23295,
+      "sha256": "c3ba260883fdc08d4348dd3f37d176912e18d0637f8d8c536c1bdde0dafbcead"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2128s.mjs",
+      "bytes": 7434,
+      "sha256": "f480af7d69153e477aa7217fdc956db9145f34a6ebad04a0b61ffabd55f2f61d"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2128s.wasm",
+      "bytes": 23766,
+      "sha256": "af8ff1f9f7463f3f3daff2a95cf8c17c14b0ec032cf165a0001d4f2b79dddf5f"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2192f.mjs",
+      "bytes": 7434,
+      "sha256": "c92f24307566bcda6f61e86805a678b16b12afa3675c670ca2ed955cb229de9c"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2192f.wasm",
+      "bytes": 37399,
+      "sha256": "15b0c28015ce29601dc07d82922a1942695739dfc91d97ee74ec7be84fc1d380"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2192s.mjs",
+      "bytes": 7434,
+      "sha256": "8645ae602ac4599395fad0612cd1d4b2c897e1afd733016a9c71be57cef70fd2"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2192s.wasm",
+      "bytes": 37873,
+      "sha256": "ede6edb4f9d2c18689c456573953d59eea2af94ef0f26cf3f034d8277c0c9d1c"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2256f.mjs",
+      "bytes": 7434,
+      "sha256": "1f4624029a660e2d735633928fd9b0bb01bfcb03e332ecb8bac412e2f883d610"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2256f.wasm",
+      "bytes": 37564,
+      "sha256": "268c8118a2db40ef736884953ba847f5c2590dfdf5b95ab82b8d3094175ce07c"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2256s.mjs",
+      "bytes": 7434,
+      "sha256": "ad9513e0a2671886a80040f6e92550f8fe34d0d9b65ff5bba9aa741f2b2d3a8f"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhsha2256s.wasm",
+      "bytes": 38271,
+      "sha256": "0d44cbe3e97d2e779879c7e998d0c8392899f0fcf8b544d22695ba387636a3a0"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake128f.mjs",
+      "bytes": 7436,
+      "sha256": "ac2d250f25f89c0d6dcef2dc0c57e88667a848f9f89ea3354ef9301580b9db69"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake128f.wasm",
+      "bytes": 15923,
+      "sha256": "eb1d97f65d8cdfa6d6c898643d0d54e101305aec2b8c28d67b281f59857eddc8"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake128s.mjs",
+      "bytes": 7436,
+      "sha256": "a9ccd63e6a56f8c9724b3a3c9176384aba5f7831975a9de3691f65cb7e229d28"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake128s.wasm",
+      "bytes": 16611,
+      "sha256": "7b43f8d64d1c9c179f777c53715ac2ec9ee5a4c6fe22371e9cff86555dccfd8c"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake192f.mjs",
+      "bytes": 7436,
+      "sha256": "fd6ad1f8eeba7e26d2303552e34f6e894630362447cbbeb8175ed841d63a9467"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake192f.wasm",
+      "bytes": 16684,
+      "sha256": "c4477060003e208137c0ffe5aec0c34d57119d8dbe8f464140d844d9ced70979"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake192s.mjs",
+      "bytes": 7436,
+      "sha256": "526ef9f9ae2d832559ef0e4be5bdd247ca7efcc35e55ab18b2f1ce909a1fa8eb"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake192s.wasm",
+      "bytes": 17166,
+      "sha256": "b875c086face602116a3ba41f208085ff645fb106546fb09b507bdfd1a10221c"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake256f.mjs",
+      "bytes": 7436,
+      "sha256": "7778b84831c53839905cacdd6f1179c6a9898f6b04e2292ea85b0d8d7128a3c7"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake256f.wasm",
+      "bytes": 16560,
+      "sha256": "d1df132e9928baab3e362d114e3d33ceed6b7b4b39b9ecd73b572343a6bf7a08"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake256s.mjs",
+      "bytes": 7436,
+      "sha256": "6f6ca0f49bdd0cf6fc744f4cce8f85c5dcd064f500fed9e08406224bad066077"
+    },
+    {
+      "path": "/pqc-practice/wasm/slhshake256s.wasm",
+      "bytes": 17270,
+      "sha256": "128ca77babc4a14145bbfd1797659d3b2a69d70c7682f70733483381e4e8d0fe"
+    }
+  ]
+}

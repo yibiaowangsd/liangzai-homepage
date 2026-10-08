@@ -11,7 +11,7 @@ test("jump search resolves Chinese and algorithm queries without inventing desti
   assert.equal(searchDestinations("签名 wasm")[0].href, "/pqc-practice");
   assert.equal(searchDestinations("  NEWS  ")[0].href, "/news");
   assert.deepEqual(searchDestinations("不存在的目的地"), []);
-  assert.equal(searchDestinations("").length, 8);
+  assert.equal(searchDestinations("").length, destinations.length);
   assert.deepEqual(searchDestinations("观测站"), []);
   assert.equal(
     new Set(destinations.map((item) => item.href)).size,

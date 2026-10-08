@@ -1,0 +1,963 @@
+{
+  "source": "https://github.com/ngcc-dev/ngcc-harness",
+  "revision": "c5261784ef27e7363b1bbace3d687932fda35ccd",
+  "totals": {
+    "candidates": 119,
+    "parameters": 586,
+    "runnable": 349
+  },
+  "candidates": [
+    {
+      "id": "sign-01",
+      "name": "Aigis-Sig+",
+      "type": "sig",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101567126852161536.html"
+    },
+    {
+      "id": "sign-02",
+      "name": "BIT: Bimodal Triangular distribution based lattice signatures",
+      "type": "sig",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561076358926336.html"
+    },
+    {
+      "id": "sign-03",
+      "name": "CEDRUS+C",
+      "type": "sig",
+      "total": 8,
+      "runnable": 7,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561076497338368.html"
+    },
+    {
+      "id": "sign-04",
+      "name": "CEDRUSɑ",
+      "type": "sig",
+      "total": 8,
+      "runnable": 7,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561076644139008.html"
+    },
+    {
+      "id": "sign-05",
+      "name": "Chinith",
+      "type": "sig",
+      "total": 14,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561076774162432.html"
+    },
+    {
+      "id": "sign-06",
+      "name": "COMPASS-SIG",
+      "type": "sig",
+      "total": 4,
+      "runnable": 1,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561076912574464.html"
+    },
+    {
+      "id": "sign-07",
+      "name": "CS",
+      "type": "sig",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561077046792192.html"
+    },
+    {
+      "id": "sign-08",
+      "name": "DARTS",
+      "type": "sig",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561077176815616.html"
+    },
+    {
+      "id": "sign-09",
+      "name": "DOVE",
+      "type": "sig",
+      "total": 6,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561077311033344.html"
+    },
+    {
+      "id": "sign-10",
+      "name": "Facto-DSA",
+      "type": "sig",
+      "total": 3,
+      "runnable": 2,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561077457833984.html"
+    },
+    {
+      "id": "sign-11",
+      "name": "FlexTree",
+      "type": "sig",
+      "total": 8,
+      "runnable": 5,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561077587857408.html"
+    },
+    {
+      "id": "sign-12",
+      "name": "Galas Signature Scheme",
+      "type": "sig",
+      "total": 8,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561077713686528.html"
+    },
+    {
+      "id": "sign-13",
+      "name": "GreatWall Signature Algorithm",
+      "type": "sig",
+      "total": 8,
+      "runnable": 7,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561077852098560.html"
+    },
+    {
+      "id": "sign-14",
+      "name": "Lynxer",
+      "type": "sig",
+      "total": 8,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561077990510592.html"
+    },
+    {
+      "id": "sign-15",
+      "name": "MORNING-ATLAS",
+      "type": "sig",
+      "total": 4,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561078120534016.html"
+    },
+    {
+      "id": "sign-16",
+      "name": "Octarine",
+      "type": "sig",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561078258946048.html"
+    },
+    {
+      "id": "sign-17",
+      "name": "OPS Digital Signature Algorithm",
+      "type": "sig",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561086848880640.html"
+    },
+    {
+      "id": "sign-18",
+      "name": "Origami",
+      "type": "sig",
+      "total": 4,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561086978904064.html"
+    },
+    {
+      "id": "sign-19",
+      "name": "Phoenix",
+      "type": "sig",
+      "total": 20,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561087113121792.html"
+    },
+    {
+      "id": "sign-20",
+      "name": "Qing Luan",
+      "type": "sig",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561087243145216.html"
+    },
+    {
+      "id": "sign-21",
+      "name": "ReSolveD-ɑ",
+      "type": "sig",
+      "total": 8,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561087368974336.html"
+    },
+    {
+      "id": "sign-22",
+      "name": "Rhyme",
+      "type": "sig",
+      "total": 8,
+      "runnable": 8,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561095950520320.html"
+    },
+    {
+      "id": "sign-23",
+      "name": "Shuttle",
+      "type": "sig",
+      "total": 3,
+      "runnable": 1,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561096101515264.html"
+    },
+    {
+      "id": "sign-24",
+      "name": "Sigurd",
+      "type": "sig",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561096235732992.html"
+    },
+    {
+      "id": "sign-25",
+      "name": "SQIsign2D2",
+      "type": "sig",
+      "total": 16,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561096361562112.html"
+    },
+    {
+      "id": "sign-26",
+      "name": "SQIsign2D-push1/2",
+      "type": "sig",
+      "total": 4,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561096483196928.html"
+    },
+    {
+      "id": "sign-27",
+      "name": "SQIsignTriangle",
+      "type": "sig",
+      "total": 4,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561096613220352.html"
+    },
+    {
+      "id": "sign-28",
+      "name": "SYDO",
+      "type": "sig",
+      "total": 6,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561105194766336.html"
+    },
+    {
+      "id": "sign-29",
+      "name": "Tins",
+      "type": "sig",
+      "total": 3,
+      "runnable": 1,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561105320595456.html"
+    },
+    {
+      "id": "sign-30",
+      "name": "TRINE",
+      "type": "sig",
+      "total": 6,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561105463201792.html"
+    },
+    {
+      "id": "sign-31",
+      "name": "TSUOV",
+      "type": "sig",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561105597419520.html"
+    },
+    {
+      "id": "sign-32",
+      "name": "UVW signature",
+      "type": "sig",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561105735831552.html"
+    },
+    {
+      "id": "sign-33",
+      "name": "VDOO: Vinegar-Diagonal-Oil-Oil",
+      "type": "sig",
+      "total": 3,
+      "runnable": 2,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561114325766144.html"
+    },
+    {
+      "id": "sign-34",
+      "name": "YuanYang.DSA",
+      "type": "sig",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101561114459983872.html"
+    },
+    {
+      "id": "kem-01",
+      "name": "Aigis-Enc+",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560842975268864.html"
+    },
+    {
+      "id": "kem-02",
+      "name": "Amoeba",
+      "type": "kem",
+      "total": 5,
+      "runnable": 5,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560843117875200.html"
+    },
+    {
+      "id": "kem-03",
+      "name": "BAG-Loong",
+      "type": "kem",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560843247898624.html"
+    },
+    {
+      "id": "kem-04",
+      "name": "BAG-Piglet",
+      "type": "kem",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560843373727744.html"
+    },
+    {
+      "id": "kem-05",
+      "name": "BIKE-MLThre",
+      "type": "kem",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560843495362560.html"
+    },
+    {
+      "id": "kem-06",
+      "name": "BRA",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560843625385984.html"
+    },
+    {
+      "id": "kem-07",
+      "name": "BRQC",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560843751215104.html"
+    },
+    {
+      "id": "kem-08",
+      "name": "BW-KEM",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560843877044224.html"
+    },
+    {
+      "id": "kem-09",
+      "name": "CheetahKEM",
+      "type": "kem",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560844002873344.html"
+    },
+    {
+      "id": "kem-10",
+      "name": "C-Multi-UR-AG",
+      "type": "kem",
+      "total": 3,
+      "runnable": 2,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560844149673984.html"
+    },
+    {
+      "id": "kem-11",
+      "name": "COMPASS-KEM",
+      "type": "kem",
+      "total": 4,
+      "runnable": 1,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560844283891712.html"
+    },
+    {
+      "id": "kem-12",
+      "name": "CTL Algorithm",
+      "type": "kem",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560844426498048.html"
+    },
+    {
+      "id": "kem-13",
+      "name": "DKEM (Ding Key Encapsulation)",
+      "type": "kem",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560844552327168.html"
+    },
+    {
+      "id": "kem-14",
+      "name": "DTRU",
+      "type": "kem",
+      "total": 12,
+      "runnable": 7,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560844682350592.html"
+    },
+    {
+      "id": "kem-15",
+      "name": "FLIT",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560844812374016.html"
+    },
+    {
+      "id": "kem-16",
+      "name": "HARE",
+      "type": "kem",
+      "total": 4,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560844942397440.html"
+    },
+    {
+      "id": "kem-17",
+      "name": "Hybrid Equivalent Punctured and Quasi-Cyclic",
+      "type": "kem",
+      "total": 4,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560853532332032.html"
+    },
+    {
+      "id": "kem-18",
+      "name": "LoongKEM",
+      "type": "kem",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560853666549760.html"
+    },
+    {
+      "id": "kem-19",
+      "name": "Lore",
+      "type": "kem",
+      "total": 8,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560853788184576.html"
+    },
+    {
+      "id": "kem-20",
+      "name": "MAMBA-Frost",
+      "type": "kem",
+      "total": 10,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560853918208000.html"
+    },
+    {
+      "id": "kem-21",
+      "name": "MAMBA-Viper",
+      "type": "kem",
+      "total": 5,
+      "runnable": 5,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560854052425728.html"
+    },
+    {
+      "id": "kem-22",
+      "name": "Mithril",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560862650748928.html"
+    },
+    {
+      "id": "kem-23",
+      "name": "Mito",
+      "type": "kem",
+      "total": 9,
+      "runnable": 9,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560862776578048.html"
+    },
+    {
+      "id": "kem-24",
+      "name": "MORNING-Scabbard",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560862906601472.html"
+    },
+    {
+      "id": "kem-25",
+      "name": "NEV",
+      "type": "kem",
+      "total": 12,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560863040819200.html"
+    },
+    {
+      "id": "kem-26",
+      "name": "NSS-HQC",
+      "type": "kem",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560863191814144.html"
+    },
+    {
+      "id": "kem-27",
+      "name": "NTRE Key Encapsulation Mechanism",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560863326031872.html"
+    },
+    {
+      "id": "kem-28",
+      "name": "OAEP-NTRU",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560871911772160.html"
+    },
+    {
+      "id": "kem-29",
+      "name": "Polar-KEM",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560872041795584.html"
+    },
+    {
+      "id": "kem-30",
+      "name": "PolarLAC",
+      "type": "kem",
+      "total": 5,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560872180207616.html"
+    },
+    {
+      "id": "kem-31",
+      "name": "QIMEN-PIKE",
+      "type": "kem",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560872306036736.html"
+    },
+    {
+      "id": "kem-32",
+      "name": "Quasi-Cyclic Twisted McEliece Key Encapsulation Mechanism",
+      "type": "kem",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560872431865856.html"
+    },
+    {
+      "id": "kem-33",
+      "name": "QUBE",
+      "type": "kem",
+      "total": 5,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560881000828928.html"
+    },
+    {
+      "id": "kem-34",
+      "name": "Rudraksh2",
+      "type": "kem",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560881139240960.html"
+    },
+    {
+      "id": "kem-35",
+      "name": "Scloud+",
+      "type": "kem",
+      "total": 15,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560881269264384.html"
+    },
+    {
+      "id": "kem-36",
+      "name": "TRIKE",
+      "type": "kem",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560881424453632.html"
+    },
+    {
+      "id": "kem-37",
+      "name": "TriQ-KEM",
+      "type": "kem",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560881558671360.html"
+    },
+    {
+      "id": "kem-38",
+      "name": "UVW Key Encapsulation Mechanism",
+      "type": "kem",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560881697083392.html"
+    },
+    {
+      "id": "kem-39",
+      "name": "Weaver",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560890312183808.html"
+    },
+    {
+      "id": "kem-40",
+      "name": "YuanYang.KEM",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560890442207232.html"
+    },
+    {
+      "id": "kem-41",
+      "name": "ZEN",
+      "type": "kem",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560890563842048.html"
+    },
+    {
+      "id": "kex-01",
+      "name": "ADKEX (Authenticated Ding Key Exchange)",
+      "type": "kex",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560625202810880.html"
+    },
+    {
+      "id": "kex-02",
+      "name": "AFS-KEX",
+      "type": "kex",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560625362194432.html"
+    },
+    {
+      "id": "kex-03",
+      "name": "CreTAKE",
+      "type": "kex",
+      "total": 25,
+      "runnable": 25,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560625517383680.html"
+    },
+    {
+      "id": "kex-04",
+      "name": "DKEX (Ding Key Exchange)",
+      "type": "kex",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560625651601408.html"
+    },
+    {
+      "id": "kex-05",
+      "name": "Loom",
+      "type": "kex",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560625773236224.html"
+    },
+    {
+      "id": "kex-06",
+      "name": "MAMBA-NIKE",
+      "type": "kex",
+      "total": 5,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560625907453952.html"
+    },
+    {
+      "id": "kex-07",
+      "name": "NEV-AKE",
+      "type": "kex",
+      "total": 9,
+      "runnable": 9,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560626045865984.html"
+    },
+    {
+      "id": "kex-08",
+      "name": "NIIKE",
+      "type": "kex",
+      "total": 3,
+      "runnable": 0,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560626184278016.html"
+    },
+    {
+      "id": "kex-09",
+      "name": "TriQ-KEX",
+      "type": "kex",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Additional/pc/content/content_2101560626335272960.html"
+    },
+    {
+      "id": "hash-01",
+      "name": "AFS-TrEDM",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101541113569038336.html"
+    },
+    {
+      "id": "hash-02",
+      "name": "AXIS: Advanced eXpandable Iterative Stream-based Hash",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101540899009417216.html"
+    },
+    {
+      "id": "hash-03",
+      "name": "C Hash",
+      "type": "hash",
+      "total": 2,
+      "runnable": 2,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101540728942972928.html"
+    },
+    {
+      "id": "hash-04",
+      "name": "CHAMP",
+      "type": "hash",
+      "total": 2,
+      "runnable": 2,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101540375996485632.html"
+    },
+    {
+      "id": "hash-05",
+      "name": "Cryptographic Hash Algorithm uHash",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101540182026702848.html"
+    },
+    {
+      "id": "hash-06",
+      "name": "Cuishen",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101539989910802432.html"
+    },
+    {
+      "id": "hash-07",
+      "name": "Dragon Hash Family",
+      "type": "hash",
+      "total": 6,
+      "runnable": 6,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101539781751689216.html"
+    },
+    {
+      "id": "hash-08",
+      "name": "Duet",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101539583977672704.html"
+    },
+    {
+      "id": "hash-09",
+      "name": "Eijen Hash Function",
+      "type": "hash",
+      "total": 5,
+      "runnable": 5,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101539361927024640.html"
+    },
+    {
+      "id": "hash-10",
+      "name": "FEILIAN",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101539111250251776.html"
+    },
+    {
+      "id": "hash-11",
+      "name": "Garnet",
+      "type": "hash",
+      "total": 8,
+      "runnable": 7,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101538925484527616.html"
+    },
+    {
+      "id": "hash-12",
+      "name": "Iphe",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101538722543128576.html"
+    },
+    {
+      "id": "hash-13",
+      "name": "JuziHash",
+      "type": "hash",
+      "total": 2,
+      "runnable": 2,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101538489901862912.html"
+    },
+    {
+      "id": "hash-14",
+      "name": "Laurus",
+      "type": "hash",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101538290232020992.html"
+    },
+    {
+      "id": "hash-15",
+      "name": "Litchi",
+      "type": "hash",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101538083238924288.html"
+    },
+    {
+      "id": "hash-16",
+      "name": "LLH",
+      "type": "hash",
+      "total": 4,
+      "runnable": 4,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101537750001471488.html"
+    },
+    {
+      "id": "hash-17",
+      "name": "MasterCube",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101537586067099648.html"
+    },
+    {
+      "id": "hash-18",
+      "name": "Megascon Hash Function",
+      "type": "hash",
+      "total": 10,
+      "runnable": 10,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101537413073031168.html"
+    },
+    {
+      "id": "hash-19",
+      "name": "MoFang Hash Function",
+      "type": "hash",
+      "total": 6,
+      "runnable": 6,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101537228439769088.html"
+    },
+    {
+      "id": "hash-20",
+      "name": "Mozi Hash Function",
+      "type": "hash",
+      "total": 10,
+      "runnable": 10,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101537013422968832.html"
+    },
+    {
+      "id": "hash-21",
+      "name": "Neulaser",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101536800629149696.html"
+    },
+    {
+      "id": "hash-22",
+      "name": "Pavelor: A Highly Secure Hash Algorithm for Software Implementation",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101536571221692416.html"
+    },
+    {
+      "id": "hash-23",
+      "name": "QILIN",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101536372126470144.html"
+    },
+    {
+      "id": "hash-24",
+      "name": "QuantaSylva Hash",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101536223673274368.html"
+    },
+    {
+      "id": "hash-25",
+      "name": "TaiChi",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101536036577955840.html"
+    },
+    {
+      "id": "hash-26",
+      "name": "The Hash Function CHIME",
+      "type": "hash",
+      "total": 2,
+      "runnable": 2,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101535839617634304.html"
+    },
+    {
+      "id": "hash-27",
+      "name": "The Vedak Hash Function Family",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101535609849466880.html"
+    },
+    {
+      "id": "hash-28",
+      "name": "The XRH-1 Hash Function",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101535400742440960.html"
+    },
+    {
+      "id": "hash-29",
+      "name": "The XRH-2 Hash Function",
+      "type": "hash",
+      "total": 3,
+      "runnable": 3,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101534893223268352.html"
+    },
+    {
+      "id": "hash-30",
+      "name": "The ZC-DM Hash Function",
+      "type": "hash",
+      "total": 6,
+      "runnable": 6,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101534683994607616.html"
+    },
+    {
+      "id": "hash-31",
+      "name": "The ZC-DMC Hash Function",
+      "type": "hash",
+      "total": 6,
+      "runnable": 6,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101534457934204928.html"
+    },
+    {
+      "id": "hash-32",
+      "name": "The ZC-EDMC Hash Function",
+      "type": "hash",
+      "total": 6,
+      "runnable": 6,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101534201922277376.html"
+    },
+    {
+      "id": "hash-33",
+      "name": "Thunder Hash Family",
+      "type": "hash",
+      "total": 6,
+      "runnable": 6,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101533797931110400.html"
+    },
+    {
+      "id": "hash-34",
+      "name": "WChain Hash Function",
+      "type": "hash",
+      "total": 2,
+      "runnable": 2,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101533578757754880.html"
+    },
+    {
+      "id": "hash-35",
+      "name": "Wish Hash Function",
+      "type": "hash",
+      "total": 2,
+      "runnable": 2,
+      "page": "https://www.niccs.org.cn/niccs/Round1Submissions4/pc/content/content_2101533368094642176.html"
+    }
+  ]
+}

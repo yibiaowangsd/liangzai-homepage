@@ -31,7 +31,7 @@ test("renders the homepage with the integrated practice destination", async () =
   const html = await response.text();
   assert.doesNotMatch(html, developmentPreviewMeta);
   assert.match(html, /量仔宇宙/);
-  assert.match(html, /工程项目/);
+  assert.match(html, /href="\/projects"/);
   for (const route of [
     "/universe",
     "/about",
@@ -143,7 +143,7 @@ test("renders the PQC arsenal route with all four algorithms", async () => {
   }
 });
 
-test("renders the human profile without invented credentials or private contact details", async () => {
+test("renders the human profile with authorized public contact and no invented credentials", async () => {
   const { default: worker } = await import("../dist/server/index.js");
   const response = await worker.fetch(
     new Request("http://localhost/about"),
@@ -158,7 +158,8 @@ test("renders the human profile without invented credentials or private contact 
   assert.match(html, /WANG YIBIAO/);
   assert.doesNotMatch(html, /QKD|量子密钥分发/);
   assert.match(html, /https:\/\/github.com\/yibiaowangsd/);
-  assert.doesNotMatch(html, /foxmail|博士|首席|教授/);
+  assert.match(html, /mailto:yibiao_wang@foxmail\.com/);
+  assert.doesNotMatch(html, /博士|首席|教授/);
 });
 
 test("SSR animation module does not start a Worker-forbidden timer", async () => {

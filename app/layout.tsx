@@ -31,6 +31,8 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <head>
+        <link rel="alternate" type="application/rss+xml" title="Yibiao 工程笔记" href="/notes/rss.xml" />
+        <link rel="alternate" type="application/rss+xml" title="Yibiao 工程周报" href="/weekly/rss.xml" />
         <meta name="theme-color" content="#F6F5EF" suppressHydrationWarning />
         {/* Synchronous by design: a saved theme must apply before the first paint. */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
