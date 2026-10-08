@@ -600,6 +600,8 @@ button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-
 /* WebKit includes the native option text in scrollable overflow. The full
    material sizes remain readable in the paragraph below this control. */
 .configuration .select-field { overflow:hidden; }
+/* The verdict, byte comparison and timing chart supersede the legacy facts. */
+#manual-result .result-facts { display:none; }
 @media(max-width:900px){
   .library-sidebar { max-height:none; }
   #library-list { flex:none;max-height:320px; }

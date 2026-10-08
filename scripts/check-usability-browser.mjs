@@ -43,6 +43,7 @@ try {
     await page.waitForFunction(()=>!document.querySelector('#guided-next').disabled||document.querySelector('#manual-result').dataset.status==='complete');
   }
   await page.waitForFunction(()=>document.querySelector('#manual-summary').textContent.includes('共享密钥一致'));
+  assert.equal(await page.locator('#manual-result .result-facts').isHidden(),true,'legacy status rows do not duplicate the verdict and timing chart');
   assert.equal(await page.locator('#timing-bars meter').count(),3);
   const key=await page.locator('#kem-public').inputValue();
   await page.locator('[data-flow-mode="free"]').click();
