@@ -7,6 +7,7 @@ import {
   Table,
 } from "../../engineering/EngineeringPage";
 import { protocols } from "../../engineering/protocols";
+import ProtocolDiagram from "../../engineering/ProtocolDiagram";
 import { pageMetadata } from "../../site/metadata";
 type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props) {
@@ -21,14 +22,7 @@ export default async function Page({ params }: Props) {
   return (
     <EngineeringPage title={p.name} intro={p.intro} eyebrow={p.status}>
       <Section title="方案图">
-        <ol className="engineering-flow">
-          {p.flow.map(([direction, message], i) => (
-            <li key={i}>
-              <span>{direction}</span>
-              <code>{message}</code>
-            </li>
-          ))}
-        </ol>
+        <ProtocolDiagram steps={p.flow} />
       </Section>
       <Section title="扩展点">
         <ul>

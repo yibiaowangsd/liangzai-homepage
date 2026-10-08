@@ -104,6 +104,44 @@ export default function Demo() {
           </li>
         ))}
       </ol>
+      <div className="hybrid-combiner" aria-label="混合秘密的组合与派生">
+        <div className="hybrid-inputs">
+          <div>
+            <strong>X25519 ss</strong>
+            <span>32 B · 双方独立计算</span>
+            <small>{steps.length >= 3 ? "秘密一致" : "等待计算"}</small>
+          </div>
+          <div>
+            <strong>ML-KEM ss</strong>
+            <span>32 B · 封装 / 解封</span>
+            <small>
+              {steps.length >= 5
+                ? steps[4].kemMatches
+                  ? "秘密一致"
+                  : "秘密不一致"
+                : "等待解封装"}
+            </small>
+          </div>
+        </div>
+        <div className="hybrid-join">
+          <strong>||</strong>
+          <span>64 B IKM</span>
+          <span aria-hidden="true">→</span>
+        </div>
+        <div className="hybrid-kdf">
+          <strong>HKDF-SHA-256</strong>
+          <span>salt：公开 transcript 摘要</span>
+          <span>info：角色、算法、实验版本</span>
+          <strong>32 B 派生密钥</strong>
+          <small>
+            {steps.length === 6
+              ? failed
+                ? "Alice ≠ Bob"
+                : "Alice = Bob"
+              : "等待双方派生"}
+          </small>
+        </div>
+      </div>
       <ol className="engineering-flow">
         {steps.map((step) => (
           <li key={step.stage}>
