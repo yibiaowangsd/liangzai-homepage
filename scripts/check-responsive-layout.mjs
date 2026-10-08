@@ -203,6 +203,15 @@ try {
       // The redesign must preserve the entrance, navigation and real page controls.
       await page.getByLabel('页面主题', { exact: true }).selectOption('paper');
       await page.keyboard.press('Escape');
+      // Every directory entry must reach its own page and release native modality.
+      for (const href of ['/models', '/storybook', '/archive', '/pqc-arsenal', '/pqc-practice', '/news', '/about', '/']) {
+        await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
+        await page.locator(`dialog[open] a[href="${href}"]`).click();
+        await page.waitForFunction(href => location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '') === href.replace(/\/$/, ''), href);
+        await page.locator('#main-content, body > .page').waitFor();
+        assert.equal(await page.locator('dialog[open]').count(), 0, `${name} ${href}: directory stays open after navigation`);
+        assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', `${name} ${href}: scroll lock survives navigation`);
+      }
       await page.getByRole('button', { name: '播放序幕', exact: true }).click();
       await page.locator('.cinema-entrance[open]').waitFor();
       await page.keyboard.press('Space');
@@ -224,6 +233,40 @@ try {
       await page.goto(base + '/observatory?form=wave', { waitUntil: 'networkidle' });
       assert.equal(new URL(page.url()).pathname, '/');
       await context.close();
+      // Run with motion enabled: reduced-motion-only checks miss capture interception.
+      const animatedContext = await browser.newContext({ reducedMotion: 'no-preference' });
+      try {
+        await animatedContext.route('https://api.wangyibiao.com/api/news/**', async route => {
+          const response = newsResponse(route.request().url());
+          await route.fulfill({ status: response.status, contentType: 'application/json', body: await response.text() });
+        });
+        // A deterministic image actor exercises transitions even without a GPU.
+        await animatedContext.route('**/*.glb', route => route.abort());
+        const animatedPage = await animatedContext.newPage();
+        for (const entry of ['settings', 'search', 'laboratory']) {
+          await animatedPage.goto(base + (entry === 'laboratory' ? '/pqc-practice/index.html' : '/news'), { waitUntil: 'networkidle' });
+          await animatedPage.waitForFunction(() => document.querySelector('.experience')?.dataset.motion === 'active' || !document.querySelector('.experience'));
+          if (entry === 'search') {
+            await animatedPage.getByRole('button', { name: '搜索全站，快捷键 Ctrl 或 Command 加 K', exact: true }).click();
+            await animatedPage.locator('.jump-results a[href="/about"]').click();
+          } else {
+            await animatedPage.getByRole('button', { name: '打开设置与目录', exact: true }).click();
+            await animatedPage.locator('dialog[open] a[href="/about"]').click();
+          }
+          await animatedPage.waitForFunction(() => !document.querySelector('dialog[open]'), undefined, { timeout: 1500 });
+          await animatedPage.waitForURL('**/about', { timeout: 10000 });
+          await animatedPage.locator('.about-push').waitFor({ state: 'hidden', timeout: 10000 });
+          await animatedPage.locator('#main-content h1').waitFor();
+          assert.notEqual(await animatedPage.evaluate(() => document.body.style.overflow), 'hidden', `${name} ${entry}: transition restores directory scroll lock`);
+          assert.equal(await animatedPage.evaluate(() => !!document.querySelector('.experience')?.inert), false, `${name} ${entry}: destination stays inert`);
+          await animatedPage.getByRole('button', { name: '打开设置与目录', exact: true }).click();
+          await animatedPage.locator('dialog[open]').waitFor();
+          await animatedPage.keyboard.press('Escape');
+          await animatedPage.locator('dialog[open]').waitFor({ state: 'hidden' });
+        }
+      } finally {
+        await animatedContext.close();
+      }
       console.log(`${name}: responsive routes, fixed card, directory, themes, intro, chapter anchors, catalog, story and model controls checked`);
     } finally {
       await browser.close();

@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type ComponentProps } from "react";
+import { useLayoutEffect, useRef, useState, type ComponentProps } from "react";
+import { flushSync } from "react-dom";
 import { useExperience } from "./Motion";
 import { destinations } from "./destinations";
 import JumpNavigation from "./JumpNavigation";
@@ -34,7 +35,7 @@ export function SiteHeader() {
   const dialog = useRef<HTMLDialogElement>(null),
     close = useRef<HTMLButtonElement>(null);
   const { paused, toggle } = useExperience();
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
     const el = dialog.current;
     if (!el) return;
@@ -43,7 +44,11 @@ export function SiteHeader() {
     el.showModal();
     document.body.style.overflow = "hidden";
     close.current?.focus();
+    // Capture-phase transitions must release the top layer and scroll lock first.
+    const dismissForNavigation = () => flushSync(() => setOpen(false));
+    document.addEventListener("liangzai:close-directory", dismissForNavigation);
     return () => {
+      document.removeEventListener("liangzai:close-directory", dismissForNavigation);
       if (el.open) el.close();
       document.body.style.overflow = overflow;
       if (previous?.isConnected) previous.focus({ preventScroll: true });

@@ -54,6 +54,8 @@ export default function AboutPushTransition() {
       event.preventDefault();
       event.stopImmediatePropagation();
       const href = link.pathname + link.search + link.hash;
+      // Closing via the intercepted link's onClick would never run here.
+      document.dispatchEvent(new Event("liangzai:close-directory"));
       active = runAboutPush(source, {
         navigate(ready) {
           routeReady.current = ready ?? null;
