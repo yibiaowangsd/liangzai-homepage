@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { flushSync } from "react-dom";
 import { usePathname } from "next/navigation";
 import { searchDestinations } from "./destinations";
 import "./jump-navigation.css";
@@ -51,7 +52,10 @@ export default function JumpNavigation({
     el.showModal();
     document.body.style.overflow = "hidden";
     input.current?.focus();
+    const dismissForNavigation = () => flushSync(() => setOpen(false));
+    document.addEventListener("liangzai:close-directory", dismissForNavigation);
     return () => {
+      document.removeEventListener("liangzai:close-directory", dismissForNavigation);
       if (el.open) el.close();
       document.body.style.overflow = previousOverflow;
       if (previousFocus?.isConnected)
