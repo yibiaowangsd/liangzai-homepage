@@ -29,6 +29,9 @@ test('public routes render independent metadata and language-specific content',a
   }
   const sitemap=await fetch('/sitemap.xml');assert.equal(sitemap.status,200);assert.match(await sitemap.text(),/<loc>https:\/\/wangyibiao.com\/pqc\/ml-kem<\/loc>/);
   const robots=await fetch('/robots.txt');assert.match(await robots.text(),/Sitemap: https:\/\/wangyibiao.com\/sitemap.xml/);
+  for (const [path, target] of [['/pqc-practice?tab=signature&algorithm=slh-dsa', '/pqc-practice/index.html?tab=signature&algorithm=slh-dsa'], ['/en/lab?tab=signature&algorithm=ml-dsa', '/pqc-practice/index-en.html?tab=signature&algorithm=ml-dsa']]) {
+   const redirect = await fetch(path); assert.ok([307, 308].includes(redirect.status)); const location = new URL(redirect.headers.get('location'), 'https://wangyibiao.com'); assert.equal(location.pathname + location.search, target);
+  }
   const rss=await fetch('/rss.xml');assert.equal(rss.status,200);assert.match(await rss.text(),/<rss version="2.0"/);
  }finally{globalThis.fetch=original;}
 });
@@ -37,4 +40,7 @@ test('standalone English laboratory has matching shell and metadata before JavaS
  assert.match(html,/<html lang="en">/);assert.match(html,/<h1>Cryptography <em>Lab<\/em><\/h1>/);
  assert.match(html,/property="og:image"/);assert.match(html,/data-lab-tab="signature"/);
  assert.doesNotMatch(html.replace(">中文<", ">Chinese<"),/>[^<>]*[\u4e00-\u9fff][^<>]*</u); // The language-switch label is checked separately below.
+ for (const script of ['app-en.js', 'dialogue-en.js', 'candidate-workbench-en.js', 'navigation-en.js']) {
+  assert.doesNotMatch(await read('public/pqc-practice/' + script), /[\u4e00-\u9fff]/u, script + ' exposes English runtime instructions');
+ }
 });

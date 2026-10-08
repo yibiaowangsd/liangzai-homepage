@@ -684,8 +684,10 @@ $('#run-example').addEventListener('click', async () => {
     write(prefix + '-public', keys.publicKey); write(prefix + '-private', keys.privateKey); keyTime = keys.ms;
     if (isKem()) {
       write('kem-alice-public', keys.publicKey);
+      animateTransfer('kem-route-pk', ['kem-alice-public']);
       const encapsulated = await request('encapsulate', { publicKey: keys.publicKey });
       write('kem-cipher', encapsulated.ciphertext); write('kem-bob-cipher', encapsulated.ciphertext);
+      animateTransfer('kem-route-ct', ['kem-bob-cipher']);
       const decapsulated = await request('decapsulate', { privateKey: keys.privateKey, ciphertext: encapsulated.ciphertext, publicKey: keys.publicKey });
       aliceSecret = encapsulated.sharedSecret;
       $('#kem-alice-secret').textContent = hex(aliceSecret); $('#kem-bob-secret').textContent = hex(decapsulated.sharedSecret);
@@ -700,6 +702,8 @@ $('#run-example').addEventListener('click', async () => {
       const message = new TextEncoder().encode($('#sign-message').value);
       const signed = await request('sign', { privateKey: keys.privateKey, message });
       write('signature', signed.signature); write('verify-signature', signed.signature); write('sig-verifier-public', keys.publicKey); $('#verify-message').value = $('#sign-message').value;
+      animateTransfer('sig-route-pk', ['sig-verifier-public']);
+      animateTransfer('sig-route-bundle', ['verify-signature']);
       const checked = await request('verify', { publicKey: keys.publicKey, signature: signed.signature, message });
       flowOutcome = checked.valid ? 'pass' : 'fail';
       $('#fact-one').textContent = '示例生成的签名'; $('#fact-two').textContent = checked.valid ? '有效' : '无效';

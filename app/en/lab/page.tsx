@@ -1,2 +1,4 @@
 import { redirect } from "next/navigation";
-export default function Lab(){redirect("/pqc-practice/index-en.html");}
+import { laboratoryTarget } from "../../site/lab-route";
+export const dynamic = "force-dynamic";
+export default async function Lab({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) { redirect(laboratoryTarget(await searchParams, true)); }

@@ -16,8 +16,8 @@ const value = id => $('#' + id).value.trim();
 const messageValue = id => $('#' + id).value;
 const short = text => text.length > 42 ? text.slice(0, 22) + ' … ' + text.slice(-12) : text;
 const steps = {
-  kem: ['准备密钥', '发布Public key', 'Encapsulate', '返回Ciphertext', 'Decapsulate'],
-  sig: ['准备密钥', '发布Public key', 'Signature', '发送Signature', 'Verify'],
+  kem: ['Prepare keys', 'Publish public key', 'Encapsulate', 'Return ciphertext', 'Decapsulate'],
+  sig: ['Prepare keys', 'Publish public key', 'Signature', 'Send signature', 'Verify'],
 };
 let visibleKind = '';
 
@@ -63,7 +63,7 @@ function drawRoute(id, materials, state) {
     && (!bundle || (receipt.message === messageValue('sign-message') && receipt.message === messageValue('verify-message')));
   const modified = !!bytes && receipt?.source === value(source) && !received;
   route.dataset.state = received ? 'delivered' : modified ? 'modified' : bytes ? 'ready' : 'empty';
-  route.querySelector('.route-state').textContent = received ? '已送达' : modified ? '接收端已改' : bytes ? '待发送' : 'Waiting for generation';
+  route.querySelector('.route-state').textContent = received ? 'Delivered' : modified ? 'Receiver modified the material' : bytes ? 'Ready to send' : 'Waiting for generation';
   const message = bundle ? messageValue('sign-message') : '';
   const messageBytes = new TextEncoder().encode(message).length;
   route.querySelector('.packet-size').textContent = bytes ? (bytes.length + (bundle ? messageBytes : 0)) + ' B' : '';
@@ -72,7 +72,7 @@ function drawRoute(id, materials, state) {
   const normalized = bytes ? hex(bytes) : '';
   route.querySelector('.packet-preview').textContent = bytes
     ? bundle ? 'm: ' + (message ? short(message) : '〈EmptyMessage〉') + '\nσ: ' + short(normalized) : short(normalized)
-    : bundle ? '等待Message与Signature' : 'Waiting for material';
+    : bundle ? 'Waiting for message and signature' : 'Waiting for material';
   route.querySelector('.packet-data').textContent = bytes
     ? bundle ? 'Message · UTF-8 · ' + messageBytes + ' B\n' + message + '\n\nSignature · HEX · ' + bytes.length + ' B\n' + normalized
       : 'HEX · ' + bytes.length + ' B\n\n' + normalized
@@ -88,7 +88,7 @@ export function renderDialogue(state) {
     const raw = input.value.trim();
     const variable = state.ngccSig && sizeKey === 'out' && (id === 'signature' || id === 'verify-signature');
     if (raw && expected) {
-      try { materials[id] = state.decode(raw, variable ? { min: 1, max: expected } : expected, '输入'); }
+      try { materials[id] = state.decode(raw, variable ? { min: 1, max: expected } : expected, 'Input'); }
       catch { /* Guidance does not block editing. */ }
     }
     const bytes = materials[id], count = bytes?.length ?? (raw ? measure(raw) : null);
@@ -127,27 +127,27 @@ export function renderDialogue(state) {
     li.querySelector('.step-dot').textContent = index < stage ? '✓' : String(index + 1).padStart(2, '0');
   });
   const guidance = state.kem ? [
-    ['Prepare keys for Bob', 'Generate测试密钥对，或在 Bob 端粘贴 / Import已有的Public key和Private key。'],
-    ['把Public key发给 Alice', '点击Transfer区的“Send public key”。只有Public key会到达另一端。'],
-    ['Alice 可以开始Encapsulate', '确认Received public key，GenerateCiphertext和 Alice 的本地Shared secret。'],
-    ['把Ciphertext送回 Bob', '点击第二条通道的“Send ciphertext”。Shared secret保留在 Alice 端。'],
-    [has('kem-private') ? 'rounds到 Bob Decapsulate' : '补入 Bob 的本地Private key', has('kem-private') ? '使用本地Private key处理Received ciphertext，再逐bytes比较双方结果。' : 'Ciphertext已经就绪；粘贴或Import配套Private key后，即可Decapsulate。'],
-    ['双方已建立相同的Shared secret', `两端的 ${state.sizes?.ss ?? 32} bytes完全一致。Transfer区只传送了Public key和Ciphertext。`],
+    ['Prepare keys for Bob', 'Generate temporary test keys or import Bob’s matching public and private keys.'],
+    ['Send the public key to Alice', 'Choose Send public key in the channel. Only the public key is transferred.'],
+    ['Alice can encapsulate', 'Use the received public key to generate ciphertext and Alice’s local shared secret.'],
+    ['Return ciphertext to Bob', 'Choose Send ciphertext in the second channel. Alice’s shared secret stays local.'],
+    [has('kem-private') ? 'Bob can decapsulate' : 'Import Bob’s private key', has('kem-private') ? 'Decapsulate the received ciphertext with the local private key, then compare all bytes.' : 'Ciphertext is ready. Import the matching private key to decapsulate.'],
+    ['Both parties derived the same shared secret', `Both copies contain ${state.sizes?.ss ?? 32} identical bytes. Only the public key and ciphertext crossed the channel.`],
   ] : [
-    ['准备 Alice 的密钥', 'Generate测试密钥对，或在 Alice 端粘贴 / Import已有的密钥。'],
-    ['让 Bob 收到Public key', '点击Transfer区的“Send public key”，为另一端Verify做好准备。'],
-    ['Alice 可以签署Message', '填写Message to sign，再使用 Alice 的本地Private keySign message。'],
-    ['把原文和Signature一起发送', '点击“Send message and signature”，把对应的数据放入 Bob 的Incoming material。'],
-    ['rounds到 Bob 验证', '核对Received public key、Message和Signature；也可以修改原文，观察结果变化。'],
-    ['Bob 已验证这份Signature', 'Signature与Received public key、Message匹配。修改Message后可重新验证。'],
+    ['Prepare Alice’s keys', 'Generate temporary test keys or import Alice’s matching keys.'],
+    ['Send the public key to Bob', 'Choose Send public key so Bob can verify the signature.'],
+    ['Alice can sign a message', 'Enter a message and sign it with Alice’s local private key.'],
+    ['Send the message and signature', 'Choose Send message and signature to populate Bob’s incoming material.'],
+    ['Bob can verify', 'Verify the received public key, message and signature. Edit the message to inspect a failure.'],
+    ['Bob verified the signature', 'The signature matches the received key and message. Edit the message and verify again.'],
   ];
   let [title, detail] = guidance[stage];
   if (failed) {
-    title = state.kem ? '双方的Shared secret不一致' : '这份Signature未通过验证';
-    detail = state.kem ? '检查Private key与Ciphertext是否配套，并确认双方使用相同的Algorithm、参数和哈希。' : '检查Public key、Message与Signature的对应关系；修改原文也会使Verify失败。';
+    title = state.kem ? 'Shared secrets differ' : 'Signature verification failed';
+    detail = state.kem ? 'Check the key and ciphertext, and match both parties’ algorithm, parameters and hash.' : 'Check the public key, message and signature. Editing the message also causes verification to fail.';
   } else if (state.outcome === 'partial') {
-    title = 'Bob 已完成Decapsulate';
-    detail = '本地Shared secret已Generate；当前没有 Alice 的Encapsulate结果，暂时无法比较。';
+    title = 'Bob completed decapsulation';
+    detail = 'Bob’s secret is ready. Alice’s encapsulation result is missing, so comparison is unavailable.';
   }
   $('#guide-number').textContent = passed ? '✓' : String(Math.min(stage + 1, 5)).padStart(2, '0');
   $('#guide-title').textContent = title;
@@ -156,7 +156,7 @@ export function renderDialogue(state) {
   for (const id of ['kem-bob', 'kem-alice', 'sig-alice', 'sig-bob']) {
     const current = id === activeActor || (state.kem && passed && id.startsWith('kem-'));
     $('#' + id).classList.toggle('is-active', current);
-    $('#' + id + '-status').textContent = current ? state.busy ? '正在计算' : passed ? '已完成' : '当前步骤' : '等待对方';
+    $('#' + id + '-status').textContent = current ? state.busy ? 'Computing' : passed ? 'Complete' : 'Current step' : 'Waiting for the other party';
   }
   document.querySelectorAll('.is-next').forEach(button => button.classList.remove('is-next'));
   if (!passed) {
@@ -171,13 +171,13 @@ export function renderDialogue(state) {
     $('#box-' + id).classList.toggle('matched', present && passed && state.kem);
     $('#box-' + id).classList.toggle('mismatched', present && failed && state.kem);
     $('#state-' + id).textContent = !present ? `Not established · ${sharedSize} B` : passed && state.kem
-      ? `已对齐 · ${sharedSize} / ${sharedSize} bytes match` : failed && state.kem ? '对照失败 · Shared secret不同' : '已建立 · 等待对照';
+      ? `Matched · ${sharedSize} / ${sharedSize} bytes match` : failed && state.kem ? 'Comparison failed: shared secrets differ' : 'Derived; waiting for comparison';
   }
   const verdict = $('#signature-verdict');
   verdict.classList.toggle('pass', !state.kem && passed);
   verdict.classList.toggle('fail', !state.kem && failed);
   $('#signature-verdict-title').textContent = !state.kem && passed ? 'SignatureValid' : !state.kem && failed ? 'SignatureInvalid' : 'Waiting to verify';
-  $('#signature-verdict-detail').textContent = !state.kem && passed ? 'Public key、Message与Signature匹配。' : !state.kem && failed ? '原文、Signature或Public key不匹配。' : 'Verification is available once the public key, message and signature are ready.';
+  $('#signature-verdict-detail').textContent = !state.kem && passed ? 'Public key, message and signature match.' : !state.kem && failed ? 'Message, signature or public key does not match.' : 'Verification is available once the public key, message and signature are ready.';
   for (const [id, sizeKey] of Object.entries(fields)) {
     if (sizeKey === 'sk') materials[id]?.fill(0);
   }
