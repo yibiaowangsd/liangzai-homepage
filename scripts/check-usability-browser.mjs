@@ -50,7 +50,9 @@ try {
   assert.equal(await page.locator('#kem-public').inputValue(),key,'view changes preserve material');
   assert.equal(await page.locator('#kem-private').isHidden(),true);
   await page.locator('#material-kem-private button').filter({hasText:'显示'}).click();assert.equal(await page.locator('#kem-private').isVisible(),true);
-  await page.locator('[data-copy="kem-public"]').click();assert.equal(await page.locator('[data-copy="kem-public"]').textContent(),'✓');
+  await page.locator('[data-copy="kem-public"]').click();
+  await page.waitForFunction(()=>document.querySelector('[data-copy="kem-public"]').textContent==='✓');
+  assert.equal(await page.evaluate(()=>navigator.clipboard.readText()),key,'clipboard contains the complete public key');
   await page.waitForFunction(()=>document.querySelector('#material-kem-public .field-fingerprint').textContent.startsWith('SHA-256'));
   page.once('dialog',dialog=>dialog.dismiss());await page.locator('#variant').selectOption('512');assert.equal(await page.locator('#variant').inputValue(),'768');assert.equal(await page.locator('#kem-public').inputValue(),key);
   await page.locator('#clear-all').click();assert.equal(await page.locator('#kem-public').inputValue(),'');await page.locator('#undo-clear').click();assert.equal(await page.locator('#kem-public').inputValue(),key);assert.match(await page.locator('#manual-summary').textContent(),/共享密钥一致/);
