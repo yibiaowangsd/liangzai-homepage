@@ -34,3 +34,10 @@ html[data-theme="midnight"] .nav-group-menu,html[data-theme="midnight"] .studio-
 .site-chrome{height:auto!important;min-height:78px!important;}.site-chrome .brand{padding-top:0!important;font-size:inherit!important;opacity:1!important;}.studio-footer-top p{font-size:clamp(18px,2vw,26px)!important;font-weight:500;line-height:1.4!important;letter-spacing:-.02em!important;margin:0!important;}.studio-footer-top a{font-size:14px;}.studio-footer .footer-groups>div>span{font-size:13px;opacity:.7;}.studio-footer .footer-groups a{font-size:13px!important;line-height:1.5;}
 @media(max-width:800px){.site-chrome{min-height:110px!important;position:sticky!important;}.chrome-actions{gap:8px!important;}.chrome-actions .theme-picker-swatch{display:none;}.site-chrome .jump-trigger{display:none!important;}.site-chrome .brand-mark{width:28px!important;height:28px!important;}.site-chrome .brand strong{font-size:18px!important;}.site-chrome .menu-toggle{width:auto!important;padding:8px!important;}.site-chrome .chrome-actions .theme-picker select{font-size:11px;max-width:62px;}.site-chrome .language-link{font-size:11px;}}
 @media(max-width:600px){.site-chrome{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:8px!important;padding:12px 16px!important;}.site-chrome .brand{grid-column:1;grid-row:1;min-width:0;gap:6px!important;}.site-chrome .brand strong span{display:none!important;}.site-chrome .brand-mark{width:24px!important;height:24px!important;}.site-chrome .chrome-actions{grid-column:2;grid-row:1;}.site-chrome .menu-toggle{min-width:52px!important;gap:6px!important;}.site-chrome .desktop-nav{grid-column:1/-1;grid-row:2;gap:10px!important;justify-content:space-between;}.nav-group:nth-last-child(-n+2) .nav-group-menu{left:auto;right:0;}}
+
+.nav-group-menu{max-height:min(70vh,520px);overflow-y:auto;}
+
+html .studio-theme .site-chrome .brand,html .studio-theme .site-chrome .language-link{color:var(--theme-ink);}
+html .studio-theme .site-chrome .menu-toggle span,html .studio-theme .site-chrome .menu-toggle i{color:inherit;}
+
+html .studio-theme .site-chrome .brand strong{color:inherit;}

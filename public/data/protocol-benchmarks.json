@@ -1,0 +1,684 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-10-08T07:55:09.052Z",
+  "environment": {
+    "node": "v24.19.0",
+    "openssl": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+    "nodeOpenSSL": "3.5.7",
+    "platform": "linux",
+    "arch": "x64",
+    "cpu": "INTEL(R) XEON(R) PLATINUM 8573C",
+    "logicalCpus": 5,
+    "memoryBytes": 35743784960,
+    "network": "127.0.0.1, no injected latency",
+    "certificate": "self-issued one-day localhost test certificates; CA verified",
+    "resumption": "fresh connections; no client session reuse",
+    "timing": "client connect start to secureConnect, including TCP; 3 warmups; no application payload",
+    "wire": "proxy byte counters through server secureConnection; TLS headers and any observed tickets included; not an IP capture",
+    "fragmentation": "TLS record counts observed; MTU segmentation in the UI is an estimate"
+  },
+  "results": [
+    {
+      "id": "classic",
+      "label": "经典",
+      "group": "X25519",
+      "certificate": "EC",
+      "auth": "ECDSA P-256",
+      "status": "measured",
+      "samples": 20,
+      "warmup": 3,
+      "medianMs": 2.541,
+      "p95Ms": 3.073,
+      "minMs": 2.188,
+      "certificateDerBytes": 412,
+      "clientBytes": 315,
+      "serverBytes": 783,
+      "clientRecords": 3,
+      "serverRecords": 6,
+      "clientHelloBytes": 230,
+      "serverHelloBytes": 122,
+      "wireBytesStable": false,
+      "measurements": [
+        {
+          "clientBytes": 315,
+          "serverBytes": 783,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 784,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 783,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 784,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 783,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 782,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 782,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 783,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 783,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 783,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 782,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 783,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 783,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 783,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 784,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 782,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 784,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 783,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 784,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        },
+        {
+          "clientBytes": 315,
+          "serverBytes": 782,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 230,
+          "serverHelloBytes": 122
+        }
+      ],
+      "timingsMs": [
+        2.9998269999999962,
+        3.215016999999989,
+        2.5654240000000073,
+        2.2255169999999964,
+        2.5171789999999987,
+        2.662850999999989,
+        2.6889400000000023,
+        2.583931000000007,
+        2.8707670000000007,
+        2.7316119999999984,
+        2.2347500000000053,
+        2.425198999999992,
+        2.515546999999998,
+        2.304704000000015,
+        2.3979349999999897,
+        2.3333620000000224,
+        3.072923000000003,
+        2.606340000000017,
+        2.4654649999999947,
+        2.1880119999999863
+      ]
+    },
+    {
+      "id": "hybrid",
+      "label": "混合",
+      "group": "X25519MLKEM768",
+      "certificate": "EC",
+      "auth": "ECDSA P-256",
+      "status": "measured",
+      "samples": 20,
+      "warmup": 3,
+      "medianMs": 2.532,
+      "p95Ms": 3.093,
+      "minMs": 2.347,
+      "certificateDerBytes": 414,
+      "clientBytes": 1491,
+      "serverBytes": 1872,
+      "clientRecords": 3,
+      "serverRecords": 6,
+      "clientHelloBytes": 1406,
+      "serverHelloBytes": 1210,
+      "wireBytesStable": false,
+      "measurements": [
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1872,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1872,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1873,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1872,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1872,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1873,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1873,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1873,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1874,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1873,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1872,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1874,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1874,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1872,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1874,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1873,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1874,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1873,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1872,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        },
+        {
+          "clientBytes": 1491,
+          "serverBytes": 1872,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1406,
+          "serverHelloBytes": 1210
+        }
+      ],
+      "timingsMs": [
+        2.4424549999999954,
+        2.362289000000004,
+        2.536551000000003,
+        2.4176020000000165,
+        2.434252999999984,
+        2.566420999999991,
+        2.5817559999999844,
+        2.5383440000000235,
+        3.09317200000001,
+        2.6644080000000088,
+        2.5661130000000014,
+        2.527563000000015,
+        3.307832000000019,
+        2.6152529999999956,
+        2.3902909999999906,
+        2.3474310000000003,
+        2.6766380000000254,
+        2.5003079999999898,
+        2.4526050000000055,
+        2.347127999999998
+      ]
+    },
+    {
+      "id": "pqc",
+      "label": "纯 PQC 协商与认证",
+      "group": "MLKEM768",
+      "certificate": "ML-DSA-65",
+      "auth": "ML-DSA-65",
+      "status": "measured",
+      "samples": 20,
+      "warmup": 3,
+      "medianMs": 3.272,
+      "p95Ms": 4.53,
+      "minMs": 2.447,
+      "certificateDerBytes": 5538,
+      "clientBytes": 1459,
+      "serverBytes": 10203,
+      "clientRecords": 3,
+      "serverRecords": 6,
+      "clientHelloBytes": 1374,
+      "serverHelloBytes": 1178,
+      "wireBytesStable": true,
+      "measurements": [
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        },
+        {
+          "clientBytes": 1459,
+          "serverBytes": 10203,
+          "clientRecords": 3,
+          "serverRecords": 6,
+          "clientHelloBytes": 1374,
+          "serverHelloBytes": 1178
+        }
+      ],
+      "timingsMs": [
+        3.0581680000000233,
+        3.9310219999999845,
+        4.734969999999976,
+        3.4605770000000007,
+        2.929715999999985,
+        3.1343579999999633,
+        2.896510000000035,
+        4.223642999999981,
+        3.051179999999988,
+        2.939741999999967,
+        2.446932000000004,
+        4.530248999999969,
+        3.4103870000000143,
+        2.90305699999999,
+        3.7557939999999803,
+        3.45386400000001,
+        2.8538839999999936,
+        3.072607000000005,
+        3.8098640000000046,
+        4.030436000000009
+      ]
+    }
+  ],
+  "interoperability": [
+    {
+      "client": "Node v24.19.0",
+      "server": "Node v24.19.0",
+      "group": "X25519",
+      "status": "passed",
+      "authentication": "ECDSA P-256"
+    },
+    {
+      "client": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+      "server": "Node v24.19.0",
+      "group": "X25519",
+      "status": "passed",
+      "authentication": "ECDSA P-256",
+      "evidence": "Connecting to 127.0.0.1\nCONNECTION ESTABLISHED\nProtocol version: TLSv1.3\nCiphersuite: TLS_AES_256_GCM_SHA384\nPeer certificate: CN=localhost\nHash used: SHA256\nSignature type: ecdsa_secp256r1_sha256\nVerification: OK\nPeer Temp Key: X25519, 253 bits\nDONE"
+    },
+    {
+      "client": "Node v24.19.0",
+      "server": "Node v24.19.0",
+      "group": "X25519MLKEM768",
+      "status": "passed",
+      "authentication": "ECDSA P-256"
+    },
+    {
+      "client": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+      "server": "Node v24.19.0",
+      "group": "X25519MLKEM768",
+      "status": "passed",
+      "authentication": "ECDSA P-256",
+      "evidence": "Connecting to 127.0.0.1\nCONNECTION ESTABLISHED\nProtocol version: TLSv1.3\nCiphersuite: TLS_AES_256_GCM_SHA384\nPeer certificate: CN=localhost\nHash used: SHA256\nSignature type: ecdsa_secp256r1_sha256\nVerification: OK\nNegotiated TLS1.3 group: X25519MLKEM768\nDONE"
+    },
+    {
+      "client": "Node v24.19.0",
+      "server": "Node v24.19.0",
+      "group": "MLKEM768",
+      "status": "passed",
+      "authentication": "ML-DSA-65"
+    },
+    {
+      "client": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+      "server": "Node v24.19.0",
+      "group": "MLKEM768",
+      "status": "passed",
+      "authentication": "ML-DSA-65",
+      "evidence": "Connecting to 127.0.0.1\nCONNECTION ESTABLISHED\nProtocol version: TLSv1.3\nCiphersuite: TLS_AES_256_GCM_SHA384\nPeer certificate: CN=localhost\nHash used: UNDEF\nSignature type: mldsa65\nVerification: OK\nNegotiated TLS1.3 group: MLKEM768\nDONE"
+    }
+  ]
+}

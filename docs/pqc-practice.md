@@ -2,6 +2,8 @@
 
 完整运行资源位于 `public/pqc-practice/`。`/pqc-practice` 重定向到 `/pqc-practice/index.html`；`audit.html` 提供逐参数接入记录、来源、团队信息和 CSV 导出。
 
+混合协商实验新增于 `/lab/hybrid`：真实 X25519 + ML-KEM-768 → HKDF，包含密文与上下文篡改。教学计划与标准 TLS 组合器分开，维护说明见 [协议工程](protocol-engineering.md)。安全与本地计算说明位于 `/lab/security`。
+
 ## 算法与运行状态
 
 主工作台按 NIST 标准算法和 2026 国内征集两组选择算法。NIST 组提供 [ML-KEM / FIPS 203](https://csrc.nist.gov/pubs/fips/203/final)、[ML-DSA / FIPS 204](https://csrc.nist.gov/pubs/fips/204/final) 和 [SLH-DSA / FIPS 205](https://csrc.nist.gov/pubs/fips/205/final)，保留 18 组 JS/WASM 参数组合。模块源自 PQMagic，提交与许可证副本位于 `PQMagic-UPSTREAM_COMMIT.txt` 和 `PQMagic-LICENSE.txt`。

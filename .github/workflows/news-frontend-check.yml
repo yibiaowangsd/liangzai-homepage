@@ -4,6 +4,29 @@ on:
   push:
     branches: [main]
     paths:
+      - 'app/engineering/**'
+      - 'app/protocols/**'
+      - 'app/projects/**'
+      - 'app/benchmarks/**'
+      - 'app/gm-pqc/**'
+      - 'app/lab/**'
+      - 'app/migration/**'
+      - 'app/notes/**'
+      - 'app/tools/**'
+      - 'app/parameters/**'
+      - 'app/contact/**'
+      - 'app/weekly/**'
+      - 'app/records/**'
+      - 'app/changelog/**'
+      - 'app/site-info/**'
+      - 'app/security.txt/**'
+      - 'public/.well-known/**'
+      - 'scripts/lib/serve-built-site.mjs'
+      - 'public/data/**'
+      - 'public/downloads/**'
+      - 'scripts/generate-engineering-data.mjs'
+      - 'scripts/check-engineering-browser.mjs'
+      - 'tests/engineering.test.mjs'
       - 'app/site/**'
       - 'app/en/**'
       - 'app/pqc/**'
@@ -59,6 +82,29 @@ on:
       - '.github/workflows/news-frontend-check.yml'
   pull_request:
     paths:
+      - 'app/engineering/**'
+      - 'app/protocols/**'
+      - 'app/projects/**'
+      - 'app/benchmarks/**'
+      - 'app/gm-pqc/**'
+      - 'app/lab/**'
+      - 'app/migration/**'
+      - 'app/notes/**'
+      - 'app/tools/**'
+      - 'app/parameters/**'
+      - 'app/contact/**'
+      - 'app/weekly/**'
+      - 'app/records/**'
+      - 'app/changelog/**'
+      - 'app/site-info/**'
+      - 'app/security.txt/**'
+      - 'public/.well-known/**'
+      - 'scripts/lib/serve-built-site.mjs'
+      - 'public/data/**'
+      - 'public/downloads/**'
+      - 'scripts/generate-engineering-data.mjs'
+      - 'scripts/check-engineering-browser.mjs'
+      - 'tests/engineering.test.mjs'
       - 'app/site/**'
       - 'app/en/**'
       - 'app/pqc/**'
@@ -132,9 +178,10 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs tests/site-theme.test.mjs tests/site-typography.test.mjs tests/layout-redesign.test.mjs tests/mobile-sidebar.test.mjs tests/reading-workspaces.test.mjs tests/public-site.test.mjs
+      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs tests/site-theme.test.mjs tests/site-typography.test.mjs tests/layout-redesign.test.mjs tests/mobile-sidebar.test.mjs tests/reading-workspaces.test.mjs tests/public-site.test.mjs tests/engineering.test.mjs
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run test:layout
+      - run: npm run test:engineering-browser
       - uses: actions/upload-artifact@v4
         if: always()
         with:

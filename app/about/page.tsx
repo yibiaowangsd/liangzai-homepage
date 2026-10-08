@@ -7,7 +7,7 @@ import FloatingIdentity from "./FloatingIdentity";
 export const metadata = pageMetadata("关于我", "Yibiao 的公开经历、密码工程项目与联系入口。", "/about", "about");
 
 const journey = [
-  { period: "2025 至今", type: "工作", place: "中电信量子集团", detail: "抗量子密码与安全协议", body: "将对密码与安全的研究延伸到工程实践，关注抗量子协议改造、密码敏捷，以及密码工程的实现与验证。", current: true },
+  { period: "2025 至今", type: "工作", place: "中电信量子集团", detail: "抗量子密码与安全协议", body: "从事抗量子 TLS/TLCP 协议改造、抗量子算法库等工作。", current: true },
   { period: "2022—2025", type: "硕士", place: "山东大学", detail: "网络空间安全", body: "继续在网络空间安全领域学习与研究，从本科阶段的专业积累走向更深入的探索。", current: false },
   { period: "2018—2022", type: "本科", place: "山东大学", detail: "网络空间安全", body: "在山大开启网络空间安全的学习之路，也是我走近密码学与安全技术的起点。", current: false },
 ];
@@ -64,7 +64,7 @@ export default function About() {
           <div className={styles.sectionHead} data-reveal><p className={styles.kicker}>03 个人项目</p><h2 id="projects-title">可公开的工程实践</h2><p>把好奇心写进代码<br />把想法做成可以体验的作品</p></div>
           <div className={styles.projects}>{projects.map((item) => <Link href={item.href} className={styles.project} key={item.no} data-reveal><span className={styles.number}>{item.no}</span><div><h3>{item.title}</h3><p>{item.text}</p></div><span className={styles.projectAction}>{item.action}<i aria-hidden="true" /></span></Link>)}</div>
         </section>
-        <section id="contact" className={styles.contact} aria-labelledby="contact-title" data-reveal><p className={styles.kicker}>04 找到我</p><h2 id="contact-title">很高兴在这里遇见你</h2><p>如果你也对密码、安全或有趣的技术表达感兴趣<br />欢迎来 GitHub 看看我的代码与项目</p><a className="silver-button" href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">访问我的 GitHub<i aria-hidden="true" /></a><span className={styles.signature}>WANG YIBIAO</span></section>
+        <section id="contact" className={styles.contact} aria-labelledby="contact-title" data-reveal><p className={styles.kicker}>04 找到我</p><h2 id="contact-title">很高兴在这里遇见你</h2><p>如果你也对密码、安全或有趣的技术表达感兴趣<br />欢迎来 GitHub 看看我的代码与项目</p><a className="silver-button" href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">访问我的 GitHub<i aria-hidden="true" /></a><p><a href="mailto:yibiao_wang@foxmail.com">yibiao_wang@foxmail.com</a> · <Link href="/contact">联系与订阅</Link></p><span className={styles.signature}>WANG YIBIAO</span></section>
       </MotionSurface>
     </main>
   );

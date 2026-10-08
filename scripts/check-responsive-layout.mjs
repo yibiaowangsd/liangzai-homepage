@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { createServer } from 'node:http';
-import { mkdir, readFile, stat } from 'node:fs/promises';
-import { extname, resolve, sep } from 'node:path';
+import { mkdir, readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { serveBuiltSite } from './lib/serve-built-site.mjs';
 import { chromium, firefox, webkit } from 'playwright';
 
 // Exercise the actual production CSS/chunks, without a live news or deployment dependency.
@@ -25,34 +25,7 @@ globalThis.fetch = (input, init) => {
   const url = typeof input === 'string' || input instanceof URL ? String(input) : input.url;
   return url.startsWith('https://api.wangyibiao.com/api/news') ? Promise.resolve(newsResponse(input)) : nativeFetch(input, init);
 };
-const { default: worker } = await import('../dist/server/index.js');
-const clientRoot = resolve('dist/client');
-const types = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json', '.wasm': 'application/wasm', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.png': 'image/png', '.bin': 'application/octet-stream', '.mp3': 'audio/mpeg' };
-async function asset(input) {
-  const file = resolve(clientRoot, '.' + decodeURIComponent(new URL(typeof input === 'string' ? input : input.url).pathname));
-  if (!file.startsWith(clientRoot + sep)) return new Response(null, { status: 404 });
-  try {
-    if (!(await stat(file)).isFile()) return new Response(null, { status: 404 });
-    return new Response(await readFile(file), { headers: { 'Content-Type': types[extname(file)] || 'application/octet-stream' } });
-  } catch (error) {
-    if (error.code === 'ENOENT') return new Response(null, { status: 404 });
-    throw error;
-  }
-}
-const server = createServer(async (incoming, outgoing) => {
-  try {
-    const request = new Request(`http://${incoming.headers.host}${incoming.url}`, { headers: incoming.headers });
-    const file = await asset(request);
-    const response = file.status === 404 ? await worker.fetch(request, { ASSETS: { fetch: asset } }, { waitUntil(promise) { void promise.catch(console.error); }, passThroughOnException() {} }) : file;
-    outgoing.writeHead(response.status, Object.fromEntries(response.headers));
-    outgoing.end(Buffer.from(await response.arrayBuffer()));
-  } catch (error) {
-    outgoing.writeHead(500);
-    outgoing.end(String(error));
-  }
-});
-await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-const base = `http://127.0.0.1:${server.address().port}`;
+const { server, base } = await serveBuiltSite();
 const viewports = [
   { width: 320, height: 568 }, { width: 390, height: 844 },
   { width: 430, height: 932 }, { width: 640, height: 360 },

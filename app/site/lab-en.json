@@ -482,5 +482,22 @@
   "加载": "Loading",
   "载入": "Loading",
   "、": ", ",
-  "签名验证结果": "Signature verification result"
+  "签名验证结果": "Signature verification result",
+  "协议工程": "Protocols",
+  "公开作品": "Projects",
+  "互通与性能": "Benchmarks",
+  "国密 × PQC": "GM × PQC",
+  "迁移指南": "Migration",
+  "混合 KEM 演示": "Hybrid KEM Demo",
+  "工程笔记": "Engineering Notes",
+  "协议尺寸工具": "Size Tools",
+  "参数速查": "Parameters",
+  "工程周报": "Engineering Digest",
+  "联系与订阅": "Contact & RSS",
+  "公开记录": "Public Record",
+  "更新日志": "Changelog",
+  "站点说明": "Site Information",
+  "实验室安全与隐私": "Lab Security & Privacy",
+  "报文尺寸计算器": "Packet Size Calculator",
+  "证书体积对比": "Certificate Comparison"
 }

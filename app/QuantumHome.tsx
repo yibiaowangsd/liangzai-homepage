@@ -33,6 +33,7 @@ export default async function QuantumHome() {
           <div className="portal-projects" data-reveal>{engineeringProjects.map(project => <article key={project.title} className="portal-project-card">
             <p className="project-protocol">{project.protocol}</p><span className="project-status">{project.status}</span><h3>{project.title}</h3><p>{project.result}</p><strong className="project-metric">{project.metric}</strong><small>{project.note}</small><a className="portal-text-link" href={project.href}>{project.action}</a>
           </article>)}</div>
+          <div className="portal-actions" data-reveal><Link className="portal-text-link" href="/projects">查看全部公开作品 →</Link><Link className="portal-text-link" href="/benchmarks">互通数据与复现脚本 →</Link><Link className="portal-text-link" href="/protocols">查看四条协议路径 →</Link></div>
           <div className="portal-lab-scene" data-reveal>
             <div className="portal-lab-art"><img src="/assets/pqc/ml-kem-studio-v2.webp" width="1200" height="800" alt="蓝色高光下的金属晶格结构，呼应基于格的后量子算法" loading="lazy" decoding="async" /></div>
             <div className="portal-lab-copy">
