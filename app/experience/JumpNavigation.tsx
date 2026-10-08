@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { flushSync } from "react-dom";
 import { usePathname } from "next/navigation";
 import { searchDestinations } from "./destinations";
@@ -43,7 +43,7 @@ export default function JumpNavigation({
     document.addEventListener("keydown", key);
     return () => document.removeEventListener("keydown", key);
   }, []);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
     const el = dialog.current;
     if (!el?.showModal) return;

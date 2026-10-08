@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type ComponentProps } from "react";
+import { useLayoutEffect, useRef, useState, type ComponentProps } from "react";
 import { flushSync } from "react-dom";
 import { useExperience } from "./Motion";
 import { destinations } from "./destinations";
@@ -35,7 +35,7 @@ export function SiteHeader() {
   const dialog = useRef<HTMLDialogElement>(null),
     close = useRef<HTMLButtonElement>(null);
   const { paused, toggle } = useExperience();
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!open) return;
     const el = dialog.current;
     if (!el) return;
