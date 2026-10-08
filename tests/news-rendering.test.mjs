@@ -161,6 +161,31 @@ test("news pages preserve published content and accessible rendering", async (t)
       }
     });
 
+    await t.test("front-page highlights cover all five directions before repeating a direction", async () => {
+      const categories = ["pqc", "protocol", "standards", "security", "ai"];
+      const items = categories.flatMap((category) => Array.from({ length: 5 }, (_, index) => ({
+        ...publishedItems[0],
+        slug: `highlights-${category}-${index}`,
+        title: `${category} 新闻 ${index}`,
+        category,
+      })));
+      upstream = () => Response.json(editions(items));
+      const main = await render("/news");
+      const front = main.slice(main.indexOf('<section class="front-page">'), main.indexOf('<div class="edition-stack">'));
+      const highlighted = [...front.matchAll(/<a\b[^>]*class="(?:lead-visual|deck-thumb)"[^>]*>/g)]
+        .map((match) => attribute(match[0], "href"));
+      assert.deepEqual(highlighted, categories.map((category) => `/news/highlights-${category}-0`));
+      assert.equal(new Set(highlighted).size, 5);
+      for (const item of items) assert.ok(main.includes(escapeHtml(item.title)), `Topic desks retain ${item.slug}`);
+
+      upstream = () => Response.json(editions(items.filter((item) => ["pqc", "ai"].includes(item.category))));
+      const sparse = await render("/news");
+      const sparseFront = sparse.slice(sparse.indexOf('<section class="front-page">'), sparse.indexOf('<div class="edition-stack">'));
+      const sparseHighlights = [...sparseFront.matchAll(/<a\b[^>]*class="(?:lead-visual|deck-thumb)"[^>]*>/g)]
+        .map((match) => attribute(match[0], "href"));
+      assert.deepEqual(sparseHighlights, ["pqc-0", "ai-0", "pqc-1", "ai-1", "pqc-2"].map((slug) => `/news/highlights-${slug}`));
+    });
+
     await t.test("source images retain their URL and use uncropped treatment", async () => {
       const items = [
         publishedItems[0],

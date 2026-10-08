@@ -17,6 +17,17 @@ export const metadata: Metadata = {
     "每天五个方向、每个方向五条：后量子密码、抗量子协议、标准动态、网络安全与 AI 前沿。",
 };
 
+function selectHighlights(topics: Record<string, NewsItem[]>, categories: readonly string[]) {
+  const stories: NewsItem[] = [];
+  // Take one story from every direction before filling any remaining slots.
+  for (let index = 0; stories.length < 5; index += 1) {
+    const round = categories.flatMap((key) => topics[key]?.slice(index, index + 1) || []);
+    if (!round.length) break;
+    stories.push(...round);
+  }
+  return stories.slice(0, 5);
+}
+
 function TopicDesk({
   category,
   items,
@@ -121,7 +132,7 @@ export default async function NewsPage({
     ? [...coreCategories, ...Object.keys(newest.topics).filter((key) => !coreCategories.includes(key as (typeof coreCategories)[number]))]
     : [...coreCategories];
   const heroStories = newest
-    ? editionCategories.flatMap((key) => newest.topics[key] || []).slice(0, 6)
+    ? selectHighlights(newest.topics, category ? [category] : editionCategories)
     : [];
   const heroLead = heroStories[0];
   const heroSide = heroStories.slice(1, 5);
