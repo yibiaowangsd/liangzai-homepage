@@ -34,16 +34,15 @@
 4. Workflow 调用 `POST https://api.wangyibiao.com/api/admin/news/batch`。
 5. Worker 按 `slug` 幂等 upsert，并同步移除当天新版日报中已不存在的旧条目。
 6. `/news` 通过 `/api/news/editions?page=N&pageSize=1` 按日报展示，一天一页，完整展示所选日报的新闻；分类筛选与文章返回保留页码。API 默认且固定 `pageSize=1`，兼容旧查询参数但不再合并多天。
-7. 已配置的群机器人在当日完整日报发布后推送五个板块的摘要与原文链接；定时检查和发送记录防止重复群发。配置与异常处理见 [机器人日报](../news-worker/ROBOT.md)。
+7. 已审核通过的群机器人在当日完整日报发布后，推送所选板块的摘要与原文链接；成员提醒由管理员配置，定时检查和发送记录防止重复群发。配置与异常处理见 [机器人日报](../news-worker/ROBOT.md)。
 
 ## Required repository secrets
 
 - `NEWS_ADMIN_TOKEN`：与 Worker 的 `ADMIN_TOKEN` 一致。
 - `CLOUDFLARE_API_TOKEN`：用于部署 Worker。
 - `CLOUDFLARE_ACCOUNT_ID`：Worker 与 D1 所在 Cloudflare Account ID。
-- `NEWS_BOT_WEBHOOK_URL`：可选，群机器人完整 webhook 地址，仅作为 Secret 保存。
 
-不要把这些值提交到仓库。
+不要把这些值提交到仓库。群机器人的 webhook 在订阅页提交并经管理员审核，不再从仓库 Secret 自动开通。Worker 可单独配置 `ROBOT_WEBHOOK_SECRET` 作为加密密钥；默认复用现有订阅签名或管理员 Secret，详见机器人日报文档。
 
 ## Daily payload
 

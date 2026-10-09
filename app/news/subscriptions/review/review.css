@@ -91,3 +91,10 @@
   .review-pagination { flex-wrap: wrap; }
   .review-pagination > span { order: 3; width: 100%; text-align: center; }
 }
+
+.review-channels { display: flex; gap: 8px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--theme-border); }
+.subscription-review .review-channels button { min-width: 120px; background: transparent; }
+.subscription-review .review-channels button[aria-pressed=true] { background: var(--theme-accent-soft); border-color: var(--theme-accent); color: var(--theme-accent); font-weight: 600; }
+.review-mention-config { margin-top: 20px; padding: 20px; border: 1px solid var(--theme-border); border-radius: 10px; background: var(--theme-bg); }
+.review-mention-config h3 { color: var(--theme-ink); font-size: 15px; }
+.review-mention-config > p { color: var(--theme-muted); font-size: 12px; }

@@ -1,42 +1,35 @@
-# 群机器人日报
+# 群机器人日报订阅
 
-复用现有每日前沿数据与 Worker 定时任务，不需要新增 ChatGPT 定时任务。现有每十五分钟的 Cron 检查北京时间当天的数据，完整日报发布后在下一次检查时推送；没有完整日报则继续等待。历史补刊不会补发到群。多条消息由定时任务发送，避免在新闻发布请求返回后的短暂后台执行窗口内中断。
+公共入口与邮箱订阅一致：`/news/subscribe` 选择「群机器人」，填写完整 webhook、群名称/称呼、新闻板块和申请理由。两种渠道均需管理员审核，机器人无需邮箱确认；默认不 @ 任何人。申请与重复提交均不触发群消息。
 
-五个核心板块各至少五条新闻才发送，每个板块一条文本消息，共五条。每条包含日期、板块、五条新闻的中文摘要、来源和原文地址。链接直接打开原始来源，没有有效原文地址时不回退到本站文章。不 @ 所有人或个人，不发送订阅者邮箱、申请理由或审核信息。
+管理员在 `/news/subscriptions/review` 登录后切换「群机器人」，查看脱敏地址、板块与申请理由，配置不 @ 或指定成员后通过。指定成员使用群中登记的手机号，最多 20 人；每份日报只在第一条消息提醒。公众不能配置 @、批准申请或覆盖已获批的设置。管理员可修改成员提醒或填写理由撤销批准；修改后停止未发送的旧任务，下一份日报使用新配置，已经发送的消息无法撤回。
 
-## 凭据配置
+## 存储与部署
 
-在 GitHub 仓库的 Actions Secrets 添加 `NEWS_BOT_WEBHOOK_URL`，值为完整 webhook 地址。`Deploy news API Worker` 通过权限为 0600 的临时文件，在部署代码时将其同步为 **liangzai-news-api** 的 Cloudflare Secret，随后删除临时文件。值不出现在源代码、前端、工作流日志或状态接口中。未配置 Secret 时机器人功能关闭，邮件订阅继续运行。
+`0003_robot_subscriptions.sql` 新增申请和每个机器人每天的发送记录。完整地址用 AES-GCM 加密，随机 nonce，申请 id 作为附加认证数据；列表只返回域名和密钥末四位。服务器使用 `ROBOT_WEBHOOK_SECRET`，未单独配置时使用现有 `NEWSLETTER_TOKEN_SECRET` 或 `ADMIN_TOKEN`，无需新增部署配置。加密密钥不得直接轮换：先使用原密钥解密、再用新密钥重新加密所有地址并更新身份摘要，否则原申请无法发送。密钥只保存在 Worker Secret，不能放入源代码。
 
-也可以直接在 Cloudflare Worker 的 Variables and Secrets 配置同名 Secret；部署保留已有凭据。当前适配 `imtwo.zdxlz.com/im-external/v1/webhook/send`，只允许 HTTPS，不跟随重定向。
+旧版 `NEWS_BOT_WEBHOOK_URL` 不再用于发送，旧 `robot_deliveries` 保留历史记录。迁移不会自动批准任何旧机器人；需从订阅页提交并由管理员审核。同一群当日已有旧版发送记录时不重新发送，下一份日报进入新订阅流程。
 
-## 已确认的消息协议
+复用每十五分钟的 Worker Cron。北京时间当天五个核心板块各至少五条新闻后，下一轮开始发送所选板块，每板块一条文本消息，附摘要、来源和直接打开原文的链接。历史补刊不补发。每轮处理最多五个机器人，其余下一轮继续。消息之间至少间隔 3.1 秒，不跟随重定向；当前支持 `imtwo.zdxlz.com` 的 HTTPS webhook。
+
+## 消息与发送记录
 
 ```json
-{
-  "type": "text",
-  "textMsg": {
-    "content": "UTF-8 日报正文",
-    "isMentioned": false
-  }
-}
+{"type":"text","textMsg":{"content":"UTF-8 日报正文","isMentioned":true,"mentionType":2,"mentionedMobileList":["13800000000"]}}
 ```
 
-消息服务返回 `ok: true, code: 200` 确认成功，不能只根据 HTTP 200 判断送达。每个请求间隔至少 3.1 秒，同一机器人每分钟不超过 20 条。不要同时用其他系统高频调用同一机器人。
+指定成员仅由审核配置生成；其他板块 `isMentioned: false`。消息服务须返回明确成功标识（如 `ok: true, code: 200`），HTTP 200 本身不代表送达。
 
-## 发送状态与重试
+每个机器人每天唯一任务，原子租约防止并发重复发送，正文与成员配置在创建任务时固定。逐条保存已确认进度，并在每条发送前重新核对批准状态和版本。明确拒绝/限流后十五分钟重试未发送部分，最多五轮；超时、连接中断、无效响应、5xx 和过期发送租约标记 `uncertain`，暂停自动重试，先在群里核对消息。供应商没有幂等接口，无法保证网络故障时恰好一次。
 
-`0002_robot_digest.sql` 只新增 `robot_deliveries` 表，保留现有新闻与邮件订阅数据。每个日报日期唯一，通过原子租约防止并行调用重复发送。正文在首次发送前固定，逐条记录已确认进度，后续改稿不会重复群发。
+## API
 
-机器人明确拒绝或返回限流时，十五分钟后从未确认的板块继续，最多五轮。连接中断、超时、无效响应、服务器 5xx 或过期发送租约无法证明是否送达，因此标记 `uncertain` 并暂停自动重试。该接口没有提供服务端幂等键，不能承诺网络异常时“恰好一次”；遇到 `uncertain` 应先在群中核对消息，再由维护者处理发送记录，不能直接重置整日报导致已确认消息重发。
+- `POST /api/robot-subscriptions`：提交申请（webhook、name、categories、reason、consent）。仅接受待审核申请；忽略公众提交的批准/@ 参数。
+- `GET /api/admin/robot-subscriptions?status=pending&page=1`：审核列表，分页 50 条，含当日发送状态，不返回明文 webhook、密文或完整密钥摘要。
+- `POST /api/admin/robot-subscriptions/:id/approve`：通过并配置 `mention_mode`（none/members）、`mention_mobiles`。
+- `POST /api/admin/robot-subscriptions/:id/mentions`：管理员修改已获批机器人的成员配置。
+- `POST /api/admin/robot-subscriptions/:id/reject`：填写 `note` 拒绝或停止推送。
 
-轮换地址后不会重发当天已发送日报；尚未发送的旧地址任务会停止，避免把固定正文发送到意外目的地。当天没有完整日报就等待，不发送空消息或冒充当天的旧日报。
+审核接口使用与邮箱相同的 `NEWSLETTER_ADMIN_TOKEN || ADMIN_TOKEN` Bearer 认证。运维接口 `GET /api/admin/robot/status` 使用发布 `ADMIN_TOKEN`，只返回汇总和当日各状态数量；原 `/api/admin/robot/send` 返回定时任务说明，不在 HTTP 请求里批量群发。
 
-## 运维接口
-
-- `GET /api/admin/robot/status`：查看当天配置与进度。
-- `POST /api/admin/robot/send`：尝试推送当天完整日报，遵守同一去重规则。
-
-均需现有新闻发布 `ADMIN_TOKEN` 的 Bearer 认证；接口不返回 webhook。公开 `/api/health` 仅返回 `robot_ready` 布尔值。日志只记录数量与状态，不记录目的地址、正文、凭据或供应商原始错误。
-
-验证：`node --test tests/news-robot.test.mjs tests/news-subscriptions.test.mjs tests/news-editions-api.test.mjs`。单元测试使用本地 SQLite 和模拟 webhook，不发送真实消息。接入时另外发送一条明确标注的测试消息确认协议。
+日志只记录数量与安全状态码，不能记录 webhook、手机号、正文或供应商原始响应。单元测试与浏览器测试使用示例地址和模拟服务，不向真实群发送测试消息。

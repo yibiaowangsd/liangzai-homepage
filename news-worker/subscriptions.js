@@ -6,11 +6,11 @@ const API = 'https://api.wangyibiao.com';
 const encoder = new TextEncoder();
 const CONSENT_VERSION = 'daily-news-v1';
 
-class RequestError extends Error {
+export class RequestError extends Error {
   constructor(message, status = 400) { super(message); this.status = status; }
 }
 const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-function cleanString(value, max, required = false) {
+export function cleanString(value, max, required = false) {
   if (typeof value !== 'string' || value.trim().length > max || (required && !value.trim())) {
     throw new RequestError('请完整填写申请信息，并遵守字数限制。');
   }
@@ -29,7 +29,7 @@ function emailAddress(value) {
   }
   return email;
 }
-async function readBody(request) {
+export async function readBody(request) {
   if (!request.headers.get('Content-Type')?.includes('application/json')) throw new RequestError('请使用 JSON 提交申请。', 415);
   const reader = request.body?.getReader();
   if (!reader) throw new RequestError('申请内容为空。');
@@ -51,10 +51,10 @@ async function readBody(request) {
     return body;
   } catch { throw new RequestError('申请内容格式不正确。'); }
 }
-async function digest(value) {
+export async function digest(value) {
   return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(value))), byte => byte.toString(16).padStart(2, '0')).join('');
 }
-async function secretMatches(a, b) {
+export async function secretMatches(a, b) {
   if (!a || !b) return false;
   const [left, right] = await Promise.all([digest(a), digest(b)]);
   let diff = 0;
