@@ -109,6 +109,8 @@ try {
   const colors = await page.locator('.subscription-primary').evaluate(element => ({ foreground: getComputedStyle(element).color, background: getComputedStyle(element).backgroundColor }));
   assert.equal(colors.foreground, 'rgb(16, 24, 32)', 'Night theme keeps dark text on the light accent button');
   assert.equal(colors.background, 'rgb(159, 180, 255)');
+  assert.equal(await page.locator('.subscription-categories strong').first().evaluate(element => getComputedStyle(element).color), 'rgb(242, 245, 247)', 'Night theme keeps section labels readable');
+  assert.equal(await page.locator('.subscription-field-label').evaluate(element => getComputedStyle(element).color), 'rgb(242, 245, 247)', 'Night theme keeps the name label readable');
   await page.screenshot({ path: resolve(output, 'subscribe-midnight.png'), fullPage: true });
   await page.getByRole('button', { name: '打开设置与目录' }).click();
   await page.getByLabel('页面主题').selectOption('paper');

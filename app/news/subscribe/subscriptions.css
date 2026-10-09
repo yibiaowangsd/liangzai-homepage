@@ -13,7 +13,7 @@
 .subscription-steps li > span { margin-right: 8px; font-variant-numeric: tabular-nums; }
 .subscription-field { display: flex; flex-direction: column; gap: 8px; font-size: 14px; margin: 20px 0; }
 .subscription-field > span, .subscription-categories legend > span { color: var(--theme-muted, #526257); font-size: 12px; }
-.subscription-field > .subscription-field-label { color: inherit; font-size: inherit; }
+.subscription-field > .subscription-field-label { color: var(--theme-ink); font-size: inherit; }
 .subscription-field-label small { color: var(--theme-muted); font-size: 12px; margin-left: 6px; }
 .subscription-page input:not([type=checkbox]), .subscription-page textarea, .subscription-page select { width: 100%; min-height: 44px; border: 1px solid var(--theme-border, #cad3c9); border-radius: 8px; background: var(--theme-bg, #fff); color: inherit; padding: 12px; font: inherit; }
 .subscription-page textarea { resize: vertical; }
@@ -22,7 +22,7 @@
 .subscription-categories legend > span { margin-left: 6px; }
 .subscription-categories > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .subscription-categories label { display: flex; gap: 10px; align-items: center; min-height: 68px; padding: 12px; border: 1px solid var(--theme-border, #cad3c9); border-radius: 8px; font-size: 14px; line-height: 1.5; cursor: pointer; }
-.subscription-categories label strong { display: block; font-weight: 600; }
+.subscription-categories label strong { display: block; font-weight: 600; color: var(--theme-ink); }
 .subscription-categories label small { display: block; color: var(--theme-muted); font-size: 11px; margin-top: 3px; }
 .subscription-page input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--theme-accent, #315a43); }
 .subscription-categories label:has(input:checked) { border-color: var(--theme-accent, #315a43); background: color-mix(in srgb, var(--theme-accent, #315a43) 8%, transparent); }
