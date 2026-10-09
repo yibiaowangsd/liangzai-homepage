@@ -86,12 +86,34 @@ jobs:
           npx --yes wrangler@4.92.0 d1 migrations apply liangzai-news-prod --remote --config "$RUNNER_TEMP/wrangler-news.jsonc"
 
       - name: Deploy Worker
+        env:
+          NEWS_BOT_WEBHOOK_URL: ${{ secrets.NEWS_BOT_WEBHOOK_URL }}
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes wrangler@4.92.0 deploy --config "$RUNNER_TEMP/wrangler-news.jsonc"
+          robot_secret_file="$RUNNER_TEMP/news-robot-secret.json"
+          trap 'rm -f "$robot_secret_file"' EXIT
+          deploy_options=()
+          if [[ -n "$NEWS_BOT_WEBHOOK_URL" ]]; then
+            python3 - "$robot_secret_file" <<'PY'
+          import json, os, sys
+          from urllib.parse import urlparse, parse_qs
+          value = os.environ["NEWS_BOT_WEBHOOK_URL"]
+          url = urlparse(value)
+          if (url.scheme != "https" or url.netloc != "imtwo.zdxlz.com" or
+              url.path != "/im-external/v1/webhook/send" or not parse_qs(url.query).get("key") or url.fragment):
+              raise SystemExit("Robot webhook configuration is invalid")
+          fd = os.open(sys.argv[1], os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+          with os.fdopen(fd, "w", encoding="utf-8") as output:
+              json.dump({"NEWS_BOT_WEBHOOK_URL": value}, output)
+          PY
+            deploy_options+=(--secrets-file "$robot_secret_file")
+          fi
+          npx --yes wrangler@4.92.0 deploy --config "$RUNNER_TEMP/wrangler-news.jsonc" "${deploy_options[@]}"
 
       - name: Verify news API
+        env:
+          EXPECT_ROBOT_READY: ${{ secrets.NEWS_BOT_WEBHOOK_URL != '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -105,6 +127,11 @@ jobs:
             python3 -c '
           import json, sys
           payload = json.load(sys.stdin)
+          if "/api/health" in sys.argv[1]:
+              import os
+              if os.environ.get("EXPECT_ROBOT_READY") == "true":
+                  assert payload["robot_ready"] is True, "Robot webhook must be configured"
+              print("Robot configured:", payload["robot_ready"])
           if "/api/subscriptions" in sys.argv[1]:
               assert payload["review_required"] is True, "Subscription review must be required"
               assert payload["email_confirmation_required"] is True, "Email confirmation must be required"
@@ -115,3 +142,20 @@ jobs:
               assert payload["meta"]["totalPages"] == max(1, payload["meta"]["totalDays"]), "Page count must match edition dates"
           ' "$url" <<< "$response"
           done
+
+      - name: Verify robot delivery service
+        env:
+          EXPECT_ROBOT_READY: ${{ secrets.NEWS_BOT_WEBHOOK_URL != '' }}
+          NEWS_ADMIN_TOKEN: ${{ secrets.NEWS_ADMIN_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$EXPECT_ROBOT_READY" != "true" ]]; then
+            echo "No repository robot secret provided; existing Worker secret is preserved."
+            exit 0
+          fi
+          [[ -n "$NEWS_ADMIN_TOKEN" ]] || { echo "Missing news administrator secret" >&2; exit 1; }
+          response="$(curl --fail --silent --show-error --max-time 30 \
+            --header "Authorization: Bearer $NEWS_ADMIN_TOKEN" \
+            https://api.wangyibiao.com/api/admin/robot/status)"
+          python3 -c 'import json,sys; data=json.load(sys.stdin); assert data["enabled"] is True; print("Robot delivery schema and configuration verified")' <<< "$response"
