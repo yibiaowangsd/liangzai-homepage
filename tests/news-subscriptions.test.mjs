@@ -83,6 +83,33 @@ test('public validation, origin restriction and administrator authentication pro
   assert.equal(f.db.prepare('SELECT count(*) n FROM newsletter_subscribers').get().n, 0);
 });
 
+test('confirmation details show the signed recipient and approved sections without activating mail', async t => {
+  const f = fixture(t); const row = await f.apply('Reader@EXAMPLE.com', ['security', 'ai']);
+  const pending = await subscriptionToken(f.env, { ...row, confirmation_expires_at: Date.now() + 86400000 }, 'confirm');
+  const pendingResponse = await f.api(`/subscriptions/confirm?token=${encodeURIComponent(pending)}`);
+  assert.equal(pendingResponse.status, 409); assert.doesNotMatch(await pendingResponse.text(), /reader@example\.com/);
+  await f.approve(row);
+  const updated = f.db.prepare('SELECT * FROM newsletter_subscribers').get();
+  const token = await subscriptionToken(f.env, updated, 'confirm');
+  const href = `/subscriptions/confirm?token=${encodeURIComponent(token)}`;
+  const details = await f.api(href);
+  assert.equal(details.status, 200); assert.equal(details.headers.get('Cache-Control'), 'no-store');
+  assert.deepEqual(await details.json(), { email: 'reader@example.com', categories: ['security', 'ai'], email_verified: false });
+  assert.equal(f.db.prepare('SELECT email_verified_at FROM newsletter_subscribers').get().email_verified_at, null);
+  assert.equal((await sendDailyDigest(f.env, date)).sent, 0);
+  assert.equal(f.mails.length, 1, 'Reading confirmation details sends no mail');
+  assert.equal((await f.api('/subscriptions/confirm', { token })).status, 200);
+  assert.equal((await (await f.api(href)).json()).email_verified, true);
+  await f.api(`/admin/subscriptions/${row.id}/reject`, { note: '停止订阅' }, true);
+  const stopped = await f.api(href); assert.equal(stopped.status, 409); assert.doesNotMatch(await stopped.text(), /reader@example\.com/);
+  for (const badToken of ['', 'x' + token, await subscriptionToken(f.env, updated, 'manage'), await subscriptionToken(f.env, { ...updated, confirmation_expires_at: Date.now() - 1000 }, 'confirm')]) {
+    const invalid = await f.api(`/subscriptions/confirm?token=${encodeURIComponent(badToken)}`);
+    assert.equal(invalid.status, 403); assert.doesNotMatch(await invalid.text(), /reader@example\.com/);
+  }
+  const publicResult = await (await f.api('/subscriptions')).json();
+  assert.ok(!('email' in publicResult), 'Public service metadata never exposes a recipient');
+});
+
 test('missing administrator or mail configuration fails closed without approving or sending', async t => {
   const f = fixture(t, false); const row = await f.apply();
   assert.equal((await f.api(`/admin/subscriptions/${row.id}/approve`, {}, true)).status, 503);

@@ -151,8 +151,6 @@ export default async function NewsPage({
       <section className="news-toolbar" aria-label="前沿新闻导航">
         <div className="news-toolbar-title">
           <h1>前沿新闻</h1>
-          <Link className="news-subscribe-link" href={category ? `/news/subscribe?category=${encodeURIComponent(category)}` : "/news/subscribe"}>订阅日报 ↗</Link>
-
         </div>
         {newest && (
           <nav className="news-day-controls" aria-label="本期日期与日刊切换">
@@ -184,6 +182,12 @@ export default async function NewsPage({
             ))}
           </nav>
         </details>
+      </section>
+
+      <section className="news-subscription-banner" aria-labelledby="news-subscription-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 6 9 7 9-7" /></svg>
+        <div><h2 id="news-subscription-title">让每天的前沿，直接抵达邮箱</h2><p>自选板块 · 每日一封 · 审核通过并确认邮箱后接收</p></div>
+        <Link className="news-subscribe-link" href={category ? `/news/subscribe?category=${encodeURIComponent(category)}` : "/news/subscribe"}>订阅日报 <span aria-hidden="true">→</span></Link>
       </section>
 
       {failed ? (

@@ -47,7 +47,10 @@ export default function QuantumHome() {
         <section className="portal-news portal-chapter" id="signal" aria-labelledby="signal-title">
           <div className="portal-section-heading" data-reveal><p className="portal-eyebrow">02</p><h2 id="signal-title">今日信号</h2><p>跟踪密码、协议与标准的新进展。<br />摘要与原始来源，帮助形成自己的判断。</p></div>
           <Suspense fallback={<div className="portal-dispatch-empty" role="status"><p>正在读取最新简报…</p><Link href="/news">阅读前沿新闻</Link></div>}><HomeDispatch /></Suspense>
-          <Link href="/news" className="portal-text-link portal-news-more">阅读完整技术简报</Link>
+          <div className="portal-news-actions">
+            <Link href="/news" className="portal-text-link">阅读完整技术简报</Link>
+            <div><p>按板块订阅，每天在邮箱读前沿。<span>审核通过并确认邮箱后接收。</span></p><Link href="/news/subscribe" className="portal-subscribe-button">订阅日报 <span aria-hidden="true">→</span></Link></div>
+          </div>
         </section>
         <section className="portal-world portal-chapter" id="world" aria-labelledby="world-title">
           <div className="portal-section-heading" data-reveal><p className="portal-eyebrow">03</p><h2 id="world-title">工程之外，一点想象</h2><p>量仔与奶龙的角色故事，<br />是这个个人网站的另一面。</p></div>

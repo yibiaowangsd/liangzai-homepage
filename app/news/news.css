@@ -989,5 +989,15 @@
 .article-body :is(h2,h3) { letter-spacing: 0; }
 @media (max-width: 780px) { .news-toolbar { position: static; } }
 
-.news-subscribe-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--theme-accent, #315a43); text-decoration: none; }
-.news-subscribe-link:hover { text-decoration: underline; }
+.news-subscription-banner { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 20px; padding: 22px var(--news-gutter); border-bottom: 1px solid var(--rule); background: color-mix(in srgb, var(--accent-dark) 5%, var(--paper)); }
+.news-subscription-banner > svg { width: 32px; height: 32px; color: var(--accent-dark); }
+.news-subscription-banner h2 { margin: 0 0 6px; font-size: 19px; font-weight: 650; line-height: 1.5; }
+.news-subscription-banner p { margin: 0; font-size: 13px; line-height: 1.7; color: var(--soft); }
+.newsroom .news-subscribe-link { display: inline-flex; align-items: center; justify-content: center; gap: 28px; min-height: 48px; padding: 12px 22px; border-radius: 8px; background: var(--accent-dark); color: var(--theme-on-accent, #fff); font-size: 15px; font-weight: 650; text-decoration: none; }
+.news-subscribe-link:hover { filter: brightness(1.1); }
+@media (max-width: 600px) {
+  .news-subscription-banner { grid-template-columns: 28px minmax(0, 1fr); gap: 12px; padding-block: 18px; }
+  .news-subscription-banner > svg { width: 26px; height: 26px; align-self: start; margin-top: 3px; }
+  .news-subscription-banner h2 { font-size: 17px; }
+  .newsroom .news-subscribe-link { grid-column: 1 / -1; }
+}
