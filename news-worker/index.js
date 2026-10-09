@@ -1,4 +1,5 @@
 import { handleSubscriptions, sendDailyDigest } from "./subscriptions.js";
+import { robotConfigured, robotStatus, sendRobotDigest } from "./robot.js";
 
 const ALLOWED_ORIGINS = new Set([
   "https://wangyibiao.com",
@@ -416,7 +417,7 @@ async function getFeatured(env, limit) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (request.method === "OPTIONS") {
@@ -437,7 +438,16 @@ export default {
           ok: database?.ok === 1,
           service: "liangzai-news-api",
           database: database?.ok === 1,
+          robot_ready: robotConfigured(env),
         });
+      }
+
+      if (url.pathname === "/api/admin/robot/status" || url.pathname === "/api/admin/robot/send") {
+        if (!env.ADMIN_TOKEN) return json(request, { error: "Administrator is not configured" }, 503);
+        if (!isAdmin(request, env)) return json(request, { error: "Unauthorized" }, 401);
+        if (request.method === "GET" && url.pathname.endsWith("/status")) return json(request, await robotStatus(env));
+        if (request.method === "POST" && url.pathname.endsWith("/send")) return json(request, await sendRobotDigest(env));
+        return json(request, { error: "Method not allowed" }, 405);
       }
 
       const subscriptionResponse = await handleSubscriptions(request, env, json);
@@ -544,6 +554,10 @@ export default {
           .map((item) => item.slug);
         const removed = date ? await syncEdition(env, date, publishedSlugs) : 0;
         const { items, ...publicResult } = result;
+        if (ctx && date === new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date())) {
+          ctx.waitUntil(sendRobotDigest(env).then(result => console.log('robot_publish', JSON.stringify(result)))
+            .catch(() => console.error('robot_publish_failed')));
+        }
 
         return json(request, {
           ...publicResult,
@@ -568,8 +582,11 @@ export default {
     }
   },
   scheduled(_controller, env, ctx) {
-    ctx.waitUntil(sendDailyDigest(env).then(result => {
-      console.log("newsletter_cron", JSON.stringify(result));
-    }).catch(() => console.error("newsletter_cron_failed")));
+    ctx.waitUntil(Promise.all([
+      sendDailyDigest(env).then(result => console.log("newsletter_cron", JSON.stringify(result)))
+        .catch(() => console.error("newsletter_cron_failed")),
+      sendRobotDigest(env).then(result => console.log("robot_cron", JSON.stringify(result)))
+        .catch(() => console.error("robot_cron_failed")),
+    ]));
   },
 };
