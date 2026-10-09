@@ -47,8 +47,10 @@ test("all news entry points round-trip their category and archive page", async (
     for (const query of ["", "?category=protocol", "?page=2", "?page=2&category=protocol"]) {
       await t.test(`listing → article → return ${query || "(default)"}`, async () => {
         const listing = await render("/news" + query);
+        assert.match(listing, /<a\b(?=[^>]*class="news-subscribe-link")[^>]*href="\/news\/subscribe(?:\?category=protocol)?"/);
         const links = [...listing.matchAll(/<a\b[^>]*href="(\/news\/[^\"]+)"[^>]*>/g)]
-          .map((match) => decodeHref(match[1]));
+          .map((match) => decodeHref(match[1]))
+          .filter((href) => new URL(href, "http://localhost").pathname !== "/news/subscribe");
         assert.ok(links.length >= 20, "Hero, deck, topic, and brief links are all covered");
         for (const href of links) assert.equal(new URL(href, "http://localhost").search, query);
         const detail = await render(links[0]);

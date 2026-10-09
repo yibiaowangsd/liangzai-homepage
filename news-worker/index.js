@@ -1,3 +1,5 @@
+import { handleSubscriptions, sendDailyDigest } from "./subscriptions.js";
+
 const ALLOWED_ORIGINS = new Set([
   "https://wangyibiao.com",
   "https://www.wangyibiao.com",
@@ -438,6 +440,9 @@ export default {
         });
       }
 
+      const subscriptionResponse = await handleSubscriptions(request, env, json);
+      if (subscriptionResponse) return subscriptionResponse;
+
       if (request.method === "GET" && url.pathname === "/api/news/editions") {
         const requestedPage = Number(url.searchParams.get("page") || "1");
         const page = Number.isSafeInteger(requestedPage) && requestedPage > 0 ? requestedPage : 1;
@@ -561,5 +566,10 @@ export default {
         clientError ? 400 : 500,
       );
     }
+  },
+  scheduled(_controller, env, ctx) {
+    ctx.waitUntil(sendDailyDigest(env).then(result => {
+      console.log("newsletter_cron", JSON.stringify(result));
+    }).catch(() => console.error("newsletter_cron_failed")));
   },
 };
