@@ -42,7 +42,7 @@ test("renders the homepage with the integrated practice destination", async () =
     assert.ok(html.includes(`href="${route}"`), `Homepage links to ${route}`);
   }
   assert.match(html, /进入密码实验室/);
-  assert.match(html, /打开设置与目录/);
+  assert.match(html, /打开显示设置/);
   assert.match(html, /把后量子密码/);
   assert.match(html, /播放序幕/);
   assert.match(html, /cinema-entrance/);

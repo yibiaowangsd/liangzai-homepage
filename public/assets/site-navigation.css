@@ -286,10 +286,21 @@
   }
 }
 
-/* Display controls live inside the directory; the header stays focused on navigation. */
-.site-preferences { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding-block: 24px; border-bottom: 1px solid var(--theme-border); }
-.settings-motion { min-height: 44px; padding: 10px 16px; border: 1px solid var(--theme-control-border); border-radius: 4px; background: var(--theme-surface); color: var(--theme-ink); font: inherit; cursor: pointer; }
-.settings-motion:focus-visible,.site-preferences :focus-visible { outline: 2px solid var(--theme-accent); outline-offset: 3px; }
+/* A non-modal settings dropdown shared by React and the standalone laboratory. */
+.site-settings { position: relative; }
+.site-settings-panel[hidden] { display: none; }
+.site-settings-panel { position: absolute; top: calc(100% + 10px); right: 0; z-index: 120; width: 300px; max-width: calc(100vw - 32px); padding: 20px; border: 1px solid var(--theme-border); border-radius: 12px; background: var(--theme-surface); color: var(--theme-ink); box-shadow: 0 12px 36px var(--theme-shadow); }
+.site-settings-panel h2 { margin: 0 0 12px; font-size: 15px; line-height: 1.5; font-weight: 650; }
+.settings-row { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 12px 0; font-size: 14px; }
+.settings-row > span { color: var(--theme-ink); white-space: nowrap; }
+.settings-row + .settings-row { border-top: 1px solid var(--theme-border); }
+.site-settings-panel p { margin: 10px 0 0; font-size: 12px; line-height: 1.8; color: var(--theme-muted); }
+html .site-settings-panel .theme-picker select { width: 132px; }
+.settings-motion { min-height: 44px; padding: 10px 16px; border: 1px solid var(--theme-control-border); border-radius: 8px; background: var(--theme-bg); color: var(--theme-ink); font: inherit; font-size: 13px; cursor: pointer; }
+.settings-motion:focus-visible,.site-settings-panel :focus-visible { outline: 2px solid var(--theme-accent); outline-offset: 3px; }
+html .site-chrome .site-settings .menu-toggle i { display: block; font-size: 18px; transition: transform .15s ease; }
+.site-settings .menu-toggle[aria-expanded=true] i { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { html .site-chrome .site-settings .menu-toggle i { transition: none; } }
 .practice-search { display: grid; gap: 8px; margin-top: 24px; color: var(--theme-ink); }
 .practice-search input { min-height: 44px; width: 100%; font: inherit; padding: 12px; border: 1px solid var(--theme-control-border); color: var(--theme-ink); background: var(--theme-bg); }
 @media (max-width: 700px) {

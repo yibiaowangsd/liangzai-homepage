@@ -102,7 +102,7 @@ try {
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `No horizontal overflow at ${width}`);
     await page.screenshot({ path: resolve(output, `subscribe-${width}.png`), fullPage: true });
   }
-  await page.getByRole('button', { name: '打开设置与目录' }).click();
+  await page.getByRole('button', { name: '打开显示设置' }).click();
   await page.getByLabel('页面主题').selectOption('midnight');
   await page.keyboard.press('Escape');
   assert.equal(await page.locator('html').getAttribute('data-theme'), 'midnight');
@@ -112,7 +112,7 @@ try {
   assert.equal(await page.locator('.subscription-categories strong').first().evaluate(element => getComputedStyle(element).color), 'rgb(242, 245, 247)', 'Night theme keeps section labels readable');
   assert.equal(await page.locator('.subscription-field-label').evaluate(element => getComputedStyle(element).color), 'rgb(242, 245, 247)', 'Night theme keeps the name label readable');
   await page.screenshot({ path: resolve(output, 'subscribe-midnight.png'), fullPage: true });
-  await page.getByRole('button', { name: '打开设置与目录' }).click();
+  await page.getByRole('button', { name: '打开显示设置' }).click();
   await page.getByLabel('页面主题').selectOption('paper');
   await page.keyboard.press('Escape');
   await page.getByLabel('邮箱地址').fill('reader@example.com');
