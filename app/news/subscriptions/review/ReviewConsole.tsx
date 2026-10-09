@@ -19,6 +19,7 @@ export default function ReviewConsole() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [ready, setReady] = useState(false);
+  const [sendingId, setSendingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -50,6 +51,18 @@ export default function ReviewConsole() {
     catch (cause) { setError(cause instanceof Error ? cause.message : "发送失败。"); }
     finally { setBusy(false); }
   }
+  async function sendRobot(row: Application) {
+    setBusy(true); setSendingId(row.id); setMessage(""); setError("");
+    try {
+      for (let part = 0; part < 5; part++) {
+        const result = await subscriptionRequest(`/admin/robot-subscriptions/${row.id}/send`, {}, secret);
+        setMessage(`${row.applicant_name || "群机器人"}：${result.message}`);
+        if (!result.more) break;
+      }
+    } catch (cause) {
+      setError(cause instanceof Error && cause.name !== "TimeoutError" && cause.name !== "AbortError" ? cause.message : "连接中断，发送结果尚未确认，请刷新列表核对状态。");
+    } finally { try { await load(); } catch { /* Preserve the send outcome if refresh fails. */ } setSendingId(null); setBusy(false); }
+  }
   function logout() {
     setChannel("email"); setConfiguring(null); setMentions({}); setSecret(""); setAuthenticated(false); setRows([]); setNotes({}); setRejecting(null); setMessage(""); setError(""); setReady(false); setTotal(0); setPage(1); setFilter("pending");
   }
@@ -76,7 +89,7 @@ export default function ReviewConsole() {
         <div className="subscription-actions"><button disabled={busy} onClick={() => void refresh()}>刷新列表</button>{channel === "email" && <button disabled={busy || !ready} onClick={() => void send()}>发送当日日报</button>}<button disabled={busy} onClick={logout}>退出</button></div>
       </div>
       <div className="review-workspace">
-        <aside className="review-sidebar"><h2>申请状态</h2><nav aria-label="申请状态">{Object.entries(statuses).map(([key, label]) => <button key={key} type="button" aria-pressed={filter === key} disabled={busy} onClick={() => void refresh(key, 1)}>{label}<span aria-hidden="true">{key === filter ? "●" : ""}</span></button>)}</nav><p>{channel === "robot" ? "审核期间不发送群消息。通过后自动发送完整日报，@ 设置只对下一份日报生效。" : "修改订阅板块的申请也会回到待审核列表。"}</p></aside>
+        <aside className="review-sidebar"><h2>申请状态</h2><nav aria-label="申请状态">{Object.entries(statuses).map(([key, label]) => <button key={key} type="button" aria-pressed={filter === key} disabled={busy} onClick={() => void refresh(key, 1)}>{label}<span aria-hidden="true">{key === filter ? "●" : ""}</span></button>)}</nav><p>{channel === "robot" ? "审核期间不发送群消息。通过后自动推送，也可在已通过列表立刻发送当日日报；当天已发送的不会重复推送。" : "修改订阅板块的申请也会回到待审核列表。"}</p></aside>
         <div className="review-list-panel">
           <header className="review-list-heading"><div><h2>{filter === "all" ? "全部申请" : `${statuses[filter]}申请`}</h2><p>共 {total} 份 · 提交时间以北京时间显示</p></div><span className="review-page-count">第 {page} / {Math.max(1, Math.ceil(total / 50))} 页</span></header>
           <div className="review-applications">{rows.map(row => {
@@ -91,6 +104,7 @@ export default function ReviewConsole() {
               {["pending", "approved"].includes(row.status) && <div className="review-application-actions">
                 <div className="subscription-actions">
                   {row.status === "pending" && <button disabled={busy || !ready} className="subscription-primary" onClick={() => channel === "robot" ? setConfiguring(configuring === row.id ? null : row.id) : void review(row, "approve")}>{channel === "robot" ? "配置并审核" : "通过申请"}</button>}
+                  {channel === "robot" && row.status === "approved" && <button className="subscription-primary" disabled={busy || !ready} onClick={() => void sendRobot(row)}>{sendingId === row.id ? "正在发送…" : "立刻发送"}</button>}
                   {channel === "robot" && row.status === "approved" && <button disabled={busy || !ready} onClick={() => setConfiguring(configuring === row.id ? null : row.id)}>配置 @ 成员</button>}
                   {channel === "email" && row.status === "approved" && !row.email_verified_at && <button disabled={busy || !ready} onClick={() => void review(row, "resend")}>重发确认邮件</button>}
                   <button className="review-danger" disabled={busy} aria-expanded={rejecting === row.id} aria-controls={`rejection-${row.id}`} onClick={() => setRejecting(rejecting === row.id ? null : row.id)}>{row.status === "approved" ? "撤销批准并停止发送" : "拒绝申请"}</button>

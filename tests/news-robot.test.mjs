@@ -10,6 +10,8 @@ import { decryptWebhook, normalizeWebhook } from '../news-worker/robot-config.js
 const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
 const testUrl = 'https://imtwo.zdxlz.com/im-external/v1/webhook/send?key=test-only-key';
 function fixture(t) {
+  const originalTimeout = globalThis.setTimeout;
+  t.mock.method(globalThis, 'setTimeout', (callback, delay, ...args) => originalTimeout(callback, delay === 3100 ? 0 : delay, ...args));
   const db = new DatabaseSync(':memory:');
   for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
   db.exec('CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)');
@@ -181,4 +183,46 @@ test('same-group legacy delivery history prevents an approved application replay
   f.db.prepare("INSERT INTO robot_deliveries (edition_date, destination_hash, payload, status, next_part, created_at, sent_at) VALUES (?, ?, '[]', 'sent', 5, ?, datetime('now'))").run(date, await digest(testUrl), Date.now());
   assert.equal((await f.send()).sent, 0); assert.equal(f.record().status, 'sent'); assert.equal(f.record().error, 'legacy_delivery');
   assert.equal(f.requests.length, 0);
+});
+
+test('manual API sends immediately in bounded steps using saved @ configuration and no repeat', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  const first = await (await f.api(path, { mention_mode: 'none', mention_mobiles: ['13900000000'] }, true)).json();
+  assert.equal(first.sent, 1); assert.equal(first.more, true); assert.equal(first.next_part, 1);
+  assert.equal(f.record().status, 'pending'); assert.equal(f.record().attempts, 0);
+  assert.deepEqual(f.requests[0].payload.textMsg.mentionedMobileList, ['13800000000']);
+  const second = await (await f.api(path, {}, true)).json(); assert.equal(second.more, false); assert.equal(second.status, 'sent');
+  const repeat = await (await f.api(path, {}, true)).json(); assert.equal(repeat.sent, 0); assert.match(repeat.message, /未重复/);
+  assert.equal(f.requests.length, 2);
+});
+
+test('manual sends require review credentials and approval, target only one group', async t => {
+  const f = fixture(t); await f.apply(); const first = f.row();
+  const path = `/admin/robot-subscriptions/${first.id}/send`;
+  assert.equal((await f.api(path, {})).status, 401);
+  assert.equal((await f.api(path, {}, true)).status, 409);
+  await f.approve(first);
+  await f.apply({ webhook: testUrl.replace('test-only-key', 'another-group-key'), name: '另一群', categories: ['ai'] });
+  const other = f.db.prepare("SELECT * FROM robot_subscribers WHERE applicant_name = '另一群'").get(); await f.approve(other);
+  await f.api(path, {}, true); assert.equal(f.requests.length, 1); assert.equal(f.requests[0].url, testUrl);
+  assert.equal(f.record(other), undefined); assert.equal(f.record(first).next_part, 1);
+});
+
+test('manual send and cron share a lease, and cron continues a partially sent manual digest', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  await Promise.all([f.api(path, {}, true), f.send()]);
+  await f.send(); assert.equal(f.requests.length, 2); assert.equal(f.record().status, 'sent');
+});
+
+test('manual sends report incomplete, uncertain and revoked states without bypassing them', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  f.db.prepare("UPDATE news SET status = 'draft' WHERE category = 'protocol'").run();
+  let result = await (await f.api(path, {}, true)).json(); assert.equal(result.status, 'waiting'); assert.equal(result.more, false); assert.equal(f.requests.length, 0);
+  f.db.prepare("UPDATE news SET status = 'published'").run();
+  f.respond(() => { throw new Error('network lost'); });
+  result = await (await f.api(path, {}, true)).json(); assert.equal(result.status, 'uncertain'); assert.equal(result.more, false);
+  await f.api(path, {}, true); assert.equal(f.requests.length, 1);
+  await f.api(`/admin/robot-subscriptions/${f.row().id}/reject`, { note: '停止发送' }, true);
+  assert.equal((await f.api(path, {}, true)).status, 409); assert.equal(f.requests.length, 1);
 });

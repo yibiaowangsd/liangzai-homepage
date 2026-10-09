@@ -74,12 +74,12 @@ async function postMessage(url, payload) {
   }
 }
 
-export async function sendRobotDigest(env, date = today(), { pause = pauseBetweenMessages } = {}) {
+export async function sendRobotDigest(env, date = today(), { pause = pauseBetweenMessages, subscriberId = null, maxMessages = Infinity } = {}) {
   if (!robotConfigured(env)) return { ok: true, enabled: false, sent: 0 };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date) throw new Error('Invalid edition date');
   const { results: subscribers = [] } = await env.DB.prepare(`SELECT s.* FROM robot_subscribers s
-    WHERE s.status = 'approved' AND NOT EXISTS (SELECT 1 FROM robot_subscription_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
-    ORDER BY s.created_at, s.id LIMIT 5`).bind(date).all();
+    WHERE s.status = 'approved' AND (? IS NULL OR s.id = ?) AND NOT EXISTS (SELECT 1 FROM robot_subscription_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
+    ORDER BY s.created_at, s.id LIMIT 5`).bind(subscriberId, subscriberId, date).all();
   if (subscribers.length) {
     const { results: items = [] } = await env.DB.prepare("SELECT slug, title, summary, category, source_name, source_url FROM news WHERE status = 'published' AND substr(published_at, 1, 10) = ? ORDER BY published_at DESC, id DESC").bind(date).all();
     if (!Object.keys(SUBSCRIPTION_CATEGORIES).every(key => items.filter(item => item.category === key).length >= 5)) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
@@ -99,9 +99,9 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
     }
   }
   // Without provider idempotency, expired in-flight leases may already have sent.
-  await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'uncertain', error = 'lease_expired', lease_until = 0 WHERE status = 'sending' AND lease_until < ?").bind(Date.now()).run();
+  await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'uncertain', error = 'lease_expired', lease_until = 0 WHERE status = 'sending' AND lease_until < ? AND (? IS NULL OR subscriber_id = ?)").bind(Date.now(), subscriberId, subscriberId).run();
   const { results: jobs = [] } = await env.DB.prepare(`SELECT id FROM robot_subscription_deliveries WHERE edition_date = ?
-    AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 ORDER BY created_at, id LIMIT 5`).bind(date, Date.now()).all();
+    AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 AND (? IS NULL OR subscriber_id = ?) ORDER BY created_at, id LIMIT 5`).bind(date, Date.now(), subscriberId, subscriberId).all();
   let sent = 0, failed = 0, completed = 0;
   for (const record of jobs) {
     const lease = crypto.randomUUID();
@@ -118,7 +118,7 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
       let url;
       try { url = await decryptWebhook(env, subscriber); } catch { throw new DeliveryError('credential_unavailable', true); }
       const messages = JSON.parse(job.payload);
-      let cancelled = false;
+      let cancelled = false, yielded = false;
       for (let part = job.next_part; part < messages.length; part++) {
         await pause();
         // Recheck approval and administrator configuration immediately before each
@@ -131,11 +131,18 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
         sent++;
         const progress = await env.DB.prepare("UPDATE robot_subscription_deliveries SET next_part = ? WHERE id = ? AND lease_token = ? AND status = 'sending'").bind(part + 1, job.id, lease).run();
         if (progress.meta.changes !== 1) throw new DeliveryError('progress_unconfirmed', true);
+        if (sent >= maxMessages && part + 1 < messages.length) {
+          // Manual sends confirm one message per HTTP request, keeping the
+          // connection below the form timeout. The next request or cron resumes.
+          await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'pending', lease_until = 0, lease_token = NULL, attempts = attempts - 1, next_attempt_at = 0, error = NULL WHERE id = ? AND lease_token = ? AND status = 'sending'").bind(job.id, lease).run();
+          yielded = true;
+          break;
+        }
       }
-      if (!cancelled) {
+      if (!cancelled && !yielded) {
         const result = await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'sent', sent_at = datetime('now'), lease_until = 0, error = NULL WHERE id = ? AND lease_token = ? AND status = 'sending'").bind(job.id, lease).run();
         completed += result.meta.changes;
-      } else {
+      } else if (cancelled) {
         await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'cancelled', lease_until = 0 WHERE id = ? AND lease_token = ? AND status = 'sending'").bind(job.id, lease).run();
       }
     } catch (error) {
@@ -146,6 +153,7 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
         .bind(status, Date.now() + 15 * 60000, code, job.id, lease).run();
       failed++;
     }
+    if (sent >= maxMessages) break;
   }
   return { ok: failed === 0, enabled: true, sent, completed, failed, date };
 }

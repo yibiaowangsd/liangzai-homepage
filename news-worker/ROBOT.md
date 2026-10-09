@@ -4,6 +4,8 @@
 
 管理员在 `/news/subscriptions/review` 登录后切换「群机器人」，查看脱敏地址、板块与申请理由，配置不 @ 或指定成员后通过。指定成员使用群中登记的手机号，最多 20 人；每份日报只在第一条消息提醒。公众不能配置 @、批准申请或覆盖已获批的设置。管理员可修改成员提醒或填写理由撤销批准；修改后停止未发送的旧任务，下一份日报使用新配置，已经发送的消息无法撤回。
 
+已通过列表中的「立刻发送」按已保存的板块与成员配置立即发送当日日报，页面显示逐条进度和结果；当日已发送、结果不确定或任务已停止时不重复发送。按钮只向该机器人发送，不影响其他群。为避免等待整份日报造成请求超时，每次请求确认一条消息后继续；关闭页面后，未发送部分由定时任务继续。
+
 ## 存储与部署
 
 `0003_robot_subscriptions.sql` 新增申请和每个机器人每天的发送记录。完整地址用 AES-GCM 加密，随机 nonce，申请 id 作为附加认证数据；列表只返回域名和密钥末四位。服务器使用 `ROBOT_WEBHOOK_SECRET`，未单独配置时使用现有 `NEWSLETTER_TOKEN_SECRET` 或 `ADMIN_TOKEN`，无需新增部署配置。加密密钥不得直接轮换：先使用原密钥解密、再用新密钥重新加密所有地址并更新身份摘要，否则原申请无法发送。密钥只保存在 Worker Secret，不能放入源代码。
@@ -28,6 +30,7 @@
 - `GET /api/admin/robot-subscriptions?status=pending&page=1`：审核列表，分页 50 条，含当日发送状态，不返回明文 webhook、密文或完整密钥摘要。
 - `POST /api/admin/robot-subscriptions/:id/approve`：通过并配置 `mention_mode`（none/members）、`mention_mobiles`。
 - `POST /api/admin/robot-subscriptions/:id/mentions`：管理员修改已获批机器人的成员配置。
+- `POST /api/admin/robot-subscriptions/:id/send`：管理员立即发送该机器人的当日日报，每次请求最多一条，`more` 表示可以继续；使用与 Cron 相同的去重、批准检查和限流规则。
 - `POST /api/admin/robot-subscriptions/:id/reject`：填写 `note` 拒绝或停止推送。
 
 审核接口使用与邮箱相同的 `NEWSLETTER_ADMIN_TOKEN || ADMIN_TOKEN` Bearer 认证。运维接口 `GET /api/admin/robot/status` 使用发布 `ADMIN_TOKEN`，只返回汇总和当日各状态数量；原 `/api/admin/robot/send` 返回定时任务说明，不在 HTTP 请求里批量群发。

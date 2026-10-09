@@ -116,6 +116,11 @@ try {
     if (request.headers().authorization !== 'Bearer test-review') { await route.fulfill({ status: 401, contentType: 'application/json', body: '{"error":"审核口令不正确。"}' }); return; }
     if (request.method() === 'POST') {
       const body = request.postDataJSON(); const action = new URL(request.url()).pathname.split('/').at(-1); robotReviews.push({ action, body });
+      if (action === 'send') {
+        const next = robotReviews.filter(r => r.action === 'send').length;
+        robotApplication.delivery_status = next >= 2 ? 'sent' : 'pending';
+        await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, sent: 1, more: next < 2, next_part: next, total: 2, message: next < 2 ? '已发送 1 / 2 条，正在继续…' : '当日日报已发送，共 2 条消息。' }) }); return;
+      }
       robotApplication.status = action === 'reject' ? 'rejected' : 'approved';
       if (action !== 'reject') { robotApplication.mention_mode = body.mention_mode; robotApplication.mention_mobiles = JSON.stringify(body.mention_mobiles); }
       await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, message: action === 'mentions' ? '@ 成员配置已更新，下一份日报生效。' : action === 'reject' ? '已拒绝申请并停止后续推送。' : '已通过审核，完整日报发布后自动推送。' }) }); return;
@@ -295,7 +300,7 @@ try {
   await page.getByRole('button', { name: '进入审核', exact: true }).click();
   await page.getByRole('button', { name: '群机器人', exact: true }).click();
   await page.getByRole('heading', { name: 'imtwo.zdxlz.com · key …demo', exact: true }).waitFor();
-  assert.equal(await page.getByRole('button', { name: '发送当日日报', exact: true }).count(), 0, 'Robot group sends stay in scheduled worker');
+  assert.equal(await page.getByRole('button', { name: '立刻发送', exact: true }).count(), 0, 'Pending robots cannot send manually');
   await page.getByRole('button', { name: '配置并审核', exact: true }).click();
   await page.getByLabel('提醒方式').selectOption('members');
   await page.getByLabel('成员手机号').fill('13800000000\n13900000000');
@@ -314,6 +319,19 @@ try {
   assert.deepEqual(robotReviews[0].body.mention_mobiles, ['13800000000', '13900000000']);
   await page.getByRole('button', { name: '已通过', exact: true }).click();
   await page.getByText('指定成员：13800000000、13900000000', { exact: true }).waitFor();
+  await page.getByRole('button', { name: '立刻发送', exact: true }).waitFor();
+  await page.getByRole('button', { name: '打开显示设置' }).click();
+  await page.getByLabel('页面主题', { exact: true }).selectOption('paper'); await page.keyboard.press('Escape');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1100 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `Immediate send controls fit ${width}`);
+    await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
+    await page.screenshot({ path: resolve(output, `robot-send-${width}.png`), fullPage: true });
+  }
+  await page.getByRole('button', { name: '立刻发送', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '当日日报已发送，共 2 条消息' }).waitFor();
+  assert.equal(robotReviews.filter(r => r.action === 'send').length, 2, 'One button confirms each message and completes the digest');
+  assert.equal(robotReviews.filter(r => r.action === 'send').every(r => Object.keys(r.body).length === 0), true, 'Manual send does not overwrite saved administrator mention configuration');
   await page.getByRole('button', { name: '配置 @ 成员', exact: true }).click();
   await page.getByLabel('提醒方式').selectOption('none');
   await page.getByRole('button', { name: '保存成员配置', exact: true }).click();
