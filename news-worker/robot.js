@@ -55,10 +55,13 @@ async function postMessage(url, payload) {
   let response;
   try {
     response = await fetch(url, {
-      method: 'POST', redirect: 'error', signal: AbortSignal.timeout(20000),
+      method: 'POST', redirect: 'manual', signal: AbortSignal.timeout(20000),
       headers: { 'Content-Type': 'application/json; charset=utf-8' }, body: JSON.stringify(payload),
     });
   } catch (error) { throw new DeliveryError('delivery_unconfirmed', true, { failure_kind: ['TimeoutError', 'AbortError'].includes(error?.name) ? 'timeout' : 'network' }); }
+  // workerd supports manual/follow, not redirect:error. Reject 3xx ourselves
+  // so the credential and message are never forwarded to another destination.
+  if (response.status >= 300 && response.status < 400) { await response.body?.cancel(); throw new DeliveryError('redirect_rejected', false, { http_status: response.status }); }
   if (response.status === 429) throw new DeliveryError('rate_limited', false, { http_status: response.status });
   if (!response.ok) throw new DeliveryError(`http_${response.status}`, response.status >= 500, { http_status: response.status });
   // Require a positive provider acknowledgement. HTTP 200 alone is not success.
@@ -106,37 +109,42 @@ export async function sendRobotConnectionTest(env, subscriberId, testId) {
   }
 }
 
-async function editionItems(env, date) {
+async function editionItems(env, date, selected = Object.keys(SUBSCRIPTION_CATEGORIES)) {
   const { results: items = [] } = await env.DB.prepare("SELECT slug, title, summary, category, source_name, source_url FROM news WHERE status = 'published' AND substr(published_at, 1, 10) = ? ORDER BY published_at DESC, id DESC").bind(date).all();
-  return Object.keys(SUBSCRIPTION_CATEGORIES).every(key => items.filter(item => item.category === key).length >= 5) ? items : null;
+  return selected.every(key => items.filter(item => item.category === key).length >= 5) ? items : null;
 }
 
-// Only an authenticated administrator's explicit, current confirmation can
-// release an uncertain job. Cron and ordinary send requests never do this.
-export async function retryUnconfirmedRobotDelivery(env, subscriber, recoveryToken, date = today()) {
-  const job = await env.DB.prepare('SELECT * FROM robot_subscription_deliveries WHERE subscriber_id = ? AND edition_date = ?').bind(subscriber.id, date).first();
-  if (!job || job.status !== 'uncertain' || recoveryToken !== (job.lease_token || job.id)) {
-    throw new RequestError('发送状态已变化，请刷新列表后重新核对。', 409);
+export async function sendManualRobotDigest(env, subscriberId, { part, version, date = today(), pause = pauseBetweenMessages } = {}) {
+  if (!robotConfigured(env)) throw new RequestError('机器人服务尚未配置。', 503);
+  if (!Number.isSafeInteger(part) || part < 0 || part > 4) throw new RequestError('发送操作已更新，请刷新页面后重试。');
+  if (date !== today()) throw new RequestError('日报日期已变化，请重新点击立刻发送。', 409);
+  const row = await env.DB.prepare("SELECT * FROM robot_subscribers WHERE id = ? AND status = 'approved'").bind(subscriberId).first();
+  if (!row) throw new RequestError('只有审核通过的机器人可以立刻发送。', 409);
+  const categories = normalizeCategories(JSON.parse(row.categories));
+  if (part >= categories.length) throw new RequestError('发送板块不存在。');
+  if (part > 0 && version !== row.version) throw new RequestError('订阅配置已变化，请重新点击立刻发送。', 409);
+  const items = await editionItems(env, date, categories);
+  if (!items) throw new RequestError('所选板块的当日日报尚未完整发布，暂不能发送。', 409);
+  const payload = buildRobotDigest(date, items, categories, { mode: row.mention_mode, mobiles: JSON.parse(row.mention_mobiles) });
+  let url;
+  try { url = await decryptWebhook(env, row); } catch { throw new RequestError('机器人凭据无法读取。', 503); }
+  await pause();
+  const active = await env.DB.prepare("SELECT id FROM robot_subscribers WHERE id = ? AND status = 'approved' AND version = ?").bind(subscriberId, row.version).first();
+  if (!active) throw new RequestError('审核或成员配置已变化，本次发送已停止。', 409);
+  // Manual sends intentionally bypass all daily history and retry gates.
+  // Each click starts with part 0; only successful acknowledgements advance it.
+  try {
+    const provider = await postMessage(url, payload[part]);
+    const nextPart = part + 1;
+    return { ok: true, sent: 1, more: nextPart < payload.length, next_part: nextPart, total: payload.length,
+      version: row.version, date, provider,
+      message: nextPart < payload.length ? `本次已发送 ${nextPart} / ${payload.length} 条，正在继续…` : `本次当日日报已发送，共 ${payload.length} 条消息。再次点击可重新发送。` };
+  } catch (error) {
+    if (!(error instanceof DeliveryError)) throw error;
+    return { ok: false, sent: 0, more: false, next_part: part, total: payload.length, version: row.version, date,
+      error_code: error.message, provider: error.provider,
+      message: error.uncertain ? `本次第 ${part + 1} 条发送结果未确认。可点击「立刻发送」重新发送。` : '机器人未接受本次消息，请检查 webhook 和成员配置后再次发送。' };
   }
-  if (job.version !== subscriber.version) throw new RequestError('成员配置已变化，旧任务不能重试，新配置从下一份日报生效。', 409);
-  let payload = job.payload;
-  if (job.error === 'legacy_delivery') {
-    const fingerprint = await digest(await decryptWebhook(env, subscriber));
-    const legacy = await env.DB.prepare('SELECT status, lease_until, next_part FROM robot_deliveries WHERE edition_date = ? AND destination_hash = ?').bind(date, fingerprint).first();
-    if (legacy?.status === 'sent' || legacy?.next_part > 0) throw new RequestError('旧版已有消息确认送达，不能整份重发，请核对群内记录并等待下一份日报。', 409);
-    if (legacy?.status === 'sending' && legacy.lease_until > Date.now()) throw new RequestError('旧版推送仍在发送中，请稍后再核对。', 409);
-    const items = await editionItems(env, date);
-    if (!items) throw new RequestError('当日日报尚未完整发布，暂不能重试。', 409);
-    // Legacy migration stores no payload. Rebuild the approved application's
-    // selected sections and saved @ configuration; leave legacy history intact.
-    payload = JSON.stringify(buildRobotDigest(date, items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) }));
-  }
-  const result = await env.DB.prepare(`UPDATE robot_subscription_deliveries SET status = 'pending', payload = ?, attempts = 0,
-    lease_until = 0, lease_token = NULL, next_attempt_at = 0, error = NULL WHERE id = ? AND status = 'uncertain'
-    AND coalesce(lease_token, id) = ? AND version = ?
-    AND EXISTS (SELECT 1 FROM robot_subscribers WHERE id = ? AND status = 'approved' AND version = ?)`)
-    .bind(payload, job.id, recoveryToken, subscriber.version, subscriber.id, subscriber.version).run();
-  if (result.meta.changes !== 1) throw new RequestError('发送状态已变化，请刷新列表后重新核对。', 409);
 }
 
 export async function sendRobotDigest(env, date = today(), { pause = pauseBetweenMessages, subscriberId = null, maxMessages = Infinity } = {}) {
