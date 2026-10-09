@@ -6,7 +6,7 @@ export const subscriptionCategories = {
   pqc: "后量子密码", protocol: "抗量子协议", standards: "标准动态", security: "网络安全", ai: "AI 前沿",
 };
 const categoryDescriptions: Record<string, string> = {
-  pqc: "算法研究与密码迁移", protocol: "TLS、SSH 与协议实践", standards: "规范、草案与行业进展", security: "漏洞、防护与安全研究", ai: "模型、应用与技术进展",
+  pqc: "算法与密码迁移", protocol: "TLS、SSH 等协议", standards: "标准与规范动态", security: "漏洞与安全研究", ai: "模型与应用进展",
 };
 export const subscriptionApi = "https://api.wangyibiao.com/api";
 export async function subscriptionRequest(path: string, body?: unknown, secret?: string) {

@@ -23,7 +23,7 @@
 .subscription-categories > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .subscription-categories label { display: flex; gap: 10px; align-items: center; min-height: 68px; padding: 12px; border: 1px solid var(--theme-border, #cad3c9); border-radius: 8px; font-size: 14px; line-height: 1.5; cursor: pointer; }
 .subscription-categories label strong { display: block; font-weight: 600; color: var(--theme-ink); }
-.subscription-categories label small { display: block; color: var(--theme-muted); font-size: 11px; margin-top: 3px; }
+.subscription-categories label small { display: block; color: var(--theme-muted); font-size: 12px; margin-top: 3px; }
 .subscription-page input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--theme-accent, #315a43); }
 .subscription-categories label:has(input:checked) { border-color: var(--theme-accent, #315a43); background: color-mix(in srgb, var(--theme-accent, #315a43) 8%, transparent); }
 .subscription-consent { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.8; margin: 24px 0; }
