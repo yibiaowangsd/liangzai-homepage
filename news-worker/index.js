@@ -463,7 +463,7 @@ export default {
             const body = await readBody(request);
             if (body.subscriber_id === undefined) return json(request, { ok: true, message: "机器人日报由定时任务发送；主动发送须指定已批准的机器人。" }, 202);
             if (!/^[a-f0-9-]{36}$/.test(body.subscriber_id)) throw new RequestError("机器人参数无效。");
-            return json(request, await sendManualRobotDigest(env, body.subscriber_id, { part: body.part, version: body.version, date: body.date }));
+            return json(request, await sendManualRobotDigest(env, body.subscriber_id, { send_id: body.send_id, part: body.part, version: body.version, date: body.date }));
           } catch (error) {
             if (error instanceof RequestError) return json(request, { error: error.message }, error.status);
             throw error;

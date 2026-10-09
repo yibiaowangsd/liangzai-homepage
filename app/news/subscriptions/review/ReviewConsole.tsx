@@ -1,14 +1,15 @@
 "use client";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { subscriptionCategories, subscriptionRequest } from "../../subscribe/SubscriptionForm";
 
-type Application = { id: string; email?: string; webhook_display?: string; mention_mode?: string; mention_mobiles?: string; delivery_status?: string; delivery_error?: string; delivery_message?: string; next_part?: number; categories: string; applicant_name: string; reason: string; status: string; email_verified_at: string | null; confirmation_sent_at: string | null; review_note: string; created_at: string };
+type Application = { id: string; email?: string; webhook_display?: string; mention_mode?: string; mention_mobiles?: string; delivery_status?: string; manual_status?: string; delivery_error?: string; delivery_message?: string; next_part?: number; categories: string; applicant_name: string; reason: string; status: string; email_verified_at: string | null; confirmation_sent_at: string | null; review_note: string; created_at: string };
 const statuses: Record<string, string> = { pending: "待审核", approved: "已通过", rejected: "已拒绝", unsubscribed: "已退订", all: "全部" };
 function submittedAt(value: string) {
   const date = new Date(/Z$|[+-]\d\d:\d\d$/.test(value) ? value : value.replace(" ", "T") + "Z");
   return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat("zh-CN", { timeZone: "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).format(date);
 }
 export default function ReviewConsole() {
+  const sending = useRef(false);
   const [channel, setChannel] = useState<"email" | "robot">("email");
   const [configuring, setConfiguring] = useState<string | null>(null);
   const [mentions, setMentions] = useState<Record<string, { mode: string; mobiles: string }>>({});
@@ -52,21 +53,23 @@ export default function ReviewConsole() {
     finally { setBusy(false); }
   }
   async function sendRobot(row: Application) {
+    if (sending.current) return;
+    sending.current = true;
     setBusy(true); setSendingId(row.id); setMessage(""); setError("");
     try {
-      let step: { part: number; version?: string; date?: string } = { part: 0 };
+      let step: { send_id: string; part: number; version?: string; date?: string } = { send_id: crypto.randomUUID(), part: 0 };
       for (let count = 0; count < 5; count++) {
         const result = await subscriptionRequest(`/admin/robot-subscriptions/${row.id}/send`, step, secret);
         const notice = `${row.applicant_name || "群机器人"}：${result.message}`;
         if (result.ok === false) { setMessage(""); setError(notice); break; }
         setMessage(notice);
         if (!result.more) break;
-        step = { part: result.next_part, version: result.version, date: result.date };
+        step = { send_id: step.send_id, part: result.next_part, version: result.version, date: result.date };
       }
     } catch (cause) {
       setMessage("");
       setError(cause instanceof Error && cause.name !== "TimeoutError" && cause.name !== "AbortError" ? cause.message : "连接中断，发送结果未确认。可点击「立刻发送」重新发送。");
-    } finally { try { await load(); } catch { /* Preserve the send outcome if refresh fails. */ } setSendingId(null); setBusy(false); }
+    } finally { try { await load(); } catch { /* Preserve the send outcome if refresh fails. */ } sending.current = false; setSendingId(null); setBusy(false); }
   }
   function logout() {
     setChannel("email"); setConfiguring(null); setMentions({}); setSecret(""); setAuthenticated(false); setRows([]); setNotes({}); setRejecting(null); setMessage(""); setError(""); setReady(false); setTotal(0); setPage(1); setFilter("pending");
@@ -94,7 +97,7 @@ export default function ReviewConsole() {
         <div className="subscription-actions"><button disabled={busy} onClick={() => void refresh()}>刷新列表</button>{channel === "email" && <button disabled={busy || !ready} onClick={() => void send()}>发送当日日报</button>}<button disabled={busy} onClick={logout}>退出</button></div>
       </div>
       <div className="review-workspace">
-        <aside className="review-sidebar"><h2>申请状态</h2><nav aria-label="申请状态">{Object.entries(statuses).map(([key, label]) => <button key={key} type="button" aria-pressed={filter === key} disabled={busy} onClick={() => void refresh(key, 1)}>{label}<span aria-hidden="true">{key === filter ? "●" : ""}</span></button>)}</nav><p>{channel === "robot" ? "审核期间不发送群消息。通过后自动推送，每天一次；后台「立刻发送」可重复发送当日日报。" : "修改订阅板块的申请也会回到待审核列表。"}</p></aside>
+        <aside className="review-sidebar"><h2>申请状态</h2><nav aria-label="申请状态">{Object.entries(statuses).map(([key, label]) => <button key={key} type="button" aria-pressed={filter === key} disabled={busy} onClick={() => void refresh(key, 1)}>{label}<span aria-hidden="true">{key === filter ? "●" : ""}</span></button>)}</nav><p>{channel === "robot" ? "审核期间不发送群消息。通过后自动推送，每天一次；后台「立刻发送」可重复发送当日日报，手动发送后当天不再自动重复推送。" : "修改订阅板块的申请也会回到待审核列表。"}</p></aside>
         <div className="review-list-panel">
           <header className="review-list-heading"><div><h2>{filter === "all" ? "全部申请" : `${statuses[filter]}申请`}</h2><p>共 {total} 份 · 提交时间以北京时间显示</p></div><span className="review-page-count">第 {page} / {Math.max(1, Math.ceil(total / 50))} 页</span></header>
           <div className="review-applications">{rows.map(row => {
@@ -105,7 +108,7 @@ export default function ReviewConsole() {
               <div className="review-application-body"><div><h3>订阅板块</h3><ul className="review-topics">{categories.map(key => <li key={key}>{subscriptionCategories[key]}</li>)}</ul></div><div><h3>申请理由</h3><p className="review-reason">{row.reason}</p></div></div>
               {row.review_note && <div className="review-record"><h3>审核备注</h3><p>{row.review_note}</p></div>}
               {row.status === "approved" && channel === "email" && <p className="review-confirmation" data-verified={!!row.email_verified_at}>{row.email_verified_at ? "邮箱已确认，订阅已启用。" : "等待收件人确认邮箱，确认后才会开始发送。"}</p>}
-              {channel === "robot" && <div className="review-record"><h3>成员提醒</h3><p>{row.mention_mode === "members" ? `指定成员：${(JSON.parse(row.mention_mobiles || "[]") as string[]).join("、")}` : "不 @ 成员"}</p>{row.status === "approved" && <p className="review-confirmation" data-verified={!["uncertain", "failed", "cancelled"].includes(row.delivery_status || "")}>自动推送状态 · {row.delivery_message || (row.delivery_status === "sent" ? "今日日报已发送" : row.delivery_status === "uncertain" ? "今日自动推送结果未确认，后台可立刻重发" : "等待完整日报与定时任务")}</p>}</div>}
+              {channel === "robot" && <div className="review-record"><h3>成员提醒</h3><p>{row.mention_mode === "members" ? `指定成员：${(JSON.parse(row.mention_mobiles || "[]") as string[]).join("、")}` : "不 @ 成员"}</p>{row.status === "approved" && <p className="review-confirmation" data-verified={!["uncertain", "failed", "cancelled"].includes(row.manual_status || row.delivery_status || "")}>今日推送 · {row.delivery_message || (row.delivery_status === "sent" ? "今日日报已发送" : row.delivery_status === "uncertain" ? "今日自动推送结果未确认，后台可立刻重发" : "等待完整日报与定时任务")}</p>}</div>}
               {["pending", "approved"].includes(row.status) && <div className="review-application-actions">
                 <div className="subscription-actions">
                   {row.status === "pending" && <button disabled={busy || !ready} className="subscription-primary" onClick={() => channel === "robot" ? setConfiguring(configuring === row.id ? null : row.id) : void review(row, "approve")}>{channel === "robot" ? "配置并审核" : "通过申请"}</button>}

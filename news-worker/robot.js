@@ -114,45 +114,83 @@ async function editionItems(env, date, selected = Object.keys(SUBSCRIPTION_CATEG
   return selected.every(key => items.filter(item => item.category === key).length >= 5) ? items : null;
 }
 
-export async function sendManualRobotDigest(env, subscriberId, { part, version, date = today(), pause = pauseBetweenMessages } = {}) {
+export async function sendManualRobotDigest(env, subscriberId, { send_id: sendId, part, version, date = today(), pause = pauseBetweenMessages } = {}) {
   if (!robotConfigured(env)) throw new RequestError('机器人服务尚未配置。', 503);
-  if (!Number.isSafeInteger(part) || part < 0 || part > 4) throw new RequestError('发送操作已更新，请刷新页面后重试。');
+  if (!/^[a-f0-9-]{36}$/.test(sendId || '') || !Number.isSafeInteger(part) || part < 0 || part > 4) throw new RequestError('发送操作已更新，请刷新页面后重试。');
   if (date !== today()) throw new RequestError('日报日期已变化，请重新点击立刻发送。', 409);
   const row = await env.DB.prepare("SELECT * FROM robot_subscribers WHERE id = ? AND status = 'approved'").bind(subscriberId).first();
   if (!row) throw new RequestError('只有审核通过的机器人可以立刻发送。', 409);
   const categories = normalizeCategories(JSON.parse(row.categories));
   if (part >= categories.length) throw new RequestError('发送板块不存在。');
   if (part > 0 && version !== row.version) throw new RequestError('订阅配置已变化，请重新点击立刻发送。', 409);
-  const items = await editionItems(env, date, categories);
-  if (!items) throw new RequestError('所选板块的当日日报尚未完整发布，暂不能发送。', 409);
-  const payload = buildRobotDigest(date, items, categories, { mode: row.mention_mode, mobiles: JSON.parse(row.mention_mobiles) });
+  await env.DB.prepare("UPDATE robot_manual_deliveries SET status = 'uncertain', error = 'lease_expired', lease_until = 0 WHERE subscriber_id = ? AND status IN ('pending','sending') AND lease_until < ?").bind(subscriberId, Date.now()).run();
+  let job = await env.DB.prepare('SELECT * FROM robot_manual_deliveries WHERE send_id = ?').bind(sendId).first();
+  if (!job) {
+    if (part !== 0) throw new RequestError('发送批次不存在，请重新点击立刻发送。', 409);
+    const items = await editionItems(env, date, categories);
+    if (!items) throw new RequestError('所选板块的当日日报尚未完整发布，暂不能发送。', 409);
+    const payload = buildRobotDigest(date, items, categories, { mode: row.mention_mode, mobiles: JSON.parse(row.mention_mobiles) });
+    // This insert and Cron's claim each exclude the other's active work. A
+    // completed manual batch also suppresses today's later automatic delivery.
+    await env.DB.prepare(`INSERT INTO robot_manual_deliveries (send_id, subscriber_id, edition_date, version, payload, lease_until, created_at)
+      SELECT ?, id, ?, version, ?, ?, ? FROM robot_subscribers WHERE id = ? AND status = 'approved' AND version = ?
+      AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries WHERE subscriber_id = ? AND status IN ('pending','sending'))
+      AND NOT EXISTS (SELECT 1 FROM robot_subscription_deliveries WHERE subscriber_id = ? AND status = 'sending' AND lease_until > ?)
+      ON CONFLICT(send_id) DO NOTHING`)
+      .bind(sendId, date, JSON.stringify(payload), Date.now() + 300000, Date.now(), subscriberId, row.version, subscriberId, subscriberId, Date.now()).run();
+    job = await env.DB.prepare('SELECT * FROM robot_manual_deliveries WHERE send_id = ?').bind(sendId).first();
+    if (!job) throw new RequestError('该机器人已有发送任务进行中，请完成后再发送。', 409);
+  }
+  if (job.subscriber_id !== subscriberId || job.edition_date !== date || job.version !== row.version) throw new RequestError('发送批次或配置已变化，请重新点击立刻发送。', 409);
+  const receipt = await env.DB.prepare('SELECT result FROM robot_manual_receipts WHERE send_id = ? AND part = ?').bind(sendId, part).first();
+  if (receipt) {
+    console.log('robot_manual', JSON.stringify({ send_id: sendId, part, sent: 0, duplicate: true, status: job.status }));
+    return { ...JSON.parse(receipt.result), sent: 0, duplicate: true };
+  }
+  if (job.status !== 'pending' || job.next_part !== part) throw new RequestError(job.status === 'sending' ? '本次消息正在发送，请勿重复提交。' : '本次发送已停止，请重新点击立刻发送。', 409);
   let url;
   try { url = await decryptWebhook(env, row); } catch { throw new RequestError('机器人凭据无法读取。', 503); }
+  const lease = crypto.randomUUID();
+  const claimed = await env.DB.prepare(`UPDATE robot_manual_deliveries SET status = 'sending', lease_token = ?, lease_until = ?
+    WHERE send_id = ? AND status = 'pending' AND next_part = ? RETURNING send_id`).bind(lease, Date.now() + 300000, sendId, part).first();
+  if (!claimed) throw new RequestError('本次消息正在发送，请勿重复提交。', 409);
   await pause();
-  const active = await env.DB.prepare("SELECT id FROM robot_subscribers WHERE id = ? AND status = 'approved' AND version = ?").bind(subscriberId, row.version).first();
-  if (!active) throw new RequestError('审核或成员配置已变化，本次发送已停止。', 409);
-  // Manual sends intentionally bypass all daily history and retry gates.
-  // Each click starts with part 0; only successful acknowledgements advance it.
+  const active = await env.DB.prepare(`SELECT s.id FROM robot_subscribers s JOIN robot_manual_deliveries m ON m.subscriber_id = s.id
+    WHERE s.id = ? AND s.status = 'approved' AND s.version = ? AND m.send_id = ? AND m.status = 'sending' AND m.lease_token = ? AND m.lease_until > ?`)
+    .bind(subscriberId, row.version, sendId, lease, Date.now()).first();
+  if (!active) {
+    await env.DB.prepare("UPDATE robot_manual_deliveries SET status = 'cancelled', lease_until = 0 WHERE send_id = ? AND lease_token = ?").bind(sendId, lease).run();
+    throw new RequestError('审核或成员配置已变化，本次发送已停止。', 409);
+  }
+  const payload = JSON.parse(job.payload); let result, status;
   try {
     const provider = await postMessage(url, payload[part]);
-    const nextPart = part + 1;
-    return { ok: true, sent: 1, more: nextPart < payload.length, next_part: nextPart, total: payload.length,
-      version: row.version, date, provider,
+    const nextPart = part + 1; status = nextPart < payload.length ? 'pending' : 'sent';
+    result = { ok: true, sent: 1, more: nextPart < payload.length, next_part: nextPart, total: payload.length,
+      send_id: sendId, version: row.version, date, provider,
       message: nextPart < payload.length ? `本次已发送 ${nextPart} / ${payload.length} 条，正在继续…` : `本次当日日报已发送，共 ${payload.length} 条消息。再次点击可重新发送。` };
   } catch (error) {
     if (!(error instanceof DeliveryError)) throw error;
-    return { ok: false, sent: 0, more: false, next_part: part, total: payload.length, version: row.version, date,
+    status = error.uncertain ? 'uncertain' : 'failed';
+    result = { ok: false, sent: 0, more: false, next_part: part, total: payload.length, send_id: sendId, version: row.version, date,
       error_code: error.message, provider: error.provider,
       message: error.uncertain ? `本次第 ${part + 1} 条发送结果未确认。可点击「立刻发送」重新发送。` : '机器人未接受本次消息，请检查 webhook 和成员配置后再次发送。' };
   }
+  await env.DB.batch([
+    env.DB.prepare('INSERT INTO robot_manual_receipts (send_id, part, result) VALUES (?, ?, ?)').bind(sendId, part, JSON.stringify(result)),
+    env.DB.prepare("UPDATE robot_manual_deliveries SET status = ?, next_part = ?, lease_token = NULL, lease_until = ?, error = ? WHERE send_id = ? AND lease_token = ? AND status = 'sending'")
+      .bind(status, result.next_part, status === 'pending' ? Date.now() + 300000 : 0, result.error_code || null, sendId, lease),
+  ]);
+  console.log('robot_manual', JSON.stringify({ send_id: sendId, part, sent: result.sent, status }));
+  return result;
 }
 
 export async function sendRobotDigest(env, date = today(), { pause = pauseBetweenMessages, subscriberId = null, maxMessages = Infinity } = {}) {
   if (!robotConfigured(env)) return { ok: true, enabled: false, sent: 0 };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date) throw new Error('Invalid edition date');
   const { results: subscribers = [] } = await env.DB.prepare(`SELECT s.* FROM robot_subscribers s
-    WHERE s.status = 'approved' AND (? IS NULL OR s.id = ?) AND NOT EXISTS (SELECT 1 FROM robot_subscription_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
-    ORDER BY s.created_at, s.id LIMIT 5`).bind(subscriberId, subscriberId, date).all();
+    WHERE s.status = 'approved' AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries m WHERE m.subscriber_id = s.id AND m.edition_date = ?) AND (? IS NULL OR s.id = ?) AND NOT EXISTS (SELECT 1 FROM robot_subscription_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
+    ORDER BY s.created_at, s.id LIMIT 5`).bind(date, subscriberId, subscriberId, date).all();
   if (subscribers.length) {
     const items = await editionItems(env, date);
     if (!items) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
@@ -174,12 +212,12 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
   // Without provider idempotency, expired in-flight leases may already have sent.
   await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'uncertain', error = 'lease_expired', lease_until = 0 WHERE status = 'sending' AND lease_until < ? AND (? IS NULL OR subscriber_id = ?)").bind(Date.now(), subscriberId, subscriberId).run();
   const { results: jobs = [] } = await env.DB.prepare(`SELECT id FROM robot_subscription_deliveries WHERE edition_date = ?
-    AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 AND (? IS NULL OR subscriber_id = ?) ORDER BY created_at, id LIMIT 5`).bind(date, Date.now(), subscriberId, subscriberId).all();
+    AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries m WHERE m.subscriber_id = robot_subscription_deliveries.subscriber_id AND m.edition_date = robot_subscription_deliveries.edition_date) AND (? IS NULL OR subscriber_id = ?) ORDER BY created_at, id LIMIT 5`).bind(date, Date.now(), subscriberId, subscriberId).all();
   let sent = 0, failed = 0, completed = 0;
   for (const record of jobs) {
     const lease = crypto.randomUUID();
     const job = await env.DB.prepare(`UPDATE robot_subscription_deliveries SET status = 'sending', lease_token = ?, lease_until = ?, attempts = attempts + 1
-      WHERE id = ? AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 RETURNING *`)
+      WHERE id = ? AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries m WHERE m.subscriber_id = robot_subscription_deliveries.subscriber_id AND m.edition_date = robot_subscription_deliveries.edition_date) RETURNING *`)
       .bind(lease, Date.now() + 300000, record.id, Date.now()).first();
     if (!job) continue;
     try {

@@ -25,7 +25,7 @@ test('workerd can send an approved digest again and rejects redirects without fo
   });
   t.after(() => mf.dispose());
   const db = await mf.getD1Database('DB');
-  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql']) {
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql']) {
     const sql = readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8').replace(/--[^\n]*/g, '');
     for (const statement of sql.split(';').map(s => s.trim()).filter(Boolean)) await db.prepare(statement).run();
   }
@@ -33,11 +33,11 @@ test('workerd can send an approved digest again and rejects redirects without fo
   const ciphertext = await encryptWebhook({ ADMIN_TOKEN: 'test-admin' }, id, webhook);
   await db.prepare("INSERT INTO robot_subscribers (id, webhook_hash, webhook_ciphertext, webhook_display, categories, reason, consent_version, status, version) VALUES (?, 'runtime-hash', ?, 'example', '[\"ai\"]', 'test', 'robot-daily-v1', 'approved', 'runtime-version')").bind(id, ciphertext).run();
   for (let i = 0; i < 5; i++) await db.prepare("INSERT INTO news VALUES (?, ?, ?, 'summary', 'ai', 'source', ?, ?, 'published')").bind(i, `runtime-${i}`, `story ${i}`, `https://example.com/story/${i}`, `${date}T08:00:00Z`).run();
-  const send = async (operational = false) => {
+  const send = async (operational = false, sendId = crypto.randomUUID(), allowBusy = false) => {
     const response = await mf.dispatchFetch(operational ? `https://api.wangyibiao.com/api/admin/robot/send` : `https://api.wangyibiao.com/api/admin/robot-subscriptions/${id}/send`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: operational ? 'Bearer test-admin' : 'Bearer test-review', Origin: 'https://wangyibiao.com' }, body: JSON.stringify({ part: 0, ...(operational ? { subscriber_id: id } : {}) }),
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: operational ? 'Bearer test-admin' : 'Bearer test-review', Origin: 'https://wangyibiao.com' }, body: JSON.stringify({ send_id: sendId, part: 0, ...(operational ? { subscriber_id: id } : {}) }),
     });
-    assert.equal(response.status, 200); return response.json();
+    assert.ok(response.status === 200 || (allowBusy && response.status === 409)); return { ...await response.json(), api_status: response.status };
   };
   for (let click = 0; click < 2; click++) {
     const result = await send(); assert.equal(result.ok, true); assert.equal(result.sent, 1); assert.equal(result.more, false);
@@ -46,7 +46,13 @@ test('workerd can send an approved digest again and rejects redirects without fo
   assert.equal(requests.length, 2); assert.match(requests[0].payload.textMsg.content, /阅读原文：https:\/\/example.com\/story/);
   assert.equal((await db.prepare('SELECT count(*) AS count FROM robot_subscription_deliveries').first()).count, 0);
   assert.equal((await send(true)).ok, true, 'Separate operational credentials use the production manual sender');
+  const duplicateId = crypto.randomUUID();
+  const parallel = await Promise.all([send(false, duplicateId, true), send(false, duplicateId, true)]);
+  assert.deepEqual(parallel.map(r => r.api_status).sort(), [200, 409]);
+  const beforeDuplicate = requests.length;
+  const duplicate = await send(false, duplicateId);
+  assert.equal(duplicate.duplicate, true); assert.equal(duplicate.sent, 0); assert.equal(requests.length, beforeDuplicate);
   redirect = true;
   const rejected = await send(); assert.equal(rejected.ok, false); assert.equal(rejected.error_code, 'redirect_rejected');
-  assert.equal(requests.length, 4, 'No request is made to the redirect target');
+  assert.equal(requests.length, 5, 'No request is made to the redirect target');
 });

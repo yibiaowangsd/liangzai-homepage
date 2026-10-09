@@ -3,7 +3,10 @@ import { RequestError, cleanString, readBody, digest, secretMatches, normalizeCa
 import { robotConfigured, normalizeWebhook, webhookDisplay, webhookHash, encryptWebhook, normalizeMentions } from './robot-config.js';
 
 const success = { ok: true, message: '机器人订阅申请已提交。管理员审核通过后启用定时推送，@ 成员由管理员配置。调整或停止推送请联系管理员。' };
-function deliveryMessage(delivery) {
+function deliveryMessage(delivery, manualStatus) {
+  if (manualStatus === 'sent') return '今日已通过后台发送，自动任务今天不再重复推送。再次点击仍可主动重发。';
+  if (['pending','sending'].includes(manualStatus)) return '本次后台发送进行中，今日自动推送已暂停。';
+  if (manualStatus) return '本次后台发送已停止，今日自动推送已暂停。可点击「立刻发送」重新发送。';
   if (!delivery) return '今日自动推送尚未开始；可立刻发送已发布的订阅板块。';
   const total = delivery.total_parts ?? JSON.parse(delivery.payload).length;
   if (delivery.status === 'sent') return `今日自动推送已完成，共 ${total} 条消息。后台可立刻重发。`;
@@ -69,10 +72,11 @@ export async function handleRobotSubscriptions(request, env, json) {
       const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
       const { results: data } = await env.DB.prepare(`SELECT s.id, s.webhook_display, s.categories, s.applicant_name, s.reason, s.status,
         s.mention_mode, s.mention_mobiles, s.review_note, s.created_at, d.status AS delivery_status, d.next_part, d.error AS delivery_error,
-        json_array_length(d.payload) AS total_parts
+        json_array_length(d.payload) AS total_parts,
+        (SELECT m.status FROM robot_manual_deliveries m WHERE m.subscriber_id = s.id AND m.edition_date = ? ORDER BY m.created_at DESC, m.send_id DESC LIMIT 1) AS manual_status
         FROM robot_subscribers s LEFT JOIN robot_subscription_deliveries d ON d.subscriber_id = s.id AND d.edition_date = ?
-        ${where} ORDER BY s.created_at DESC, s.id LIMIT 50 OFFSET ?`).bind(date, ...args, (page - 1) * 50).all();
-      return json(request, { data: data.map(row => ({ ...row, delivery_message: deliveryMessage(row.delivery_status ? { status: row.delivery_status, error: row.delivery_error, next_part: row.next_part, total_parts: row.total_parts } : null) })), total: count.total, page, robot_ready: robotConfigured(env) });
+        ${where} ORDER BY s.created_at DESC, s.id LIMIT 50 OFFSET ?`).bind(date, date, ...args, (page - 1) * 50).all();
+      return json(request, { data: data.map(row => ({ ...row, delivery_message: deliveryMessage(row.delivery_status ? { status: row.delivery_status, error: row.delivery_error, next_part: row.next_part, total_parts: row.total_parts } : null, row.manual_status) })), total: count.total, page, robot_ready: robotConfigured(env) });
     }
     const match = url.pathname.match(/^\/api\/admin\/robot-subscriptions\/([a-f0-9-]{36})\/(approve|reject|mentions|send|retry)$/);
     if (request.method === 'POST' && match) {
@@ -84,7 +88,7 @@ export async function handleRobotSubscriptions(request, env, json) {
         if (row.status !== 'approved') throw new RequestError('只有审核通过的机器人可以立刻发送。', 409);
         if (!robotConfigured(env)) throw new RequestError('机器人订阅服务尚未配置。', 503);
         if (action === 'retry') throw new RequestError('发送操作已更新，请刷新页面后使用「立刻发送」。', 410);
-        return json(request, await sendManualRobotDigest(env, id, { part: body.part, version: body.version, date: body.date }));
+        return json(request, await sendManualRobotDigest(env, id, { send_id: body.send_id, part: body.part, version: body.version, date: body.date }));
       }
       if (action === 'approve' && row.status !== 'pending') throw new RequestError('只有待审核申请可以通过。', 409);
       if (action === 'mentions' && row.status !== 'approved') throw new RequestError('请先通过申请，再调整成员配置。', 409);
@@ -99,6 +103,9 @@ export async function handleRobotSubscriptions(request, env, json) {
           review_note = ?, reviewed_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND version = ?`)
           .bind(status, mentions.mode, JSON.stringify(mentions.mobiles), version, action === 'mentions' ? row.review_note : note, id, row.version),
         env.DB.prepare(`UPDATE robot_subscription_deliveries SET status = 'cancelled', lease_until = 0 WHERE subscriber_id = ?
+          AND status IN ('pending','sending') AND version != ? AND EXISTS (SELECT 1 FROM robot_subscribers WHERE id = ? AND version = ?)`)
+          .bind(id, version, id, version),
+        env.DB.prepare(`UPDATE robot_manual_deliveries SET status = 'cancelled', lease_until = 0 WHERE subscriber_id = ?
           AND status IN ('pending','sending') AND version != ? AND EXISTS (SELECT 1 FROM robot_subscribers WHERE id = ? AND version = ?)`)
           .bind(id, version, id, version),
       ]);
