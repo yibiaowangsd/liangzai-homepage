@@ -117,7 +117,7 @@ try {
     if (request.method() === 'POST') {
       const body = request.postDataJSON(); const action = new URL(request.url()).pathname.split('/').at(-1); robotReviews.push({ action, body });
       if (action === 'send') {
-        assert.ok(Number.isInteger(body.part));
+        assert.ok(Number.isInteger(body.part)); assert.match(body.send_id, /^[a-f0-9-]{36}$/);
         const next = body.part + 1;
         await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, sent: 1, more: next < 2, next_part: next, total: 2, version: 'example-approved-version', date: '2026-10-09', message: next < 2 ? '本次已发送 1 / 2 条，正在继续…' : '本次当日日报已发送，共 2 条消息。再次点击可重新发送。' }) }); return;
       }
@@ -328,10 +328,16 @@ try {
     await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: resolve(output, `robot-send-${width}.png`), fullPage: true });
   }
-  await page.getByRole('button', { name: '立刻发送', exact: true }).click();
+  await page.evaluate(() => {
+    const button = [...document.querySelectorAll('button')].find(button => button.textContent === '立刻发送');
+    button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  });
   await page.getByRole('status').filter({ hasText: '当日日报已发送，共 2 条消息' }).waitFor();
   assert.equal(robotReviews.filter(r => r.action === 'send').length, 2, 'One button confirms each message and completes the digest');
-  assert.deepEqual(robotReviews.filter(r => r.action === 'send').map(r => r.body), [{ part: 0 }, { part: 1, version: 'example-approved-version', date: '2026-10-09' }]);
+  const firstBatch = robotReviews.filter(r => r.action === 'send');
+  assert.equal(firstBatch[0].body.send_id, firstBatch[1].body.send_id, 'All parts of one click share a send id');
+  assert.deepEqual(firstBatch.map(r => ({ ...r.body, send_id: undefined })), [{ part: 0, send_id: undefined }, { part: 1, version: 'example-approved-version', date: '2026-10-09', send_id: undefined }]);
   robotApplication.delivery_status = 'uncertain'; robotApplication.delivery_error = 'legacy_delivery'; robotApplication.next_part = 0;
   robotApplication.delivery_message = '今日旧版自动推送结果未确认。后台可立刻发送完整日报。';
   await page.getByRole('button', { name: '刷新列表', exact: true }).click();
@@ -342,6 +348,7 @@ try {
   await page.getByRole('button', { name: '立刻发送', exact: true }).click();
   await page.getByRole('status').filter({ hasText: '当日日报已发送，共 2 条消息' }).waitFor();
   assert.deepEqual(robotReviews.slice(beforeRepeat).map(r => r.body.part), [0, 1], 'Another click resends all boards without recovery confirmation');
+  assert.notEqual(robotReviews[beforeRepeat].body.send_id, firstBatch[0].body.send_id, 'Another deliberate click gets a new send id');
   assert.equal(robotApplication.mention_mode, 'members', 'Manual sending preserves approved member configuration');
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1100 });

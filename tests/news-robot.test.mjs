@@ -13,7 +13,7 @@ function fixture(t) {
   const originalTimeout = globalThis.setTimeout;
   t.mock.method(globalThis, 'setTimeout', (callback, delay, ...args) => originalTimeout(callback, delay === 3100 ? 0 : delay, ...args));
   const db = new DatabaseSync(':memory:');
-  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
   db.exec('CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)');
   const insert = db.prepare('INSERT INTO news VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'); let id = 0;
   for (const category of ['pqc', 'protocol', 'standards', 'security', 'ai']) for (let i = 0; i < 5; i++) insert.run(++id, `${date}-${category}-${i}`, `${category} story ${i}`, '中文摘要', category, '一手来源', `https://example.com/${category}/${i}`, `${date}T08:00:00Z`, 'published');
@@ -30,9 +30,14 @@ function fixture(t) {
     assert.equal(new URL(url).hostname, 'imtwo.zdxlz.com'); assert.equal(options.method, 'POST'); assert.equal(options.redirect, 'manual'); assert.ok(options.signal instanceof AbortSignal);
     const payload = JSON.parse(options.body); requests.push({ url, payload }); return respond(payload, requests.length);
   });
-  const api = (path, body, admin = false, extra = {}) => worker.fetch(new Request('https://api.wangyibiao.com/api' + path, {
-    method: body === undefined ? 'GET' : 'POST', headers: { Origin: 'https://wangyibiao.com', 'Content-Type': 'application/json', 'CF-Connecting-IP': '192.0.2.1', ...(admin ? { Authorization: `Bearer ${env.ADMIN_TOKEN}` } : {}), ...extra }, ...(body === undefined ? {} : { body: JSON.stringify(body) }),
-  }), env);
+  const api = (path, body, admin = false, extra = {}) => {
+    // A fresh id models another deliberate click. Continuations and retries
+    // supply the existing id explicitly.
+    if (body !== undefined && /robot(?:-subscriptions\/[^/]+)?\/send$/.test(path)) body = { send_id: crypto.randomUUID(), ...body };
+    return worker.fetch(new Request('https://api.wangyibiao.com/api' + path, {
+      method: body === undefined ? 'GET' : 'POST', headers: { Origin: 'https://wangyibiao.com', 'Content-Type': 'application/json', 'CF-Connecting-IP': '192.0.2.1', ...(admin ? { Authorization: `Bearer ${env.ADMIN_TOKEN}` } : {}), ...extra }, ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+    }), env);
+  };
   const row = () => db.prepare('SELECT * FROM robot_subscribers ORDER BY created_at, id LIMIT 1').get();
   const apply = async (overrides = {}, extra = {}) => { const response = await api('/robot-subscriptions', { webhook: testUrl, name: '研究群', categories: ['pqc', 'ai'], reason: '研究和学习', consent: true, ...overrides }, false, extra); assert.equal(response.status, 202, await response.text()); return row(); };
   const approve = async (subscriber = row(), config = {}) => { const response = await api(`/admin/robot-subscriptions/${subscriber.id}/approve`, config, true); assert.equal(response.status, 200, await response.text()); };
@@ -198,7 +203,7 @@ test('manual API sends all selected boards in bounded steps, uses saved @ and pe
   for (let click = 0; click < 2; click++) {
     const first = await (await f.api(path, { part: 0, mention_mode: 'none', mention_mobiles: ['13900000000'] }, true)).json();
     assert.equal(first.sent, 1); assert.equal(first.more, true); assert.equal(first.next_part, 1);
-    const second = await (await f.api(path, { part: first.next_part, version: first.version, date: first.date }, true)).json();
+    const second = await (await f.api(path, { send_id: first.send_id, part: first.next_part, version: first.version, date: first.date }, true)).json();
     assert.equal(second.ok, true); assert.equal(second.more, false); assert.equal(second.total, 2);
     assert.match(second.message, /再次点击可重新发送/);
   }
@@ -233,7 +238,7 @@ test('manual send bypasses old uncertain history, while cron keeps its daily ded
   assert.equal(f.db.prepare('SELECT status FROM robot_deliveries').get().status, 'uncertain');
   await f.send(); assert.equal(f.requests.length, 1);
   const list = await (await f.api('/admin/robot-subscriptions?status=approved', undefined, true)).json();
-  assert.equal(list.data[0].recovery_token, undefined); assert.match(list.data[0].delivery_message, /后台可立刻/);
+  assert.equal(list.data[0].recovery_token, undefined); assert.match(list.data[0].delivery_message, /今日自动推送已暂停/);
 });
 
 test('manual sending requires complete selected boards; unrelated unpublished boards do not block it', async t => {
@@ -265,7 +270,7 @@ test('manual steps stop after changes or revocation, and a new click uses curren
 
 test('manual sending rechecks approval after the rate-limit pause and before outbound delivery', async t => {
   const f = fixture(t); await f.apply(); await f.approve();
-  await assert.rejects(() => sendManualRobotDigest(f.env, f.row().id, { part: 0, pause: async () => {
+  await assert.rejects(() => sendManualRobotDigest(f.env, f.row().id, { send_id: crypto.randomUUID(), part: 0, pause: async () => {
     await f.api(`/admin/robot-subscriptions/${f.row().id}/reject`, { note: '停止发送' }, true);
   } }), /发送已停止/);
   assert.equal(f.requests.length, 0);
@@ -334,7 +339,76 @@ test('operational administrator can send one approved group without gaining revi
   const first = await (await f.api('/admin/robot/send', body, true)).json();
   assert.equal(first.ok, true); assert.equal(first.more, true);
   assert.deepEqual(f.requests[0].payload.textMsg.mentionedMobileList, ['13800000000']);
-  const last = await (await f.api('/admin/robot/send', { ...body, part: 1, version: first.version, date: first.date }, true)).json();
+  const last = await (await f.api('/admin/robot/send', { ...body, send_id: first.send_id, part: 1, version: first.version, date: first.date }, true)).json();
   assert.equal(last.ok, true); assert.equal(last.more, false); assert.equal(f.requests.length, 2);
   assert.equal(f.record(), undefined);
+});
+
+test('the same manual batch part is acknowledged again without sending again, including concurrent requests', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  const body = { send_id: crypto.randomUUID(), part: 0 };
+  const responses = await Promise.all([f.api(path, body, true), f.api(path, body, true)]);
+  assert.deepEqual(responses.map(r => r.status).sort(), [200, 409]); assert.equal(f.requests.length, 1);
+  const first = await responses.find(r => r.status === 200).json();
+  const repeated = await (await f.api(path, body, true)).json();
+  assert.equal(repeated.duplicate, true); assert.equal(repeated.sent, 0); assert.equal(repeated.next_part, 1);
+  assert.equal(f.requests.length, 1);
+  const second = { send_id: body.send_id, part: 1, version: first.version, date: first.date };
+  assert.equal((await (await f.api(path, second, true)).json()).ok, true);
+  assert.equal((await (await f.api(path, second, true)).json()).duplicate, true); assert.equal(f.requests.length, 2);
+  assert.equal((await (await f.api(path, { part: 0 }, true)).json()).sent, 1, 'A new deliberate click starts a new batch');
+  assert.equal(f.requests.length, 3);
+});
+
+test('different concurrent click ids cannot create two active manual batches for the same robot', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  const responses = await Promise.all([f.api(path, { part: 0 }, true), f.api(path, { part: 0 }, true)]);
+  assert.deepEqual(responses.map(r => r.status).sort(), [200, 409]); assert.equal(f.requests.length, 1);
+});
+
+test('manual delivery excludes concurrent and later cron sends today, while tomorrow still sends automatically', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const sendId = crypto.randomUUID();
+  const first = await sendManualRobotDigest(f.env, f.row().id, { send_id: sendId, part: 0, pause: async () => {
+    assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 0);
+  } });
+  assert.equal(f.requests.length, 1);
+  assert.equal((await f.send()).sent, 0, 'Cron also skips between manual parts');
+  const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  await f.api(path, { send_id: sendId, part: 1, version: first.version, date: first.date }, true);
+  assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 2);
+  const list = await (await f.api('/admin/robot-subscriptions?status=approved', undefined, true)).json();
+  assert.equal(list.data[0].manual_status, 'sent'); assert.match(list.data[0].delivery_message, /自动任务今天不再重复/);
+  const tomorrow = new Date(Date.parse(date) + 86400000).toISOString().slice(0,10);
+  f.db.prepare('UPDATE news SET published_at = ?').run(tomorrow + 'T08:00:00Z');
+  assert.equal((await sendRobotDigest(f.env, tomorrow, { pause: async () => {} })).sent, 2);
+});
+
+test('manual delivery refuses to overlap an already claimed cron sender', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  let first = true;
+  await f.send({ pause: async () => {
+    if (first) { first = false; assert.equal((await f.api(path, { part: 0 }, true)).status, 409); }
+  } });
+  assert.equal(f.requests.length, 2); assert.equal(f.db.prepare('SELECT count(*) AS count FROM robot_manual_deliveries').get().count, 0);
+});
+
+test('unknown manual delivery is never resent under the same click id; a new click may explicitly resend', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  const body = { send_id: crypto.randomUUID(), part: 0 }; f.respond(() => { throw new Error('connection lost'); });
+  const failed = await (await f.api(path, body, true)).json(); assert.equal(failed.ok, false);
+  const duplicate = await (await f.api(path, body, true)).json(); assert.equal(duplicate.ok, false); assert.equal(duplicate.duplicate, true);
+  assert.equal(f.requests.length, 1); assert.equal((await f.send()).sent, 0);
+  f.respond(() => Response.json({ ok: true, code: 200 }));
+  assert.equal((await (await f.api(path, { part: 0 }, true)).json()).ok, true); assert.equal(f.requests.length, 2);
+});
+
+test('manual batch freezes content and cannot skip unsent sections', async t => {
+  const f = fixture(t); await f.apply({ categories: ['pqc','protocol','ai'] }); await f.approve();
+  const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  const first = await (await f.api(path, { part: 0 }, true)).json();
+  const step = { send_id: first.send_id, version: first.version, date: first.date };
+  assert.equal((await f.api(path, { ...step, part: 2 }, true)).status, 409); assert.equal(f.requests.length, 1);
+  f.db.prepare('UPDATE news SET title = ?').run('edited after the first part');
+  for (const part of [1, 2]) assert.equal((await (await f.api(path, { ...step, part }, true)).json()).ok, true);
+  assert.equal(f.requests.length, 3); assert.doesNotMatch(f.requests.at(-1).payload.textMsg.content, /edited after/);
 });

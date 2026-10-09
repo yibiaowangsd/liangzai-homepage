@@ -10,6 +10,7 @@ function fixture(t, mail = true) {
   const db = new DatabaseSync(':memory:');
   db.exec(readFileSync(new URL('../news-worker/migrations/0001_subscriptions.sql', import.meta.url), 'utf8'));
   db.exec(readFileSync(new URL('../news-worker/migrations/0003_robot_subscriptions.sql', import.meta.url), 'utf8'));
+  db.exec(readFileSync(new URL('../news-worker/migrations/0004_robot_manual_deliveries.sql', import.meta.url), 'utf8'));
   db.exec(`CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)`);
   const insert = db.prepare('INSERT INTO news VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
   let id = 0;
