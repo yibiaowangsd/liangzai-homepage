@@ -2,7 +2,7 @@
 import { useState, type FormEvent } from "react";
 import { subscriptionCategories, subscriptionRequest } from "../../subscribe/SubscriptionForm";
 
-type Application = { id: string; email?: string; webhook_display?: string; mention_mode?: string; mention_mobiles?: string; delivery_status?: string; delivery_error?: string; next_part?: number; categories: string; applicant_name: string; reason: string; status: string; email_verified_at: string | null; confirmation_sent_at: string | null; review_note: string; created_at: string };
+type Application = { id: string; email?: string; webhook_display?: string; mention_mode?: string; mention_mobiles?: string; delivery_status?: string; delivery_error?: string; delivery_message?: string; recovery_token?: string; next_part?: number; categories: string; applicant_name: string; reason: string; status: string; email_verified_at: string | null; confirmation_sent_at: string | null; review_note: string; created_at: string };
 const statuses: Record<string, string> = { pending: "待审核", approved: "已通过", rejected: "已拒绝", unsubscribed: "已退订", all: "全部" };
 function submittedAt(value: string) {
   const date = new Date(/Z$|[+-]\d\d:\d\d$/.test(value) ? value : value.replace(" ", "T") + "Z");
@@ -20,6 +20,8 @@ export default function ReviewConsole() {
   const [total, setTotal] = useState(0);
   const [ready, setReady] = useState(false);
   const [sendingId, setSendingId] = useState<string | null>(null);
+  const [recovery, setRecovery] = useState<{ id: string; token: string; nextPart: number } | null>(null);
+  const [notReceived, setNotReceived] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -32,13 +34,13 @@ export default function ReviewConsole() {
   }
   async function refresh(status = filter, nextPage = page, kind = channel) {
     setBusy(true); setError(""); setMessage("");
-    try { await load(status, nextPage, kind); setRejecting(null); setConfiguring(null); setMentions({}); } catch (cause) { setError(cause instanceof Error ? cause.message : "无法读取申请。"); }
+    try { await load(status, nextPage, kind); setRejecting(null); setConfiguring(null); setMentions({}); setRecovery(null); setNotReceived(false); } catch (cause) { setError(cause instanceof Error ? cause.message : "无法读取申请。"); }
     finally { setBusy(false); }
   }
   async function login(event: FormEvent<HTMLFormElement>) { event.preventDefault(); await refresh("pending", 1); }
   async function review(row: Application, action: string) {
     if (action === "reject" && !notes[row.id]?.trim()) { setError("请填写拒绝理由。"); return; }
-    setBusy(true); setError(""); setMessage("");
+    setBusy(true); setError(""); setMessage(""); setRecovery(null); setNotReceived(false);
     try {
       const result = await subscriptionRequest(`${endpoint()}/${row.id}/${action}`, { note: notes[row.id] || "", ...(channel === "robot" && action !== "reject" ? { mention_mode: mentions[row.id]?.mode || row.mention_mode || "none", mention_mobiles: mentions[row.id] ? mentions[row.id].mobiles.split(/[\s,，;；]+/).filter(Boolean) : JSON.parse(row.mention_mobiles || "[]") } : {}) }, secret);
       setMessage(result.message); setRejecting(null); setConfiguring(null); setMentions({});
@@ -51,12 +53,21 @@ export default function ReviewConsole() {
     catch (cause) { setError(cause instanceof Error ? cause.message : "发送失败。"); }
     finally { setBusy(false); }
   }
-  async function sendRobot(row: Application) {
-    setBusy(true); setSendingId(row.id); setMessage(""); setError("");
+  function checkRecovery(row: Application) {
+    setRecovery({ id: row.id, token: row.recovery_token || "", nextPart: row.next_part || 0 });
+    setNotReceived(false); setRejecting(null); setConfiguring(null); setMessage(""); setError("");
+  }
+  async function sendRobot(row: Application, recoveryToken?: string) {
+    setBusy(true); setSendingId(row.id); setMessage(""); setError(""); setRecovery(null); setNotReceived(false);
     try {
       for (let part = 0; part < 5; part++) {
-        const result = await subscriptionRequest(`/admin/robot-subscriptions/${row.id}/send`, {}, secret);
-        setMessage(`${row.applicant_name || "群机器人"}：${result.message}`);
+        const retry = part === 0 && recoveryToken;
+        const result = await subscriptionRequest(`/admin/robot-subscriptions/${row.id}/${retry ? "retry" : "send"}`, retry ? { confirm_not_received: true, recovery_token: recoveryToken } : {}, secret);
+        const notice = `${row.applicant_name || "群机器人"}：${result.message}`;
+        if (result.requires_confirmation) {
+          setRecovery({ id: row.id, token: result.recovery_token, nextPart: result.next_part }); setNotReceived(false);
+        }
+        if (result.ok === false) { setMessage(""); setError(notice); } else setMessage(notice);
         if (!result.more) break;
       }
     } catch (cause) {
@@ -64,7 +75,7 @@ export default function ReviewConsole() {
     } finally { try { await load(); } catch { /* Preserve the send outcome if refresh fails. */ } setSendingId(null); setBusy(false); }
   }
   function logout() {
-    setChannel("email"); setConfiguring(null); setMentions({}); setSecret(""); setAuthenticated(false); setRows([]); setNotes({}); setRejecting(null); setMessage(""); setError(""); setReady(false); setTotal(0); setPage(1); setFilter("pending");
+    setChannel("email"); setConfiguring(null); setMentions({}); setRecovery(null); setNotReceived(false); setSecret(""); setAuthenticated(false); setRows([]); setNotes({}); setRejecting(null); setMessage(""); setError(""); setReady(false); setTotal(0); setPage(1); setFilter("pending");
   }
   return <section className="review-console" aria-label="订阅审核工作台" aria-busy={busy}>
     <p role="status" className="subscription-message review-notice">{message}</p>
@@ -100,15 +111,16 @@ export default function ReviewConsole() {
               <div className="review-application-body"><div><h3>订阅板块</h3><ul className="review-topics">{categories.map(key => <li key={key}>{subscriptionCategories[key]}</li>)}</ul></div><div><h3>申请理由</h3><p className="review-reason">{row.reason}</p></div></div>
               {row.review_note && <div className="review-record"><h3>审核备注</h3><p>{row.review_note}</p></div>}
               {row.status === "approved" && channel === "email" && <p className="review-confirmation" data-verified={!!row.email_verified_at}>{row.email_verified_at ? "邮箱已确认，订阅已启用。" : "等待收件人确认邮箱，确认后才会开始发送。"}</p>}
-              {channel === "robot" && <div className="review-record"><h3>成员提醒</h3><p>{row.mention_mode === "members" ? `指定成员：${(JSON.parse(row.mention_mobiles || "[]") as string[]).join("、")}` : "不 @ 成员"}</p>{row.status === "approved" && <p className="review-confirmation" data-verified="true">已启用定时推送 · {row.delivery_status === "sent" ? "今日日报已发送" : row.delivery_error === "legacy_delivery" ? row.delivery_status === "uncertain" ? "今日旧版推送结果待核对，已暂停重试" : "今日已有旧版推送记录，下一份日报启用" : row.delivery_status === "uncertain" ? "今日发送结果待核对，已暂停重试" : row.delivery_status === "failed" ? "今日推送失败，请检查机器人配置" : row.delivery_status === "sending" ? "今日日报发送中" : row.delivery_status === "cancelled" ? "配置已调整，下一份日报生效" : "等待完整日报与定时任务"}</p>}</div>}
+              {channel === "robot" && <div className="review-record"><h3>成员提醒</h3><p>{row.mention_mode === "members" ? `指定成员：${(JSON.parse(row.mention_mobiles || "[]") as string[]).join("、")}` : "不 @ 成员"}</p>{row.status === "approved" && <p className="review-confirmation" data-verified={!["uncertain", "failed", "cancelled"].includes(row.delivery_status || "")}>已启用定时推送 · {row.delivery_message || (row.delivery_status === "sent" ? "今日日报已发送" : row.delivery_status === "uncertain" ? "今日发送结果未确认，请核对群内消息后重试" : "等待完整日报与定时任务")}</p>}</div>}
               {["pending", "approved"].includes(row.status) && <div className="review-application-actions">
                 <div className="subscription-actions">
                   {row.status === "pending" && <button disabled={busy || !ready} className="subscription-primary" onClick={() => channel === "robot" ? setConfiguring(configuring === row.id ? null : row.id) : void review(row, "approve")}>{channel === "robot" ? "配置并审核" : "通过申请"}</button>}
-                  {channel === "robot" && row.status === "approved" && <button className="subscription-primary" disabled={busy || !ready} onClick={() => void sendRobot(row)}>{sendingId === row.id ? "正在发送…" : "立刻发送"}</button>}
+                  {channel === "robot" && row.status === "approved" && <button className="subscription-primary" disabled={busy || !ready} onClick={() => row.delivery_status === "uncertain" ? checkRecovery(row) : void sendRobot(row)}>{sendingId === row.id ? "正在发送…" : row.delivery_status === "uncertain" ? "核对后重试" : "立刻发送"}</button>}
                   {channel === "robot" && row.status === "approved" && <button disabled={busy || !ready} onClick={() => setConfiguring(configuring === row.id ? null : row.id)}>配置 @ 成员</button>}
                   {channel === "email" && row.status === "approved" && !row.email_verified_at && <button disabled={busy || !ready} onClick={() => void review(row, "resend")}>重发确认邮件</button>}
                   <button className="review-danger" disabled={busy} aria-expanded={rejecting === row.id} aria-controls={`rejection-${row.id}`} onClick={() => setRejecting(rejecting === row.id ? null : row.id)}>{row.status === "approved" ? "撤销批准并停止发送" : "拒绝申请"}</button>
                 </div>
+                {channel === "robot" && recovery?.id === row.id && <div className="review-mention-config review-recovery"><h3>重试前核对群内消息</h3><p>{row.delivery_error === "legacy_delivery" ? "旧版推送没有明确的送达结果。确认群内未收到后，按当前审核的板块和成员配置发送今日日报。" : `已确认发送的 ${recovery.nextPart} 条不会重发；重试将从第 ${recovery.nextPart + 1} 条继续。`}</p><label className="subscription-consent"><input type="checkbox" checked={notReceived} onChange={event => setNotReceived(event.target.checked)} disabled={busy} /><span>我已核对群内消息，确认待重试的消息未收到</span></label><div className="subscription-actions"><button className="subscription-primary" disabled={busy || !ready || !notReceived || !recovery.token} onClick={() => void sendRobot(row, recovery.token)}>确认并重试</button><button disabled={busy} onClick={() => { setRecovery(null); setNotReceived(false); }}>取消重试</button></div></div>}
                 {channel === "robot" && configuring === row.id && <div className="review-mention-config"><h3>{row.status === "pending" ? "审核与成员提醒" : "调整成员提醒"}</h3><label className="subscription-field">提醒方式<select value={draft.mode} disabled={busy} onChange={event => setMentions({ ...mentions, [row.id]: { ...draft, mode: event.target.value } })}><option value="none">不 @ 成员</option><option value="members">@ 指定成员</option></select></label>{draft.mode === "members" && <label className="subscription-field">成员手机号<textarea value={draft.mobiles} onChange={event => setMentions({ ...mentions, [row.id]: { ...draft, mobiles: event.target.value } })} rows={3} maxLength={340} disabled={busy} placeholder="每行一个手机号，也可用逗号分隔" /><span>最多 20 位成员，使用群成员登记的 11 至 15 位数字手机号。</span></label>}<p>每份日报仅在第一条消息提醒所选成员。申请人无法设置或修改 @ 对象。</p><div className="subscription-actions"><button className="subscription-primary" disabled={busy || !ready} onClick={() => void review(row, row.status === "pending" ? "approve" : "mentions")}>{row.status === "pending" ? "通过并启用" : "保存成员配置"}</button><button disabled={busy} onClick={() => { setConfiguring(null); setMentions({ ...mentions, [row.id]: { mode: row.mention_mode || "none", mobiles: (JSON.parse(row.mention_mobiles || "[]") as string[]).join("\n") } }); }}>取消</button></div></div>}
                 {rejecting === row.id && <div className="review-rejection" id={`rejection-${row.id}`}><label className="subscription-field">拒绝理由<textarea value={notes[row.id] || ""} onChange={event => setNotes({ ...notes, [row.id]: event.target.value })} maxLength={500} rows={3} disabled={busy} placeholder="写明原因，便于后续复核" /></label><div className="subscription-actions"><button className="review-danger" disabled={busy} onClick={() => void review(row, "reject")}>{row.status === "approved" ? "确认撤销" : "确认拒绝"}</button><button disabled={busy} onClick={() => setRejecting(null)}>取消</button></div></div>}
               </div>}

@@ -226,3 +226,91 @@ test('manual sends report incomplete, uncertain and revoked states without bypas
   await f.api(`/admin/robot-subscriptions/${f.row().id}/reject`, { note: '停止发送' }, true);
   assert.equal((await f.api(path, {}, true)).status, 409); assert.equal(f.requests.length, 1);
 });
+
+async function uncertainLegacy(f, status = 'uncertain', leaseUntil = 0) {
+  f.db.prepare("INSERT INTO robot_deliveries (edition_date, destination_hash, payload, status, error, next_part, created_at, lease_until) VALUES (?, ?, '[]', ?, 'delivery_unconfirmed', 0, ?, ?)")
+    .run(date, await digest(testUrl), status, Date.now(), leaseUntil);
+  await f.apply(); await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  return `/admin/robot-subscriptions/${f.row().id}`;
+}
+
+test('legacy uncertainty is actionable, never reported as successful and requires a current explicit confirmation', async t => {
+  const f = fixture(t); const path = await uncertainLegacy(f);
+  const blocked = await (await f.api(`${path}/send`, {}, true)).json();
+  assert.equal(blocked.ok, false); assert.equal(blocked.requires_confirmation, true); assert.equal(blocked.status, 'uncertain');
+  assert.match(blocked.message, /旧版.*核对后重试/); assert.equal(f.requests.length, 0);
+  const list = await (await f.api('/admin/robot-subscriptions?status=approved', undefined, true)).json();
+  assert.equal(list.data[0].recovery_token, blocked.recovery_token); assert.match(list.data[0].delivery_message, /旧版/);
+  for (const body of [{}, { confirm_not_received: false, recovery_token: blocked.recovery_token }, { confirm_not_received: true, recovery_token: 'stale-confirmation' }]) {
+    assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
+  }
+  const confirmation = { confirm_not_received: true, recovery_token: blocked.recovery_token };
+  assert.equal((await f.api(`${path}/retry`, confirmation)).status, 401);
+  const first = await (await f.api(`${path}/retry`, confirmation, true)).json();
+  assert.equal(first.more, true); assert.equal(first.next_part, 1); assert.equal(first.total, 2);
+  assert.deepEqual(f.requests[0].payload.textMsg.mentionedMobileList, ['13800000000']);
+  assert.equal(f.db.prepare('SELECT status FROM robot_deliveries').get().status, 'uncertain', 'Preserve legacy history');
+  const final = await (await f.api(`${path}/send`, {}, true)).json(); assert.equal(final.status, 'sent');
+  assert.equal(f.requests.length, 2);
+  assert.equal((await f.api(`${path}/retry`, confirmation, true)).status, 409);
+  await f.api(`${path}/send`, {}, true); assert.equal(f.requests.length, 2, 'Confirmed retry never enables a completed replay');
+});
+
+test('confirmed retry resumes only the unconfirmed part; concurrent confirmations and cron do not duplicate', async t => {
+  const f = fixture(t); await f.apply(); await f.approve();
+  f.respond((_, count) => count === 1 ? Response.json({ ok: true, code: 200 }) : Promise.reject(new Error('private webhook')));
+  await f.send(); assert.equal(f.record().next_part, 1); assert.equal(f.record().status, 'uncertain');
+  const path = `/admin/robot-subscriptions/${f.row().id}`;
+  const blocked = await (await f.api(`${path}/send`, {}, true)).json(); assert.equal(f.requests.length, 2);
+  const original = JSON.parse(f.record().payload)[1];
+  f.db.prepare('UPDATE news SET title = ?').run('edited after attempt');
+  f.respond(() => Response.json({ ok: true, code: 200 }));
+  const body = { confirm_not_received: true, recovery_token: blocked.recovery_token };
+  const results = await Promise.all([f.api(`${path}/retry`, body, true), f.api(`${path}/retry`, body, true), f.send()]);
+  assert.deepEqual(results.slice(0, 2).map(r => r.status).sort(), [200, 409]);
+  assert.equal(f.requests.length, 3); assert.deepEqual(f.requests[2].payload, original);
+  assert.equal(f.record().next_part, 2); assert.equal(f.record().status, 'sent');
+});
+
+test('a failed confirmed retry rotates confirmation and cannot be replayed using an old confirmation', async t => {
+  const f = fixture(t); const path = await uncertainLegacy(f);
+  const blocked = await (await f.api(`${path}/send`, {}, true)).json();
+  f.respond(() => { throw new Error('unconfirmed'); });
+  const firstBody = { confirm_not_received: true, recovery_token: blocked.recovery_token };
+  const failed = await (await f.api(`${path}/retry`, firstBody, true)).json();
+  assert.equal(failed.requires_confirmation, true); assert.notEqual(failed.recovery_token, blocked.recovery_token);
+  assert.equal((await f.api(`${path}/retry`, firstBody, true)).status, 409); assert.equal(f.requests.length, 1);
+  await f.send(); assert.equal(f.requests.length, 1);
+});
+
+test('legacy retry waits for a complete edition and refuses an active old sender', async t => {
+  const f = fixture(t); const path = await uncertainLegacy(f, 'sending', Date.now() + 300000);
+  const blocked = await (await f.api(`${path}/send`, {}, true)).json();
+  const body = { confirm_not_received: true, recovery_token: blocked.recovery_token };
+  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
+  f.db.prepare("UPDATE robot_deliveries SET status = 'uncertain', lease_until = 0").run();
+  f.db.prepare("UPDATE news SET status = 'draft' WHERE category = 'ai'").run();
+  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
+  assert.equal(f.record().status, 'uncertain'); assert.equal(f.requests.length, 0);
+});
+
+test('retry never bypasses a revoked approval or changed administrator configuration', async t => {
+  const f = fixture(t); const path = await uncertainLegacy(f);
+  const blocked = await (await f.api(`${path}/send`, {}, true)).json();
+  const body = { confirm_not_received: true, recovery_token: blocked.recovery_token };
+  await f.api(`${path}/mentions`, { mention_mode: 'none' }, true);
+  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
+  await f.api(`${path}/reject`, { note: '停止发送' }, true);
+  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409); assert.equal(f.requests.length, 0);
+});
+
+test('legacy recovery does not discard messages confirmed by the old sender after migration', async t => {
+  const f = fixture(t); const path = await uncertainLegacy(f);
+  const blocked = await (await f.api(`${path}/send`, {}, true)).json();
+  const body = { confirm_not_received: true, recovery_token: blocked.recovery_token };
+  f.db.prepare('UPDATE robot_deliveries SET next_part = 1').run();
+  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
+  f.db.prepare("UPDATE robot_deliveries SET next_part = 0, status = 'sent'").run();
+  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
+  assert.equal(f.requests.length, 0); assert.equal(f.record().status, 'uncertain');
+});
