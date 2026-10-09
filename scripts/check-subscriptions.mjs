@@ -116,14 +116,10 @@ try {
     if (request.headers().authorization !== 'Bearer test-review') { await route.fulfill({ status: 401, contentType: 'application/json', body: '{"error":"审核口令不正确。"}' }); return; }
     if (request.method() === 'POST') {
       const body = request.postDataJSON(); const action = new URL(request.url()).pathname.split('/').at(-1); robotReviews.push({ action, body });
-      if (action === 'send' || action === 'retry') {
-        if (action === 'send' && robotApplication.delivery_status === 'uncertain') {
-          await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: false, sent: 0, more: false, status: 'uncertain', requires_confirmation: true, recovery_token: robotApplication.recovery_token, next_part: 0, message: robotApplication.delivery_message }) }); return;
-        }
-        if (action === 'retry') { robotApplication.next_part = 0; delete robotApplication.delivery_error; delete robotApplication.delivery_message; delete robotApplication.recovery_token; }
-        const next = (robotApplication.next_part || 0) + 1; robotApplication.next_part = next;
-        robotApplication.delivery_status = next >= 2 ? 'sent' : 'pending';
-        await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, sent: 1, more: next < 2, next_part: next, total: 2, message: next < 2 ? '已发送 1 / 2 条，正在继续…' : '当日日报已发送，共 2 条消息。' }) }); return;
+      if (action === 'send') {
+        assert.ok(Number.isInteger(body.part));
+        const next = body.part + 1;
+        await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, sent: 1, more: next < 2, next_part: next, total: 2, version: 'example-approved-version', date: '2026-10-09', message: next < 2 ? '本次已发送 1 / 2 条，正在继续…' : '本次当日日报已发送，共 2 条消息。再次点击可重新发送。' }) }); return;
       }
       robotApplication.status = action === 'reject' ? 'rejected' : 'approved';
       if (action !== 'reject') { robotApplication.mention_mode = body.mention_mode; robotApplication.mention_mobiles = JSON.stringify(body.mention_mobiles); }
@@ -335,30 +331,23 @@ try {
   await page.getByRole('button', { name: '立刻发送', exact: true }).click();
   await page.getByRole('status').filter({ hasText: '当日日报已发送，共 2 条消息' }).waitFor();
   assert.equal(robotReviews.filter(r => r.action === 'send').length, 2, 'One button confirms each message and completes the digest');
-  assert.equal(robotReviews.filter(r => r.action === 'send').every(r => Object.keys(r.body).length === 0), true, 'Manual send does not overwrite saved administrator mention configuration');
+  assert.deepEqual(robotReviews.filter(r => r.action === 'send').map(r => r.body), [{ part: 0 }, { part: 1, version: 'example-approved-version', date: '2026-10-09' }]);
   robotApplication.delivery_status = 'uncertain'; robotApplication.delivery_error = 'legacy_delivery'; robotApplication.next_part = 0;
-  robotApplication.recovery_token = 'example-current-confirmation';
-  robotApplication.delivery_message = '今日旧版推送结果未确认，已阻止新增机器人的重复推送。请核对群内消息后选择「核对后重试」。';
+  robotApplication.delivery_message = '今日旧版自动推送结果未确认。后台可立刻发送完整日报。';
   await page.getByRole('button', { name: '刷新列表', exact: true }).click();
-  await page.getByRole('button', { name: '核对后重试', exact: true }).click();
-  assert.equal(await page.getByRole('button', { name: '确认并重试', exact: true }).isEnabled(), false, 'Uncertain delivery requires administrator verification');
-  const beforeRetry = robotReviews.length;
-  await page.getByRole('button', { name: '取消重试', exact: true }).click();
-  assert.equal(robotReviews.length, beforeRetry, 'Cancel does not send or reset a job');
-  await page.getByRole('button', { name: '核对后重试', exact: true }).click();
+  assert.equal(await page.getByRole('button', { name: '立刻发送', exact: true }).isEnabled(), true);
+  assert.equal(await page.getByRole('button', { name: '核对后重试', exact: true }).count(), 0);
+  const beforeRepeat = robotReviews.length;
+  await page.getByRole('button', { name: '立刻发送', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '当日日报已发送，共 2 条消息' }).waitFor();
+  assert.deepEqual(robotReviews.slice(beforeRepeat).map(r => r.body.part), [0, 1], 'Another click resends all boards without recovery confirmation');
+  assert.equal(robotApplication.mention_mode, 'members', 'Manual sending preserves approved member configuration');
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 1100 });
-    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `Unconfirmed retry fits ${width}`);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `Repeated manual send fits ${width}`);
     await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
-    await page.screenshot({ path: resolve(output, `robot-retry-${width}.png`), fullPage: true });
+    await page.screenshot({ path: resolve(output, `robot-manual-${width}.png`), fullPage: true });
   }
-  await page.getByRole('checkbox', { name: '我已核对群内消息，确认待重试的消息未收到' }).check();
-  await page.getByRole('button', { name: '确认并重试', exact: true }).click();
-  await page.getByRole('status').filter({ hasText: '当日日报已发送，共 2 条消息' }).waitFor();
-  const retryRequests = robotReviews.slice(beforeRetry);
-  assert.deepEqual(retryRequests.map(r => r.action), ['retry', 'send'], 'Confirmed recovery resumes using bounded send steps');
-  assert.deepEqual(retryRequests[0].body, { confirm_not_received: true, recovery_token: 'example-current-confirmation' });
-  assert.deepEqual(retryRequests[1].body, {}); assert.equal(robotApplication.mention_mode, 'members', 'Recovery preserves approved member configuration');
   await page.getByRole('button', { name: '配置 @ 成员', exact: true }).click();
   await page.getByLabel('提醒方式').selectOption('none');
   await page.getByRole('button', { name: '保存成员配置', exact: true }).click();

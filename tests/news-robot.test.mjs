@@ -3,7 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import worker from '../news-worker/index.js';
-import { buildRobotDigest, robotStatus, sendRobotDigest } from '../news-worker/robot.js';
+import { buildRobotDigest, robotStatus, sendRobotDigest, sendManualRobotDigest } from '../news-worker/robot.js';
 import { digest } from '../news-worker/subscriptions.js';
 import { decryptWebhook, normalizeWebhook } from '../news-worker/robot-config.js';
 
@@ -27,7 +27,7 @@ function fixture(t) {
   const env = { DB, ADMIN_TOKEN: 'test-admin', NEWS_BOT_WEBHOOK_URL: testUrl };
   const requests = []; let respond = () => Response.json({ ok: true, code: 200 });
   t.mock.method(globalThis, 'fetch', async (url, options) => {
-    assert.equal(new URL(url).hostname, 'imtwo.zdxlz.com'); assert.equal(options.method, 'POST'); assert.equal(options.redirect, 'error'); assert.ok(options.signal instanceof AbortSignal);
+    assert.equal(new URL(url).hostname, 'imtwo.zdxlz.com'); assert.equal(options.method, 'POST'); assert.equal(options.redirect, 'manual'); assert.ok(options.signal instanceof AbortSignal);
     const payload = JSON.parse(options.body); requests.push({ url, payload }); return respond(payload, requests.length);
   });
   const api = (path, body, admin = false, extra = {}) => worker.fetch(new Request('https://api.wangyibiao.com/api' + path, {
@@ -185,48 +185,6 @@ test('same-group legacy delivery history prevents an approved application replay
   assert.equal(f.requests.length, 0);
 });
 
-test('manual API sends immediately in bounded steps using saved @ configuration and no repeat', async t => {
-  const f = fixture(t); await f.apply(); await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
-  const path = `/admin/robot-subscriptions/${f.row().id}/send`;
-  const first = await (await f.api(path, { mention_mode: 'none', mention_mobiles: ['13900000000'] }, true)).json();
-  assert.equal(first.sent, 1); assert.equal(first.more, true); assert.equal(first.next_part, 1);
-  assert.equal(f.record().status, 'pending'); assert.equal(f.record().attempts, 0);
-  assert.deepEqual(f.requests[0].payload.textMsg.mentionedMobileList, ['13800000000']);
-  const second = await (await f.api(path, {}, true)).json(); assert.equal(second.more, false); assert.equal(second.status, 'sent');
-  const repeat = await (await f.api(path, {}, true)).json(); assert.equal(repeat.sent, 0); assert.match(repeat.message, /未重复/);
-  assert.equal(f.requests.length, 2);
-});
-
-test('manual sends require review credentials and approval, target only one group', async t => {
-  const f = fixture(t); await f.apply(); const first = f.row();
-  const path = `/admin/robot-subscriptions/${first.id}/send`;
-  assert.equal((await f.api(path, {})).status, 401);
-  assert.equal((await f.api(path, {}, true)).status, 409);
-  await f.approve(first);
-  await f.apply({ webhook: testUrl.replace('test-only-key', 'another-group-key'), name: '另一群', categories: ['ai'] });
-  const other = f.db.prepare("SELECT * FROM robot_subscribers WHERE applicant_name = '另一群'").get(); await f.approve(other);
-  await f.api(path, {}, true); assert.equal(f.requests.length, 1); assert.equal(f.requests[0].url, testUrl);
-  assert.equal(f.record(other), undefined); assert.equal(f.record(first).next_part, 1);
-});
-
-test('manual send and cron share a lease, and cron continues a partially sent manual digest', async t => {
-  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}/send`;
-  await Promise.all([f.api(path, {}, true), f.send()]);
-  await f.send(); assert.equal(f.requests.length, 2); assert.equal(f.record().status, 'sent');
-});
-
-test('manual sends report incomplete, uncertain and revoked states without bypassing them', async t => {
-  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}/send`;
-  f.db.prepare("UPDATE news SET status = 'draft' WHERE category = 'protocol'").run();
-  let result = await (await f.api(path, {}, true)).json(); assert.equal(result.status, 'waiting'); assert.equal(result.more, false); assert.equal(f.requests.length, 0);
-  f.db.prepare("UPDATE news SET status = 'published'").run();
-  f.respond(() => { throw new Error('network lost'); });
-  result = await (await f.api(path, {}, true)).json(); assert.equal(result.status, 'uncertain'); assert.equal(result.more, false);
-  await f.api(path, {}, true); assert.equal(f.requests.length, 1);
-  await f.api(`/admin/robot-subscriptions/${f.row().id}/reject`, { note: '停止发送' }, true);
-  assert.equal((await f.api(path, {}, true)).status, 409); assert.equal(f.requests.length, 1);
-});
-
 async function uncertainLegacy(f, status = 'uncertain', leaseUntil = 0) {
   f.db.prepare("INSERT INTO robot_deliveries (edition_date, destination_hash, payload, status, error, next_part, created_at, lease_until) VALUES (?, ?, '[]', ?, 'delivery_unconfirmed', 0, ?, ?)")
     .run(date, await digest(testUrl), status, Date.now(), leaseUntil);
@@ -234,85 +192,97 @@ async function uncertainLegacy(f, status = 'uncertain', leaseUntil = 0) {
   return `/admin/robot-subscriptions/${f.row().id}`;
 }
 
-test('legacy uncertainty is actionable, never reported as successful and requires a current explicit confirmation', async t => {
-  const f = fixture(t); const path = await uncertainLegacy(f);
-  const blocked = await (await f.api(`${path}/send`, {}, true)).json();
-  assert.equal(blocked.ok, false); assert.equal(blocked.requires_confirmation, true); assert.equal(blocked.status, 'uncertain');
-  assert.match(blocked.message, /旧版.*核对后重试/); assert.equal(f.requests.length, 0);
-  const list = await (await f.api('/admin/robot-subscriptions?status=approved', undefined, true)).json();
-  assert.equal(list.data[0].recovery_token, blocked.recovery_token); assert.match(list.data[0].delivery_message, /旧版/);
-  for (const body of [{}, { confirm_not_received: false, recovery_token: blocked.recovery_token }, { confirm_not_received: true, recovery_token: 'stale-confirmation' }]) {
-    assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
+test('manual API sends all selected boards in bounded steps, uses saved @ and permits another complete send', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  for (let click = 0; click < 2; click++) {
+    const first = await (await f.api(path, { part: 0, mention_mode: 'none', mention_mobiles: ['13900000000'] }, true)).json();
+    assert.equal(first.sent, 1); assert.equal(first.more, true); assert.equal(first.next_part, 1);
+    const second = await (await f.api(path, { part: first.next_part, version: first.version, date: first.date }, true)).json();
+    assert.equal(second.ok, true); assert.equal(second.more, false); assert.equal(second.total, 2);
+    assert.match(second.message, /再次点击可重新发送/);
   }
-  const confirmation = { confirm_not_received: true, recovery_token: blocked.recovery_token };
-  assert.equal((await f.api(`${path}/retry`, confirmation)).status, 401);
-  const first = await (await f.api(`${path}/retry`, confirmation, true)).json();
-  assert.equal(first.more, true); assert.equal(first.next_part, 1); assert.equal(first.total, 2);
-  assert.deepEqual(f.requests[0].payload.textMsg.mentionedMobileList, ['13800000000']);
-  assert.equal(f.db.prepare('SELECT status FROM robot_deliveries').get().status, 'uncertain', 'Preserve legacy history');
-  const final = await (await f.api(`${path}/send`, {}, true)).json(); assert.equal(final.status, 'sent');
-  assert.equal(f.requests.length, 2);
-  assert.equal((await f.api(`${path}/retry`, confirmation, true)).status, 409);
-  await f.api(`${path}/send`, {}, true); assert.equal(f.requests.length, 2, 'Confirmed retry never enables a completed replay');
+  assert.equal(f.requests.length, 4); assert.equal(f.record(), undefined);
+  for (const index of [0, 2]) assert.deepEqual(f.requests[index].payload.textMsg.mentionedMobileList, ['13800000000']);
+  for (const index of [1, 3]) assert.equal(f.requests[index].payload.textMsg.isMentioned, false);
 });
 
-test('confirmed retry resumes only the unconfirmed part; concurrent confirmations and cron do not duplicate', async t => {
-  const f = fixture(t); await f.apply(); await f.approve();
-  f.respond((_, count) => count === 1 ? Response.json({ ok: true, code: 200 }) : Promise.reject(new Error('private webhook')));
-  await f.send(); assert.equal(f.record().next_part, 1); assert.equal(f.record().status, 'uncertain');
-  const path = `/admin/robot-subscriptions/${f.row().id}`;
-  const blocked = await (await f.api(`${path}/send`, {}, true)).json(); assert.equal(f.requests.length, 2);
-  const original = JSON.parse(f.record().payload)[1];
-  f.db.prepare('UPDATE news SET title = ?').run('edited after attempt');
-  f.respond(() => Response.json({ ok: true, code: 200 }));
-  const body = { confirm_not_received: true, recovery_token: blocked.recovery_token };
-  const results = await Promise.all([f.api(`${path}/retry`, body, true), f.api(`${path}/retry`, body, true), f.send()]);
-  assert.deepEqual(results.slice(0, 2).map(r => r.status).sort(), [200, 409]);
-  assert.equal(f.requests.length, 3); assert.deepEqual(f.requests[2].payload, original);
-  assert.equal(f.record().next_part, 2); assert.equal(f.record().status, 'sent');
+test('manual sends require review credentials and approval, target only one group', async t => {
+  const f = fixture(t); await f.apply(); const first = f.row();
+  const path = `/admin/robot-subscriptions/${first.id}/send`;
+  assert.equal((await f.api(path, { part: 0 })).status, 401);
+  assert.equal((await f.api(path, { part: 0 }, true)).status, 409);
+  await f.approve(first);
+  await f.apply({ webhook: testUrl.replace('test-only-key', 'another-group-key'), name: '另一群', categories: ['ai'] });
+  const other = f.db.prepare("SELECT * FROM robot_subscribers WHERE applicant_name = '另一群'").get(); await f.approve(other);
+  await f.api(path, { part: 0 }, true); assert.equal(f.requests.length, 1); assert.equal(f.requests[0].url, testUrl);
+  assert.equal(f.record(other), undefined); assert.equal(f.record(first), undefined);
 });
 
-test('a failed confirmed retry rotates confirmation and cannot be replayed using an old confirmation', async t => {
-  const f = fixture(t); const path = await uncertainLegacy(f);
-  const blocked = await (await f.api(`${path}/send`, {}, true)).json();
-  f.respond(() => { throw new Error('unconfirmed'); });
-  const firstBody = { confirm_not_received: true, recovery_token: blocked.recovery_token };
-  const failed = await (await f.api(`${path}/retry`, firstBody, true)).json();
-  assert.equal(failed.requires_confirmation, true); assert.notEqual(failed.recovery_token, blocked.recovery_token);
-  assert.equal((await f.api(`${path}/retry`, firstBody, true)).status, 409); assert.equal(f.requests.length, 1);
+for (const status of ['sent', 'uncertain', 'failed', 'cancelled', 'sending']) test(`manual send bypasses ${status} daily history without changing cron history`, async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); await f.send();
+  f.db.prepare('UPDATE robot_subscription_deliveries SET status = ?').run(status); const before = f.record();
+  const result = await (await f.api(`/admin/robot-subscriptions/${f.row().id}/send`, { part: 0 }, true)).json();
+  assert.equal(result.ok, true); assert.equal(result.sent, 1); assert.deepEqual(f.record(), before);
+});
+
+test('manual send bypasses old uncertain history, while cron keeps its daily deduplication', async t => {
+  const f = fixture(t); const path = await uncertainLegacy(f); await f.send(); const before = f.record();
+  const result = await (await f.api(`${path}/send`, { part: 0 }, true)).json();
+  assert.equal(result.ok, true); assert.deepEqual(f.record(), before);
+  assert.equal(f.db.prepare('SELECT status FROM robot_deliveries').get().status, 'uncertain');
   await f.send(); assert.equal(f.requests.length, 1);
+  const list = await (await f.api('/admin/robot-subscriptions?status=approved', undefined, true)).json();
+  assert.equal(list.data[0].recovery_token, undefined); assert.match(list.data[0].delivery_message, /后台可立刻/);
 });
 
-test('legacy retry waits for a complete edition and refuses an active old sender', async t => {
-  const f = fixture(t); const path = await uncertainLegacy(f, 'sending', Date.now() + 300000);
-  const blocked = await (await f.api(`${path}/send`, {}, true)).json();
-  const body = { confirm_not_received: true, recovery_token: blocked.recovery_token };
-  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
-  f.db.prepare("UPDATE robot_deliveries SET status = 'uncertain', lease_until = 0").run();
+test('manual sending requires complete selected boards; unrelated unpublished boards do not block it', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  f.db.prepare("UPDATE news SET status = 'draft' WHERE category = 'protocol'").run();
+  assert.equal((await (await f.api(path, { part: 0 }, true)).json()).ok, true);
   f.db.prepare("UPDATE news SET status = 'draft' WHERE category = 'ai'").run();
-  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
-  assert.equal(f.record().status, 'uncertain'); assert.equal(f.requests.length, 0);
+  assert.equal((await f.api(path, { part: 0 }, true)).status, 409); assert.equal(f.requests.length, 1);
 });
 
-test('retry never bypasses a revoked approval or changed administrator configuration', async t => {
-  const f = fixture(t); const path = await uncertainLegacy(f);
-  const blocked = await (await f.api(`${path}/send`, {}, true)).json();
-  const body = { confirm_not_received: true, recovery_token: blocked.recovery_token };
-  await f.api(`${path}/mentions`, { mention_mode: 'none' }, true);
-  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
+test('manual steps reject invalid or stale coordinates and the retired retry API', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}`;
+  for (const part of [undefined, -1, 5, 2, '0', 0.5]) assert.equal((await f.api(`${path}/send`, { part }, true)).status, 400);
+  assert.equal((await f.api(`${path}/send`, { part: 1, version: 'stale' }, true)).status, 409);
+  assert.equal((await f.api(`${path}/send`, { part: 0, date: '2020-01-01' }, true)).status, 409);
+  assert.equal((await f.api(`${path}/retry`, {}, true)).status, 410); assert.equal(f.requests.length, 0);
+});
+
+test('manual steps stop after changes or revocation, and a new click uses current administrator configuration', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}`;
+  const first = await (await f.api(`${path}/send`, { part: 0 }, true)).json();
+  await f.api(`${path}/mentions`, { mention_mode: 'members', mention_mobiles: ['13900000000'] }, true);
+  assert.equal((await f.api(`${path}/send`, { part: 1, version: first.version, date: first.date }, true)).status, 409);
+  assert.equal((await (await f.api(`${path}/send`, { part: 0 }, true)).json()).ok, true);
+  assert.deepEqual(f.requests.at(-1).payload.textMsg.mentionedMobileList, ['13900000000']);
   await f.api(`${path}/reject`, { note: '停止发送' }, true);
-  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409); assert.equal(f.requests.length, 0);
+  assert.equal((await f.api(`${path}/send`, { part: 0 }, true)).status, 409); assert.equal(f.requests.length, 2);
 });
 
-test('legacy recovery does not discard messages confirmed by the old sender after migration', async t => {
-  const f = fixture(t); const path = await uncertainLegacy(f);
-  const blocked = await (await f.api(`${path}/send`, {}, true)).json();
-  const body = { confirm_not_received: true, recovery_token: blocked.recovery_token };
-  f.db.prepare('UPDATE robot_deliveries SET next_part = 1').run();
-  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
-  f.db.prepare("UPDATE robot_deliveries SET next_part = 0, status = 'sent'").run();
-  assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
-  assert.equal(f.requests.length, 0); assert.equal(f.record().status, 'uncertain');
+test('manual sending rechecks approval after the rate-limit pause and before outbound delivery', async t => {
+  const f = fixture(t); await f.apply(); await f.approve();
+  await assert.rejects(() => sendManualRobotDigest(f.env, f.row().id, { part: 0, pause: async () => {
+    await f.api(`/admin/robot-subscriptions/${f.row().id}/reject`, { note: '停止发送' }, true);
+  } }), /发送已停止/);
+  assert.equal(f.requests.length, 0);
+});
+
+for (const [name, respond, code] of [
+  ['timeout', () => { throw new Error('secret test-only-key'); }, 'delivery_unconfirmed'],
+  ['provider rejection', () => Response.json({ ok: false, code: 7101, message: 'secret test-only-key' }), 'provider_rejected'],
+  ['ambiguous acknowledgement', () => Response.json({ code: 200 }), 'delivery_unconfirmed'],
+  ['redirect', () => new Response(null, { status: 302, headers: { Location: 'https://other.example/' } }), 'redirect_rejected'],
+]) test(`manual ${name} stops the click without automatically retrying; a new click can send again`, async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  f.respond(respond); const failed = await (await f.api(path, { part: 0 }, true)).json();
+  assert.equal(failed.ok, false); assert.equal(failed.more, false); assert.equal(failed.error_code, code);
+  assert.equal(f.requests.length, 1); assert.doesNotMatch(JSON.stringify(failed), /secret|test-only/);
+  f.respond(() => Response.json({ ok: true, code: 200 }));
+  assert.equal((await (await f.api(path, { part: 0 }, true)).json()).ok, true); assert.equal(f.requests.length, 2);
 });
 
 test('connection test requires an approved target and operational administrator credentials', async t => {
