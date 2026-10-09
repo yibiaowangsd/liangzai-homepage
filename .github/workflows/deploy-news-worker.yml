@@ -60,7 +60,7 @@ jobs:
             "compatibility_date": "2026-09-30",
             "keep_vars": true,
             "workers_dev": true,
-            "triggers": { "crons": ["*/15 * * * *"] },
+            "triggers": { "crons": ["*/30 * * * *"] },
             "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": false }, "traces": { "enabled": false } },
             "routes": [
               {
