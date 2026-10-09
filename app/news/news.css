@@ -988,3 +988,6 @@
 .article-byline { font-size: var(--type-caption); line-height: 1.8; }
 .article-body :is(h2,h3) { letter-spacing: 0; }
 @media (max-width: 780px) { .news-toolbar { position: static; } }
+
+.news-subscribe-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--theme-accent, #315a43); text-decoration: none; }
+.news-subscribe-link:hover { text-decoration: underline; }

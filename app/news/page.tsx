@@ -151,6 +151,7 @@ export default async function NewsPage({
       <section className="news-toolbar" aria-label="前沿新闻导航">
         <div className="news-toolbar-title">
           <h1>前沿新闻</h1>
+          <Link className="news-subscribe-link" href={category ? `/news/subscribe?category=${encodeURIComponent(category)}` : "/news/subscribe"}>订阅日报 ↗</Link>
 
         </div>
         {newest && (

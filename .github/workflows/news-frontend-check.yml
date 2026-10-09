@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'app/news/**'
+      - 'news-worker/**'
       - 'app/QuantumHome.tsx'
       - 'app/studio/**'
       - 'app/models/**'
@@ -36,6 +37,7 @@ on:
       - 'tests/page-arrival.test.mjs'
       - 'tests/about-push-image.test.mjs'
       - 'tests/news-*.test.mjs'
+      - 'scripts/check-subscriptions.mjs'
       - 'news/validate-edition.py'
       - 'app/page.tsx'
       - 'app/layout.tsx'
@@ -52,6 +54,7 @@ on:
   pull_request:
     paths:
       - 'app/news/**'
+      - 'news-worker/**'
       - 'app/QuantumHome.tsx'
       - 'app/studio/**'
       - 'app/models/**'
@@ -83,6 +86,7 @@ on:
       - 'tests/page-arrival.test.mjs'
       - 'tests/about-push-image.test.mjs'
       - 'tests/news-*.test.mjs'
+      - 'scripts/check-subscriptions.mjs'
       - 'news/validate-edition.py'
       - 'app/page.tsx'
       - 'app/layout.tsx'
@@ -118,10 +122,13 @@ jobs:
       - run: npm run build
       - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs tests/site-theme.test.mjs tests/site-typography.test.mjs tests/layout-redesign.test.mjs tests/mobile-sidebar.test.mjs tests/reading-workspaces.test.mjs
       - run: npx playwright install --with-deps chromium firefox webkit
+      - run: node scripts/check-subscriptions.mjs
       - run: npm run test:layout
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: responsive-browser-screenshots
-          path: outputs/responsive/
+          path: |
+            outputs/responsive/
+            outputs/subscriptions/
           retention-days: 7

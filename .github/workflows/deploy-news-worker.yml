@@ -60,6 +60,8 @@ jobs:
             "compatibility_date": "2026-09-30",
             "keep_vars": true,
             "workers_dev": true,
+            "triggers": { "crons": ["*/15 * * * *"] },
+            "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": false }, "traces": { "enabled": false } },
             "routes": [
               {
                 "pattern": "api.wangyibiao.com",
@@ -70,11 +72,18 @@ jobs:
               {
                 "binding": "DB",
                 "database_name": "liangzai-news-prod",
-                "database_id": "$database_id"
+                "database_id": "$database_id",
+                "migrations_dir": "${GITHUB_WORKSPACE}/news-worker/migrations"
               }
             ]
           }
           EOF
+
+      - name: Apply subscription schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.92.0 d1 migrations apply liangzai-news-prod --remote --config "$RUNNER_TEMP/wrangler-news.jsonc"
 
       - name: Deploy Worker
         shell: bash
@@ -88,6 +97,7 @@ jobs:
           set -euo pipefail
           for url in \
             "https://api.wangyibiao.com/api/health" \
+            "https://api.wangyibiao.com/api/subscriptions" \
             "https://api.wangyibiao.com/api/news/featured?limit=6" \
             "https://api.wangyibiao.com/api/news/editions?page=1&pageSize=1"; do
             echo "Checking $url"
@@ -95,6 +105,9 @@ jobs:
             python3 -c '
           import json, sys
           payload = json.load(sys.stdin)
+          if "/api/subscriptions" in sys.argv[1]:
+              assert payload["review_required"] is True, "Subscription review must be required"
+              assert payload["email_confirmation_required"] is True, "Email confirmation must be required"
           if "/api/news/editions" in sys.argv[1]:
               assert payload["meta"]["pageSize"] == 1, "Expected one day per page"
               assert len(payload["data"]) <= 1, "Multiple dates returned on one page"

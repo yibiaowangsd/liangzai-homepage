@@ -284,6 +284,7 @@ test("news pages preserve published content and accessible rendering", async (t)
           assert.equal(next.searchParams.get("category") || "", category);
           for (const match of main.matchAll(/href="(\/news\/[^"]+)"/g)) {
             const href = new URL(match[1].replaceAll("&amp;", "&"), "http://localhost");
+            if (href.pathname === "/news/subscribe") continue;
             assert.equal(Number(href.searchParams.get("page") || 1), safePage);
             assert.equal(href.searchParams.get("category") || "", category);
           }
