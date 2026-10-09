@@ -1,0 +1,32 @@
+name: Read robot delivery history
+on:
+  push:
+    branches: ['diagnose/robot-duplicates-20261009']
+    paths: ['.github/workflows/robot-duplicates-audit.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Read safe delivery status
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.92.0 d1 list --json > "$RUNNER_TEMP/d1.json"
+          python3 - "$RUNNER_TEMP/d1.json" "$RUNNER_TEMP/config.json" <<'PY'
+          import json,sys
+          db=next(x for x in json.load(open(sys.argv[1])) if x["name"]=="liangzai-news-prod")
+          json.dump({"name":"robot-audit","compatibility_date":"2026-09-30","d1_databases":[{"binding":"DB","database_name":db["name"],"database_id":db["uuid"]}]},open(sys.argv[2],"w"))
+          PY
+          npx --yes wrangler@4.92.0 d1 execute liangzai-news-prod --remote --config "$RUNNER_TEMP/config.json" --json --command "SELECT d.edition_date,d.status,d.next_part,d.error,datetime(d.created_at/1000,'unixepoch') AS started_at,d.sent_at FROM robot_subscription_deliveries d JOIN robot_subscribers s ON s.id=d.subscriber_id WHERE s.created_at='2026-10-09 08:59:34' ORDER BY d.edition_date DESC LIMIT 5;" > "$RUNNER_TEMP/status.json"
+          python3 - "$RUNNER_TEMP/status.json" <<'PY'
+          import json,sys
+          rows=[row for report in json.load(open(sys.argv[1])) for row in report.get("results",[])]
+          print("ROBOT_HISTORY "+json.dumps(rows))
+          PY
