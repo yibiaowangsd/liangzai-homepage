@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
   email_verified_at TEXT,
   confirmation_expires_at INTEGER,
   confirmation_sent_at TEXT,
+  confirmation_generation INTEGER NOT NULL DEFAULT 0,
   review_note TEXT NOT NULL DEFAULT '',
   reviewed_at TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now')),

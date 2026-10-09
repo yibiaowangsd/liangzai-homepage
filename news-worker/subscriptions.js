@@ -114,7 +114,7 @@ async function confirmation(env, subscriber) {
   const payload = { from: env.NEWSLETTER_FROM, to: [subscriber.email], subject: '量仔日报订阅已通过审核，请确认邮箱',
     text: `你的量仔日报订阅申请已通过审核。订阅板块：${labels}。\n确认后才会开始收到日报，链接七天内有效：\n${href}\n如果这不是你的申请，请忽略此邮件；不会向你发送日报。`,
     html: `<h1>订阅申请已通过审核</h1><p>订阅板块：${escapeHtml(labels)}</p><p>确认邮箱后才会开始收到日报，链接七天内有效。</p><p><a href="${escapeHtml(href)}">确认邮箱并启用订阅</a></p><p>如果这不是你的申请，请忽略此邮件；不会向你发送日报。</p>` };
-  await sendMail(env, payload, `newsletter-confirm/${subscriber.id}/${subscriber.token_version}/${subscriber.confirmation_expires_at}`);
+  await sendMail(env, payload, `newsletter-confirm/${subscriber.id}/${subscriber.token_version}/${subscriber.confirmation_expires_at}/${subscriber.confirmation_generation}`);
   await env.DB.prepare("UPDATE newsletter_subscribers SET confirmation_sent_at = datetime('now') WHERE id = ? AND token_version = ?").bind(subscriber.id, subscriber.token_version).run();
 }
 async function apply(request, env) {
@@ -135,7 +135,7 @@ async function apply(request, env) {
     VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(email) DO UPDATE SET categories = excluded.categories,
     applicant_name = excluded.applicant_name, reason = excluded.reason, consent_version = excluded.consent_version,
     token_version = excluded.token_version, status = 'pending', email_verified_at = NULL,
-    confirmation_expires_at = NULL, confirmation_sent_at = NULL, review_note = '', reviewed_at = NULL, updated_at = datetime('now')
+    confirmation_expires_at = NULL, confirmation_sent_at = NULL, confirmation_generation = 0, review_note = '', reviewed_at = NULL, updated_at = datetime('now')
     WHERE newsletter_subscribers.status IN ('rejected', 'unsubscribed')`).bind(crypto.randomUUID(), email, JSON.stringify(categories), applicantName, reason, CONSENT_VERSION, crypto.randomUUID()).run();
   // Do not disclose whether an address already exists, or let unauthenticated duplicates replace approved preferences.
   return { ok: true, message: '申请已提交，审核通过后将向邮箱发送确认链接。已订阅用户可通过日报中的管理入口修改板块。' };
@@ -269,7 +269,9 @@ export async function handleSubscriptions(request, env, json) {
       if (action === 'approve' && subscriber.status !== 'pending') throw new RequestError('仅待审核申请可以通过。', 409);
       if (action === 'resend' && (subscriber.status !== 'approved' || subscriber.email_verified_at)) throw new RequestError('只有已通过但尚未确认邮箱的申请可以重发确认邮件。', 409);
       const expires = subscriber.confirmation_expires_at > Date.now() ? subscriber.confirmation_expires_at : Date.now() + 7 * 86400000;
-      await env.DB.prepare("UPDATE newsletter_subscribers SET status = 'approved', confirmation_expires_at = ?, review_note = '', reviewed_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND status = ?").bind(expires, id, subscriber.status).run();
+      // A failed/uncertain attempt keeps its key; an explicit resend after success starts a new attempt.
+      const generation = action === 'resend' && subscriber.confirmation_sent_at ? 1 : 0;
+      await env.DB.prepare("UPDATE newsletter_subscribers SET status = 'approved', confirmation_expires_at = ?, confirmation_generation = confirmation_generation + ?, confirmation_sent_at = NULL, review_note = '', reviewed_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND status = ?").bind(expires, generation, id, subscriber.status).run();
       const updated = await env.DB.prepare('SELECT * FROM newsletter_subscribers WHERE id = ?').bind(id).first();
       if (updated.status !== 'approved') throw new RequestError('申请状态已变化，请刷新列表。', 409);
       if (!updated.email_verified_at) await confirmation(env, updated);

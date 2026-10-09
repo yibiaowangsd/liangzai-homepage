@@ -178,3 +178,17 @@ test('scheduled handler registers the daily task with waitUntil', async t => {
   worker.scheduled({}, f.env, { waitUntil(promise) { task = promise; } });
   assert.ok(task instanceof Promise); await task; assert.equal(f.mails.length, 0);
 });
+
+test('failed approval cannot activate mail; confirmation retries keep a key and explicit successful resends get a new key', async t => {
+  const f = fixture(t); const row = await f.apply(); f.setFail(true);
+  assert.equal((await f.api(`/admin/subscriptions/${row.id}/approve`, {}, true)).status, 502);
+  const failed = f.mails.at(-1);
+  const waiting = f.db.prepare('SELECT * FROM newsletter_subscribers').get();
+  assert.equal(waiting.status, 'approved'); assert.equal(waiting.email_verified_at, null); assert.equal(waiting.confirmation_sent_at, null);
+  assert.equal((await sendDailyDigest(f.env, date)).sent, 0);
+  f.setFail(false);
+  assert.equal((await f.api(`/admin/subscriptions/${row.id}/resend`, {}, true)).status, 200);
+  assert.equal(f.mails.at(-1).key, failed.key); assert.deepEqual(f.mails.at(-1).message, failed.message);
+  assert.equal((await f.api(`/admin/subscriptions/${row.id}/resend`, {}, true)).status, 200);
+  assert.notEqual(f.mails.at(-1).key, failed.key);
+});
