@@ -25,12 +25,8 @@ export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTIO
     const stories = items.filter(item => item.category === category).slice(0, 5);
     const lines = [`量仔每日前沿 · ${date}`, `${part + 1}/${categories.length} · ${label}`];
     for (const [index, item] of stories.entries()) {
-      lines.push(`${index + 1}. ${cleanText(item.title, 180)}`);
-      if (item.summary) lines.push(cleanText(item.summary, 220));
-      lines.push(`来源：${cleanText(item.source_name || '原始来源', 100)}`);
       const original = sourceUrl(item.source_url);
-      lines.push(original ? `阅读原文：${original}` : '原始来源暂未提供链接。');
-      lines.push('');
+      lines.push(`${index + 1}. ${cleanText(item.title, 60)}${original ? ` ${original}` : ''}`);
     }
     return { type: 'text', textMsg: { content: lines.join('\n').trim(), isMentioned: part === 0 && mentions.mode === 'members',
       ...(part === 0 && mentions.mode === 'members' ? { mentionType: 2, mentionedMobileList: mentions.mobiles } : {}) } };

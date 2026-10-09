@@ -64,8 +64,8 @@ test('approved robot sends selected sections with administrator mentions only on
   assert.equal(first.isMentioned, true); assert.equal(first.mentionType, 2); assert.deepEqual(first.mentionedMobileList, ['13800000000','13900000000']);
   assert.equal(second.isMentioned, false); assert.equal(second.mentionedMobileList, undefined);
   assert.match(first.content, /1\/2 · 后量子密码/); assert.match(second.content, /2\/2 · AI 前沿/);
-  assert.equal([...first.content.matchAll(/阅读原文：https:\/\/example.com/g)].length, 5);
-  assert.doesNotMatch(first.content + second.content, /protocol story|wangyibiao.com\/news/);
+  assert.equal(first.content.split('\n').filter(line => /^\d\. pqc story \d https:\/\/example.com\/pqc\/\d$/.test(line)).length, 5);
+  assert.doesNotMatch(first.content + second.content, /中文摘要|一手来源|来源：|阅读原文：|protocol story|wangyibiao.com\/news/);
   assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 2);
 });
 
@@ -177,10 +177,23 @@ test('rate limits use opaque keys; admin channel honors separate review credenti
   assert.equal((await f.api('/admin/robot-subscriptions', undefined, false, { Authorization: 'Bearer review-only' })).status, 200);
 });
 
+test('compact digest keeps each short title beside its complete original link', () => {
+  const [message] = buildRobotDigest(date, [
+    { category: 'ai', title: '简短标题', summary: '不发送这段摘要', source_name: '不发送这个来源', source_url: 'https://example.com/original?a=1&b=2' },
+    { category: 'ai', title: '量🚀'.repeat(40), source_url: 'https://example.com/long-title' },
+  ], ['ai']);
+  assert.deepEqual(message.textMsg.content.split('\n'), [
+    `量仔每日前沿 · ${date}`, '1/1 · AI 前沿',
+    '1. 简短标题 https://example.com/original?a=1&b=2',
+    `2. ${'量🚀'.repeat(29)}量… https://example.com/long-title`,
+  ]);
+});
+
 test('news text cannot inject mentions or unsafe original links', () => {
   const messages = buildRobotDigest(date, [{ category: 'ai', title: '@all\nnew section', summary: 'Hello\u0000 world', source_url: 'javascript:alert(1)' }], ['ai']);
   assert.equal(messages.length, 1); assert.equal(messages[0].textMsg.isMentioned, false);
   assert.match(messages[0].textMsg.content, /＠all new section/); assert.doesNotMatch(messages[0].textMsg.content, /javascript:|\u0000/);
+  assert.equal(messages[0].textMsg.content.split('\n').at(-1), '1. ＠all new section');
 });
 
 test('same-group legacy delivery history prevents an approved application replaying today', async t => {

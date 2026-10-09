@@ -43,7 +43,9 @@ test('workerd can send an approved digest again and rejects redirects without fo
     const result = await send(); assert.equal(result.ok, true); assert.equal(result.sent, 1); assert.equal(result.more, false);
     assert.equal(result.provider.http_status, 200);
   }
-  assert.equal(requests.length, 2); assert.match(requests[0].payload.textMsg.content, /阅读原文：https:\/\/example.com\/story/);
+  assert.equal(requests.length, 2);
+  assert.match(requests[0].payload.textMsg.content, /^1\. story 4 https:\/\/example.com\/story\/4$/m);
+  assert.doesNotMatch(requests[0].payload.textMsg.content, /summary|来源：|阅读原文：/);
   assert.equal((await db.prepare('SELECT count(*) AS count FROM robot_subscription_deliveries').first()).count, 0);
   assert.equal((await send(true)).ok, true, 'Separate operational credentials use the production manual sender');
   const duplicateId = crypto.randomUUID();
