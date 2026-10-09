@@ -335,6 +335,7 @@ try {
   robotApplication.delivery_status = 'uncertain'; robotApplication.delivery_error = 'legacy_delivery'; robotApplication.next_part = 0;
   robotApplication.delivery_message = '今日旧版自动推送结果未确认。后台可立刻发送完整日报。';
   await page.getByRole('button', { name: '刷新列表', exact: true }).click();
+  await page.locator('.review-console[aria-busy="false"]').waitFor();
   assert.equal(await page.getByRole('button', { name: '立刻发送', exact: true }).isEnabled(), true);
   assert.equal(await page.getByRole('button', { name: '核对后重试', exact: true }).count(), 0);
   const beforeRepeat = robotReviews.length;
