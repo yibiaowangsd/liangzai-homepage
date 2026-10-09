@@ -105,11 +105,17 @@ try {
               const nav = header.querySelector('.desktop-nav');
               const homeTitle = document.querySelector('#home-title');
               const identity = document.querySelector('[data-identity-card]');
+              const footer = document.querySelector('.studio-footer');
+              const center = el => { const r = el.getBoundingClientRect(); return r.left + r.width / 2; };
               return {
                 width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth,
                 brand: rect(header.querySelector('.brand')), actions: rect(header.querySelector('.chrome-actions')),
                 nav: getComputedStyle(nav).display === 'none' ? null : rect(nav),
                 retiredLinks: document.querySelectorAll('a[href="/observatory"]').length,
+                footerCenters: footer ? [
+                  ...[...footer.querySelectorAll('.footer-groups > div')].flatMap(group => [...group.children].map(child => center(child) - center(group))),
+                  ...[...footer.querySelector('.studio-footer-bottom').children].map(child => center(child) - center(footer)),
+                ] : [],
                 identity: identity ? { ...rect(identity), canonicalWidth: identity.offsetWidth, canonicalHeight: identity.offsetHeight } : null,
                 editionNote: document.querySelector('.news-edition-note') ? rect(document.querySelector('.news-edition-note')) : null,
                 content: [...document.querySelectorAll(selector)].map(el => {
@@ -131,6 +137,7 @@ try {
               assert.ok(layout.nav.right + 2 <= layout.actions.left, 'navigation overlaps controls');
             }
             assert.equal(layout.retiredLinks, 0, 'retired destination appears in navigation');
+            assert.ok(layout.footerCenters.every(offset => Math.abs(offset) < 1), `footer text is off-center: ${layout.footerCenters.join(', ')}`);
             if (path.startsWith('/news/')) {
               assert.ok(layout.content[0].width <= 928, 'article line length grows without a reading limit');
               assert.ok(layout.content[0].width >= Math.min(240, layout.width - 40), 'article reading column is too narrow');
@@ -186,16 +193,26 @@ try {
           }
         }
         await page.setViewportSize({ width: 320, height: 568 });
-        await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
-        const menu = page.locator('dialog[open]');
-        await menu.waitFor();
-        assert.equal(await menu.locator('a[href="/observatory"]').count(), 0);
+        await page.getByRole('button', { name: '打开显示设置', exact: true }).click();
+        const settings = page.locator('.site-settings-panel');
+        await settings.waitFor();
+        assert.equal(await settings.locator('a, nav').count(), 0, 'settings must not offer navigation');
+        assert.equal(await page.locator('dialog[open]').count(), 0, 'settings should not open a modal');
+        assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', 'settings should not lock scrolling');
+        const settingsBounds = await settings.boundingBox();
+        assert.ok(settingsBounds.x >= 0 && settingsBounds.x + settingsBounds.width <= 321, 'settings leave the narrow viewport');
         await page.keyboard.press('Escape');
-        await menu.waitFor({ state: 'hidden' });
+        await settings.waitFor({ state: 'hidden' });
+        assert.equal(await page.getByRole('button', { name: '打开显示设置', exact: true }).evaluate(button => button === document.activeElement), true, 'Escape restores settings focus');
+        await page.keyboard.press('ArrowDown');
+        await settings.waitFor();
+        assert.equal(await settings.getByLabel('页面主题', { exact: true }).evaluate(select => select === document.activeElement), true, 'ArrowDown focuses the first setting');
+        await page.locator('.brand').click();
+        await settings.waitFor({ state: 'hidden' });
       }
       // Native selectors and the React selector use the same two palettes.
       await page.goto(base, { waitUntil: 'networkidle' });
-      await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
+      await page.getByRole('button', { name: '打开显示设置', exact: true }).click();
       for (const theme of ['paper', 'midnight']) {
         await page.getByLabel('页面主题', { exact: true }).selectOption(theme);
         await page.waitForFunction(theme => document.documentElement.dataset.theme === theme, theme);
@@ -203,13 +220,13 @@ try {
       // The redesign must preserve the entrance, navigation and real page controls.
       await page.getByLabel('页面主题', { exact: true }).selectOption('paper');
       await page.keyboard.press('Escape');
-      // Every directory entry must reach its own page and release native modality.
+      // Navigation stays available through independent search and releases modality.
       for (const href of ['/models', '/storybook', '/archive', '/pqc-arsenal', '/pqc-practice', '/news', '/about', '/']) {
-        await page.getByRole('button', { name: '打开设置与目录', exact: true }).click();
+        await page.locator('.jump-trigger').click();
         await page.locator(`dialog[open] a[href="${href}"]`).click();
         await page.waitForFunction(href => location.pathname.replace(/\/index\.html$/, '').replace(/\/$/, '') === href.replace(/\/$/, ''), href);
         await page.locator('#main-content').waitFor();
-        assert.equal(await page.locator('dialog[open]').count(), 0, `${name} ${href}: directory stays open after navigation`);
+        assert.equal(await page.locator('dialog[open]').count(), 0, `${name} ${href}: search stays open after navigation`);
         assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', `${name} ${href}: scroll lock survives navigation`);
       }
       await page.getByRole('button', { name: '播放序幕', exact: true }).click();
@@ -243,6 +260,7 @@ try {
         // A deterministic image actor exercises transitions even without a GPU.
         await animatedContext.route('**/*.glb', route => route.abort());
         const animatedPage = await animatedContext.newPage();
+        await animatedPage.setViewportSize({ width: 1440, height: 900 });
         for (const entry of ['settings', 'search', 'laboratory']) {
           await animatedPage.goto(base + (entry === 'laboratory' ? '/pqc-practice/index.html' : '/news'), { waitUntil: 'networkidle' });
           await animatedPage.waitForFunction(() => document.querySelector('.experience')?.dataset.motion === 'active' || !document.querySelector('.experience'));
@@ -250,24 +268,25 @@ try {
             await animatedPage.getByRole('button', { name: '搜索全站，快捷键 Ctrl 或 Command 加 K', exact: true }).click();
             await animatedPage.locator('.jump-results a[href="/about"]').click();
           } else {
-            await animatedPage.getByRole('button', { name: '打开设置与目录', exact: true }).click();
-            await animatedPage.locator('dialog[open] a[href="/about"]').click();
+            await animatedPage.getByRole('button', { name: '打开显示设置', exact: true }).click();
+            await animatedPage.locator('.desktop-nav a[href="/about"]').click();
           }
+          await animatedPage.locator('.site-settings-panel').waitFor({ state: 'hidden', timeout: 1500 });
           await animatedPage.waitForFunction(() => !document.querySelector('dialog[open]'), undefined, { timeout: 1500 });
           await animatedPage.waitForURL('**/about', { timeout: 10000 });
           await animatedPage.locator('.about-push').waitFor({ state: 'hidden', timeout: 10000 });
           await animatedPage.locator('#main-content h1').waitFor();
           assert.notEqual(await animatedPage.evaluate(() => document.body.style.overflow), 'hidden', `${name} ${entry}: transition restores directory scroll lock`);
           assert.equal(await animatedPage.evaluate(() => !!document.querySelector('.experience')?.inert), false, `${name} ${entry}: destination stays inert`);
-          await animatedPage.getByRole('button', { name: '打开设置与目录', exact: true }).click();
-          await animatedPage.locator('dialog[open]').waitFor();
+          await animatedPage.getByRole('button', { name: '打开显示设置', exact: true }).click();
+          await animatedPage.locator('.site-settings-panel').waitFor();
           await animatedPage.keyboard.press('Escape');
-          await animatedPage.locator('dialog[open]').waitFor({ state: 'hidden' });
+          await animatedPage.locator('.site-settings-panel').waitFor({ state: 'hidden' });
         }
       } finally {
         await animatedContext.close();
       }
-      console.log(`${name}: responsive routes, fixed card, directory, themes, intro, chapter anchors, catalog, story and model controls checked`);
+      console.log(`${name}: responsive routes, centered footer, settings dropdown, search, themes, intro, chapter anchors, catalog, story and model controls checked`);
     } finally {
       await browser.close();
     }

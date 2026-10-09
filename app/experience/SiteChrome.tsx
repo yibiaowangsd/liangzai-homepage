@@ -1,8 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLayoutEffect, useRef, useState, type ComponentProps } from "react";
-import { flushSync } from "react-dom";
+import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useExperience } from "./Motion";
 import { destinations } from "./destinations";
 import JumpNavigation from "./JumpNavigation";
@@ -18,42 +17,59 @@ function NavigationLink({
     <Link href={href} {...props} />
   );
 }
-const previews: Record<string, string> = {
-  "/": "/assets/characters-v2/arsenal-liangzai-cutout.webp",
-  "/models": "/assets/models/observatory/duo-front.webp",
-  "/storybook": "/assets/book-v2/09-final-battle.webp",
-  "/archive": "/assets/characters-v2/archive-origin.webp",
-  "/pqc-arsenal": "/assets/pqc/ml-kem-studio-v2.webp",
-  "/pqc-practice": "/assets/pqc/ml-dsa-studio-v2.webp",
-  "/news": "/news-covers/security.svg",
-  "/about": "/assets/characters-v2/archive-after.webp",
-};
-export function SiteHeader() {
-  const path = usePathname(),
-    [open, setOpen] = useState(false),
-    [preview, setPreview] = useState(destinations[0]);
-  const dialog = useRef<HTMLDialogElement>(null),
-    close = useRef<HTMLButtonElement>(null);
+function SiteSettings() {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const focusFirst = useRef(false);
   const { paused, toggle } = useExperience();
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!open) return;
-    const el = dialog.current;
-    if (!el) return;
-    const previous = document.activeElement as HTMLElement | null,
-      overflow = document.body.style.overflow;
-    el.showModal();
-    document.body.style.overflow = "hidden";
-    close.current?.focus();
-    // Capture-phase transitions must release the top layer and scroll lock first.
-    const dismissForNavigation = () => flushSync(() => setOpen(false));
-    document.addEventListener("liangzai:close-directory", dismissForNavigation);
+    if (focusFirst.current) {
+      root.current?.querySelector("select")?.focus();
+      focusFirst.current = false;
+    }
+    const dismiss = () => setOpen(false);
+    const outside = (event: Event) => {
+      if (event.target instanceof Node && !root.current?.contains(event.target)) dismiss();
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      dismiss();
+      trigger.current?.focus();
+    };
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("focusin", outside);
+    document.addEventListener("keydown", escape);
+    document.addEventListener("liangzai:close-settings", dismiss);
+    document.addEventListener("liangzai:close-directory", dismiss);
     return () => {
-      document.removeEventListener("liangzai:close-directory", dismissForNavigation);
-      if (el.open) el.close();
-      document.body.style.overflow = overflow;
-      if (previous?.isConnected) previous.focus({ preventScroll: true });
+      document.removeEventListener("pointerdown", outside);
+      document.removeEventListener("focusin", outside);
+      document.removeEventListener("keydown", escape);
+      document.removeEventListener("liangzai:close-settings", dismiss);
+      document.removeEventListener("liangzai:close-directory", dismiss);
     };
   }, [open]);
+  return <div className="site-settings" ref={root}>
+    <button ref={trigger} className="menu-toggle" type="button" aria-label="打开显示设置" aria-expanded={open} aria-controls="site-settings-panel" onClick={() => setOpen(value => !value)} onKeyDown={event => {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        if (open) root.current?.querySelector("select")?.focus();
+        else { focusFirst.current = true; setOpen(true); }
+      }
+    }}><span>设置</span><i aria-hidden="true">⌄</i></button>
+    {open && <section className="site-settings-panel" id="site-settings-panel" aria-label="显示设置">
+      <h2>显示设置</h2>
+      <div className="settings-row"><span>页面主题</span><ThemePicker /></div>
+      <div className="settings-row"><span>页面动效</span><button className="settings-motion" type="button" onClick={toggle} aria-pressed={paused}>{paused ? "开启动效" : "暂停动效"}</button></div>
+      <p>动效同时遵循系统的减少动态效果设置。</p>
+    </section>}
+  </div>;
+}
+export function SiteHeader() {
+  const path = usePathname();
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -89,106 +105,10 @@ export function SiteHeader() {
             ))}
         </nav>
         <div className="chrome-actions">
-          <JumpNavigation blocked={open} onOpen={() => setOpen(false)} />
-          <button
-            className="menu-toggle"
-            type="button"
-            aria-haspopup="dialog"
-            aria-expanded={open}
-            aria-controls="site-atlas"
-            onClick={() => setOpen(true)}
-            aria-label="打开设置与目录"
-          >
-            <span>设置</span>
-            <i aria-hidden="true">＋</i>
-          </button>
+          <JumpNavigation onOpen={() => document.dispatchEvent(new Event("liangzai:close-settings"))} />
+          <SiteSettings key={path} />
         </div>
       </header>
-      {open && (
-        <dialog
-          ref={dialog}
-          className="site-atlas"
-          id="site-atlas"
-          aria-label="设置与目录"
-          onKeyDown={(event) => {
-            if (event.key !== "Tab") return;
-            const items = Array.from(
-              event.currentTarget.querySelectorAll<HTMLElement>(
-                "button, a[href], select",
-              ),
-            );
-            const first = items[0],
-              last = items.at(-1);
-            if (event.shiftKey && document.activeElement === first) {
-              event.preventDefault();
-              last?.focus();
-            } else if (!event.shiftKey && document.activeElement === last) {
-              event.preventDefault();
-              first?.focus();
-            }
-          }}
-          onCancel={(event) => {
-            event.preventDefault();
-            setOpen(false);
-          }}
-        >
-          <div className="atlas-top">
-            <span>量仔 / 密码工程与实验</span>
-            <button
-              ref={close}
-              type="button"
-              onClick={() => setOpen(false)}
-              aria-label="关闭全站目录"
-            >
-              关闭 <span aria-hidden="true">×</span>
-            </button>
-          </div>
-          <div className="site-preferences" aria-label="显示设置">
-            <ThemePicker />
-            <button className="settings-motion" type="button" onClick={toggle} aria-pressed={paused}>
-              {paused ? "开启动效" : "暂停动效"}
-            </button>
-          </div>
-          <div className="atlas-body">
-            <div className="atlas-preview">
-              <h2 id="atlas-title">
-                去你想去
-                <br />
-                的地方
-              </h2>
-              <div className="atlas-preview-image">
-                <img
-                  src={previews[preview.href]}
-                  alt=""
-                  width="700"
-                  height="600"
-                />
-              </div>
-              <p>{preview.description}</p>
-            </div>
-            <nav className="atlas-links" aria-label="全站导航">
-              {destinations.map((item, i) => (
-                <NavigationLink
-                  key={item.href}
-                  href={item.href}
-                  onPointerEnter={() => setPreview(item)}
-                  onFocus={() => setPreview(item)}
-                  onClick={() => setOpen(false)}
-                  aria-current={path === item.href ? "page" : undefined}
-                >
-                  <small>0{i + 1}</small>
-                  <span>{item.name}</span>
-
-                </NavigationLink>
-              ))}
-            </nav>
-          </div>
-          <div className="atlas-bottom">
-            <span>保持认真。保持好奇。</span>
-            <span>Esc 关闭 / Ctrl + K 搜索</span>
-          </div>
-        </dialog>
-      )}
     </>
   );
 }

@@ -1,26 +1,98 @@
-// Same all-screen directory as the React shell; laboratory navigation stays a document navigation.
+// Settings stay in a small dropdown; full-site navigation belongs to search.
 const trigger = document.querySelector(".menu-toggle");
 const source = document.querySelector(".site-nav");
 if (trigger && source) {
+  const settings = document.createElement("div");
+  settings.className = "site-settings";
+  trigger.before(settings);
+  settings.append(trigger);
+  const panel = document.createElement("section");
+  panel.id = "practice-settings-panel";
+  panel.className = "site-settings-panel";
+  panel.setAttribute("aria-label", "显示设置");
+  panel.hidden = true;
+  const title = document.createElement("h2");
+  title.textContent = "显示设置";
+  const themeRow = document.createElement("div");
+  themeRow.className = "settings-row";
+  const themeLabel = document.createElement("span");
+  themeLabel.textContent = "页面主题";
+  themeRow.append(themeLabel, document.querySelector("#practice-preferences").content.cloneNode(true));
+  themeRow.querySelector("select").value = document.documentElement.dataset.themePreference || "paper";
+  const motionRow = document.createElement("div");
+  motionRow.className = "settings-row";
+  const motionLabel = document.createElement("span");
+  motionLabel.textContent = "页面动效";
+  const motion = document.createElement("button");
+  motion.type = "button";
+  motion.className = "settings-motion";
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  function savedPause() {
+    try { return localStorage.getItem("liangzai-motion") === "paused"; } catch { return false; }
+  }
+  function syncMotion() {
+    const paused = savedPause() || reducedMotion.matches;
+    motion.textContent = paused ? "开启动效" : "暂停动效";
+    motion.setAttribute("aria-pressed", String(paused));
+  }
+  motion.addEventListener("click", () => {
+    try { localStorage.setItem("liangzai-motion", savedPause() ? "active" : "paused"); } catch { /* Storage can be unavailable. */ }
+    window.dispatchEvent(new Event("liangzai:motion-change"));
+    syncMotion();
+  });
+  window.addEventListener("liangzai:motion-change", syncMotion);
+  window.addEventListener("storage", syncMotion);
+  reducedMotion.addEventListener("change", syncMotion);
+  syncMotion();
+  motionRow.append(motionLabel, motion);
+  const note = document.createElement("p");
+  note.textContent = "动效同时遵循系统的减少动态效果设置。";
+  panel.append(title, themeRow, motionRow, note);
+  settings.append(panel);
+  function setSettingsOpen(open) {
+    panel.hidden = !open;
+    trigger.setAttribute("aria-expanded", String(open));
+  }
+  trigger.addEventListener("click", () => setSettingsOpen(panel.hidden));
+  trigger.addEventListener("keydown", event => {
+    if (event.key !== "ArrowDown") return;
+    event.preventDefault();
+    setSettingsOpen(true);
+    panel.querySelector("select").focus();
+  });
+  document.addEventListener("pointerdown", event => {
+    if (!settings.contains(event.target)) setSettingsOpen(false);
+  });
+  document.addEventListener("focusin", event => {
+    if (!settings.contains(event.target)) setSettingsOpen(false);
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !panel.hidden) {
+      event.preventDefault();
+      setSettingsOpen(false);
+      trigger.focus();
+    }
+  });
+  document.addEventListener("liangzai:close-settings", () => setSettingsOpen(false));
+  document.addEventListener("liangzai:close-directory", () => setSettingsOpen(false));
+
+  const searchTrigger = document.querySelector(".jump-trigger");
   const menu = document.createElement("dialog");
-  menu.id = "practice-mobile-menu";
+  menu.id = "practice-search-dialog";
   menu.className = "practice-mobile-menu";
-  menu.setAttribute("aria-label", "设置与目录");
+  menu.setAttribute("aria-label", "搜索全站");
   const heading = document.createElement("div");
   heading.className = "practice-menu-top";
   const name = document.createElement("span");
-  name.textContent = "量仔 / 密码工程与实验";
+  name.textContent = "搜索全站";
   const close = document.createElement("button");
   close.type = "button";
   close.textContent = "关闭 ×";
-  close.setAttribute("aria-label", "关闭设置与目录");
+  close.setAttribute("aria-label", "关闭搜索");
   heading.append(name, close);
   const nav = source.cloneNode(true);
   nav.className = "";
-  nav.setAttribute("aria-label", "全站导航");
-  const preferences = document.createElement("div");
-  preferences.className = "site-preferences";
-  preferences.append(document.querySelector("#practice-preferences").content.cloneNode(true));
+  nav.setAttribute("aria-label", "搜索结果");
   const search = document.createElement("label");
   search.className = "practice-search";
   search.textContent = "搜索全站";
@@ -32,50 +104,53 @@ if (trigger && source) {
     const query = input.value.trim().toLowerCase();
     nav.querySelectorAll("a").forEach(link => { link.hidden = !link.textContent.toLowerCase().includes(query); });
   });
-  menu.append(heading, preferences, search, nav);
+  menu.append(heading, search, nav);
   document.body.append(menu);
-  let opened = false,
-    previousOverflow = "";
-  function setOpen(open) {
+  let opened = false;
+  let previousOverflow = "";
+  let previousFocus = searchTrigger;
+  function setSearchOpen(open) {
     if (opened === open) return;
     opened = open;
-    trigger.setAttribute("aria-expanded", String(open));
     if (open) {
+      setSettingsOpen(false);
+      previousFocus = document.activeElement;
       previousOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
       if (typeof menu.showModal === "function") menu.showModal();
       else menu.setAttribute("open", "");
-      close.focus();
+      input.focus();
     } else {
       if (typeof menu.close === "function") menu.close();
       else menu.removeAttribute("open");
       document.body.style.overflow = previousOverflow;
-      trigger.focus();
+      if (previousFocus?.isConnected) previousFocus.focus();
     }
   }
-  document.addEventListener("liangzai:close-directory", () => setOpen(false));
-  trigger.addEventListener("click", () => setOpen(!opened));
-  document.querySelector(".jump-trigger")?.addEventListener("click", () => { setOpen(true); input.focus(); });
+  document.addEventListener("liangzai:close-directory", () => setSearchOpen(false));
+  searchTrigger?.addEventListener("click", () => setSearchOpen(true));
   document.addEventListener("keydown", event => {
     if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k" && !document.querySelector("dialog[open]")) {
-      event.preventDefault(); setOpen(true); input.focus();
+      event.preventDefault();
+      setSearchOpen(true);
     }
   });
-  close.addEventListener("click", () => setOpen(false));
-  menu.addEventListener("cancel", (event) => {
+  close.addEventListener("click", () => setSearchOpen(false));
+  menu.addEventListener("cancel", event => {
     event.preventDefault();
-    setOpen(false);
+    setSearchOpen(false);
   });
-  nav.addEventListener("click", (event) => {
-    if (event.target.closest("a")) setOpen(false);
+  menu.addEventListener("close", () => setSearchOpen(false));
+  nav.addEventListener("click", event => {
+    if (event.target.closest("a")) setSearchOpen(false);
   });
-  menu.addEventListener("keydown", (event) => {
+  menu.addEventListener("keydown", event => {
     if (event.key === "Escape") {
       event.preventDefault();
-      setOpen(false);
+      setSearchOpen(false);
     }
     if (event.key !== "Tab") return;
-    const items = [...menu.querySelectorAll("button, select, input, a:not([hidden])")];
+    const items = [...menu.querySelectorAll("button, input, a:not([hidden])")];
     if (event.shiftKey && document.activeElement === items[0]) {
       event.preventDefault();
       items.at(-1).focus();
