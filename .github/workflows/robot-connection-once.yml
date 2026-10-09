@@ -1,0 +1,56 @@
+name: Single robot connection message
+on:
+  push:
+    branches: ['diagnose/robot-connection-20261009']
+    paths: ['.github/workflows/robot-connection-once.yml']
+permissions:
+  contents: read
+concurrency:
+  group: robot-connection-once-20261009
+  cancel-in-progress: false
+jobs:
+  send-one:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      NEWS_ADMIN_TOKEN: ${{ secrets.NEWS_ADMIN_TOKEN }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Resolve approved target without exposing its credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_RUN_ATTEMPT" == "1" ]] || { echo "Single connection test already attempted; do not rerun"; exit 1; }
+          npx --yes wrangler@4.92.0 d1 list --json > "$RUNNER_TEMP/d1.json"
+          python3 - "$RUNNER_TEMP/d1.json" "$RUNNER_TEMP/connection-config.json" <<'PY'
+          import json,sys
+          db=next(x for x in json.load(open(sys.argv[1])) if x["name"]=="liangzai-news-prod")
+          json.dump({"name":"robot-connection-test","compatibility_date":"2026-09-30","d1_databases":[{"binding":"DB","database_name":db["name"],"database_id":db["uuid"]}]},open(sys.argv[2],"w"))
+          PY
+          npx --yes wrangler@4.92.0 d1 execute liangzai-news-prod --remote --config "$RUNNER_TEMP/connection-config.json" --json --command "SELECT id FROM robot_subscribers WHERE status='approved' AND created_at='2026-10-09 08:59:34' LIMIT 2;" > "$RUNNER_TEMP/connection-target.json"
+      - name: Send exactly one connection message from the production Worker
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import {readFileSync} from 'node:fs';
+          const reports=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/connection-target.json','utf8'));
+          const rows=reports.flatMap(report=>report.results||[]);
+          if(rows.length!==1)throw new Error('Expected exactly one approved target; no message sent');
+          const response=await fetch('https://api.wangyibiao.com/api/admin/robot/test',{
+            method:'POST',redirect:'error',signal:AbortSignal.timeout(45000),
+            headers:{'Content-Type':'application/json',Authorization:'Bearer '+process.env.NEWS_ADMIN_TOKEN},
+            body:JSON.stringify({subscriber_id:rows[0].id,test_id:'CONNECT-20261009-1742'})
+          });
+          const result=await response.json();
+          const p=result.provider||{};
+          const provider={http_status:p.http_status,failure_kind:['timeout','network'].includes(p.failure_kind)?p.failure_kind:undefined,
+            ok:typeof p.ok==='boolean'?p.ok:undefined,success:typeof p.success==='boolean'?p.success:undefined,
+            code:/^-?\d{1,9}$/.test(p.code||'')?p.code:undefined,
+            acknowledgement_fields:Array.isArray(p.acknowledgement_fields)?p.acknowledgement_fields.filter(k=>['ok','success','code','message','msg','data'].includes(k)):undefined};
+          console.log('CONNECTION_TEST_RESULT '+JSON.stringify({api_http_status:response.status,ok:result.ok,attempted:result.attempted,test_id:result.test_id,
+            error_code:result.error_code,uncertain:result.uncertain,provider}));
+          if(!response.ok||result.attempted!==1)throw new Error('Connection test request was not accepted; no automatic retry');
+          JS
