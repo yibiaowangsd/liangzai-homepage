@@ -1,0 +1,27 @@
+name: Diagnose robot delivery (read only)
+on:
+  push:
+    branches: ['diagnose/robot-send-20261009']
+    paths: ['.github/workflows/diagnose-robot.yml']
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Read delivery states without credentials or personal data
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes wrangler@4.92.0 d1 list --json > "$RUNNER_TEMP/d1.json"
+          python3 - "$RUNNER_TEMP/d1.json" "$RUNNER_TEMP/diagnose.json" <<'PY'
+          import json,sys
+          db=next(x for x in json.load(open(sys.argv[1])) if x["name"]=="liangzai-news-prod")
+          json.dump({"name":"read-only-robot-diagnostics","compatibility_date":"2026-09-30","d1_databases":[{"binding":"DB","database_name":db["name"],"database_id":db["uuid"]}]},open(sys.argv[2],"w"))
+          PY
+          npx --yes wrangler@4.92.0 d1 execute liangzai-news-prod --remote --config "$RUNNER_TEMP/diagnose.json" --json --command "SELECT s.status AS approval, s.created_at, s.updated_at, json_array_length(s.categories) AS selected_sections, s.version = d.version AS current_config, d.edition_date, d.status AS delivery, d.error, d.next_part, json_array_length(d.payload) AS total_parts, d.attempts, d.next_attempt_at FROM robot_subscribers s LEFT JOIN robot_subscription_deliveries d ON d.subscriber_id=s.id AND d.edition_date='2026-10-09' ORDER BY s.created_at DESC LIMIT 5; SELECT substr(published_at,1,10) AS edition, category, count(*) AS stories FROM news WHERE status='published' AND substr(published_at,1,10)>='2026-10-08' GROUP BY edition,category ORDER BY edition DESC,category; SELECT edition_date,status,error,next_part FROM robot_deliveries WHERE edition_date='2026-10-09';"
