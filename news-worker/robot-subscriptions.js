@@ -1,3 +1,4 @@
+import { sendRobotDigest } from './robot.js';
 import { RequestError, cleanString, readBody, digest, secretMatches, normalizeCategories } from './subscriptions.js';
 import { robotConfigured, normalizeWebhook, webhookDisplay, webhookHash, encryptWebhook, normalizeMentions } from './robot-config.js';
 
@@ -57,12 +58,29 @@ export async function handleRobotSubscriptions(request, env, json) {
         ${where} ORDER BY s.created_at DESC, s.id LIMIT 50 OFFSET ?`).bind(date, ...args, (page - 1) * 50).all();
       return json(request, { data, total: count.total, page, robot_ready: robotConfigured(env) });
     }
-    const match = url.pathname.match(/^\/api\/admin\/robot-subscriptions\/([a-f0-9-]{36})\/(approve|reject|mentions)$/);
+    const match = url.pathname.match(/^\/api\/admin\/robot-subscriptions\/([a-f0-9-]{36})\/(approve|reject|mentions|send)$/);
     if (request.method === 'POST' && match) {
       const [, id, action] = match;
       const body = await readBody(request);
       const row = await env.DB.prepare('SELECT * FROM robot_subscribers WHERE id = ?').bind(id).first();
       if (!row) throw new RequestError('申请不存在。', 404);
+      if (action === 'send') {
+        if (row.status !== 'approved') throw new RequestError('只有审核通过的机器人可以立刻发送。', 409);
+        if (!robotConfigured(env)) throw new RequestError('机器人订阅服务尚未配置。', 503);
+        const result = await sendRobotDigest(env, undefined, { subscriberId: id, maxMessages: 1 });
+        const delivery = await env.DB.prepare('SELECT status, next_part, next_attempt_at, payload FROM robot_subscription_deliveries WHERE subscriber_id = ? AND edition_date = ?').bind(id, result.date || new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date())).first();
+        const total = delivery ? JSON.parse(delivery.payload).length : 0;
+        const more = result.sent > 0 && delivery?.status === 'pending' && delivery.next_attempt_at <= Date.now();
+        const message = !delivery ? result.message || '当日日报尚未完整发布，未发送。'
+          : delivery.status === 'sent' ? result.sent ? `当日日报已发送，共 ${total} 条消息。` : '当日日报已发送，未重复推送。'
+          : more ? `已发送 ${delivery.next_part} / ${total} 条，正在继续…`
+          : delivery.status === 'sending' ? '当日日报正在发送，请稍后刷新查看结果。'
+          : delivery.status === 'uncertain' ? '推送结果尚未确认，已暂停重试，请先核对群内消息。'
+          : delivery.status === 'cancelled' ? '当前发送任务已停止，新配置从下一份日报生效。'
+          : delivery.status === 'failed' ? '推送未完成，请检查机器人配置和发送记录。'
+          : '机器人暂未接受消息，将由定时任务重试。';
+        return json(request, { ok: result.ok, sent: result.sent, more, status: delivery?.status || 'waiting', next_part: delivery?.next_part || 0, total, message });
+      }
       if (action === 'approve' && row.status !== 'pending') throw new RequestError('只有待审核申请可以通过。', 409);
       if (action === 'mentions' && row.status !== 'approved') throw new RequestError('请先通过申请，再调整成员配置。', 409);
       if (action === 'reject' && !['pending','approved'].includes(row.status)) throw new RequestError('此申请已处理。', 409);
