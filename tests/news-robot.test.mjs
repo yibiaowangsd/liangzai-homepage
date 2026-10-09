@@ -314,3 +314,38 @@ test('legacy recovery does not discard messages confirmed by the old sender afte
   assert.equal((await f.api(`${path}/retry`, body, true)).status, 409);
   assert.equal(f.requests.length, 0); assert.equal(f.record().status, 'uncertain');
 });
+
+test('connection test requires an approved target and operational administrator credentials', async t => {
+  const f = fixture(t); await f.apply();
+  const body = { subscriber_id: f.row().id, test_id: 'CONNECT-TEST-1' };
+  assert.equal((await f.api('/admin/robot/test', body)).status, 401);
+  assert.equal((await f.api('/admin/robot/test', body, true)).status, 409);
+  assert.equal(f.requests.length, 0);
+  await f.approve();
+  assert.equal((await f.api('/admin/robot/test', { ...body, test_id: 'invalid\n@all' }, true)).status, 400);
+  const result = await (await f.api('/admin/robot/test', body, true)).json();
+  assert.equal(result.ok, true); assert.equal(result.attempted, 1); assert.equal(result.provider.http_status, 200);
+  assert.equal(f.requests.length, 1); assert.equal(f.requests[0].payload.textMsg.isMentioned, false);
+  assert.match(f.requests[0].payload.textMsg.content, /CONNECT-TEST-1/);
+  assert.equal(f.requests[0].payload.textMsg.mentionedMobileList, undefined);
+  assert.equal(f.record(), undefined, 'Connection test does not enqueue or record a daily edition');
+});
+
+test('connection test bypasses daily history and sends exactly one independent message without automatic retries', async t => {
+  const f = fixture(t); await uncertainLegacy(f);
+  await f.send(); const before = f.record();
+  f.respond(() => { throw new Error('secret echoed test-only-key'); });
+  const result = await (await f.api('/admin/robot/test', { subscriber_id: f.row().id, test_id: 'CONNECT-TEST-2' }, true)).json();
+  assert.equal(result.ok, false); assert.equal(result.attempted, 1); assert.equal(result.uncertain, true);
+  assert.equal(result.provider.failure_kind, 'network'); assert.equal(f.requests.length, 1);
+  assert.deepEqual(f.record(), before); assert.doesNotMatch(JSON.stringify(result), /test-only-key|ciphertext|private/);
+});
+
+test('connection diagnostics reveal only safe acknowledgement fields and never provider messages or credentials', async t => {
+  const f = fixture(t); await f.apply(); await f.approve();
+  f.respond(() => Response.json({ code: 200, message: 'private webhook test-only-key', data: { secret: testUrl } }));
+  const result = await (await f.api('/admin/robot/test', { subscriber_id: f.row().id, test_id: 'CONNECT-TEST-3' }, true)).json();
+  assert.equal(result.ok, false); assert.equal(result.uncertain, true); assert.equal(result.provider.code, '200');
+  assert.deepEqual(result.provider.acknowledgement_fields, ['code', 'message', 'data']);
+  assert.doesNotMatch(JSON.stringify(result), /private|test-only|imtwo\.zdxlz/);
+});

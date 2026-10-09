@@ -1,6 +1,6 @@
 import { handleRobotSubscriptions } from "./robot-subscriptions.js";
-import { handleSubscriptions, sendDailyDigest } from "./subscriptions.js";
-import { robotConfigured, robotStatus, sendRobotDigest } from "./robot.js";
+import { handleSubscriptions, sendDailyDigest, readBody, RequestError } from "./subscriptions.js";
+import { robotConfigured, robotStatus, sendRobotDigest, sendRobotConnectionTest } from "./robot.js";
 
 const ALLOWED_ORIGINS = new Set([
   "https://wangyibiao.com",
@@ -443,10 +443,19 @@ export default {
         });
       }
 
-      if (url.pathname === "/api/admin/robot/status" || url.pathname === "/api/admin/robot/send") {
+      if (url.pathname === "/api/admin/robot/status" || url.pathname === "/api/admin/robot/send" || url.pathname === "/api/admin/robot/test") {
         if (!env.ADMIN_TOKEN) return json(request, { error: "Administrator is not configured" }, 503);
         if (!isAdmin(request, env)) return json(request, { error: "Unauthorized" }, 401);
         if (request.method === "GET" && url.pathname.endsWith("/status")) return json(request, await robotStatus(env));
+        if (request.method === "POST" && url.pathname.endsWith("/test")) {
+          try {
+            const body = await readBody(request);
+            return json(request, await sendRobotConnectionTest(env, body.subscriber_id, body.test_id));
+          } catch (error) {
+            if (error instanceof RequestError) return json(request, { error: error.message }, error.status);
+            throw error;
+          }
+        }
         if (request.method === "POST" && url.pathname.endsWith("/send")) return json(request, { ok: true, message: "机器人日报由定时任务发送，仅处理已审核通过的申请。" }, 202);
         return json(request, { error: "Method not allowed" }, 405);
       }

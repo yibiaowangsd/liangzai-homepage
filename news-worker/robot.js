@@ -38,7 +38,17 @@ export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTIO
 }
 
 class DeliveryError extends Error {
-  constructor(code, uncertain = false) { super(code); this.uncertain = uncertain; }
+  constructor(code, uncertain = false, provider = {}) { super(code); this.uncertain = uncertain; this.provider = provider; }
+}
+
+function acknowledgementInfo(response, result) {
+  // Never return a provider's raw body/message: it may echo the secret URL.
+  return { http_status: response.status,
+    ...(typeof result?.ok === 'boolean' ? { ok: result.ok } : {}),
+    ...(typeof result?.success === 'boolean' ? { success: result.success } : {}),
+    ...(/^-?\d{1,9}$/.test(String(result?.code ?? '')) ? { code: String(result.code) } : {}),
+    acknowledgement_fields: ['ok', 'success', 'code', 'message', 'msg', 'data'].filter(key => result && Object.hasOwn(result, key)),
+  };
 }
 
 async function postMessage(url, payload) {
@@ -48,9 +58,9 @@ async function postMessage(url, payload) {
       method: 'POST', redirect: 'error', signal: AbortSignal.timeout(20000),
       headers: { 'Content-Type': 'application/json; charset=utf-8' }, body: JSON.stringify(payload),
     });
-  } catch { throw new DeliveryError('delivery_unconfirmed', true); }
-  if (response.status === 429) throw new DeliveryError('rate_limited');
-  if (!response.ok) throw new DeliveryError(`http_${response.status}`, response.status >= 500);
+  } catch (error) { throw new DeliveryError('delivery_unconfirmed', true, { failure_kind: ['TimeoutError', 'AbortError'].includes(error?.name) ? 'timeout' : 'network' }); }
+  if (response.status === 429) throw new DeliveryError('rate_limited', false, { http_status: response.status });
+  if (!response.ok) throw new DeliveryError(`http_${response.status}`, response.status >= 500, { http_status: response.status });
   // Require a positive provider acknowledgement. HTTP 200 alone is not success.
   let result;
   try {
@@ -66,11 +76,33 @@ async function postMessage(url, payload) {
     const bytes = new Uint8Array(length); let offset = 0;
     for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; }
     result = JSON.parse(new TextDecoder().decode(bytes));
-  } catch { throw new DeliveryError('invalid_acknowledgement', true); }
-  if (result?.success === false || result?.ok === false) throw new DeliveryError('provider_rejected');
+  } catch { throw new DeliveryError('invalid_acknowledgement', true, { http_status: response.status }); }
+  const provider = acknowledgementInfo(response, result);
+  if (result?.success === false || result?.ok === false) throw new DeliveryError('provider_rejected', false, provider);
   if (!(result?.success === true || result?.ok === true) ||
       (result.code !== undefined && ![0, 200, '0', '200'].includes(result.code))) {
-    throw new DeliveryError('delivery_unconfirmed', true);
+    throw new DeliveryError('delivery_unconfirmed', true, provider);
+  }
+  return provider;
+}
+
+export async function sendRobotConnectionTest(env, subscriberId, testId) {
+  if (!robotConfigured(env)) throw new RequestError('机器人服务尚未配置。', 503);
+  if (!/^[a-f0-9-]{36}$/.test(subscriberId || '') || !/^[A-Z0-9-]{1,64}$/.test(testId || '')) throw new RequestError('测试参数无效。');
+  const subscriber = await env.DB.prepare("SELECT * FROM robot_subscribers WHERE id = ? AND status = 'approved'").bind(subscriberId).first();
+  if (!subscriber) throw new RequestError('机器人不存在或尚未审核通过。', 409);
+  let url;
+  try { url = await decryptWebhook(env, subscriber); } catch { throw new RequestError('机器人凭据无法读取。', 503); }
+  // A connection check is exactly one independent message, with no mentions,
+  // retries or changes to daily delivery history and automatic delivery jobs.
+  const payload = { type: 'text', textMsg: { content: `量仔机器人连接确认\n测试编号：${testId}\n这是一条连接测试消息。请确认收到，确认后再继续配置日报。`, isMentioned: false } };
+  try {
+    const provider = await postMessage(url, payload);
+    return { ok: true, attempted: 1, test_id: testId, provider, message: '已发出一条连接测试消息，机器人服务返回成功，请在群内确认收到。' };
+  } catch (error) {
+    if (!(error instanceof DeliveryError)) throw error;
+    return { ok: false, attempted: 1, test_id: testId, error_code: error.message, uncertain: error.uncertain, provider: error.provider,
+      message: error.uncertain ? '连接测试已尝试发送，但服务未返回明确成功，请核对群内是否收到。' : '机器人服务拒绝连接测试消息。' };
   }
 }
 
