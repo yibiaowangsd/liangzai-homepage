@@ -1,0 +1,71 @@
+name: Diagnose and send one robot connection message
+on:
+  push:
+    branches: ['diagnose/robot-network-20261009']
+    paths: ['.github/workflows/robot-network-once.yml']
+permissions:
+  contents: read
+jobs:
+  diagnose-and-send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      NEWS_ADMIN_TOKEN: ${{ secrets.NEWS_ADMIN_TOKEN }}
+      ROBOT_WEBHOOK_SECRET: ${{ secrets.ROBOT_WEBHOOK_SECRET }}
+      NEWSLETTER_TOKEN_SECRET: ${{ secrets.NEWSLETTER_TOKEN_SECRET }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Resolve approved encrypted destination
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$GITHUB_RUN_ATTEMPT" == "1" ]] || { echo "Connection message already attempted; do not rerun"; exit 1; }
+          npx --yes wrangler@4.92.0 d1 list --json > "$RUNNER_TEMP/d1.json"
+          python3 - "$RUNNER_TEMP/d1.json" "$RUNNER_TEMP/connection-config.json" <<'PY'
+          import json,sys
+          db=next(x for x in json.load(open(sys.argv[1])) if x["name"]=="liangzai-news-prod")
+          json.dump({"name":"robot-connection-test","compatibility_date":"2026-09-30","d1_databases":[{"binding":"DB","database_name":db["name"],"database_id":db["uuid"]}]},open(sys.argv[2],"w"))
+          PY
+          npx --yes wrangler@4.92.0 d1 execute liangzai-news-prod --remote --config "$RUNNER_TEMP/connection-config.json" --json --command "SELECT id,webhook_ciphertext FROM robot_subscribers WHERE status='approved' AND created_at='2026-10-09 08:59:34' LIMIT 2;" > "$RUNNER_TEMP/encrypted-target.json"
+      - name: Inspect network without bypassing TLS and send one test
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'JS'
+          import {readFileSync} from 'node:fs';
+          import {lookup} from 'node:dns/promises';
+          import tls from 'node:tls';
+          import {decryptWebhook} from './news-worker/robot-config.js';
+          const host='imtwo.zdxlz.com';
+          const safeCode=error=>typeof error?.code==='string'&&/^[A-Z0-9_]{1,60}$/.test(error.code)?error.code:'unclassified';
+          try{
+            const addresses=await lookup(host,{all:true});
+            console.log('ROBOT_DNS '+JSON.stringify({resolved:true,families:addresses.map(a=>a.family),private_ipv4:addresses.some(a=>a.family===4&&/^(10\.|127\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(a.address))}));
+          }catch(error){console.log('ROBOT_DNS '+JSON.stringify({resolved:false,error_code:safeCode(error)}));}
+          await new Promise(resolve=>{
+            const socket=tls.connect({host,port:443,servername:host,rejectUnauthorized:true});
+            let done=false;
+            const finish=data=>{if(done)return;done=true;console.log('ROBOT_TLS '+JSON.stringify(data));socket.destroy();resolve();};
+            socket.setTimeout(10000,()=>finish({connected:false,error_code:'TIMEOUT'}));
+            socket.once('secureConnect',()=>finish({connected:true,authorized:socket.authorized,protocol:socket.getProtocol()}));
+            socket.once('error',error=>finish({connected:false,error_code:safeCode(error)}));
+          });
+          const reports=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/encrypted-target.json','utf8'));
+          const rows=reports.flatMap(report=>report.results||[]);
+          if(rows.length!==1)throw new Error('Expected exactly one approved target; no message sent');
+          let url;
+          const secrets=[...new Set([process.env.ROBOT_WEBHOOK_SECRET,process.env.NEWSLETTER_TOKEN_SECRET,process.env.NEWS_ADMIN_TOKEN].filter(Boolean))];
+          for(const secret of secrets){try{url=await decryptWebhook({ROBOT_WEBHOOK_SECRET:secret},rows[0]);break;}catch{}}
+          if(!url){console.log('ROBOT_DIRECT_TEST '+JSON.stringify({attempted:0,error_code:'credential_unavailable'}));process.exit(0);}
+          try{
+            const response=await fetch(url,{method:'POST',redirect:'error',signal:AbortSignal.timeout(20000),headers:{'Content-Type':'application/json; charset=utf-8'},
+              body:JSON.stringify({type:'text',textMsg:{content:'量仔机器人连接确认\n测试编号：CONNECT-20261009-1742\n这是一条连接测试消息。请确认收到，确认后再继续配置日报。',isMentioned:false}})});
+            let body;try{body=await response.json();}catch{}
+            const code=/^-?\d{1,9}$/.test(String(body?.code??''))?String(body.code):undefined;
+            console.log('ROBOT_DIRECT_TEST '+JSON.stringify({attempted:1,http_status:response.status,
+              ok:typeof body?.ok==='boolean'?body.ok:undefined,success:typeof body?.success==='boolean'?body.success:undefined,code,
+              acknowledgement_fields:['ok','success','code','message','msg','data'].filter(k=>body&&Object.hasOwn(body,k))}));
+          }catch(error){console.log('ROBOT_DIRECT_TEST '+JSON.stringify({attempted:1,error_code:safeCode(error.cause||error),error_name:['TimeoutError','AbortError','TypeError'].includes(error.name)?error.name:'Error'}));}
+          JS
