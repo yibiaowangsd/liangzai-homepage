@@ -5,6 +5,9 @@ import { useEffect, useState, type FormEvent } from "react";
 export const subscriptionCategories = {
   pqc: "后量子密码", protocol: "抗量子协议", standards: "标准动态", security: "网络安全", ai: "AI 前沿",
 };
+const categoryDescriptions: Record<string, string> = {
+  pqc: "算法研究与密码迁移", protocol: "TLS、SSH 与协议实践", standards: "规范、草案与行业进展", security: "漏洞、防护与安全研究", ai: "模型、应用与技术进展",
+};
 export const subscriptionApi = "https://api.wangyibiao.com/api";
 export async function subscriptionRequest(path: string, body?: unknown, secret?: string) {
   const response = await fetch(subscriptionApi + path, {
@@ -20,10 +23,10 @@ export async function subscriptionRequest(path: string, body?: unknown, secret?:
 export function CategoryChoices({ selected, onChange, disabled }: {
   selected: string[]; onChange: (values: string[]) => void; disabled?: boolean;
 }) {
-  return <fieldset className="subscription-categories" disabled={disabled}><legend>订阅板块 <span>可多选，至少一项</span></legend>
+  return <fieldset className="subscription-categories" disabled={disabled}><legend>订阅板块 <span>已选 {selected.length} / 5 · 可多选</span></legend>
     <div>{Object.entries(subscriptionCategories).map(([key, label]) => <label key={key}>
       <input type="checkbox" name="categories" value={key} checked={selected.includes(key)} onChange={event => onChange(event.target.checked ? [...selected, key] : selected.filter(value => value !== key))} />
-      <span>{label}</span>
+      <span><strong>{label}</strong><small>{categoryDescriptions[key]}</small></span>
     </label>)}</div>
   </fieldset>;
 }
@@ -35,15 +38,19 @@ export default function SubscriptionForm({ action, token, initialCategory }: { a
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const [email, setEmail] = useState("");
+  const [verified, setVerified] = useState(false);
+  const [attempt, setAttempt] = useState(0);
   const isAction = ["confirm", "manage", "unsubscribe"].includes(action);
+  const needsDetails = action === "confirm" || action === "manage";
   useEffect(() => {
-    if (action !== "manage" || !token) return;
+    if (!["manage", "confirm"].includes(action) || !token) return;
     let active = true;
-    subscriptionRequest(`/subscriptions/settings?token=${encodeURIComponent(token)}`).then(result => {
-      if (active) { setSelected(result.categories); setLoaded(true); }
+    subscriptionRequest(`/subscriptions/${action === "confirm" ? "confirm" : "settings"}?token=${encodeURIComponent(token)}`).then(result => {
+      if (active) { setSelected(result.categories); setEmail(result.email || ""); setVerified(Boolean(result.email_verified)); setLoaded(true); }
     }).catch(cause => { if (active) setError(cause instanceof Error ? cause.message : "无法读取订阅信息。"); });
     return () => { active = false; };
-  }, [action, token]);
+  }, [action, token, attempt]);
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(""); setMessage("");
@@ -57,29 +64,41 @@ export default function SubscriptionForm({ action, token, initialCategory }: { a
         email: form.get("email"), name: form.get("name"), reason: form.get("reason"), website: form.get("website"), categories: selected, consent: form.get("consent") === "on",
       };
       const result = await subscriptionRequest(path, body);
+      if (!isAction) setEmail(String(form.get("email") || "").trim());
       setMessage(result.message); setDone(true);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "网络异常，请稍后再试。"); }
     finally { setBusy(false); }
   }
-  return <section className="subscription-card" aria-label={isAction ? "管理日报订阅" : "日报订阅申请"}>
-    <h2>{action === "confirm" ? "确认邮箱" : action === "unsubscribe" ? "退订日报" : action === "manage" ? "调整订阅板块" : "申请订阅"}</h2>
-    {!isAction && <ol className="subscription-steps"><li>提交申请</li><li>管理员审核</li><li>邮件确认后开始接收</li></ol>}
-    {action === "confirm" && <p>申请通过审核后，仍需你确认邮箱。点击下方按钮启用日报订阅。</p>}
+  return <section className={`subscription-card subscription-form-card ${isAction ? "subscription-action-card" : ""}`} aria-label={isAction ? "管理日报订阅" : "日报订阅申请"} aria-busy={busy}>
+    <div className="subscription-card-heading"><h2>{done && !isAction ? "申请已提交" : action === "confirm" ? done || verified ? "订阅已启用" : "最后一步，确认邮箱" : action === "unsubscribe" ? "退订日报" : action === "manage" ? "调整订阅板块" : "申请订阅"}</h2>
+      {!isAction && <span className="subscription-review-badge">{done ? "等待审核" : "需管理员审核"}</span>}
+    </div>
+    {!isAction && !done && <ol className="subscription-steps" aria-label="订阅流程"><li><span>01</span>提交申请</li><li><span>02</span>管理员审核</li><li><span>03</span>确认邮箱</li></ol>}
+    {action === "confirm" && loaded && <>
+      <div className="subscription-recipient"><span>{done || verified ? "日报收件邮箱" : "即将接收日报的邮箱"}</span><strong>{email}</strong><small>已通过管理员审核 · {done || verified ? "邮箱已确认" : "等待你确认邮箱"}</small></div>
+      <p className="subscription-selection-label">你订阅的板块</p><ul className="subscription-topic-summary">{selected.map(key => <li key={key}>{subscriptionCategories[key as keyof typeof subscriptionCategories]}</li>)}</ul>
+      {!done && !verified && <p className="subscription-footnote">确认后，完整日报发布时会向此邮箱发送所选板块，每日最多一封。如果这不是你的邮箱或申请，请关闭此页面。</p>}
+      {verified && !done && <p role="status" className="subscription-message">此邮箱已确认，无需重复操作。下一份完整日报发布后将发送所选板块。</p>}
+    </>}
+    {needsDetails && token && !loaded && !error && <p role="status" className="subscription-loading">正在读取{action === "confirm" ? "收件邮箱和" : ""}订阅板块…</p>}
+    {isAction && !token && <p role="alert" className="subscription-error">链接不完整，请从邮件中重新打开。</p>}
+    {done && !isAction && <><div className="subscription-recipient"><span>审核通过后，确认邮件将发送至</span><strong>{email}</strong></div><p>请留意此邮箱的收件箱与垃圾邮件。完成审核和邮箱确认后，才会开始接收日报。</p></>}
     {action === "unsubscribe" && <p>确认退订后，将停止接收所有板块的日报。之后可重新申请。</p>}
     {action === "manage" && <p>修改板块将重新提交审核，审核期间暂停发送日报。</p>}
-    {!done && <form onSubmit={submit}>
-      {!isAction && <><label className="subscription-field">邮箱地址<input name="email" type="email" autoComplete="email" maxLength={254} required placeholder="you@example.com" disabled={busy} /></label>
-        <label className="subscription-field">称呼 <span>选填</span><input name="name" autoComplete="name" maxLength={80} disabled={busy} /></label>
-      </>}
+    {!done && !(action === "confirm" && verified) && <form onSubmit={submit}>
+      {!isAction && <div className="subscription-contact-fields"><label className="subscription-field">邮箱地址<input name="email" type="email" autoComplete="email" maxLength={254} required placeholder="you@example.com" disabled={busy} /></label>
+        <label className="subscription-field"><span className="subscription-field-label">称呼 <small>选填</small></span><input name="name" autoComplete="name" maxLength={80} placeholder="怎么称呼你？" disabled={busy} /></label>
+      </div>}
       {(!isAction || action === "manage") && <CategoryChoices selected={selected} onChange={setSelected} disabled={busy || (action === "manage" && !loaded)} />}
-      {!isAction && <><label className="subscription-field">申请理由<textarea name="reason" maxLength={500} required rows={3} placeholder="想关注哪些研究、工作或学习方向？供管理员审核，最多 500 字。" disabled={busy} /></label>
+      {!isAction && <><label className="subscription-field">申请理由<textarea name="reason" maxLength={500} required rows={2} placeholder="简述你的研究、工作或学习方向，供管理员审核（最多 500 字）。" disabled={busy} /></label>
         <div className="subscription-trap" aria-hidden="true"><label>网站<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
-        <label className="subscription-consent"><input name="consent" type="checkbox" required disabled={busy} /><span>我同意为审核与发送日报使用所填信息。审核通过并确认邮箱后才开始接收，每日最多一封，可随时退订。</span></label>
+        <label className="subscription-consent"><input name="consent" type="checkbox" required disabled={busy} /><span>我同意为订阅审核与日报发送使用所填信息。审核通过并确认邮箱后开始接收，可随时退订。</span></label>
       </>}
-      <button className="subscription-primary" type="submit" disabled={busy || (action === "manage" && !loaded) || (isAction && !token)}>{busy ? "正在提交…" : action === "confirm" ? "确认邮箱并启用订阅" : action === "unsubscribe" ? "确认退订" : action === "manage" ? "提交板块调整审核" : "提交订阅申请"}</button>
+      <button className="subscription-primary" type="submit" disabled={busy || (needsDetails && !loaded) || (isAction && !token)}>{busy ? "正在提交…" : action === "confirm" ? "确认邮箱并启用订阅" : action === "unsubscribe" ? "确认退订" : action === "manage" ? "提交板块调整审核" : "提交订阅申请"}</button>
     </form>}
     <p className="subscription-message" role="status">{message}</p>
     {error && <p className="subscription-error" role="alert">{error}</p>}
-    {!isAction && <p className="subscription-footnote">审核期间不发送邮件。请使用本人邮箱；信息仅用于订阅审核与日报服务。已订阅用户通过日报中的「管理订阅板块」修改选择。</p>}
+    {needsDetails && token && !loaded && error && <button type="button" onClick={() => { setError(""); setAttempt(value => value + 1); }}>重新读取订阅信息</button>}
+    {!isAction && !done && <p className="subscription-footnote">审核期间不发送邮件。请使用本人邮箱；已订阅用户可通过日报中的「管理订阅板块」修改选择。</p>}
   </section>;
 }

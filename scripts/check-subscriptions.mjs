@@ -62,8 +62,18 @@ try {
   const page = await context.newPage();
   const requests = [];
   let approved = false;
+  const confirmationEmail = 'reader.with.a.long.address@example.com';
+  let confirmed = false;
   await context.route('https://api.wangyibiao.com/api/subscriptions**', async route => {
     const request = route.request();
+    const url = new URL(request.url());
+    if (url.pathname.endsWith('/confirm')) {
+      if (url.searchParams.get('token') === 'invalid-token') {
+        await route.fulfill({ status: 403, contentType: 'application/json', body: JSON.stringify({ error: '链接无效或已过期，请联系管理员重新发送确认邮件。' }) }); return;
+      }
+      if (request.method() === 'POST') { requests.push({ url: request.url(), body: request.postDataJSON() }); confirmed = true; }
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ email: confirmationEmail, categories: ['ai', 'pqc'], email_verified: confirmed, message: '邮箱已确认，订阅已启用。' }) }); return;
+    }
     if (request.method() === 'POST') requests.push({ url: request.url(), body: request.postDataJSON() });
     await route.fulfill({ status: 202, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': base }, body: JSON.stringify({ ok: true, message: '申请已提交，审核通过后将向邮箱发送确认链接。' }) });
   });
@@ -73,8 +83,17 @@ try {
     if (request.method() === 'POST') { approved = true; await route.fulfill({ headers: { 'Access-Control-Allow-Origin': base }, contentType: 'application/json', body: JSON.stringify({ ok: true, message: '已通过审核，等待邮箱确认。' }) }); return; }
     await route.fulfill({ headers: { 'Access-Control-Allow-Origin': base }, contentType: 'application/json', body: JSON.stringify({ mail_ready: true, total: approved ? 0 : 1, page: 1, data: approved ? [] : [{ id: 'test-application', email: 'reader@example.com', categories: '["ai"]', applicant_name: '读者', reason: '研究学习', status: 'pending', created_at: '2026-10-09 08:00:00' }] }) });
   });
-  for (const width of [390, 1440]) {
+  for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
+    await page.goto(base + '/news?category=ai', { waitUntil: 'networkidle' });
+    const subscriptionEntry = page.getByRole('link', { name: '订阅日报' });
+    assert.equal(await subscriptionEntry.isVisible(), true);
+    assert.equal(await subscriptionEntry.getAttribute('href'), '/news/subscribe?category=ai');
+    const entryBounds = await subscriptionEntry.boundingBox();
+    assert.ok(entryBounds.y + entryBounds.height < 900, 'Subscription entry is in the first viewport');
+    assert.ok(entryBounds.height >= 44, 'Subscription entry has a comfortable tap target');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `News subscription entry fits ${width}`);
+    await page.screenshot({ path: resolve(output, `news-entry-${width}.png`), fullPage: false });
     const response = await page.goto(base + '/news/subscribe?category=ai', { waitUntil: 'networkidle' });
     assert.equal(response.status(), 200);
     await page.getByRole('button', { name: '提交订阅申请' }).waitFor();
@@ -83,6 +102,17 @@ try {
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `No horizontal overflow at ${width}`);
     await page.screenshot({ path: resolve(output, `subscribe-${width}.png`), fullPage: true });
   }
+  await page.getByRole('button', { name: '打开设置与目录' }).click();
+  await page.getByLabel('页面主题').selectOption('midnight');
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('html').getAttribute('data-theme'), 'midnight');
+  const colors = await page.locator('.subscription-primary').evaluate(element => ({ foreground: getComputedStyle(element).color, background: getComputedStyle(element).backgroundColor }));
+  assert.equal(colors.foreground, 'rgb(16, 24, 32)', 'Night theme keeps dark text on the light accent button');
+  assert.equal(colors.background, 'rgb(159, 180, 255)');
+  await page.screenshot({ path: resolve(output, 'subscribe-midnight.png'), fullPage: true });
+  await page.getByRole('button', { name: '打开设置与目录' }).click();
+  await page.getByLabel('页面主题').selectOption('paper');
+  await page.keyboard.press('Escape');
   await page.getByLabel('邮箱地址').fill('reader@example.com');
   await page.getByLabel('申请理由').fill('研究学习');
   await page.locator('input[name=categories][value=pqc]').check();
@@ -92,11 +122,32 @@ try {
   assert.deepEqual(requests[0].body.categories, ['ai', 'pqc']);
   assert.equal(requests[0].body.consent, true);
   assert.equal(await page.getByRole('button', { name: '提交订阅申请' }).count(), 0);
-  await page.goto(base + '/news/subscribe?action=confirm&token=test-token', { waitUntil: 'networkidle' });
-  assert.equal(requests.length, 1, 'GET confirmation link cannot activate a subscription');
+  assert.equal(await page.locator('.subscription-recipient strong').innerText(), 'reader@example.com', 'Application receipt displays the entered email');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto(base + '/news/subscribe?action=confirm&token=test-token', { waitUntil: 'networkidle' });
+    assert.equal(requests.length, 1, 'GET confirmation link cannot activate a subscription');
+    assert.equal(await page.locator('.subscription-recipient strong').innerText(), confirmationEmail);
+    assert.match(await page.locator('.subscription-topic-summary').innerText(), /AI 前沿/);
+    assert.match(await page.locator('.subscription-topic-summary').innerText(), /后量子密码/);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `Confirmation email fits ${width}`);
+    await page.screenshot({ path: resolve(output, `confirm-${width}.png`), fullPage: true });
+  }
   await page.getByRole('button', { name: '确认邮箱并启用订阅' }).click();
-  await page.getByRole('status').filter({ hasText: '申请已提交' }).waitFor();
+  await page.getByRole('status').filter({ hasText: '邮箱已确认' }).waitFor();
   assert.match(requests[1].url, /subscriptions\/confirm$/);
+  assert.equal(await page.locator('.subscription-recipient strong').innerText(), confirmationEmail, 'Confirmed receipt retains the recipient email');
+  await page.reload({ waitUntil: 'networkidle' });
+  assert.equal(await page.getByRole('button', { name: '确认邮箱并启用订阅' }).count(), 0, 'Already verified email needs no repeat confirmation');
+  await page.goto(base + '/news/subscribe?action=confirm&token=invalid-token', { waitUntil: 'networkidle' });
+  await page.getByRole('alert').filter({ hasText: '链接无效或已过期' }).waitFor();
+  assert.equal(await page.locator('.subscription-recipient').count(), 0, 'Invalid link exposes no email');
+  assert.equal(await page.getByRole('button', { name: '确认邮箱并启用订阅' }).isEnabled(), false);
+  await page.goto(base + '/news/subscribe?action=confirm', { waitUntil: 'networkidle' });
+  await page.getByRole('alert').filter({ hasText: '链接不完整' }).waitFor();
+  assert.equal(await page.getByRole('button', { name: '确认邮箱并启用订阅' }).isEnabled(), false);
+  await page.goto(base + '/', { waitUntil: 'networkidle' });
+  assert.equal(await page.locator('.portal-subscribe-button').getAttribute('href'), '/news/subscribe');
   await page.goto(base + '/news/subscriptions/review', { waitUntil: 'networkidle' });
   await page.getByLabel('管理员审核口令').fill('test-review');
   await page.getByRole('button', { name: '进入审核' }).click();
@@ -109,7 +160,7 @@ try {
   assert.equal(approved, true);
   await page.getByRole('button', { name: '退出', exact: true }).click();
   assert.equal(await page.getByLabel('管理员审核口令').inputValue(), '');
-  console.log('Subscription browser checks passed: desktop/mobile form, section selection, approval console and explicit confirmation.');
+  console.log('Subscription browser checks passed: visible news/home entries, desktop/mobile form, signed recipient display, invalid links, approval console and explicit confirmation.');
 } finally {
   if (browser) await browser.close();
   await new Promise(resolve => server.close(resolve));

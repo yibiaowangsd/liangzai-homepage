@@ -218,11 +218,13 @@ export async function handleSubscriptions(request, env, json) {
       }
       if (request.method === 'GET') return new Response('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="referrer" content="no-referrer"><title>退订量仔日报</title><h1>退订量仔日报</h1><p>点击按钮后停止接收日报。</p><form method="post"><button type="submit">确认退订</button></form></html>', { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer' } });
     }
-    if (request.method === 'POST' && url.pathname === '/api/subscriptions/confirm') {
-      const body = await readBody(request);
-      const subscriber = await resolveToken(env, body.token, 'confirm');
+    if (url.pathname === '/api/subscriptions/confirm' && ['GET', 'POST'].includes(request.method)) {
+      const body = request.method === 'POST' ? await readBody(request) : {};
+      const subscriber = await resolveToken(env, request.method === 'POST' ? body.token : url.searchParams.get('token'), 'confirm');
       if (subscriber.status !== 'approved') throw new RequestError('申请尚未通过审核或已停止订阅。', 409);
-      const result = await env.DB.prepare("UPDATE newsletter_subscribers SET email_verified_at = COALESCE(email_verified_at, datetime('now')), updated_at = datetime('now') WHERE id = ? AND status = 'approved'").bind(subscriber.id).run();
+      // Only a valid confirmation capability may reveal its recipient; GET never activates mail.
+      if (request.method === 'GET') return json(request, { email: subscriber.email, categories: JSON.parse(subscriber.categories), email_verified: Boolean(subscriber.email_verified_at) });
+      const result = await env.DB.prepare("UPDATE newsletter_subscribers SET email_verified_at = COALESCE(email_verified_at, datetime('now')), updated_at = datetime('now') WHERE id = ? AND token_version = ? AND status = 'approved'").bind(subscriber.id, subscriber.token_version).run();
       if (!result.meta.changes) throw new RequestError('申请状态已变化，请重新打开确认链接。', 409);
       return json(request, { ok: true, message: '邮箱已确认，订阅已启用。完整日报发布后将发送所选板块。' });
     }
