@@ -298,9 +298,11 @@
 html .site-settings-panel .theme-picker select { width: 132px; }
 .settings-motion { min-height: 44px; padding: 10px 16px; border: 1px solid var(--theme-control-border); border-radius: 8px; background: var(--theme-bg); color: var(--theme-ink); font: inherit; font-size: 13px; cursor: pointer; }
 .settings-motion:focus-visible,.site-settings-panel :focus-visible { outline: 2px solid var(--theme-accent); outline-offset: 3px; }
-html .site-chrome .site-settings .menu-toggle i { display: block; font-size: 18px; transition: transform .15s ease; }
-.site-settings .menu-toggle[aria-expanded=true] i { transform: rotate(180deg); }
-@media (prefers-reduced-motion: reduce) { html .site-chrome .site-settings .menu-toggle i { transition: none; } }
+html .site-chrome .site-settings .menu-toggle { gap: 8px; line-height: 1; }
+html .site-chrome .site-settings .menu-toggle > span { display: block; line-height: 1.4; }
+.site-settings .settings-chevron { display: block; width: 14px; height: 14px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: transform .15s ease; }
+.site-settings .menu-toggle[aria-expanded=true] .settings-chevron { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .site-settings .settings-chevron { transition: none; } }
 .practice-search { display: grid; gap: 8px; margin-top: 24px; color: var(--theme-ink); }
 .practice-search input { min-height: 44px; width: 100%; font: inherit; padding: 12px; border: 1px solid var(--theme-control-border); color: var(--theme-ink); background: var(--theme-bg); }
 @media (max-width: 700px) {

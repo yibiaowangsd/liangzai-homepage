@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ReviewConsole from "./ReviewConsole";
 import "../../subscribe/subscriptions.css";
+import "./review.css";
 
 export const metadata: Metadata = { title: "日报订阅审核 · 量仔", robots: { index: false, follow: false }, referrer: "no-referrer" };
 export default function SubscriptionReviewPage() {

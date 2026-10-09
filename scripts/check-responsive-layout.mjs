@@ -105,18 +105,20 @@ try {
               const nav = header.querySelector('.desktop-nav');
               const homeTitle = document.querySelector('#home-title');
               const identity = document.querySelector('[data-identity-card]');
+              const settingsButton = header.querySelector('.menu-toggle');
               const footer = document.querySelector('.studio-footer');
               const center = el => { const r = el.getBoundingClientRect(); return r.left + r.width / 2; };
               return {
                 width: document.documentElement.clientWidth, scroll: document.documentElement.scrollWidth,
                 brand: rect(header.querySelector('.brand')), actions: rect(header.querySelector('.chrome-actions')),
+                settingsText: rect(settingsButton.querySelector('span')), settingsIcon: rect(settingsButton.querySelector('.settings-chevron')),
                 nav: getComputedStyle(nav).display === 'none' ? null : rect(nav),
                 retiredLinks: document.querySelectorAll('a[href="/observatory"]').length,
                 footerCenters: footer ? [
                   ...[...footer.querySelectorAll('.footer-groups > div')].flatMap(group => [...group.children].map(child => center(child) - center(group))),
                   ...[...footer.querySelector('.studio-footer-bottom').children].map(child => center(child) - center(footer)),
                 ] : [],
-                identity: identity ? { ...rect(identity), canonicalWidth: identity.offsetWidth, canonicalHeight: identity.offsetHeight } : null,
+                identity: identity ? { ...rect(identity), canonicalWidth: identity.offsetWidth, canonicalHeight: identity.offsetHeight, content: [...identity.querySelectorAll('h2,p,dt,dd,a')].map(rect) } : null,
                 editionNote: document.querySelector('.news-edition-note') ? rect(document.querySelector('.news-edition-note')) : null,
                 content: [...document.querySelectorAll(selector)].map(el => {
                   const r = el.getBoundingClientRect();
@@ -132,6 +134,7 @@ try {
             assert.ok(layout.scroll <= layout.width + 1, `horizontal overflow: ${layout.scroll}/${layout.width}`);
             assert.ok(layout.brand.right + 2 <= layout.actions.left || layout.brand.bottom <= layout.actions.top + 1, 'header controls overlap brand');
             assert.ok(layout.actions.right <= layout.width + 1, 'header controls leave viewport');
+            assert.ok(Math.abs((layout.settingsText.top + layout.settingsText.bottom) / 2 - (layout.settingsIcon.top + layout.settingsIcon.bottom) / 2) < 1, 'settings label and chevron are not vertically aligned');
             if (layout.nav) {
               assert.ok(layout.brand.right + 2 <= layout.nav.left, 'navigation overlaps brand');
               assert.ok(layout.nav.right + 2 <= layout.actions.left, 'navigation overlaps controls');
@@ -160,9 +163,10 @@ try {
             }
             if (layout.identity) {
               assert.equal(layout.identity.canonicalWidth, 460, 'identity card changes its canonical width');
-              assert.equal(layout.identity.canonicalHeight, 356, 'identity card changes its canonical height');
+              assert.equal(layout.identity.canonicalHeight, 292, 'identity card changes its canonical height');
               if (viewport.width >= 600) assert.ok(Math.abs(layout.identity.width - 460) < 1, 'desktop identity card grows or shrinks');
               assert.ok(layout.identity.left >= -1 && layout.identity.right <= layout.width + 1, 'identity card leaves the screen');
+              assert.ok(layout.identity.content.every(text => text.left >= layout.identity.left && text.right <= layout.identity.right && text.top >= layout.identity.top && text.bottom <= layout.identity.bottom), 'identity card clips its text or links');
             }
             if (viewport.width === 320 || viewport.width === 1440) {
               const slug = path === '/' ? 'home' : path.replaceAll('/', '-').replace(/^-/, '');

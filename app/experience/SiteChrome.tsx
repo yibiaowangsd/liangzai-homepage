@@ -59,7 +59,7 @@ function SiteSettings() {
         if (open) root.current?.querySelector("select")?.focus();
         else { focusFirst.current = true; setOpen(true); }
       }
-    }}><span>设置</span><i aria-hidden="true">⌄</i></button>
+    }}><span>设置</span><svg className="settings-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg></button>
     {open && <section className="site-settings-panel" id="site-settings-panel" aria-label="显示设置">
       <h2>显示设置</h2>
       <div className="settings-row"><span>页面主题</span><ThemePicker /></div>
