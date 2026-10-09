@@ -319,3 +319,22 @@ test('connection diagnostics reveal only safe acknowledgement fields and never p
   assert.deepEqual(result.provider.acknowledgement_fields, ['code', 'message', 'data']);
   assert.doesNotMatch(JSON.stringify(result), /private|test-only|imtwo\.zdxlz/);
 });
+
+test('operational administrator can send one approved group without gaining review or @ configuration access', async t => {
+  const f = fixture(t); await f.apply(); const body = { subscriber_id: f.row().id, part: 0 };
+  assert.equal((await f.api('/admin/robot/send', body)).status, 401);
+  assert.equal((await f.api('/admin/robot/send', body, true)).status, 409);
+  await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  f.env.NEWSLETTER_ADMIN_TOKEN = 'review-only';
+  assert.equal((await f.api('/admin/robot-subscriptions', undefined, true)).status, 401);
+  assert.equal((await f.api('/admin/robot/send', body, false, { Authorization: 'Bearer review-only' })).status, 401);
+  assert.equal((await f.api('/admin/robot/send', body, true, { Origin: 'https://other.example' })).status, 403);
+  assert.equal((await f.api('/admin/robot/send', {}, true)).status, 202); assert.equal(f.requests.length, 0);
+  assert.equal((await f.api('/admin/robot/send', { ...body, subscriber_id: 'bad' }, true)).status, 400);
+  const first = await (await f.api('/admin/robot/send', body, true)).json();
+  assert.equal(first.ok, true); assert.equal(first.more, true);
+  assert.deepEqual(f.requests[0].payload.textMsg.mentionedMobileList, ['13800000000']);
+  const last = await (await f.api('/admin/robot/send', { ...body, part: 1, version: first.version, date: first.date }, true)).json();
+  assert.equal(last.ok, true); assert.equal(last.more, false); assert.equal(f.requests.length, 2);
+  assert.equal(f.record(), undefined);
+});

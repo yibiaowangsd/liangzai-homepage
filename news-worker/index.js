@@ -1,6 +1,6 @@
 import { handleRobotSubscriptions } from "./robot-subscriptions.js";
 import { handleSubscriptions, sendDailyDigest, readBody, RequestError } from "./subscriptions.js";
-import { robotConfigured, robotStatus, sendRobotDigest, sendRobotConnectionTest } from "./robot.js";
+import { robotConfigured, robotStatus, sendRobotDigest, sendRobotConnectionTest, sendManualRobotDigest } from "./robot.js";
 
 const ALLOWED_ORIGINS = new Set([
   "https://wangyibiao.com",
@@ -456,7 +456,19 @@ export default {
             throw error;
           }
         }
-        if (request.method === "POST" && url.pathname.endsWith("/send")) return json(request, { ok: true, message: "机器人日报由定时任务发送，仅处理已审核通过的申请。" }, 202);
+        if (request.method === "POST" && url.pathname.endsWith("/send")) {
+          try {
+            const origin = request.headers.get("Origin");
+            if (origin && !ALLOWED_ORIGINS.has(origin)) throw new RequestError("不允许的请求来源。", 403);
+            const body = await readBody(request);
+            if (body.subscriber_id === undefined) return json(request, { ok: true, message: "机器人日报由定时任务发送；主动发送须指定已批准的机器人。" }, 202);
+            if (!/^[a-f0-9-]{36}$/.test(body.subscriber_id)) throw new RequestError("机器人参数无效。");
+            return json(request, await sendManualRobotDigest(env, body.subscriber_id, { part: body.part, version: body.version, date: body.date }));
+          } catch (error) {
+            if (error instanceof RequestError) return json(request, { error: error.message }, error.status);
+            throw error;
+          }
+        }
         return json(request, { error: "Method not allowed" }, 405);
       }
 
