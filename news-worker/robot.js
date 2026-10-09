@@ -1,4 +1,4 @@
-import { SUBSCRIPTION_CATEGORIES, normalizeCategories, digest } from './subscriptions.js';
+import { SUBSCRIPTION_CATEGORIES, normalizeCategories, digest, RequestError } from './subscriptions.js';
 import { robotConfigured, decryptWebhook } from './robot-config.js';
 export { robotConfigured } from './robot-config.js';
 
@@ -74,6 +74,39 @@ async function postMessage(url, payload) {
   }
 }
 
+async function editionItems(env, date) {
+  const { results: items = [] } = await env.DB.prepare("SELECT slug, title, summary, category, source_name, source_url FROM news WHERE status = 'published' AND substr(published_at, 1, 10) = ? ORDER BY published_at DESC, id DESC").bind(date).all();
+  return Object.keys(SUBSCRIPTION_CATEGORIES).every(key => items.filter(item => item.category === key).length >= 5) ? items : null;
+}
+
+// Only an authenticated administrator's explicit, current confirmation can
+// release an uncertain job. Cron and ordinary send requests never do this.
+export async function retryUnconfirmedRobotDelivery(env, subscriber, recoveryToken, date = today()) {
+  const job = await env.DB.prepare('SELECT * FROM robot_subscription_deliveries WHERE subscriber_id = ? AND edition_date = ?').bind(subscriber.id, date).first();
+  if (!job || job.status !== 'uncertain' || recoveryToken !== (job.lease_token || job.id)) {
+    throw new RequestError('发送状态已变化，请刷新列表后重新核对。', 409);
+  }
+  if (job.version !== subscriber.version) throw new RequestError('成员配置已变化，旧任务不能重试，新配置从下一份日报生效。', 409);
+  let payload = job.payload;
+  if (job.error === 'legacy_delivery') {
+    const fingerprint = await digest(await decryptWebhook(env, subscriber));
+    const legacy = await env.DB.prepare('SELECT status, lease_until, next_part FROM robot_deliveries WHERE edition_date = ? AND destination_hash = ?').bind(date, fingerprint).first();
+    if (legacy?.status === 'sent' || legacy?.next_part > 0) throw new RequestError('旧版已有消息确认送达，不能整份重发，请核对群内记录并等待下一份日报。', 409);
+    if (legacy?.status === 'sending' && legacy.lease_until > Date.now()) throw new RequestError('旧版推送仍在发送中，请稍后再核对。', 409);
+    const items = await editionItems(env, date);
+    if (!items) throw new RequestError('当日日报尚未完整发布，暂不能重试。', 409);
+    // Legacy migration stores no payload. Rebuild the approved application's
+    // selected sections and saved @ configuration; leave legacy history intact.
+    payload = JSON.stringify(buildRobotDigest(date, items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) }));
+  }
+  const result = await env.DB.prepare(`UPDATE robot_subscription_deliveries SET status = 'pending', payload = ?, attempts = 0,
+    lease_until = 0, lease_token = NULL, next_attempt_at = 0, error = NULL WHERE id = ? AND status = 'uncertain'
+    AND coalesce(lease_token, id) = ? AND version = ?
+    AND EXISTS (SELECT 1 FROM robot_subscribers WHERE id = ? AND status = 'approved' AND version = ?)`)
+    .bind(payload, job.id, recoveryToken, subscriber.version, subscriber.id, subscriber.version).run();
+  if (result.meta.changes !== 1) throw new RequestError('发送状态已变化，请刷新列表后重新核对。', 409);
+}
+
 export async function sendRobotDigest(env, date = today(), { pause = pauseBetweenMessages, subscriberId = null, maxMessages = Infinity } = {}) {
   if (!robotConfigured(env)) return { ok: true, enabled: false, sent: 0 };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date) throw new Error('Invalid edition date');
@@ -81,8 +114,8 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
     WHERE s.status = 'approved' AND (? IS NULL OR s.id = ?) AND NOT EXISTS (SELECT 1 FROM robot_subscription_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
     ORDER BY s.created_at, s.id LIMIT 5`).bind(subscriberId, subscriberId, date).all();
   if (subscribers.length) {
-    const { results: items = [] } = await env.DB.prepare("SELECT slug, title, summary, category, source_name, source_url FROM news WHERE status = 'published' AND substr(published_at, 1, 10) = ? ORDER BY published_at DESC, id DESC").bind(date).all();
-    if (!Object.keys(SUBSCRIPTION_CATEGORIES).every(key => items.filter(item => item.category === key).length >= 5)) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
+    const items = await editionItems(env, date);
+    if (!items) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
     for (const subscriber of subscribers) {
       const payload = buildRobotDigest(date, items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) });
       // Respect today's legacy singleton history when the same group applies

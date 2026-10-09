@@ -24,6 +24,8 @@
 
 每个机器人每天唯一任务，原子租约防止并发重复发送，正文与成员配置在创建任务时固定。逐条保存已确认进度，并在每条发送前重新核对批准状态和版本。明确拒绝/限流后十五分钟重试未发送部分，最多五轮；超时、连接中断、无效响应、5xx 和过期发送租约标记 `uncertain`，暂停自动重试，先在群里核对消息。供应商没有幂等接口，无法保证网络故障时恰好一次。
 
+新增机器人会继承同一 webhook 的当日旧版推送记录。如果旧版结果未确认，审核卡片显示具体原因及「核对后重试」。管理员必须先核对群内未收到待确认的消息，勾选说明后点击「确认并重试」。后端按本次状态令牌原子恢复任务，已确认的部分不会重发；旧版空任务则按当前审核的板块和成员配置重建正文。原旧版历史保留。普通「立刻发送」及 Cron 不会自行解除未确认状态，状态变化、撤销审核、成员配置版本变化和仍在发送中的旧任务都不能被重试绕过。
+
 ## API
 
 - `POST /api/robot-subscriptions`：提交申请（webhook、name、categories、reason、consent）。仅接受待审核申请；忽略公众提交的批准/@ 参数。
@@ -31,6 +33,7 @@
 - `POST /api/admin/robot-subscriptions/:id/approve`：通过并配置 `mention_mode`（none/members）、`mention_mobiles`。
 - `POST /api/admin/robot-subscriptions/:id/mentions`：管理员修改已获批机器人的成员配置。
 - `POST /api/admin/robot-subscriptions/:id/send`：管理员立即发送该机器人的当日日报，每次请求最多一条，`more` 表示可以继续；使用与 Cron 相同的去重、批准检查和限流规则。
+- `POST /api/admin/robot-subscriptions/:id/retry`：管理员核对后的重试，必须携带 `confirm_not_received: true` 和最新 `recovery_token`；只恢复当前未确认的任务，每次最多一条，其余通过 `send` 继续。
 - `POST /api/admin/robot-subscriptions/:id/reject`：填写 `note` 拒绝或停止推送。
 
 审核接口使用与邮箱相同的 `NEWSLETTER_ADMIN_TOKEN || ADMIN_TOKEN` Bearer 认证。运维接口 `GET /api/admin/robot/status` 使用发布 `ADMIN_TOKEN`，只返回汇总和当日各状态数量；原 `/api/admin/robot/send` 返回定时任务说明，不在 HTTP 请求里批量群发。
