@@ -417,7 +417,7 @@ async function getFeatured(env, limit) {
 }
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
     const url = new URL(request.url);
 
     if (request.method === "OPTIONS") {
@@ -554,10 +554,6 @@ export default {
           .map((item) => item.slug);
         const removed = date ? await syncEdition(env, date, publishedSlugs) : 0;
         const { items, ...publicResult } = result;
-        if (ctx && date === new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date())) {
-          ctx.waitUntil(sendRobotDigest(env).then(result => console.log('robot_publish', JSON.stringify(result)))
-            .catch(() => console.error('robot_publish_failed')));
-        }
 
         return json(request, {
           ...publicResult,
