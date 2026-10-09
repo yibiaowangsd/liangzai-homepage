@@ -140,15 +140,22 @@ async function apply(request, env) {
   // Do not disclose whether an address already exists, or let unauthenticated duplicates replace approved preferences.
   return { ok: true, message: '申请已提交，审核通过后将向邮箱发送确认链接。已订阅用户可通过日报中的管理入口修改板块。' };
 }
+function originalSource(value) {
+  if (typeof value !== 'string') return null;
+  try {
+    const url = new URL(value);
+    return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
+  } catch { return null; }
+}
 export async function buildDigest(env, subscriber, date, items) {
   const categories = normalizeCategories(JSON.parse(subscriber.categories));
   const manage = `${SITE}/news/subscribe?action=manage&token=${encodeURIComponent(await subscriptionToken(env, subscriber, 'manage'))}`;
   const unsubscribeToken = await subscriptionToken(env, subscriber, 'unsubscribe');
   const unsubscribe = `${SITE}/news/subscribe?action=unsubscribe&token=${encodeURIComponent(unsubscribeToken)}`;
   const oneClick = `${API}/api/subscriptions/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`;
-  const sections = categories.map(category => ({ label: SUBSCRIPTION_CATEGORIES[category], items: items.filter(item => item.category === category).slice(0, 5) }));
-  const text = [`量仔每日前沿 · ${date}`, ...sections.flatMap(section => [section.label, ...section.items.map(item => `${item.title}\n${item.summary || ''}\n阅读全文：${SITE}/news/${encodeURIComponent(item.slug)}${item.source_url ? `\n原文：${item.source_url}` : ''}`)]), `管理订阅：${manage}`, `退订：${unsubscribe}`].join('\n\n');
-  const html = `<html lang="zh-CN"><body style="margin:0;background:#f5f3ed;color:#202321;font:16px/1.8 Arial,sans-serif"><main style="max-width:680px;margin:auto;padding:32px 24px"><h1 style="font-size:28px">量仔每日前沿</h1><p>${date} · 仅包含你已获批订阅的板块</p>${sections.map(section => `<h2 style="margin-top:32px;border-bottom:1px solid #d4d6ce">${escapeHtml(section.label)}</h2>${section.items.map(item => `<article style="margin:24px 0"><h3><a style="color:#263c32" href="${SITE}/news/${encodeURIComponent(item.slug)}">${escapeHtml(item.title)}</a></h3><p>${escapeHtml(item.summary)}</p><p style="font-size:13px">${escapeHtml(item.source_name || '原始来源')} · <a href="${SITE}/news/${encodeURIComponent(item.slug)}">阅读全文与原文来源</a></p></article>`).join('')}`).join('')}<hr><p style="font-size:13px">你收到此邮件是因为订阅申请已通过审核并确认邮箱。<br><a href="${escapeHtml(manage)}">管理订阅板块</a> · <a href="${escapeHtml(unsubscribe)}">退订日报</a></p></main></body></html>`;
+  const sections = categories.map(category => ({ label: SUBSCRIPTION_CATEGORIES[category], items: items.filter(item => item.category === category).slice(0, 5).map(item => ({ ...item, original: originalSource(item.source_url) })) }));
+  const text = [`量仔每日前沿 · ${date}`, ...sections.flatMap(section => [section.label, ...section.items.map(item => `${item.title}\n${item.summary || ''}\n${item.original ? `阅读原文：${item.original}` : '原始来源暂未提供链接。'}`)]), `管理订阅：${manage}`, `退订：${unsubscribe}`].join('\n\n');
+  const html = `<html lang="zh-CN"><body style="margin:0;background:#f5f3ed;color:#202321;font:16px/1.8 Arial,sans-serif"><main style="max-width:680px;margin:auto;padding:32px 24px"><h1 style="font-size:28px">量仔每日前沿</h1><p>${date} · 仅包含你已获批订阅的板块</p>${sections.map(section => `<h2 style="margin-top:32px;border-bottom:1px solid #d4d6ce">${escapeHtml(section.label)}</h2>${section.items.map(item => `<article style="margin:24px 0"><h3>${item.original ? `<a style="color:#263c32" href="${escapeHtml(item.original)}">${escapeHtml(item.title)}</a>` : escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p><p style="font-size:13px">${escapeHtml(item.source_name || '原始来源')} · ${item.original ? `<a href="${escapeHtml(item.original)}">阅读原文</a>` : '原始来源暂未提供链接。'}</p></article>`).join('')}`).join('')}<hr><p style="font-size:13px">你收到此邮件是因为订阅申请已通过审核并确认邮箱。<br><a href="${escapeHtml(manage)}">管理订阅板块</a> · <a href="${escapeHtml(unsubscribe)}">退订日报</a></p></main></body></html>`;
   return { from: env.NEWSLETTER_FROM, to: [subscriber.email], subject: `量仔每日前沿｜${date}｜${sections.map(s => s.label).join(' · ')}`, html, text,
     headers: { 'List-Unsubscribe': `<${oneClick}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } };
 }

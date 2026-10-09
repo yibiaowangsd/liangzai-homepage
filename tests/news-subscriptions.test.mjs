@@ -3,7 +3,7 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import worker from '../news-worker/index.js';
-import { sendDailyDigest, subscriptionToken } from '../news-worker/subscriptions.js';
+import { buildDigest, sendDailyDigest, subscriptionToken } from '../news-worker/subscriptions.js';
 
 const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
 function fixture(t, mail = true) {
@@ -64,9 +64,30 @@ test('approval and mailbox confirmation are both required; selected sections onl
   const digest = f.mails[1].message;
   assert.match(digest.text, /pqc story/); assert.match(digest.text, /ai story/); assert.doesNotMatch(digest.text, /protocol story/);
   assert.doesNotMatch(digest.html, /<script>/); assert.match(digest.html, /&lt;script&gt;/);
+  assert.match(digest.html, /href="https:\/\/example.com\/source"/);
+  assert.match(digest.text, /阅读原文：https:\/\/example.com\/source/);
+  assert.doesNotMatch(digest.html + digest.text, /https:\/\/wangyibiao.com\/news\/\d{4}-/);
   assert.match(digest.headers['List-Unsubscribe'], /api\/subscriptions\/unsubscribe\?token=/);
   assert.equal(digest.headers['List-Unsubscribe-Post'], 'List-Unsubscribe=One-Click');
   assert.equal(f.db.prepare('SELECT count(*) n FROM newsletter_deliveries WHERE status = ?').get('sent').n, 1);
+});
+
+test('digest titles and reading links go straight to original sources; missing or unsafe URLs never fall back to site articles', async t => {
+  const f = fixture(t);
+  const row = await f.apply('reader@example.com', ['pqc']);
+  for (const [index, url] of [[0, 'https://example.com/original?part=1&lang=zh'], [1, null], [2, 'javascript:alert(1)'], [3, '/news/fallback']]) {
+    f.db.prepare('UPDATE news SET source_url = ? WHERE slug = ?').run(url, `${date}-pqc-${index}`);
+  }
+  const items = f.db.prepare('SELECT * FROM news').all();
+  const digest = await buildDigest(f.env, row, date, items);
+  assert.match(digest.html, /href="https:\/\/example.com\/original\?part=1&amp;lang=zh"/);
+  assert.match(digest.text, /阅读原文：https:\/\/example.com\/original\?part=1&lang=zh/);
+  assert.doesNotMatch(digest.html + digest.text, /javascript:|https:\/\/wangyibiao.com\/news\/\d{4}-|\/news\/fallback/);
+  assert.equal([...digest.html.matchAll(/href="https:\/\/example.com\//g)].length, 4, 'Both title and reading link point to each available original');
+  assert.equal([...digest.html.matchAll(/原始来源暂未提供链接。/g)].length, 3);
+  assert.match(digest.html, /管理订阅板块/);
+  assert.match(digest.html, /退订日报/);
+  assert.equal(f.mails.length, 0, 'Rendering a digest does not send mail');
 });
 
 test('public validation, origin restriction and administrator authentication protect applications', async t => {
