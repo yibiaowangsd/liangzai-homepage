@@ -16,7 +16,7 @@ test('workerd can send an approved digest again and rejects redirects without fo
   const requests = []; let redirect = false;
   const mf = new Miniflare({ modules: true, script: bundle.outputFiles[0].text,
     // This date is supported by the repository's locked local workerd version.
-    compatibilityDate: '2026-05-22', d1Databases: { DB: 'robot-runtime-test' }, bindings: { ADMIN_TOKEN: 'test-admin' },
+    compatibilityDate: '2026-05-22', d1Databases: { DB: 'robot-runtime-test' }, bindings: { ADMIN_TOKEN: 'test-admin', NEWSLETTER_ADMIN_TOKEN: 'test-review' },
     outboundService: async request => {
       requests.push({ url: request.url, payload: await request.json() });
       assert.equal(request.url, webhook); assert.equal(request.method, 'POST');
@@ -33,9 +33,9 @@ test('workerd can send an approved digest again and rejects redirects without fo
   const ciphertext = await encryptWebhook({ ADMIN_TOKEN: 'test-admin' }, id, webhook);
   await db.prepare("INSERT INTO robot_subscribers (id, webhook_hash, webhook_ciphertext, webhook_display, categories, reason, consent_version, status, version) VALUES (?, 'runtime-hash', ?, 'example', '[\"ai\"]', 'test', 'robot-daily-v1', 'approved', 'runtime-version')").bind(id, ciphertext).run();
   for (let i = 0; i < 5; i++) await db.prepare("INSERT INTO news VALUES (?, ?, ?, 'summary', 'ai', 'source', ?, ?, 'published')").bind(i, `runtime-${i}`, `story ${i}`, `https://example.com/story/${i}`, `${date}T08:00:00Z`).run();
-  const send = async () => {
-    const response = await mf.dispatchFetch(`https://api.wangyibiao.com/api/admin/robot-subscriptions/${id}/send`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-admin', Origin: 'https://wangyibiao.com' }, body: JSON.stringify({ part: 0 }),
+  const send = async (operational = false) => {
+    const response = await mf.dispatchFetch(operational ? `https://api.wangyibiao.com/api/admin/robot/send` : `https://api.wangyibiao.com/api/admin/robot-subscriptions/${id}/send`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: operational ? 'Bearer test-admin' : 'Bearer test-review', Origin: 'https://wangyibiao.com' }, body: JSON.stringify({ part: 0, ...(operational ? { subscriber_id: id } : {}) }),
     });
     assert.equal(response.status, 200); return response.json();
   };
@@ -45,7 +45,8 @@ test('workerd can send an approved digest again and rejects redirects without fo
   }
   assert.equal(requests.length, 2); assert.match(requests[0].payload.textMsg.content, /阅读原文：https:\/\/example.com\/story/);
   assert.equal((await db.prepare('SELECT count(*) AS count FROM robot_subscription_deliveries').first()).count, 0);
+  assert.equal((await send(true)).ok, true, 'Separate operational credentials use the production manual sender');
   redirect = true;
   const rejected = await send(); assert.equal(rejected.ok, false); assert.equal(rejected.error_code, 'redirect_rejected');
-  assert.equal(requests.length, 3, 'No request is made to the redirect target');
+  assert.equal(requests.length, 4, 'No request is made to the redirect target');
 });

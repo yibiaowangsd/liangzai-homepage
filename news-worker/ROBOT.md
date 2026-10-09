@@ -36,7 +36,7 @@
 - `POST /api/admin/robot-subscriptions/:id/retry`：旧接口返回 410，提示刷新页面使用「立刻发送」。
 - `POST /api/admin/robot-subscriptions/:id/reject`：填写 `note` 拒绝或停止推送。
 
-审核接口使用与邮箱相同的 `NEWSLETTER_ADMIN_TOKEN || ADMIN_TOKEN` Bearer 认证。运维接口 `GET /api/admin/robot/status` 使用发布 `ADMIN_TOKEN`，只返回汇总和当日各状态数量；原 `/api/admin/robot/send` 返回定时任务说明，不在 HTTP 请求里批量群发。
+审核接口使用与邮箱相同的 `NEWSLETTER_ADMIN_TOKEN || ADMIN_TOKEN` Bearer 认证。运维接口 `GET /api/admin/robot/status` 使用发布 `ADMIN_TOKEN`，只返回汇总和当日各状态数量；`POST /api/admin/robot/send` 可指定已获批的 `subscriber_id`，按同样的 `part/version/date` 逐条主动发送，使用与审核页一致的发送逻辑；不携带目标时仅返回定时任务说明，不批量群发。发布口令不能读取审核列表、批准申请或修改 @ 配置，审核口令不能调用发布接口。
 
 日志只记录数量与安全状态码，不能记录 webhook、手机号、正文或供应商原始响应。单元测试与浏览器测试使用示例地址和模拟服务，不向真实群发送测试消息。
 
