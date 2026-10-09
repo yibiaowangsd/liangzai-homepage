@@ -1,4 +1,4 @@
-import { SUBSCRIPTION_CATEGORIES, normalizeCategories } from './subscriptions.js';
+import { SUBSCRIPTION_CATEGORIES, normalizeCategories, digest } from './subscriptions.js';
 import { robotConfigured, decryptWebhook } from './robot-config.js';
 export { robotConfigured } from './robot-config.js';
 
@@ -85,10 +85,17 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
     if (!Object.keys(SUBSCRIPTION_CATEGORIES).every(key => items.filter(item => item.category === key).length >= 5)) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
     for (const subscriber of subscribers) {
       const payload = buildRobotDigest(date, items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) });
-      await env.DB.prepare(`INSERT INTO robot_subscription_deliveries (id, subscriber_id, edition_date, version, payload, created_at)
-        SELECT ?, id, ?, version, ?, ? FROM robot_subscribers WHERE id = ? AND status = 'approved' AND version = ?
+      // Respect today's legacy singleton history when the same group applies
+      // after migration. Approval must not replay an already attempted edition.
+      let fingerprint;
+      try { fingerprint = await digest(await decryptWebhook(env, subscriber)); }
+      catch { /* The claimed job reports an unavailable credential safely. */ }
+      const legacy = fingerprint ? await env.DB.prepare('SELECT status, sent_at FROM robot_deliveries WHERE edition_date = ? AND destination_hash = ?').bind(date, fingerprint).first() : null;
+      const inheritedStatus = !legacy ? 'pending' : legacy.status === 'sent' ? 'sent' : ['sending','uncertain'].includes(legacy.status) ? 'uncertain' : 'cancelled';
+      await env.DB.prepare(`INSERT INTO robot_subscription_deliveries (id, subscriber_id, edition_date, version, payload, created_at, status, error, sent_at)
+        SELECT ?, id, ?, version, ?, ?, ?, ?, ? FROM robot_subscribers WHERE id = ? AND status = 'approved' AND version = ?
         ON CONFLICT(subscriber_id, edition_date) DO NOTHING`)
-        .bind(crypto.randomUUID(), date, JSON.stringify(payload), Date.now(), subscriber.id, subscriber.version).run();
+        .bind(crypto.randomUUID(), date, legacy ? "[]" : JSON.stringify(payload), Date.now(), inheritedStatus, legacy ? "legacy_delivery" : null, legacy?.sent_at || null, subscriber.id, subscriber.version).run();
     }
   }
   // Without provider idempotency, expired in-flight leases may already have sent.

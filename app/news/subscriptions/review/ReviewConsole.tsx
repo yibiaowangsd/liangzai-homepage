@@ -2,7 +2,7 @@
 import { useState, type FormEvent } from "react";
 import { subscriptionCategories, subscriptionRequest } from "../../subscribe/SubscriptionForm";
 
-type Application = { id: string; email?: string; webhook_display?: string; mention_mode?: string; mention_mobiles?: string; delivery_status?: string; next_part?: number; categories: string; applicant_name: string; reason: string; status: string; email_verified_at: string | null; confirmation_sent_at: string | null; review_note: string; created_at: string };
+type Application = { id: string; email?: string; webhook_display?: string; mention_mode?: string; mention_mobiles?: string; delivery_status?: string; delivery_error?: string; next_part?: number; categories: string; applicant_name: string; reason: string; status: string; email_verified_at: string | null; confirmation_sent_at: string | null; review_note: string; created_at: string };
 const statuses: Record<string, string> = { pending: "待审核", approved: "已通过", rejected: "已拒绝", unsubscribed: "已退订", all: "全部" };
 function submittedAt(value: string) {
   const date = new Date(/Z$|[+-]\d\d:\d\d$/.test(value) ? value : value.replace(" ", "T") + "Z");
@@ -87,7 +87,7 @@ export default function ReviewConsole() {
               <div className="review-application-body"><div><h3>订阅板块</h3><ul className="review-topics">{categories.map(key => <li key={key}>{subscriptionCategories[key]}</li>)}</ul></div><div><h3>申请理由</h3><p className="review-reason">{row.reason}</p></div></div>
               {row.review_note && <div className="review-record"><h3>审核备注</h3><p>{row.review_note}</p></div>}
               {row.status === "approved" && channel === "email" && <p className="review-confirmation" data-verified={!!row.email_verified_at}>{row.email_verified_at ? "邮箱已确认，订阅已启用。" : "等待收件人确认邮箱，确认后才会开始发送。"}</p>}
-              {channel === "robot" && <div className="review-record"><h3>成员提醒</h3><p>{row.mention_mode === "members" ? `指定成员：${(JSON.parse(row.mention_mobiles || "[]") as string[]).join("、")}` : "不 @ 成员"}</p>{row.status === "approved" && <p className="review-confirmation" data-verified="true">已启用定时推送 · {row.delivery_status === "sent" ? "今日日报已发送" : row.delivery_status === "uncertain" ? "今日发送结果待核对，已暂停重试" : row.delivery_status === "failed" ? "今日推送失败，请检查机器人配置" : row.delivery_status === "sending" ? "今日日报发送中" : row.delivery_status === "cancelled" ? "配置已调整，下一份日报生效" : "等待完整日报与定时任务"}</p>}</div>}
+              {channel === "robot" && <div className="review-record"><h3>成员提醒</h3><p>{row.mention_mode === "members" ? `指定成员：${(JSON.parse(row.mention_mobiles || "[]") as string[]).join("、")}` : "不 @ 成员"}</p>{row.status === "approved" && <p className="review-confirmation" data-verified="true">已启用定时推送 · {row.delivery_status === "sent" ? "今日日报已发送" : row.delivery_error === "legacy_delivery" ? row.delivery_status === "uncertain" ? "今日旧版推送结果待核对，已暂停重试" : "今日已有旧版推送记录，下一份日报启用" : row.delivery_status === "uncertain" ? "今日发送结果待核对，已暂停重试" : row.delivery_status === "failed" ? "今日推送失败，请检查机器人配置" : row.delivery_status === "sending" ? "今日日报发送中" : row.delivery_status === "cancelled" ? "配置已调整，下一份日报生效" : "等待完整日报与定时任务"}</p>}</div>}
               {["pending", "approved"].includes(row.status) && <div className="review-application-actions">
                 <div className="subscription-actions">
                   {row.status === "pending" && <button disabled={busy || !ready} className="subscription-primary" onClick={() => channel === "robot" ? setConfiguring(configuring === row.id ? null : row.id) : void review(row, "approve")}>{channel === "robot" ? "配置并审核" : "通过申请"}</button>}

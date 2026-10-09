@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import worker from '../news-worker/index.js';
 import { buildRobotDigest, robotStatus, sendRobotDigest } from '../news-worker/robot.js';
+import { digest } from '../news-worker/subscriptions.js';
 import { decryptWebhook, normalizeWebhook } from '../news-worker/robot-config.js';
 
 const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
@@ -173,4 +174,11 @@ test('news text cannot inject mentions or unsafe original links', () => {
   const messages = buildRobotDigest(date, [{ category: 'ai', title: '@all\nnew section', summary: 'Hello\u0000 world', source_url: 'javascript:alert(1)' }], ['ai']);
   assert.equal(messages.length, 1); assert.equal(messages[0].textMsg.isMentioned, false);
   assert.match(messages[0].textMsg.content, /＠all new section/); assert.doesNotMatch(messages[0].textMsg.content, /javascript:|\u0000/);
+});
+
+test('same-group legacy delivery history prevents an approved application replaying today', async t => {
+  const f = fixture(t); await f.apply(); await f.approve();
+  f.db.prepare("INSERT INTO robot_deliveries (edition_date, destination_hash, payload, status, next_part, created_at, sent_at) VALUES (?, ?, '[]', 'sent', 5, ?, datetime('now'))").run(date, await digest(testUrl), Date.now());
+  assert.equal((await f.send()).sent, 0); assert.equal(f.record().status, 'sent'); assert.equal(f.record().error, 'legacy_delivery');
+  assert.equal(f.requests.length, 0);
 });
