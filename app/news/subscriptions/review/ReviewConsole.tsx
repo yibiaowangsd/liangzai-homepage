@@ -55,7 +55,7 @@ export default function ReviewConsole() {
     {!authenticated ? <div className="review-login">
       <div className="review-login-guide">
         <span className="review-section-label">审核流程</span>
-        <h2>每一份订阅，<br />先审核，再送达。</h2>
+        <h2>每一份订阅<br />先审核，再送达</h2>
         <p>查看申请理由和所选板块，决定是否通过。收件人确认邮箱后，才会开始接收日报。</p>
         <ol><li><span>01</span><div><strong>查看申请</strong><p>核对邮箱、关注板块和申请理由。</p></div></li><li><span>02</span><div><strong>作出审核</strong><p>通过申请，或填写理由后拒绝。</p></div></li><li><span>03</span><div><strong>确认后送达</strong><p>由收件人确认邮箱，随后自动发送。</p></div></li></ol>
       </div>
