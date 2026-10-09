@@ -1,26 +1,9 @@
-import { SUBSCRIPTION_CATEGORIES } from './subscriptions.js';
+import { SUBSCRIPTION_CATEGORIES, normalizeCategories } from './subscriptions.js';
+import { robotConfigured, decryptWebhook } from './robot-config.js';
+export { robotConfigured } from './robot-config.js';
 
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
 const pauseBetweenMessages = () => new Promise(resolve => setTimeout(resolve, 3100));
-const encoder = new TextEncoder();
-
-function webhookUrl(env) {
-  try {
-    const url = new URL(env.NEWS_BOT_WEBHOOK_URL);
-    if (url.protocol !== 'https:' || url.hostname !== 'imtwo.zdxlz.com' || url.port ||
-        url.pathname !== '/im-external/v1/webhook/send' || !url.searchParams.get('key') ||
-        url.username || url.password || url.hash) return null;
-    return url.href;
-  } catch { return null; }
-}
-
-export function robotConfigured(env) { return Boolean(webhookUrl(env)); }
-
-async function hash(value) {
-  return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(value))),
-    byte => byte.toString(16).padStart(2, '0')).join('');
-}
-
 function cleanText(value, limit) {
   // Prevent news text from adding fake sections, control characters or mass mentions.
   const text = String(value ?? '').replace(/[\x00-\x1f\x7f]/g, ' ').replace(/@/g, '＠').replace(/\s+/g, ' ').trim();
@@ -35,10 +18,12 @@ function sourceUrl(value) {
   } catch { return null; }
 }
 
-export function buildRobotDigest(date, items) {
-  return Object.entries(SUBSCRIPTION_CATEGORIES).map(([category, label], part) => {
+export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTION_CATEGORIES), mentions = { mode: 'none', mobiles: [] }) {
+  const categories = normalizeCategories(selected);
+  return categories.map((category, part) => {
+    const label = SUBSCRIPTION_CATEGORIES[category];
     const stories = items.filter(item => item.category === category).slice(0, 5);
-    const lines = [`量仔每日前沿 · ${date}`, `${part + 1}/5 · ${label}`];
+    const lines = [`量仔每日前沿 · ${date}`, `${part + 1}/${categories.length} · ${label}`];
     for (const [index, item] of stories.entries()) {
       lines.push(`${index + 1}. ${cleanText(item.title, 180)}`);
       if (item.summary) lines.push(cleanText(item.summary, 220));
@@ -47,7 +32,8 @@ export function buildRobotDigest(date, items) {
       lines.push(original ? `阅读原文：${original}` : '原始来源暂未提供链接。');
       lines.push('');
     }
-    return { type: 'text', textMsg: { content: lines.join('\n').trim(), isMentioned: false } };
+    return { type: 'text', textMsg: { content: lines.join('\n').trim(), isMentioned: part === 0 && mentions.mode === 'members',
+      ...(part === 0 && mentions.mode === 'members' ? { mentionType: 2, mentionedMobileList: mentions.mobiles } : {}) } };
   });
 }
 
@@ -89,59 +75,76 @@ async function postMessage(url, payload) {
 }
 
 export async function sendRobotDigest(env, date = today(), { pause = pauseBetweenMessages } = {}) {
-  const url = webhookUrl(env);
-  if (!url) return { ok: true, enabled: false, sent: 0, message: '机器人尚未配置，未推送日报。' };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date) {
-    throw new Error('Invalid edition date');
-  }
-  const fingerprint = await hash(url);
-  const existing = await env.DB.prepare('SELECT * FROM robot_deliveries WHERE edition_date = ?').bind(date).first();
-  if (!existing) {
+  if (!robotConfigured(env)) return { ok: true, enabled: false, sent: 0 };
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date) throw new Error('Invalid edition date');
+  const { results: subscribers = [] } = await env.DB.prepare(`SELECT s.* FROM robot_subscribers s
+    WHERE s.status = 'approved' AND NOT EXISTS (SELECT 1 FROM robot_subscription_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
+    ORDER BY s.created_at, s.id LIMIT 5`).bind(date).all();
+  if (subscribers.length) {
     const { results: items = [] } = await env.DB.prepare("SELECT slug, title, summary, category, source_name, source_url FROM news WHERE status = 'published' AND substr(published_at, 1, 10) = ? ORDER BY published_at DESC, id DESC").bind(date).all();
-    if (!Object.keys(SUBSCRIPTION_CATEGORIES).every(key => items.filter(item => item.category === key).length >= 5)) {
-      return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
+    if (!Object.keys(SUBSCRIPTION_CATEGORIES).every(key => items.filter(item => item.category === key).length >= 5)) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
+    for (const subscriber of subscribers) {
+      const payload = buildRobotDigest(date, items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) });
+      await env.DB.prepare(`INSERT INTO robot_subscription_deliveries (id, subscriber_id, edition_date, version, payload, created_at)
+        SELECT ?, id, ?, version, ?, ? FROM robot_subscribers WHERE id = ? AND status = 'approved' AND version = ?
+        ON CONFLICT(subscriber_id, edition_date) DO NOTHING`)
+        .bind(crypto.randomUUID(), date, JSON.stringify(payload), Date.now(), subscriber.id, subscriber.version).run();
     }
-    await env.DB.prepare('INSERT INTO robot_deliveries (edition_date, destination_hash, payload, created_at) VALUES (?, ?, ?, ?) ON CONFLICT(edition_date) DO NOTHING')
-      .bind(date, fingerprint, JSON.stringify(buildRobotDigest(date, items)), Date.now()).run();
   }
-  // This webhook has no documented idempotency key. Never retry an expired in-flight
-  // request: the provider may have delivered it before the Worker stopped.
-  await env.DB.prepare("UPDATE robot_deliveries SET status = 'uncertain', error = 'lease_expired' WHERE edition_date = ? AND status = 'sending' AND lease_until < ?").bind(date, Date.now()).run();
-  await env.DB.prepare("UPDATE robot_deliveries SET status = 'failed', error = 'destination_changed' WHERE edition_date = ? AND status = 'pending' AND destination_hash != ?").bind(date, fingerprint).run();
-  const lease = crypto.randomUUID();
-  const job = await env.DB.prepare(`UPDATE robot_deliveries SET status = 'sending', lease_token = ?, lease_until = ?, attempts = attempts + 1
-    WHERE edition_date = ? AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 AND destination_hash = ? RETURNING *`)
-    .bind(lease, Date.now() + 300000, date, Date.now(), fingerprint).first();
-  if (!job) {
-    const record = await env.DB.prepare('SELECT status FROM robot_deliveries WHERE edition_date = ?').bind(date).first();
-    const blocked = ['uncertain', 'failed'].includes(record?.status);
-    return { ok: !blocked, enabled: true, sent: 0, date, status: record?.status,
-      message: blocked ? '推送已暂停，请先检查发送记录与群内消息。' : '日报已发送、正在发送或等待处理，未重复推送。' };
-  }
-  const messages = JSON.parse(job.payload); let sent = 0;
-  try {
-    // Space every request, including the first after a partial retry, below 20/minute.
-    for (let part = job.next_part; part < messages.length; part++) {
-      await pause();
-      await postMessage(url, messages[part]);
-      const result = await env.DB.prepare('UPDATE robot_deliveries SET next_part = ? WHERE edition_date = ? AND lease_token = ? AND status = ?')
-        .bind(part + 1, date, lease, 'sending').run();
-      if (result.meta.changes !== 1) throw new DeliveryError('progress_unconfirmed', true);
-      sent++;
+  // Without provider idempotency, expired in-flight leases may already have sent.
+  await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'uncertain', error = 'lease_expired', lease_until = 0 WHERE status = 'sending' AND lease_until < ?").bind(Date.now()).run();
+  const { results: jobs = [] } = await env.DB.prepare(`SELECT id FROM robot_subscription_deliveries WHERE edition_date = ?
+    AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 ORDER BY created_at, id LIMIT 5`).bind(date, Date.now()).all();
+  let sent = 0, failed = 0, completed = 0;
+  for (const record of jobs) {
+    const lease = crypto.randomUUID();
+    const job = await env.DB.prepare(`UPDATE robot_subscription_deliveries SET status = 'sending', lease_token = ?, lease_until = ?, attempts = attempts + 1
+      WHERE id = ? AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 RETURNING *`)
+      .bind(lease, Date.now() + 300000, record.id, Date.now()).first();
+    if (!job) continue;
+    try {
+      const subscriber = await env.DB.prepare('SELECT * FROM robot_subscribers WHERE id = ? AND status = ? AND version = ?').bind(job.subscriber_id, 'approved', job.version).first();
+      if (!subscriber) {
+        await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'cancelled', lease_until = 0 WHERE id = ? AND lease_token = ?").bind(job.id, lease).run();
+        continue;
+      }
+      let url;
+      try { url = await decryptWebhook(env, subscriber); } catch { throw new DeliveryError('credential_unavailable', true); }
+      const messages = JSON.parse(job.payload);
+      let cancelled = false;
+      for (let part = job.next_part; part < messages.length; part++) {
+        await pause();
+        // Recheck approval and administrator configuration immediately before each
+        // outbound request, so revocation stops unsent sections of an active job.
+        const active = await env.DB.prepare(`SELECT d.id FROM robot_subscription_deliveries d JOIN robot_subscribers s ON s.id = d.subscriber_id
+          WHERE d.id = ? AND d.lease_token = ? AND d.status = 'sending' AND s.status = 'approved' AND s.version = d.version`)
+          .bind(job.id, lease).first();
+        if (!active) { cancelled = true; break; }
+        await postMessage(url, messages[part]);
+        sent++;
+        const progress = await env.DB.prepare("UPDATE robot_subscription_deliveries SET next_part = ? WHERE id = ? AND lease_token = ? AND status = 'sending'").bind(part + 1, job.id, lease).run();
+        if (progress.meta.changes !== 1) throw new DeliveryError('progress_unconfirmed', true);
+      }
+      if (!cancelled) {
+        const result = await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'sent', sent_at = datetime('now'), lease_until = 0, error = NULL WHERE id = ? AND lease_token = ? AND status = 'sending'").bind(job.id, lease).run();
+        completed += result.meta.changes;
+      } else {
+        await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'cancelled', lease_until = 0 WHERE id = ? AND lease_token = ? AND status = 'sending'").bind(job.id, lease).run();
+      }
+    } catch (error) {
+      const uncertain = !(error instanceof DeliveryError) || error.uncertain;
+      const status = uncertain ? 'uncertain' : job.attempts >= 5 ? 'failed' : 'pending';
+      const code = error instanceof DeliveryError ? error.message : 'delivery_unconfirmed';
+      await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = ?, lease_until = 0, next_attempt_at = ?, error = ? WHERE id = ? AND lease_token = ? AND status = 'sending'")
+        .bind(status, Date.now() + 15 * 60000, code, job.id, lease).run();
+      failed++;
     }
-    await env.DB.prepare("UPDATE robot_deliveries SET status = 'sent', sent_at = datetime('now'), lease_until = 0, error = NULL WHERE edition_date = ? AND lease_token = ? AND status = 'sending'").bind(date, lease).run();
-    return { ok: true, enabled: true, sent, date, message: '机器人日报已推送。' };
-  } catch (error) {
-    const uncertain = !(error instanceof DeliveryError) || error.uncertain;
-    const status = uncertain ? 'uncertain' : job.attempts >= 5 ? 'failed' : 'pending';
-    const code = error instanceof DeliveryError ? error.message : 'delivery_unconfirmed';
-    await env.DB.prepare('UPDATE robot_deliveries SET status = ?, lease_until = 0, next_attempt_at = ?, error = ? WHERE edition_date = ? AND lease_token = ? AND status = ?')
-      .bind(status, Date.now() + 15 * 60000, code, date, lease, 'sending').run();
-    return { ok: false, enabled: true, sent, date, status, message: uncertain ? '推送结果尚未确认，已暂停自动重试，避免重复群消息。' : status === 'failed' ? '机器人未接受消息，已达到重试上限。' : '机器人未接受消息，稍后重试。' };
   }
+  return { ok: failed === 0, enabled: true, sent, completed, failed, date };
 }
 
 export async function robotStatus(env, date = today()) {
-  const record = await env.DB.prepare('SELECT edition_date, next_part, status, attempts, error, sent_at FROM robot_deliveries WHERE edition_date = ?').bind(date).first();
-  return { enabled: robotConfigured(env), date, delivery: record || null };
+  const counts = await env.DB.prepare("SELECT count(*) AS total, sum(status = 'approved') AS approved, sum(status = 'pending') AS pending FROM robot_subscribers").first();
+  const { results: deliveries } = await env.DB.prepare('SELECT status, count(*) AS count FROM robot_subscription_deliveries WHERE edition_date = ? GROUP BY status').bind(date).all();
+  return { enabled: robotConfigured(env), review_required: true, date, subscriptions: counts, deliveries };
 }

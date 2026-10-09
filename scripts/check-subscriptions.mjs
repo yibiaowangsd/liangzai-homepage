@@ -104,6 +104,26 @@ try {
     const filtered = applications.filter(row => status === 'all' || row.status === status);
     await route.fulfill({ headers: { 'Access-Control-Allow-Origin': base }, contentType: 'application/json', body: JSON.stringify({ mail_ready: mailReady, total: filtered.length, page: pageNumber, data: filtered.slice((pageNumber - 1) * 50, pageNumber * 50) }) });
   });
+  const robotRequests = [];
+  const robotReviews = [];
+  const robotApplication = { id: '24ff3dea-6ec3-4c8e-a5ea-9b5d4a3e7a81', webhook_display: 'imtwo.zdxlz.com · key …demo', categories: '["pqc","ai"]', applicant_name: '密码研究交流群（示例）', reason: '希望让群成员持续跟进密码标准与 AI 研究。', status: 'pending', created_at: '2026-10-09 08:00:00', mention_mode: 'none', mention_mobiles: '[]' };
+  await context.route('https://api.wangyibiao.com/api/robot-subscriptions', async route => {
+    robotRequests.push(route.request().postDataJSON());
+    await route.fulfill({ status: 202, contentType: 'application/json', body: JSON.stringify({ ok: true, message: '机器人订阅申请已提交。管理员审核通过后启用定时推送。' }) });
+  });
+  await context.route('https://api.wangyibiao.com/api/admin/robot-subscriptions**', async route => {
+    const request = route.request();
+    if (request.headers().authorization !== 'Bearer test-review') { await route.fulfill({ status: 401, contentType: 'application/json', body: '{"error":"审核口令不正确。"}' }); return; }
+    if (request.method() === 'POST') {
+      const body = request.postDataJSON(); const action = new URL(request.url()).pathname.split('/').at(-1); robotReviews.push({ action, body });
+      robotApplication.status = action === 'reject' ? 'rejected' : 'approved';
+      if (action !== 'reject') { robotApplication.mention_mode = body.mention_mode; robotApplication.mention_mobiles = JSON.stringify(body.mention_mobiles); }
+      await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, message: action === 'mentions' ? '@ 成员配置已更新，下一份日报生效。' : action === 'reject' ? '已拒绝申请并停止后续推送。' : '已通过审核，完整日报发布后自动推送。' }) }); return;
+    }
+    const status = new URL(request.url()).searchParams.get('status');
+    const data = status === 'all' || robotApplication.status === status ? [robotApplication] : [];
+    await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ robot_ready: true, data, total: data.length, page: 1 }) });
+  });
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto(base + '/news?category=ai', { waitUntil: 'networkidle' });
@@ -114,6 +134,7 @@ try {
     assert.ok(entryBounds.y + entryBounds.height < 900, 'Subscription entry is in the first viewport');
     assert.ok(entryBounds.height >= 44, 'Subscription entry has a comfortable tap target');
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `News subscription entry fits ${width}`);
+    await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: resolve(output, `news-entry-${width}.png`), fullPage: false });
     const response = await page.goto(base + '/news/subscribe?category=ai', { waitUntil: 'networkidle' });
     assert.equal(response.status(), 200);
@@ -121,6 +142,7 @@ try {
     assert.equal(await page.locator('.subscription-categories input:checked').count(), 1);
     assert.equal(await page.locator('input[name=categories][value=ai]').isChecked(), true);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `No horizontal overflow at ${width}`);
+    await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: resolve(output, `subscribe-${width}.png`), fullPage: true });
   }
   await page.getByRole('button', { name: '打开显示设置' }).click();
@@ -132,6 +154,7 @@ try {
   assert.equal(colors.background, 'rgb(159, 180, 255)');
   assert.equal(await page.locator('.subscription-categories strong').first().evaluate(element => getComputedStyle(element).color), 'rgb(242, 245, 247)', 'Night theme keeps section labels readable');
   assert.equal(await page.locator('.subscription-field-label').evaluate(element => getComputedStyle(element).color), 'rgb(242, 245, 247)', 'Night theme keeps the name label readable');
+  await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
   await page.screenshot({ path: resolve(output, 'subscribe-midnight.png'), fullPage: true });
   await page.getByRole('button', { name: '打开显示设置' }).click();
   await page.getByLabel('页面主题').selectOption('paper');
@@ -154,6 +177,7 @@ try {
     assert.match(await page.locator('.subscription-topic-summary').innerText(), /AI 前沿/);
     assert.match(await page.locator('.subscription-topic-summary').innerText(), /后量子密码/);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `Confirmation email fits ${width}`);
+    await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: resolve(output, `confirm-${width}.png`), fullPage: true });
   }
   await page.getByRole('button', { name: '确认邮箱并启用订阅' }).click();
@@ -175,6 +199,7 @@ try {
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, 'Review login fits the viewport');
+    await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: resolve(output, `review-login-${width}.png`), fullPage: true });
   }
   await page.getByLabel('管理员审核口令').fill('incorrect-test-secret');
@@ -188,11 +213,13 @@ try {
   for (const width of [320, 390, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, 'Review workbench fits the viewport');
+    await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: resolve(output, `review-${width}.png`), fullPage: true });
   }
   await page.getByRole('button', { name: '打开显示设置' }).click();
   await page.getByLabel('页面主题', { exact: true }).selectOption('midnight');
   await page.keyboard.press('Escape');
+  await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
   await page.screenshot({ path: resolve(output, 'review-midnight-1440.png'), fullPage: true });
   assert.equal(await page.locator('.review-application-heading h2').first().evaluate(el => getComputedStyle(el).color), 'rgb(242, 245, 247)', 'Review email is readable in midnight theme');
   await page.getByRole('button', { name: '打开显示设置' }).click();
@@ -242,7 +269,63 @@ try {
   assert.equal(await page.evaluate(() => [...Object.values(localStorage), ...Object.values(sessionStorage)].some(value => String(value).includes('test-review'))), false, 'Review credentials stay out of browser storage');
   await page.getByRole('button', { name: '退出', exact: true }).click();
   assert.equal(await page.getByLabel('管理员审核口令').inputValue(), '');
-  console.log('Subscription browser checks passed: visible news/home entries, desktop/mobile form, signed recipient display, invalid links, approval console and explicit confirmation.');
+  await page.goto(base + '/news/subscribe?category=ai', { waitUntil: 'networkidle' });
+  await page.getByRole('radio', { name: /群机器人/ }).check();
+  assert.equal(await page.getByLabel('邮箱地址').count(), 0, 'Robot channel has no email requirement');
+  assert.equal(await page.getByLabel('成员手机号').count(), 0, 'Applicants cannot configure mentions');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `Robot form fits ${width}`);
+    await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
+    await page.screenshot({ path: resolve(output, `robot-subscribe-${width}.png`), fullPage: true });
+  }
+  await page.getByLabel('机器人 webhook 地址').fill('https://imtwo.zdxlz.com/im-external/v1/webhook/send?key=example-only-demo');
+  await page.getByLabel('群名称 / 申请人称呼').fill('研究交流群');
+  await page.getByLabel('申请理由').fill('研究学习');
+  await page.locator('input[name=consent]').check();
+  await page.getByRole('button', { name: '提交订阅申请' }).click();
+  await page.getByRole('status').filter({ hasText: '机器人订阅申请已提交' }).waitFor();
+  assert.equal(robotRequests[0].webhook.includes('example-only-demo'), true);
+  assert.deepEqual(robotRequests[0].categories, ['ai']);
+  assert.equal(robotRequests[0].email, undefined); assert.equal(robotRequests[0].mention_mode, undefined);
+  assert.equal(await page.locator('.subscription-recipient strong').innerText(), '研究交流群');
+  assert.equal((await page.locator('body').innerText()).includes('example-only-demo'), false, 'Receipt does not expose webhook credential');
+  await page.goto(base + '/news/subscriptions/review', { waitUntil: 'networkidle' });
+  await page.getByLabel('管理员审核口令').fill('test-review');
+  await page.getByRole('button', { name: '进入审核', exact: true }).click();
+  await page.getByRole('button', { name: '群机器人', exact: true }).click();
+  await page.getByRole('heading', { name: 'imtwo.zdxlz.com · key …demo', exact: true }).waitFor();
+  assert.equal(await page.getByRole('button', { name: '发送当日日报', exact: true }).count(), 0, 'Robot group sends stay in scheduled worker');
+  await page.getByRole('button', { name: '配置并审核', exact: true }).click();
+  await page.getByLabel('提醒方式').selectOption('members');
+  await page.getByLabel('成员手机号').fill('13800000000\n13900000000');
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1100 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `Robot review fits ${width}`);
+    await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
+    await page.screenshot({ path: resolve(output, `robot-review-${width}.png`), fullPage: true });
+  }
+  await page.getByRole('button', { name: '打开显示设置' }).click();
+  await page.getByLabel('页面主题', { exact: true }).selectOption('midnight'); await page.keyboard.press('Escape');
+  await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
+  await page.screenshot({ path: resolve(output, 'robot-review-midnight.png'), fullPage: true });
+  await page.getByRole('button', { name: '通过并启用', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '已通过审核' }).waitFor();
+  assert.deepEqual(robotReviews[0].body.mention_mobiles, ['13800000000', '13900000000']);
+  await page.getByRole('button', { name: '已通过', exact: true }).click();
+  await page.getByText('指定成员：13800000000、13900000000', { exact: true }).waitFor();
+  await page.getByRole('button', { name: '配置 @ 成员', exact: true }).click();
+  await page.getByLabel('提醒方式').selectOption('none');
+  await page.getByRole('button', { name: '保存成员配置', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '成员配置已更新' }).waitFor();
+  assert.equal(robotReviews.at(-1).body.mention_mode, 'none');
+  await page.getByRole('button', { name: '撤销批准并停止发送', exact: true }).click();
+  await page.getByLabel('拒绝理由').fill('管理员停止推送');
+  await page.getByRole('button', { name: '确认撤销', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '停止后续推送' }).waitFor();
+  await page.getByRole('button', { name: '退出', exact: true }).click();
+  assert.equal(await page.getByLabel('管理员审核口令').inputValue(), '');
+  console.log('Subscription browser checks passed: visible news/home entries, desktop/mobile form, signed recipient display, invalid links, approval console explicit confirmation, robot channel applications, administrator member configuration and revocation.');
 } finally {
   if (browser) await browser.close();
   await new Promise(resolve => server.close(resolve));

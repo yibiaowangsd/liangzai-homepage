@@ -15,7 +15,7 @@
 .subscription-field > span, .subscription-categories legend > span { color: var(--theme-muted, #526257); font-size: 12px; }
 .subscription-field > .subscription-field-label { color: var(--theme-ink); font-size: inherit; }
 .subscription-field-label small { color: var(--theme-muted); font-size: 12px; margin-left: 6px; }
-.subscription-page input:not([type=checkbox]), .subscription-page textarea, .subscription-page select { width: 100%; min-height: 44px; border: 1px solid var(--theme-border, #cad3c9); border-radius: 8px; background: var(--theme-bg, #fff); color: inherit; padding: 12px; font: inherit; }
+.subscription-page input:not([type=checkbox]):not([type=radio]), .subscription-page textarea, .subscription-page select { width: 100%; min-height: 44px; border: 1px solid var(--theme-border, #cad3c9); border-radius: 8px; background: var(--theme-bg, #fff); color: inherit; padding: 12px; font: inherit; }
 .subscription-page textarea { resize: vertical; }
 .subscription-categories { min-width: 0; border: 0; padding: 0; margin: 20px 0; }
 .subscription-categories legend { font-size: 14px; margin-bottom: 12px; }
@@ -98,3 +98,15 @@
   .subscription-recipient { padding: 16px; }
 }
 @media (max-width: 380px) { .subscription-categories > div { grid-template-columns: minmax(0, 1fr); } }
+
+.subscription-channels { border: 0; padding: 0; margin: 0 0 24px; min-width: 0; }
+.subscription-channels legend { font-size: 14px; margin-bottom: 12px; }
+.subscription-channels > div { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.subscription-channels label { display: flex; align-items: flex-start; gap: 10px; padding: 15px 12px; border: 1px solid var(--theme-border); border-radius: 10px; cursor: pointer; }
+.subscription-page .subscription-channels input { width: 17px; height: 17px; margin: 3px 0 0; accent-color: var(--theme-accent); flex-shrink: 0; }
+.subscription-channels label:has(input:checked) { border-color: var(--theme-accent); background: var(--theme-accent-soft); }
+.subscription-channels strong { display: block; font-size: 14px; font-weight: 600; }
+.subscription-channels small { display: block; font-size: 11px; line-height: 1.7; color: var(--theme-muted); margin-top: 5px; }
+.subscription-robot-fields .subscription-field:first-child { margin-bottom: 8px; }
+.subscription-field-help { font-size: 12px; color: var(--theme-muted); margin: 0; }
+@media (max-width: 380px) { .subscription-channels > div { grid-template-columns: minmax(0, 1fr); } }

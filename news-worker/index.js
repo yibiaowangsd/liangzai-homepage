@@ -1,3 +1,4 @@
+import { handleRobotSubscriptions } from "./robot-subscriptions.js";
 import { handleSubscriptions, sendDailyDigest } from "./subscriptions.js";
 import { robotConfigured, robotStatus, sendRobotDigest } from "./robot.js";
 
@@ -446,9 +447,12 @@ export default {
         if (!env.ADMIN_TOKEN) return json(request, { error: "Administrator is not configured" }, 503);
         if (!isAdmin(request, env)) return json(request, { error: "Unauthorized" }, 401);
         if (request.method === "GET" && url.pathname.endsWith("/status")) return json(request, await robotStatus(env));
-        if (request.method === "POST" && url.pathname.endsWith("/send")) return json(request, await sendRobotDigest(env));
+        if (request.method === "POST" && url.pathname.endsWith("/send")) return json(request, { ok: true, message: "机器人日报由定时任务发送，仅处理已审核通过的申请。" }, 202);
         return json(request, { error: "Method not allowed" }, 405);
       }
+
+      const robotSubscriptionResponse = await handleRobotSubscriptions(request, env, json);
+      if (robotSubscriptionResponse) return robotSubscriptionResponse;
 
       const subscriptionResponse = await handleSubscriptions(request, env, json);
       if (subscriptionResponse) return subscriptionResponse;

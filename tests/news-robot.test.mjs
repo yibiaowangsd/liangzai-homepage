@@ -3,214 +3,174 @@ import test from 'node:test';
 import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
 import worker from '../news-worker/index.js';
-import { buildRobotDigest, robotConfigured, robotStatus, sendRobotDigest } from '../news-worker/robot.js';
+import { buildRobotDigest, robotStatus, sendRobotDigest } from '../news-worker/robot.js';
+import { decryptWebhook, normalizeWebhook } from '../news-worker/robot-config.js';
 
 const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
 const testUrl = 'https://imtwo.zdxlz.com/im-external/v1/webhook/send?key=test-only-key';
-
 function fixture(t) {
   const db = new DatabaseSync(':memory:');
-  db.exec(readFileSync(new URL('../news-worker/migrations/0002_robot_digest.sql', import.meta.url), 'utf8'));
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
   db.exec('CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)');
-  const insert = db.prepare('INSERT INTO news VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
-  let id = 0;
-  for (const day of [date, '2020-01-01']) {
-    for (const category of ['pqc', 'protocol', 'standards', 'security', 'ai']) {
-      for (let i = 0; i < 5; i++) {
-        insert.run(++id, `${day}-${category}-${i}`, `${category} story ${i}`, '中文摘要', category,
-          '一手来源', `https://example.com/${category}/${i}?a=1&b=2`, `${day}T08:00:00Z`, 'published');
-      }
-    }
-  }
+  const insert = db.prepare('INSERT INTO news VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'); let id = 0;
+  for (const category of ['pqc', 'protocol', 'standards', 'security', 'ai']) for (let i = 0; i < 5; i++) insert.run(++id, `${date}-${category}-${i}`, `${category} story ${i}`, '中文摘要', category, '一手来源', `https://example.com/${category}/${i}`, `${date}T08:00:00Z`, 'published');
   const DB = { prepare(sql) {
     const statement = db.prepare(sql); let args = [];
-    return {
-      bind(...values) { args = values; return this; },
-      async first() { return statement.get(...args); },
-      async all() { return { results: statement.all(...args) }; },
-      async run() { return { meta: { changes: Number(statement.run(...args).changes) } }; },
-    };
+    return { bind(...values) { args = values; return this; }, async first() { return statement.get(...args); }, async all() { return { results: statement.all(...args) }; }, async run() { return { meta: { changes: Number(statement.run(...args).changes) } }; } };
+  }, async batch(statements) {
+    db.exec('BEGIN'); try { const result = []; for (const statement of statements) result.push(await statement.run()); db.exec('COMMIT'); return result; }
+    catch (error) { db.exec('ROLLBACK'); throw error; }
   } };
-  const env = { DB, NEWS_BOT_WEBHOOK_URL: testUrl, ADMIN_TOKEN: 'test-admin' };
-  const requests = []; let respond = () => new Response(JSON.stringify({ ok: true, code: 200, message: '成功' }));
+  const env = { DB, ADMIN_TOKEN: 'test-admin', NEWS_BOT_WEBHOOK_URL: testUrl };
+  const requests = []; let respond = () => Response.json({ ok: true, code: 200 });
   t.mock.method(globalThis, 'fetch', async (url, options) => {
-    assert.equal(url, env.NEWS_BOT_WEBHOOK_URL);
-    assert.equal(options.method, 'POST'); assert.equal(options.redirect, 'error');
-    assert.ok(options.signal instanceof AbortSignal);
-    const payload = JSON.parse(options.body);
-    assert.equal(payload.type, 'text'); assert.equal(payload.textMsg.isMentioned, false);
-    assert.ok(payload.textMsg.content);
-    requests.push(payload);
-    return respond(payload, requests.length);
+    assert.equal(new URL(url).hostname, 'imtwo.zdxlz.com'); assert.equal(options.method, 'POST'); assert.equal(options.redirect, 'error'); assert.ok(options.signal instanceof AbortSignal);
+    const payload = JSON.parse(options.body); requests.push({ url, payload }); return respond(payload, requests.length);
   });
-  const pauses = [];
-  const send = day => sendRobotDigest(env, day || date, { pause: async () => { pauses.push(true); } });
-  const api = (path, method = 'GET', token) => worker.fetch(new Request('https://api.wangyibiao.com' + path, {
-    method, headers: token ? { Authorization: `Bearer ${token}` } : {},
+  const api = (path, body, admin = false, extra = {}) => worker.fetch(new Request('https://api.wangyibiao.com/api' + path, {
+    method: body === undefined ? 'GET' : 'POST', headers: { Origin: 'https://wangyibiao.com', 'Content-Type': 'application/json', 'CF-Connecting-IP': '192.0.2.1', ...(admin ? { Authorization: `Bearer ${env.ADMIN_TOKEN}` } : {}), ...extra }, ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   }), env);
-  const record = () => db.prepare('SELECT * FROM robot_deliveries WHERE edition_date = ?').get(date);
+  const row = () => db.prepare('SELECT * FROM robot_subscribers ORDER BY created_at, id LIMIT 1').get();
+  const apply = async (overrides = {}, extra = {}) => { const response = await api('/robot-subscriptions', { webhook: testUrl, name: '研究群', categories: ['pqc', 'ai'], reason: '研究和学习', consent: true, ...overrides }, false, extra); assert.equal(response.status, 202, await response.text()); return row(); };
+  const approve = async (subscriber = row(), config = {}) => { const response = await api(`/admin/robot-subscriptions/${subscriber.id}/approve`, config, true); assert.equal(response.status, 200, await response.text()); };
+  const record = (subscriber = row()) => db.prepare('SELECT * FROM robot_subscription_deliveries WHERE subscriber_id = ? AND edition_date = ?').get(subscriber.id, date);
+  const send = (options = {}) => sendRobotDigest(env, date, { pause: async () => {}, ...options });
   t.after(() => db.close());
-  return { db, env, requests, pauses, send, api, record, respond(callback) { respond = callback; } };
+  return { db, env, requests, api, apply, approve, row, record, send, respond(callback) { respond = callback; } };
 }
 
-test('complete edition sends five original-source sections once, independent of email subscriptions', async t => {
+test('pending applications cannot push or configure @; legacy deployment webhook does not grant approval', async t => {
   const f = fixture(t);
-  assert.equal((await f.send()).sent, 5);
-  assert.equal(f.requests.length, 5); assert.equal(f.pauses.length, 5);
-  const labels = ['后量子密码', '抗量子协议', '标准动态', '网络安全', 'AI 前沿'];
-  f.requests.forEach((message, index) => {
-    assert.match(message.textMsg.content, new RegExp(`${index + 1}/5 · ${labels[index]}`));
-    assert.equal([...message.textMsg.content.matchAll(/阅读原文：https:\/\/example.com/g)].length, 5);
-    assert.match(message.textMsg.content, /中文摘要/);
-    assert.doesNotMatch(message.textMsg.content, /2020-01-01|wangyibiao.com\/news\//);
-  });
-  assert.equal(f.record().status, 'sent'); assert.equal(f.record().next_part, 5);
-  assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 5);
-  f.db.prepare('UPDATE news SET title = ? WHERE substr(published_at,1,10) = ?').run('改稿', date);
   assert.equal((await f.send()).sent, 0);
-  assert.ok(!f.record().payload.includes('test-only-key'));
+  await f.apply({ status: 'approved', mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  assert.equal(f.row().status, 'pending'); assert.equal(f.row().mention_mode, 'none');
+  assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 0);
+  assert.equal((await f.api(`/admin/robot-subscriptions/${f.row().id}/approve`, {})).status, 401);
+  assert.equal((await f.api(`/admin/robot-subscriptions/${f.row().id}/mentions`, { mention_mode: 'members', mention_mobiles: ['13800000000'] })).status, 401);
 });
 
-test('incomplete, unpublished and wrong-date news never create or send a robot edition', async t => {
-  const f = fixture(t);
-  f.db.prepare("UPDATE news SET status = 'draft' WHERE category = 'ai' AND substr(published_at,1,10) = ?").run(date);
-  const response = await f.send();
-  assert.equal(response.sent, 0); assert.match(response.message, /尚未完整/);
-  assert.equal(f.record(), undefined); assert.equal(f.requests.length, 0);
-  f.db.prepare("UPDATE news SET published_at = '2020-01-01T08:00:00Z'").run();
-  assert.equal((await f.send()).sent, 0);
+test('approved robot sends selected sections with administrator mentions only on first message, once per day', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000','13900000000','13800000000'] });
+  assert.equal((await f.send()).sent, 2); assert.equal(f.record().status, 'sent');
+  const [first, second] = f.requests.map(r => r.payload.textMsg);
+  assert.equal(first.isMentioned, true); assert.equal(first.mentionType, 2); assert.deepEqual(first.mentionedMobileList, ['13800000000','13900000000']);
+  assert.equal(second.isMentioned, false); assert.equal(second.mentionedMobileList, undefined);
+  assert.match(first.content, /1\/2 · 后量子密码/); assert.match(second.content, /2\/2 · AI 前沿/);
+  assert.equal([...first.content.matchAll(/阅读原文：https:\/\/example.com/g)].length, 5);
+  assert.doesNotMatch(first.content + second.content, /protocol story|wangyibiao.com\/news/);
+  assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 2);
 });
 
-test('disabled or invalid destinations never perform database work or leak webhook credentials', async () => {
-  for (const value of [undefined, '', 'http://imtwo.zdxlz.com/im-external/v1/webhook/send?key=x',
-    'https://evil.example/im-external/v1/webhook/send?key=x',
-    'https://user:password@imtwo.zdxlz.com/im-external/v1/webhook/send?key=x',
-    'https://imtwo.zdxlz.com/im-external/v1/webhook/send',
-    'https://imtwo.zdxlz.com/another?key=x']) {
-    const env = { NEWS_BOT_WEBHOOK_URL: value };
-    assert.equal(robotConfigured(env), false);
-    const result = await sendRobotDigest(env);
-    assert.equal(result.enabled, false); assert.equal(result.sent, 0);
-    assert.doesNotMatch(JSON.stringify(result), /password|imtwo|key=/);
+test('webhooks encrypted at rest and private fields absent from public/admin metadata', async t => {
+  const f = fixture(t); await f.apply(); const subscriber = f.row();
+  assert.doesNotMatch(JSON.stringify(subscriber), /test-only-key/);
+  assert.equal(await decryptWebhook(f.env, subscriber), testUrl);
+  await assert.rejects(() => decryptWebhook(f.env, { ...subscriber, id: crypto.randomUUID() }));
+  for (const [path, admin] of [['/robot-subscriptions', false], ['/admin/robot-subscriptions', true], ['/admin/robot/status', true]]) {
+    const response = await f.api(path, undefined, admin); assert.equal(response.status, 200);
+    const result = await response.text(); assert.doesNotMatch(result, /test-only-key|webhook_ciphertext|webhook_hash/);
   }
+  const list = await (await f.api('/admin/robot-subscriptions', undefined, true)).json();
+  assert.equal(list.data[0].webhook_display, 'imtwo.zdxlz.com · key …-key');
+  assert.equal((await robotStatus(f.env)).subscriptions.pending, 1);
 });
 
-test('parallel Cron/manual sends atomically claim one edition and never double-send parts', async t => {
-  const f = fixture(t);
-  const results = await Promise.all([f.send(), f.send(), f.send()]);
-  assert.equal(results.reduce((sum, item) => sum + item.sent, 0), 5);
-  assert.equal(f.requests.length, 5); assert.equal(f.record().status, 'sent');
+test('public duplicate cannot overwrite approved topics or admin member configuration', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  const before = f.row(); await f.apply({ categories: ['security'], name: '陌生申请', mention_mode: 'none' });
+  assert.deepEqual(f.row(), before);
 });
 
-test('provider rejection retains accepted parts and retries the frozen remaining content', async t => {
-  const f = fixture(t);
-  f.respond((_payload, number) => new Response(JSON.stringify(number === 3 ? { success: false, code: 7101, message: testUrl } : { ok: true, code: 200 })));
-  const first = await f.send();
-  assert.equal(first.ok, false); assert.equal(first.sent, 2); assert.equal(first.status, 'pending');
-  assert.doesNotMatch(JSON.stringify(first), /test-only-key|imtwo/);
-  const frozen = JSON.parse(f.record().payload);
-  assert.equal(f.record().next_part, 2);
-  assert.equal((await f.send()).sent, 0, 'Backoff prevents immediate retries');
-  f.db.prepare('UPDATE news SET title = ?').run('更改的新闻');
-  f.db.prepare('UPDATE robot_deliveries SET next_attempt_at = 0').run();
-  assert.equal((await f.send()).sent, 3);
-  assert.deepEqual(f.requests.slice(3), frozen.slice(2));
-  assert.equal(f.record().status, 'sent'); assert.equal(f.record().attempts, 2);
+test('multiple groups have separate approval, chosen boards and daily delivery records', async t => {
+  const f = fixture(t); await f.apply(); await f.approve();
+  await f.apply({ webhook: testUrl.replace('test-only-key', 'second-test-key'), name: '第二群', categories: ['security'] });
+  assert.equal((await f.send()).sent, 2); assert.equal(f.requests.length, 2);
+  const second = f.db.prepare("SELECT * FROM robot_subscribers WHERE applicant_name = '第二群'").get(); await f.approve(second);
+  assert.equal((await f.send()).sent, 1); assert.equal(f.requests.at(-1).url.includes('second-test-key'), true);
+  assert.match(f.requests.at(-1).payload.textMsg.content, /网络安全/);
 });
 
-test('rate limits retry at most five rounds without creating another edition', async t => {
-  const f = fixture(t); f.respond(() => new Response('', { status: 429 }));
-  for (let attempt = 1; attempt <= 5; attempt++) {
-    f.db.prepare('UPDATE robot_deliveries SET next_attempt_at = 0').run();
-    assert.equal((await f.send()).ok, false);
-    assert.equal(f.record().attempts, attempt);
-  }
-  assert.equal(f.record().status, 'failed'); assert.equal(f.record().error, 'rate_limited');
-  assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 5);
+test('concurrent cron claims never send the same part twice', async t => {
+  const f = fixture(t); await f.apply(); await f.approve();
+  await Promise.all([f.send(), f.send()]); assert.equal(f.requests.length, 2); assert.equal(f.record().status, 'sent');
 });
 
-test('uncertain transport and acknowledgements stop automatic retries instead of duplicating group messages', async t => {
-  for (const failure of ['network', 'server', 'html', 'empty', 'huge', 'wrong-code']) {
-    await t.test(failure, async sub => {
-      const f = fixture(sub);
-      f.respond(() => {
-        if (failure === 'network') throw new Error(testUrl);
-        if (failure === 'server') return new Response('Error: ' + testUrl, { status: 500 });
-        if (failure === 'html') return new Response('<html>not JSON</html>');
-        if (failure === 'huge') return new Response('x'.repeat(17000));
-        return new Response(JSON.stringify(failure === 'wrong-code' ? { ok: true, code: 500 } : {}));
-      });
-      const result = await f.send();
-      assert.equal(result.status, 'uncertain'); assert.equal(f.record().status, 'uncertain');
-      assert.doesNotMatch(JSON.stringify(result), /test-only-key|imtwo/);
-      assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 1);
-    });
-  }
+test('revoke between parts stops remaining outbound messages; a new application returns to review', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); let count = 0;
+  await f.send({ pause: async () => { if (++count === 2) assert.equal((await f.api(`/admin/robot-subscriptions/${f.row().id}/reject`, { note: '停止群推送' }, true)).status, 200); } });
+  assert.equal(f.requests.length, 1); assert.equal(f.record().status, 'cancelled');
+  await f.apply({ categories: ['ai'] }); assert.equal(f.row().status, 'pending'); assert.equal(f.row().mention_mode, 'none');
+  assert.equal((await f.send()).sent, 0); await f.approve(); assert.equal((await f.send()).sent, 0, 'Reapproval cannot resend a partially delivered edition');
 });
 
-test('an expired in-flight lease pauses; a live lease is never reclaimed', async t => {
-  const f = fixture(t); f.respond(() => new Response(JSON.stringify({ ok: false, code: 500 })));
-  await f.send();
-  f.db.prepare("UPDATE robot_deliveries SET status = 'sending', lease_until = ?").run(Date.now() + 300000);
-  assert.equal((await f.send()).sent, 0); assert.equal(f.record().status, 'sending');
-  f.db.prepare('UPDATE robot_deliveries SET lease_until = 0').run();
-  assert.equal((await f.send()).sent, 0); assert.equal(f.record().status, 'uncertain');
-  assert.equal(f.record().error, 'lease_expired'); assert.equal(f.requests.length, 1);
+test('member configuration change stops queued old mentions and uses new settings next day', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  let count = 0; await f.send({ pause: async () => { if (++count === 1) assert.equal((await f.api(`/admin/robot-subscriptions/${f.row().id}/mentions`, { mention_mode: 'members', mention_mobiles: ['13900000000'] }, true)).status, 200); } });
+  assert.equal(f.requests.length, 0); assert.equal(f.record().status, 'cancelled');
+  assert.equal(f.row().mention_mobiles, '["13900000000"]'); assert.equal((await f.send()).sent, 0);
+  const tomorrow = new Date(Date.parse(date) + 86400000).toISOString().slice(0,10);
+  f.db.prepare('UPDATE news SET published_at = ?').run(tomorrow + 'T08:00:00Z');
+  await sendRobotDigest(f.env, tomorrow, { pause: async () => {} }); assert.deepEqual(f.requests[0].payload.textMsg.mentionedMobileList, ['13900000000']);
 });
 
-test('changing destinations never forwards an old pending payload to another group', async t => {
-  const f = fixture(t); f.respond(() => new Response(JSON.stringify({ ok: false, code: 500 })));
-  await f.send();
-  f.env.NEWS_BOT_WEBHOOK_URL = testUrl.replace('test-only-key', 'rotated-test-key');
-  const result = await f.send();
-  assert.equal(result.sent, 0); assert.equal(f.requests.length, 1);
-  assert.equal(f.record().status, 'failed'); assert.equal(f.record().error, 'destination_changed');
+test('provider rejection retries only unsent parts with frozen content; uncertain acceptance pauses', async t => {
+  const f = fixture(t); await f.apply(); await f.approve();
+  f.respond((_, count) => Response.json(count === 2 ? { ok: false, code: 7101, message: 'secret echoed test-only-key' } : { ok: true, code: 200 }));
+  assert.equal((await f.send()).sent, 1); assert.equal(f.record().next_part, 1); assert.equal(f.record().status, 'pending');
+  f.db.prepare('UPDATE robot_subscription_deliveries SET next_attempt_at = 0').run();
+  f.db.prepare('UPDATE news SET title = ?').run('later edit'); f.respond(() => Response.json({ ok: true, code: 200 }));
+  assert.equal((await f.send()).sent, 1); assert.equal(f.record().status, 'sent'); assert.doesNotMatch(f.requests.at(-1).payload.textMsg.content, /later edit/);
 });
 
-test('formatting suppresses mentions, control text and unsafe source links', () => {
-  const payloads = buildRobotDigest(date, [
-    { category: 'pqc', title: '@all\n伪标题', summary: '😀'.repeat(500), source_url: 'javascript:alert(1)' },
-    { category: 'pqc', title: '来源缺失', source_url: '/news/fallback' },
-    { category: 'pqc', title: '带凭据地址', source_url: 'https://username:password@example.com/' },
-    { category: 'pqc', title: '有效来源', source_url: 'https://example.com/a?b=1&c=2' },
-  ]);
-  const content = payloads[0].textMsg.content;
-  assert.match(content, /＠all 伪标题/); assert.doesNotMatch(content, /javascript:|\/news\/fallback|username:password|@all/);
-  assert.match(content, /阅读原文：https:\/\/example.com\/a\?b=1&c=2/);
-  assert.equal([...content.matchAll(/原始来源暂未提供链接。/g)].length, 3);
-  assert.ok(!content.includes('\uFFFD'), 'Unicode summaries do not split surrogate pairs');
+for (const [name, respond] of [
+  ['timeout', () => { throw new Error('private webhook'); }],
+  ['ambiguous HTTP 200', () => Response.json({ code: 200 })],
+  ['server 500', () => new Response('error', { status: 500 })],
+  ['oversized acknowledgement', () => new Response('x'.repeat(16385))],
+]) test(`${name} becomes uncertain and never auto-retries`, async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); f.respond(respond);
+  await f.send(); assert.equal(f.record().status, 'uncertain'); assert.doesNotMatch(f.record().error, /private|test-only/);
+  await f.send(); assert.equal(f.requests.length, 1);
 });
 
-test('health reveals only readiness; robot administration requires the publisher credential', async t => {
-  const f = fixture(t);
-  const health = await (await f.api('/api/health')).json();
-  assert.equal(health.robot_ready, true); assert.doesNotMatch(JSON.stringify(health), /test-only-key|imtwo/);
-  assert.equal((await f.api('/api/admin/robot/status')).status, 401);
-  assert.equal((await f.api('/api/admin/robot/send', 'POST', 'wrong')).status, 401);
-  const status = await (await f.api('/api/admin/robot/status', 'GET', 'test-admin')).json();
-  assert.equal(status.enabled, true); assert.equal(status.delivery, null);
-  assert.doesNotMatch(JSON.stringify(status), /test-only-key|imtwo/);
-  assert.equal((await f.api('/api/admin/robot/send', 'GET', 'test-admin')).status, 405);
+test('expired in-flight lease is not replayed; retryable failures stop after five attempts', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); f.respond(() => new Response('', { status: 429 }));
+  for (let i = 0; i < 5; i++) { await f.send(); f.db.prepare('UPDATE robot_subscription_deliveries SET next_attempt_at = 0').run(); }
+  assert.equal(f.record().status, 'failed'); await f.send(); assert.equal(f.requests.length, 5);
+  f.db.prepare("UPDATE robot_subscription_deliveries SET status = 'sending', lease_until = 1").run();
+  await f.send(); assert.equal(f.record().status, 'uncertain'); assert.equal(f.requests.length, 5);
+});
+
+test('incomplete editions wait and invalid calendar dates never send', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); f.db.prepare("DELETE FROM news WHERE category = 'protocol'").run();
+  assert.equal((await f.send()).sent, 0); assert.equal(f.record(), undefined);
+  for (const day of ['bad', '2026-02-30']) await assert.rejects(() => sendRobotDigest(f.env, day), /Invalid edition date/);
   assert.equal(f.requests.length, 0);
-  delete f.env.ADMIN_TOKEN;
-  assert.equal((await f.api('/api/admin/robot/status')).status, 503);
 });
 
-test('scheduled robot delivery uses waitUntil and the real rate-limit delay when mail is disabled', async t => {
-  const f = fixture(t); const delays = [];
-  t.mock.method(globalThis, 'setTimeout', (callback, ms) => { delays.push(ms); callback(); return 0; });
-  let task;
-  worker.scheduled({}, f.env, { waitUntil(promise) { task = promise; } });
-  assert.ok(task instanceof Promise); await task;
-  assert.equal(f.requests.length, 5); assert.equal(f.record().status, 'sent');
-  assert.deepEqual(delays, [3100, 3100, 3100, 3100, 3100]);
-  const status = await robotStatus(f.env);
-  assert.equal(status.delivery.next_part, 5); assert.equal(status.delivery.status, 'sent');
-  assert.doesNotMatch(JSON.stringify(status), /test-only-key/);
-});
-
-test('invalid edition dates are rejected before any sends', async t => {
+test('validation prevents SSRF, untrusted origins, oversized inputs and invalid administrator mentions', async t => {
   const f = fixture(t);
-  for (const day of ['bad', '2026-02-30', '2026-10-09T00:00:00Z']) await assert.rejects(() => f.send(day), /Invalid edition date/);
-  assert.equal(f.requests.length, 0);
+  for (const webhook of ['http://imtwo.zdxlz.com/im-external/v1/webhook/send?key=abcd', 'https://localhost/private?key=abcd', testUrl + '&key=another', testUrl + '&x=y', testUrl + '#fragment', testUrl.replace('imtwo.zdxlz.com', 'imtwo.zdxlz.com.evil.test')]) {
+    assert.throws(() => normalizeWebhook(webhook)); assert.equal((await f.api('/robot-subscriptions', { webhook, name: '群', categories: ['ai'], reason: '学习', consent: true })).status, 400);
+  }
+  assert.equal((await f.api('/robot-subscriptions', {}, false, { Origin: 'https://evil.test' })).status, 403);
+  assert.equal((await f.api('/robot-subscriptions', { reason: 'x'.repeat(9000) })).status, 413);
+  await f.apply();
+  for (const body of [{ mention_mode: 'all' }, { mention_mode: 'members', mention_mobiles: [] }, { mention_mode: 'members', mention_mobiles: ['@all'] }]) assert.equal((await f.api(`/admin/robot-subscriptions/${f.row().id}/approve`, body, true)).status, 400);
+  assert.equal(f.row().status, 'pending'); assert.equal(f.requests.length, 0);
+});
+
+test('rate limits use opaque keys; admin channel honors separate review credential', async t => {
+  const f = fixture(t); for (let i = 0; i < 5; i++) await f.apply();
+  assert.equal((await f.api('/robot-subscriptions', { webhook: testUrl, name: '群', categories: ['ai'], reason: '学习', consent: true })).status, 429);
+  assert.doesNotMatch(JSON.stringify(f.db.prepare('SELECT * FROM newsletter_request_limits').all()), /192\.0\.2\.1/);
+  f.env.NEWSLETTER_ADMIN_TOKEN = 'review-only';
+  assert.equal((await f.api('/admin/robot-subscriptions', undefined, true)).status, 401);
+  assert.equal((await f.api('/admin/robot-subscriptions', undefined, false, { Authorization: 'Bearer review-only' })).status, 200);
+});
+
+test('news text cannot inject mentions or unsafe original links', () => {
+  const messages = buildRobotDigest(date, [{ category: 'ai', title: '@all\nnew section', summary: 'Hello\u0000 world', source_url: 'javascript:alert(1)' }], ['ai']);
+  assert.equal(messages.length, 1); assert.equal(messages[0].textMsg.isMentioned, false);
+  assert.match(messages[0].textMsg.content, /＠all new section/); assert.doesNotMatch(messages[0].textMsg.content, /javascript:|\u0000/);
 });
