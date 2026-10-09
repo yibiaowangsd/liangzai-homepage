@@ -39,3 +39,5 @@
 审核接口使用与邮箱相同的 `NEWSLETTER_ADMIN_TOKEN || ADMIN_TOKEN` Bearer 认证。运维接口 `GET /api/admin/robot/status` 使用发布 `ADMIN_TOKEN`，只返回汇总和当日各状态数量；原 `/api/admin/robot/send` 返回定时任务说明，不在 HTTP 请求里批量群发。
 
 日志只记录数量与安全状态码，不能记录 webhook、手机号、正文或供应商原始响应。单元测试与浏览器测试使用示例地址和模拟服务，不向真实群发送测试消息。
+
+连接排查使用 `POST /api/admin/robot/test`，由发布管理员 `ADMIN_TOKEN` 认证，参数为已审核的 `subscriber_id` 和仅由大写字母、数字、连字符组成的 `test_id`。每次仅尝试一条独立连接确认消息，不 @、不自动重试、不读取或修改日报去重记录。响应只返回安全的 HTTP 状态、成功标记和数字状态码；实际群内是否收到仍需管理员核对。真实测试必须由用户明确要求后单次执行。
