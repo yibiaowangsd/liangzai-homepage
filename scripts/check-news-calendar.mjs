@@ -82,12 +82,24 @@ try {
       });
       const page = await context.newPage();
       const errors = [];
-      page.on("pageerror", error => errors.push(String(error)));
-      page.on("console", message => { if (message.type() === "error" && /hydration|did not match|React error/i.test(message.text())) errors.push(message.text()); });
+      const failedRequests = [];
+      let documentNavigation = false;
+      async function navigateDocument(action) {
+        documentNavigation = true;
+        try { return await action(); }
+        finally { documentNavigation = false; }
+      }
+      page.on("pageerror", error => errors.push({ message: String(error), documentNavigation }));
+      page.on("console", message => { if (message.type() === "error" && /hydration|did not match|React error/i.test(message.text())) errors.push({ message: message.text(), documentNavigation }); });
+      page.on("requestfailed", request => {
+        if (request.url().startsWith(base + "/") && request.url().includes(".rsc")) {
+          failedRequests.push({ url: request.url(), failure: request.failure()?.errorText || "", documentNavigation });
+        }
+      });
 
       for (const width of [320, 390, 1440]) {
         await page.setViewportSize({ width, height: 900 });
-        await page.goto(base + "/news?category=protocol", { waitUntil: "networkidle" });
+        await navigateDocument(() => page.goto(base + "/news?category=protocol", { waitUntil: "networkidle" }));
         const trigger = page.locator(".news-day-controls .news-date-trigger");
         assert.equal(await trigger.boundingBox().then(bounds => bounds.height >= 44), true);
         await trigger.click();
@@ -121,7 +133,7 @@ try {
         await page.waitForURL("**/news?date=2026-09-30&category=protocol");
         await page.locator('.news-day-controls time[datetime="2026-09-30"]').waitFor();
         await page.waitForLoadState("networkidle");
-        await page.reload({ waitUntil: "networkidle" });
+        await navigateDocument(() => page.reload({ waitUntil: "networkidle" }));
         assert.equal(await page.locator(".news-day-controls time").getAttribute("datetime"), "2026-09-30");
         const article = page.locator('.lead-copy h2 a');
         assert.equal(await article.getAttribute("href"), "/news/2026-09-30-protocol?date=2026-09-30&category=protocol");
@@ -134,7 +146,7 @@ try {
         await page.waitForLoadState("networkidle");
       }
 
-      await page.goto(base + "/news?date=2026-10-10&category=protocol", { waitUntil: "networkidle" });
+      await navigateDocument(() => page.goto(base + "/news?date=2026-10-10&category=protocol", { waitUntil: "networkidle" }));
       const trigger = page.locator(".news-day-controls .news-date-trigger");
       await trigger.click();
       const dialog = page.getByRole("dialog", { name: "选择日刊日期" });
@@ -192,7 +204,15 @@ try {
         return bounds && bounds.y >= 0 && bounds.y + bounds.height <= 421;
       }, { message: `${engine} calendar fits a short viewport` }).toBe(true);
       await page.screenshot({ path: resolve(output, `${engine}-short.png`), fullPage: false });
-      assert.deepEqual(errors, [], `${engine} has no page or hydration errors`);
+      // WebKit can report an aborted old-document fetch as an access-control
+      // error on reload. Exempt it only when requestfailed proves cancellation
+      // of that exact local RSC URL during a deliberate document navigation.
+      const unexpectedErrors = errors.filter(error => {
+        if (engine !== "webkit" || !error.documentNavigation || !/Fetch API cannot load .* due to access control checks/.test(error.message)) return true;
+        return !failedRequests.some(request => request.documentNavigation && /cancelled|canceled|ERR_ABORTED/i.test(request.failure) && error.message.includes(request.url.slice("http://".length)));
+      });
+      if (errors.length) console.log(`${engine} request diagnostics: ${JSON.stringify({ errors, failedRequests })}`);
+      assert.deepEqual(unexpectedErrors, [], `${engine} has no unexpected page or hydration errors`);
       console.log(`${engine}: calendar selection, keyboard, history, categories and responsive checks passed`);
       await context.close();
     } finally { await browser.close(); }
