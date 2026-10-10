@@ -1,6 +1,6 @@
 import { publishedCoverage, CORE_CATEGORIES } from './edition.js';
 import { SUBSCRIPTION_CATEGORIES, normalizeCategories, digest, RequestError } from './subscriptions.js';
-import { robotConfigured, decryptWebhook } from './robot-config.js';
+import { robotConfigured, decryptWebhook, normalizeSendMode } from './robot-config.js';
 export { robotConfigured } from './robot-config.js';
 
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
@@ -19,19 +19,25 @@ function sourceUrl(value) {
   } catch { return null; }
 }
 
-export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTION_CATEGORIES), mentions = { mode: 'none', mobiles: [] }) {
+export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTION_CATEGORIES), mentions = { mode: 'none', mobiles: [] }, options = {}) {
   const categories = normalizeCategories(selected);
-  return categories.map((category, part) => {
+  const sendMode = normalizeSendMode(options.send_mode);
+  const sections = categories.map(category => {
     const label = SUBSCRIPTION_CATEGORIES[category];
     const stories = items.filter(item => item.category === category).slice(0, 5);
-    const lines = [`量仔每日前沿 · ${date}`, `${part + 1}/${categories.length} · ${label}`];
+    const lines = [];
     for (const [index, item] of stories.entries()) {
       const original = sourceUrl(item.source_url);
       lines.push(`${index + 1}. ${cleanText(item.title, 60)}${original ? ` ${original}` : ''}`);
     }
-    return { type: 'text', textMsg: { content: lines.join('\n').trim(), isMentioned: part === 0 && mentions.mode === 'members',
-      ...(part === 0 && mentions.mode === 'members' ? { mentionType: 2, mentionedMobileList: mentions.mobiles } : {}) } };
+    return { label, lines };
   });
+  const message = (content, first) => ({ type: 'text', textMsg: { content, isMentioned: first && mentions.mode === 'members',
+    ...(first && mentions.mode === 'members' ? { mentionType: 2, mentionedMobileList: mentions.mobiles } : {}) } });
+  if (sendMode === 'single') {
+    return [message([`量仔每日前沿 · ${date}`, ...sections.map(section => [section.label, ...section.lines].join('\n'))].join('\n\n'), true)];
+  }
+  return sections.map((section, part) => message([`量仔每日前沿 · ${date}`, `${part + 1}/${sections.length} · ${section.label}`, ...section.lines].join('\n').trim(), part === 0));
 }
 
 class DeliveryError extends Error {
@@ -119,15 +125,16 @@ export async function sendManualRobotDigest(env, subscriberId, { send_id: sendId
   const row = await env.DB.prepare("SELECT * FROM robot_subscribers WHERE id = ? AND status = 'approved'").bind(subscriberId).first();
   if (!row) throw new RequestError('只有审核通过的机器人可以立刻发送。', 409);
   const categories = normalizeCategories(JSON.parse(row.categories));
-  if (part >= categories.length) throw new RequestError('发送板块不存在。');
+  if (part >= categories.length) throw new RequestError('发送消息不存在。');
   if (part > 0 && version !== row.version) throw new RequestError('订阅配置已变化，请重新点击立刻发送。', 409);
+  if (row.send_mode === 'single' && part > 0) throw new RequestError('发送消息不存在。');
   await env.DB.prepare("UPDATE robot_manual_deliveries SET status = 'uncertain', error = 'lease_expired', lease_until = 0 WHERE subscriber_id = ? AND status IN ('pending','sending') AND lease_until < ?").bind(subscriberId, Date.now()).run();
   let job = await env.DB.prepare('SELECT * FROM robot_manual_deliveries WHERE send_id = ?').bind(sendId).first();
   if (!job) {
     if (part !== 0) throw new RequestError('发送批次不存在，请重新点击立刻发送。', 409);
     const edition = await editionItems(env, date, categories);
     if (!edition) throw new RequestError('所选板块的当日日报尚未完整发布，暂不能发送。', 409);
-    const payload = buildRobotDigest(date, edition.items, categories, { mode: row.mention_mode, mobiles: JSON.parse(row.mention_mobiles) });
+    const payload = buildRobotDigest(date, edition.items, categories, { mode: row.mention_mode, mobiles: JSON.parse(row.mention_mobiles) }, { send_mode: row.send_mode });
     // This insert and Cron's claim each exclude the other's active work. A
     // completed manual batch also suppresses today's later automatic delivery.
     await env.DB.prepare(`INSERT INTO robot_manual_deliveries (send_id, subscriber_id, edition_date, version, payload, lease_until, created_at)
@@ -193,7 +200,7 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
     const edition = await editionItems(env, date);
     if (!edition) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
     for (const subscriber of subscribers) {
-      const payload = buildRobotDigest(date, edition.items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) });
+      const payload = buildRobotDigest(date, edition.items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) }, { send_mode: subscriber.send_mode });
       // Respect today's legacy singleton history when the same group applies
       // after migration. Approval must not replay an already attempted edition.
       let fingerprint;

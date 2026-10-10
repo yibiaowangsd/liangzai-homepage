@@ -111,7 +111,7 @@ try {
   });
   const robotRequests = [];
   const robotReviews = [];
-  const robotApplication = { id: '24ff3dea-6ec3-4c8e-a5ea-9b5d4a3e7a81', webhook_display: 'imtwo.zdxlz.com · key …demo', categories: '["pqc","ai"]', applicant_name: '密码研究交流群（示例）', reason: '希望让群成员持续跟进密码标准与 AI 研究。', status: 'pending', created_at: '2026-10-09 08:00:00', mention_mode: 'none', mention_mobiles: '[]' };
+  const robotApplication = { id: '24ff3dea-6ec3-4c8e-a5ea-9b5d4a3e7a81', webhook_display: 'imtwo.zdxlz.com · key …demo', categories: '["pqc","ai"]', applicant_name: '密码研究交流群（示例）', reason: '希望让群成员持续跟进密码标准与 AI 研究。', status: 'pending', created_at: '2026-10-09 08:00:00', send_mode: 'single', mention_mode: 'none', mention_mobiles: '[]' };
   await context.route('https://api.wangyibiao.com/api/robot-subscriptions', async route => {
     robotRequests.push(route.request().postDataJSON());
     await route.fulfill({ status: 202, contentType: 'application/json', body: JSON.stringify({ ok: true, message: '机器人订阅申请已提交。管理员审核通过后启用定时推送。' }) });
@@ -123,11 +123,11 @@ try {
       const body = request.postDataJSON(); const action = new URL(request.url()).pathname.split('/').at(-1); robotReviews.push({ action, body });
       if (action === 'send') {
         assert.ok(Number.isInteger(body.part)); assert.match(body.send_id, /^[a-f0-9-]{36}$/);
-        const next = body.part + 1;
-        await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, sent: 1, more: next < 2, next_part: next, total: 2, version: 'example-approved-version', date: '2026-10-09', message: next < 2 ? '本次已发送 1 / 2 条，正在继续…' : '本次当日日报已发送，共 2 条消息。再次点击可重新发送。' }) }); return;
+        const next = body.part + 1, total = robotApplication.send_mode === 'single' ? 1 : 2;
+        await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, sent: 1, more: next < total, next_part: next, total, version: 'example-approved-version', date: '2026-10-09', message: next < total ? `本次已发送 ${next} / ${total} 条，正在继续…` : `本次当日日报已发送，共 ${total} 条消息。再次点击可重新发送。` }) }); return;
       }
       robotApplication.status = action === 'reject' ? 'rejected' : 'approved';
-      if (['approve', 'settings'].includes(action)) robotApplication.categories = JSON.stringify(body.categories);
+      if (['approve', 'settings'].includes(action)) { robotApplication.categories = JSON.stringify(body.categories); robotApplication.send_mode = body.send_mode; }
       if (action !== 'reject') { robotApplication.mention_mode = body.mention_mode; robotApplication.mention_mobiles = JSON.stringify(body.mention_mobiles); }
       await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, message: action === 'settings' ? '发送配置已保存。' : action === 'reject' ? '已拒绝申请并停止后续推送。' : '已通过审核，完整日报发布后自动推送。' }) }); return;
     }
@@ -323,6 +323,8 @@ try {
   assert.equal(await page.getByLabel('管理员审核口令').inputValue(), '');
   await page.goto(base + '/news/subscribe?category=ai', { waitUntil: 'networkidle' });
   await page.getByRole('radio', { name: /群机器人/ }).check();
+  assert.equal(await page.getByRole('radio', { name: /按板块分多条/ }).isChecked(), true);
+  await page.getByRole('radio', { name: /单条汇总/ }).check();
   assert.equal(await page.getByLabel('邮箱地址').count(), 0, 'Robot channel has no email requirement');
   assert.equal(await page.getByLabel('成员手机号').count(), 0, 'Applicants cannot configure mentions');
   for (const width of [320, 390, 1440]) {
@@ -339,6 +341,7 @@ try {
   await page.getByRole('status').filter({ hasText: '机器人订阅申请已提交' }).waitFor();
   assert.equal(robotRequests[0].webhook.includes('example-only-demo'), true);
   assert.deepEqual(robotRequests[0].categories, ['ai']);
+  assert.equal(robotRequests[0].send_mode, 'single');
   assert.equal(robotRequests[0].email, undefined); assert.equal(robotRequests[0].mention_mode, undefined);
   assert.equal(await page.locator('.subscription-recipient strong').innerText(), '研究交流群');
   assert.equal((await page.locator('body').innerText()).includes('example-only-demo'), false, 'Receipt does not expose webhook credential');
@@ -349,6 +352,8 @@ try {
   await page.getByRole('heading', { name: 'imtwo.zdxlz.com · key …demo', exact: true }).waitFor();
   assert.equal(await page.getByRole('button', { name: '立刻发送', exact: true }).count(), 0, 'Pending robots cannot send manually');
   await page.getByRole('button', { name: '配置并审核', exact: true }).click();
+  assert.equal(await page.getByRole('radio', { name: /单条汇总/ }).isChecked(), true);
+  await page.getByRole('radio', { name: /按板块分多条/ }).check();
   await page.getByRole('checkbox', { name: /AI 前沿/ }).uncheck();
   await page.getByRole('checkbox', { name: /网络安全/ }).check();
   await page.getByLabel('提醒方式').selectOption('members');
@@ -367,6 +372,7 @@ try {
   await page.getByRole('status').filter({ hasText: '已通过审核' }).waitFor();
   assert.deepEqual(robotReviews[0].body.mention_mobiles, ['13800000000', '13900000000']);
   assert.deepEqual(robotReviews[0].body.categories, ['pqc', 'security']);
+  assert.equal(robotReviews[0].body.send_mode, 'multiple'); assert.equal(robotReviews[0].body.expected_send_mode, 'single');
   await page.getByRole('button', { name: '已通过', exact: true }).click();
   await page.getByText('指定成员：13800000000、13900000000', { exact: true }).waitFor();
   await page.getByRole('button', { name: '立刻发送', exact: true }).waitFor();
@@ -410,12 +416,18 @@ try {
   assert.equal(await page.getByRole('button', { name: '立刻发送', exact: true }).isEnabled(), false, 'Save or cancel before manually sending');
   await page.getByRole('checkbox', { name: /抗量子迁移/ }).check();
   await page.getByRole('checkbox', { name: /NGCC 公钥征集/ }).check();
+  await page.getByRole('radio', { name: /单条汇总/ }).check();
   await page.getByLabel('提醒方式').selectOption('none');
   await page.getByRole('button', { name: '保存发送配置', exact: true }).click();
   await page.getByRole('status').filter({ hasText: '发送配置已保存' }).waitFor();
   assert.equal(robotReviews.at(-1).body.mention_mode, 'none');
   assert.deepEqual(robotReviews.at(-1).body.categories, ['pqc', 'security', 'migration', 'ngcc']);
+  assert.equal(robotReviews.at(-1).body.send_mode, 'single'); assert.equal(robotReviews.at(-1).body.expected_send_mode, 'multiple');
   await page.locator('.review-topics').getByText('NGCC 公钥征集', { exact: true }).waitFor();
+  const beforeSingleSend = robotReviews.filter(r => r.action === 'send').length;
+  await page.getByRole('button', { name: '立刻发送', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '当日日报已发送，共 1 条消息' }).waitFor();
+  assert.equal(robotReviews.filter(r => r.action === 'send').length, beforeSingleSend + 1, 'Single mode sends one request after saving the configuration');
   await page.getByRole('button', { name: '撤销批准并停止发送', exact: true }).click();
   await page.getByLabel('拒绝理由').fill('管理员停止推送');
   await page.getByRole('button', { name: '确认撤销', exact: true }).click();

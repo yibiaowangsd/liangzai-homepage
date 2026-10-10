@@ -1,6 +1,6 @@
 import { sendManualRobotDigest } from './robot.js';
 import { RequestError, cleanString, readBody, digest, secretMatches, normalizeCategories } from './subscriptions.js';
-import { robotConfigured, normalizeWebhook, webhookDisplay, webhookHash, encryptWebhook, normalizeMentions } from './robot-config.js';
+import { robotConfigured, normalizeWebhook, webhookDisplay, webhookHash, encryptWebhook, normalizeMentions, normalizeSendMode, ROBOT_SEND_MODES } from './robot-config.js';
 
 const success = { ok: true, message: '机器人订阅申请已提交。管理员审核通过后启用定时推送，@ 成员由管理员配置。调整或停止推送请联系管理员。' };
 function deliveryMessage(delivery, manualStatus) {
@@ -27,6 +27,7 @@ async function apply(request, env) {
   if (body.website) return success;
   const webhook = normalizeWebhook(body.webhook);
   const categories = normalizeCategories(body.categories);
+  const sendMode = normalizeSendMode(body.send_mode);
   const name = cleanString(body.name || '', 80, true);
   const reason = cleanString(body.reason, 500, true);
   if (body.consent !== true) throw new RequestError('请先同意订阅说明。');
@@ -38,13 +39,13 @@ async function apply(request, env) {
   const fingerprint = await webhookHash(env, webhook);
   const existing = await env.DB.prepare('SELECT id FROM robot_subscribers WHERE webhook_hash = ?').bind(fingerprint).first();
   const id = existing?.id || crypto.randomUUID();
-  await env.DB.prepare(`INSERT INTO robot_subscribers (id, webhook_hash, webhook_ciphertext, webhook_display, categories, applicant_name, reason, consent_version, version)
-    VALUES (?, ?, ?, ?, ?, ?, ?, 'robot-daily-v1', ?) ON CONFLICT(webhook_hash) DO UPDATE SET
-    webhook_ciphertext = excluded.webhook_ciphertext, categories = excluded.categories, applicant_name = excluded.applicant_name,
+  await env.DB.prepare(`INSERT INTO robot_subscribers (id, webhook_hash, webhook_ciphertext, webhook_display, categories, send_mode, applicant_name, reason, consent_version, version)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'robot-daily-v1', ?) ON CONFLICT(webhook_hash) DO UPDATE SET
+    webhook_ciphertext = excluded.webhook_ciphertext, categories = excluded.categories, send_mode = excluded.send_mode, applicant_name = excluded.applicant_name,
     reason = excluded.reason, consent_version = excluded.consent_version, version = excluded.version, status = 'pending',
     mention_mode = 'none', mention_mobiles = '[]', review_note = '', reviewed_at = NULL, updated_at = datetime('now')
     WHERE robot_subscribers.status IN ('rejected','unsubscribed')`)
-    .bind(id, fingerprint, await encryptWebhook(env, id, webhook), webhookDisplay(webhook), JSON.stringify(categories), name, reason, crypto.randomUUID()).run();
+    .bind(id, fingerprint, await encryptWebhook(env, id, webhook), webhookDisplay(webhook), JSON.stringify(categories), sendMode, name, reason, crypto.randomUUID()).run();
   // Public applicants cannot grant approval, choose @ recipients or overwrite an
   // approved subscription by submitting the same credential again.
   return success;
@@ -59,7 +60,7 @@ export async function handleRobotSubscriptions(request, env, json) {
     if (origin && !['https://wangyibiao.com', 'https://www.wangyibiao.com'].includes(origin)) throw new RequestError('不允许的请求来源。', 403);
     if (isReview && !env.NEWSLETTER_ADMIN_TOKEN && !env.ADMIN_TOKEN) throw new RequestError('审核服务未配置。', 503);
     if (isReview && !await secretMatches(request.headers.get('Authorization'), `Bearer ${env.NEWSLETTER_ADMIN_TOKEN || env.ADMIN_TOKEN}`)) throw new RequestError('审核口令不正确。', 401);
-    if (isPublic && request.method === 'GET') return json(request, { review_required: true, robot_ready: robotConfigured(env), mentions_admin_only: true });
+    if (isPublic && request.method === 'GET') return json(request, { review_required: true, robot_ready: robotConfigured(env), mentions_admin_only: true, send_modes: ROBOT_SEND_MODES, default_send_mode: 'multiple' });
     if (isPublic && request.method === 'POST') return json(request, await apply(request, env), 202);
     if (request.method === 'GET' && url.pathname === '/api/admin/robot-subscriptions') {
       const status = url.searchParams.get('status') || 'pending';
@@ -70,7 +71,7 @@ export async function handleRobotSubscriptions(request, env, json) {
       const args = status === 'all' ? [] : [status];
       const count = await env.DB.prepare(`SELECT count(*) AS total FROM robot_subscribers s ${where}`).bind(...args).first();
       const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
-      const { results: data } = await env.DB.prepare(`SELECT s.id, s.webhook_display, s.categories, s.applicant_name, s.reason, s.status,
+      const { results: data } = await env.DB.prepare(`SELECT s.id, s.webhook_display, s.categories, s.send_mode, s.applicant_name, s.reason, s.status,
         s.mention_mode, s.mention_mobiles, s.review_note, s.created_at, d.status AS delivery_status, d.next_part, d.error AS delivery_error,
         json_array_length(d.payload) AS total_parts,
         (SELECT m.status FROM robot_manual_deliveries m WHERE m.subscriber_id = s.id AND m.edition_date = ? ORDER BY m.created_at DESC, m.send_id DESC LIMIT 1) AS manual_status
@@ -98,21 +99,26 @@ export async function handleRobotSubscriptions(request, env, json) {
       if (['approve', 'settings'].includes(action) && body.expected_categories !== undefined && JSON.stringify(normalizeCategories(body.expected_categories)) !== row.categories) {
         throw new RequestError('订阅板块已被其他操作修改，请刷新后重试。', 409);
       }
+      if (['approve', 'settings'].includes(action) && body.expected_send_mode !== undefined && normalizeSendMode(body.expected_send_mode) !== row.send_mode) {
+        throw new RequestError('发送方式已被其他操作修改，请刷新后重试。', 409);
+      }
       const categories = action === 'settings' || (action === 'approve' && body.categories !== undefined)
         ? JSON.stringify(normalizeCategories(body.categories)) : row.categories;
+      const sendMode = ['approve', 'settings'].includes(action)
+        ? normalizeSendMode(body.send_mode === undefined ? row.send_mode : body.send_mode) : row.send_mode;
       const mentions = action === 'reject' ? { mode: 'none', mobiles: [] } : normalizeMentions({
         mention_mode: body.mention_mode ?? row.mention_mode,
         mention_mobiles: body.mention_mobiles ?? JSON.parse(row.mention_mobiles),
       });
-      if (action === 'settings' && categories === row.categories && mentions.mode === row.mention_mode && JSON.stringify(mentions.mobiles) === row.mention_mobiles) {
+      if (action === 'settings' && categories === row.categories && sendMode === row.send_mode && mentions.mode === row.mention_mode && JSON.stringify(mentions.mobiles) === row.mention_mobiles) {
         return json(request, { ok: true, message: '发送配置未变化，原发送安排保持不变。' });
       }
       const version = crypto.randomUUID();
       const status = action === 'reject' ? 'rejected' : 'approved';
       const result = await env.DB.batch([
-        env.DB.prepare(`UPDATE robot_subscribers SET status = ?, categories = ?, mention_mode = ?, mention_mobiles = ?, version = ?,
+        env.DB.prepare(`UPDATE robot_subscribers SET status = ?, categories = ?, send_mode = ?, mention_mode = ?, mention_mobiles = ?, version = ?,
           review_note = ?, reviewed_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND version = ?`)
-          .bind(status, categories, mentions.mode, JSON.stringify(mentions.mobiles), version, ['mentions', 'settings'].includes(action) ? row.review_note : note, id, row.version),
+          .bind(status, categories, sendMode, mentions.mode, JSON.stringify(mentions.mobiles), version, ['mentions', 'settings'].includes(action) ? row.review_note : note, id, row.version),
         env.DB.prepare(`UPDATE robot_subscription_deliveries SET status = 'cancelled', lease_until = 0 WHERE subscriber_id = ?
           AND status IN ('pending','sending') AND version != ? AND EXISTS (SELECT 1 FROM robot_subscribers WHERE id = ? AND version = ?)`)
           .bind(id, version, id, version),

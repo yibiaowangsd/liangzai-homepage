@@ -1,8 +1,8 @@
 "use client";
 import { useRef, useState, type FormEvent } from "react";
-import { CategoryChoices, subscriptionCategories, subscriptionRequest } from "../../subscribe/SubscriptionForm";
+import { CategoryChoices, RobotSendModeChoices, robotSendModes, type RobotSendMode, subscriptionCategories, subscriptionRequest } from "../../subscribe/SubscriptionForm";
 
-type Application = { id: string; email?: string; webhook_display?: string; mention_mode?: string; mention_mobiles?: string; delivery_status?: string; manual_status?: string; delivery_error?: string; delivery_message?: string; next_part?: number; categories: string; applicant_name: string; reason: string; status: string; email_verified_at: string | null; confirmation_sent_at: string | null; review_note: string; created_at: string };
+type Application = { id: string; email?: string; webhook_display?: string; send_mode?: RobotSendMode; mention_mode?: string; mention_mobiles?: string; delivery_status?: string; manual_status?: string; delivery_error?: string; delivery_message?: string; next_part?: number; categories: string; applicant_name: string; reason: string; status: string; email_verified_at: string | null; confirmation_sent_at: string | null; review_note: string; created_at: string };
 const statuses: Record<string, string> = { pending: "待审核", approved: "已通过", rejected: "已拒绝", unsubscribed: "已退订", all: "全部" };
 function submittedAt(value: string) {
   const date = new Date(/Z$|[+-]\d\d:\d\d$/.test(value) ? value : value.replace(" ", "T") + "Z");
@@ -14,6 +14,7 @@ export default function ReviewConsole() {
   const [configuring, setConfiguring] = useState<string | null>(null);
   const [mentions, setMentions] = useState<Record<string, { mode: string; mobiles: string }>>({});
   const [selections, setSelections] = useState<Record<string, string[]>>({});
+  const [sendModes, setSendModes] = useState<Record<string, RobotSendMode>>({});
   const [secret, setSecret] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   const [rows, setRows] = useState<Application[]>([]);
@@ -34,7 +35,7 @@ export default function ReviewConsole() {
   }
   async function refresh(status = filter, nextPage = page, kind = channel) {
     setBusy(true); setError(""); setMessage("");
-    try { await load(status, nextPage, kind); setRejecting(null); setConfiguring(null); setMentions({}); setSelections({}); } catch (cause) { setError(cause instanceof Error ? cause.message : "无法读取申请。"); }
+    try { await load(status, nextPage, kind); setRejecting(null); setConfiguring(null); setMentions({}); setSelections({}); setSendModes({}); } catch (cause) { setError(cause instanceof Error ? cause.message : "无法读取申请。"); }
     finally { setBusy(false); }
   }
   async function login(event: FormEvent<HTMLFormElement>) { event.preventDefault(); await refresh("pending", 1); }
@@ -42,6 +43,7 @@ export default function ReviewConsole() {
     setError(""); setMessage(""); setRejecting(null);
     setConfiguring(configuring === row.id ? null : row.id);
     setSelections({ [row.id]: JSON.parse(row.categories) });
+    setSendModes({ [row.id]: row.send_mode || "multiple" });
     setMentions({ [row.id]: { mode: row.mention_mode || "none", mobiles: (JSON.parse(row.mention_mobiles || "[]") as string[]).join("\n") } });
   }
   async function review(row: Application, action: string) {
@@ -54,9 +56,9 @@ export default function ReviewConsole() {
       const result = await subscriptionRequest(`${endpoint()}/${row.id}/${action}`, {
         note: notes[row.id] || "",
         ...(configureContent ? { categories, expected_categories: JSON.parse(row.categories) } : {}),
-        ...(channel === "robot" && configureContent ? { mention_mode: mentions[row.id]?.mode || row.mention_mode || "none", mention_mobiles: mentions[row.id] ? mentions[row.id].mobiles.split(/[\s,，;；]+/).filter(Boolean) : JSON.parse(row.mention_mobiles || "[]") } : {}),
+        ...(channel === "robot" && configureContent ? { send_mode: sendModes[row.id] ?? row.send_mode ?? "multiple", expected_send_mode: row.send_mode || "multiple", mention_mode: mentions[row.id]?.mode || row.mention_mode || "none", mention_mobiles: mentions[row.id] ? mentions[row.id].mobiles.split(/[\s,，;；]+/).filter(Boolean) : JSON.parse(row.mention_mobiles || "[]") } : {}),
       }, secret);
-      setMessage(result.message); setRejecting(null); setConfiguring(null); setMentions({}); setSelections({});
+      setMessage(result.message); setRejecting(null); setConfiguring(null); setMentions({}); setSelections({}); setSendModes({});
     } catch (cause) { setError(cause instanceof Error ? cause.message : "审核操作失败。"); }
     finally { try { await load(); } catch { /* Keep the original error and allow refresh. */ } setBusy(false); }
   }
@@ -86,7 +88,7 @@ export default function ReviewConsole() {
     } finally { try { await load(); } catch { /* Preserve the send outcome if refresh fails. */ } sending.current = false; setSendingId(null); setBusy(false); }
   }
   function logout() {
-    setChannel("email"); setConfiguring(null); setMentions({}); setSelections({}); setSecret(""); setAuthenticated(false); setRows([]); setNotes({}); setRejecting(null); setMessage(""); setError(""); setReady(false); setTotal(0); setPage(1); setFilter("pending");
+    setChannel("email"); setConfiguring(null); setMentions({}); setSelections({}); setSendModes({}); setSecret(""); setAuthenticated(false); setRows([]); setNotes({}); setRejecting(null); setMessage(""); setError(""); setReady(false); setTotal(0); setPage(1); setFilter("pending");
   }
   return <section className="review-console" aria-label="订阅审核工作台" aria-busy={busy}>
     <p role="status" className="subscription-message review-notice">{message}</p>
@@ -123,7 +125,7 @@ export default function ReviewConsole() {
               <div className="review-application-body"><div><h3>{row.status === "pending" ? "申请板块" : "发送板块"}</h3><ul className="review-topics">{categories.map(key => <li key={key}>{subscriptionCategories[key]}</li>)}</ul></div><div><h3>申请理由</h3><p className="review-reason">{row.reason}</p></div></div>
               {row.review_note && <div className="review-record"><h3>审核备注</h3><p>{row.review_note}</p></div>}
               {row.status === "approved" && channel === "email" && <p className="review-confirmation" data-verified={!!row.email_verified_at}>{row.email_verified_at ? "邮箱已确认，订阅已启用。" : "等待收件人确认邮箱，确认后才会开始发送。"}</p>}
-              {channel === "robot" && <div className="review-record"><h3>成员提醒</h3><p>{row.mention_mode === "members" ? `指定成员：${(JSON.parse(row.mention_mobiles || "[]") as string[]).join("、")}` : "不 @ 成员"}</p>{row.status === "approved" && <p className="review-confirmation" data-verified={!["uncertain", "failed", "cancelled"].includes(row.manual_status || row.delivery_status || "")}>今日推送 · {row.delivery_message || (row.delivery_status === "sent" ? "今日日报已发送" : row.delivery_status === "uncertain" ? "今日自动推送结果未确认，后台可立刻重发" : "等待完整日报与定时任务")}</p>}</div>}
+              {channel === "robot" && <div className="review-record"><h3>{row.status === "pending" ? "申请发送方式" : "发送方式"}</h3><p>{robotSendModes[row.send_mode || "multiple"]}</p><h3>成员提醒</h3><p>{row.mention_mode === "members" ? `指定成员：${(JSON.parse(row.mention_mobiles || "[]") as string[]).join("、")}` : "不 @ 成员"}</p>{row.status === "approved" && <p className="review-confirmation" data-verified={!["uncertain", "failed", "cancelled"].includes(row.manual_status || row.delivery_status || "")}>今日推送 · {row.delivery_message || (row.delivery_status === "sent" ? "今日日报已发送" : row.delivery_status === "uncertain" ? "今日自动推送结果未确认，后台可立刻重发" : "等待完整日报与定时任务")}</p>}</div>}
               {["pending", "approved"].includes(row.status) && <div className="review-application-actions">
                 <div className="subscription-actions">
                   {row.status === "pending" && <button disabled={busy || !ready} className="subscription-primary" aria-expanded={configuring === row.id} aria-controls={`configuration-${row.id}`} onClick={() => configure(row)}>配置并审核</button>}
@@ -139,11 +141,12 @@ export default function ReviewConsole() {
                   {!selected.length && <p className="subscription-error">请至少选择一个发送板块。</p>}
                   <p>{row.status === "pending" ? "默认选中申请人提交的板块，可调整后通过。" : "保存后，新发送使用所选板块；当日已开始的旧推送会停止剩余内容，不自动重发。"}{channel === "email" ? "邮箱确认后才会发送日报。" : row.status === "approved" ? "需要推送新内容时，可保存后点击「立刻发送」。" : "通过后启用定时推送。"}</p>
                   {channel === "robot" && <>
+                    <RobotSendModeChoices value={sendModes[row.id] ?? row.send_mode ?? "multiple"} onChange={value => setSendModes({ ...sendModes, [row.id]: value })} disabled={busy} />
                     <h3>成员提醒</h3><label className="subscription-field">提醒方式<select value={draft.mode} disabled={busy} onChange={event => setMentions({ ...mentions, [row.id]: { ...draft, mode: event.target.value } })}><option value="none">不 @ 成员</option><option value="members">@ 指定成员</option></select></label>
                     {draft.mode === "members" && <label className="subscription-field">成员手机号<textarea value={draft.mobiles} onChange={event => setMentions({ ...mentions, [row.id]: { ...draft, mobiles: event.target.value } })} rows={3} maxLength={340} disabled={busy} placeholder="每行一个手机号，也可用逗号分隔" /><span>最多 20 位成员，使用群成员登记的 11 至 15 位数字手机号。</span></label>}
                     <p>每份日报仅在第一条消息提醒所选成员。申请人无法设置或修改 @ 对象。</p>
                   </>}
-                  <div className="subscription-actions"><button className="subscription-primary" disabled={busy || !selected.length || (row.status === "pending" && !ready)} onClick={() => void review(row, row.status === "pending" ? "approve" : "settings")}>{row.status === "pending" ? channel === "email" && !row.email_verified_at ? "通过并发送确认邮件" : "通过并启用" : "保存发送配置"}</button><button disabled={busy} onClick={() => { setConfiguring(null); setMentions({}); setSelections({}); }}>取消</button></div>
+                  <div className="subscription-actions"><button className="subscription-primary" disabled={busy || !selected.length || (row.status === "pending" && !ready)} onClick={() => void review(row, row.status === "pending" ? "approve" : "settings")}>{row.status === "pending" ? channel === "email" && !row.email_verified_at ? "通过并发送确认邮件" : "通过并启用" : "保存发送配置"}</button><button disabled={busy} onClick={() => { setConfiguring(null); setMentions({}); setSelections({}); setSendModes({}); }}>取消</button></div>
                 </div>}
                 {rejecting === row.id && <div className="review-rejection" id={`rejection-${row.id}`}><label className="subscription-field">拒绝理由<textarea value={notes[row.id] || ""} onChange={event => setNotes({ ...notes, [row.id]: event.target.value })} maxLength={500} rows={3} disabled={busy} placeholder="写明原因，便于后续复核" /></label><div className="subscription-actions"><button className="review-danger" disabled={busy} onClick={() => void review(row, "reject")}>{row.status === "approved" ? "确认撤销" : "确认拒绝"}</button><button disabled={busy} onClick={() => setRejecting(null)}>取消</button></div></div>}
               </div>}

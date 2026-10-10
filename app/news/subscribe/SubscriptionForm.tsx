@@ -5,6 +5,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import policy from "../../../news/edition-policy.json";
 
 export const subscriptionCategories: Record<string, string> = Object.fromEntries(Object.entries(policy.categories).map(([key, value]) => [key, value.label]));
+export const robotSendModes = { single: "单条汇总", multiple: "按板块分多条" } as const;
+export type RobotSendMode = keyof typeof robotSendModes;
 const categoryDescriptions: Record<string, string> = Object.fromEntries(Object.entries(policy.categories).map(([key, value]) => [key, value.description]));
 export const subscriptionApi = "https://api.wangyibiao.com/api";
 export async function subscriptionRequest(path: string, body?: unknown, secret?: string) {
@@ -29,9 +31,22 @@ export function CategoryChoices({ selected, onChange, disabled, legend = "订阅
   </fieldset>;
 }
 
+export function RobotSendModeChoices({ value, onChange, disabled }: {
+  value: RobotSendMode; onChange: (value: RobotSendMode) => void; disabled?: boolean;
+}) {
+  return <fieldset className="subscription-channels subscription-send-mode" disabled={disabled}>
+    <legend>机器人发送方式</legend>
+    <div>{Object.entries(robotSendModes).map(([key, label]) => <label key={key}>
+      <input type="radio" name="send_mode" value={key} checked={value === key} onChange={() => onChange(key as RobotSendMode)} />
+      <span><strong>{label}</strong><small>{key === "single" ? "所选板块合并成一条消息" : "每个板块一条消息"}</small></span>
+    </label>)}</div>
+  </fieldset>;
+}
+
 export default function SubscriptionForm({ action, token, initialCategory }: { action: string; token: string; initialCategory: string }) {
   const [selected, setSelected] = useState<string[]>(Object.hasOwn(subscriptionCategories, initialCategory) ? [initialCategory] : Object.keys(subscriptionCategories));
   const [channel, setChannel] = useState<"email" | "robot">("email");
+  const [sendMode, setSendMode] = useState<RobotSendMode>("multiple");
   const [groupName, setGroupName] = useState("");
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -61,7 +76,7 @@ export default function SubscriptionForm({ action, token, initialCategory }: { a
       const form = new FormData(event.currentTarget);
       const path = action === "manage" ? "/subscriptions/settings" : isAction ? `/subscriptions/${action}` : channel === "robot" ? "/robot-subscriptions" : "/subscriptions";
       const body = isAction ? { token, categories: selected } : {
-        ...(channel === "robot" ? { webhook: form.get("webhook") } : { email: form.get("email") }), name: form.get("name"), reason: form.get("reason"), website: form.get("website"), categories: selected, consent: form.get("consent") === "on",
+        ...(channel === "robot" ? { webhook: form.get("webhook"), send_mode: sendMode } : { email: form.get("email") }), name: form.get("name"), reason: form.get("reason"), website: form.get("website"), categories: selected, consent: form.get("consent") === "on",
       };
       const result = await subscriptionRequest(path, body);
       if (!isAction) { setEmail(String(form.get("email") || "").trim()); setGroupName(String(form.get("name") || "").trim()); }
@@ -82,7 +97,7 @@ export default function SubscriptionForm({ action, token, initialCategory }: { a
     </>}
     {needsDetails && token && !loaded && !error && <p role="status" className="subscription-loading">正在读取{action === "confirm" ? "收件邮箱和" : ""}订阅板块…</p>}
     {isAction && !token && <p role="alert" className="subscription-error">链接不完整，请从邮件中重新打开。</p>}
-    {done && !isAction && <><div className="subscription-recipient"><span>{channel === "robot" ? "等待审核的群机器人" : "审核通过后，确认邮件将发送至"}</span><strong>{channel === "robot" ? groupName : email}</strong></div><p>{channel === "robot" ? "审核期间不会向群里发送消息。管理员通过申请后启用定时推送，并决定需要 @ 的成员。" : "请留意此邮箱的收件箱与垃圾邮件。完成审核和邮箱确认后，才会开始接收日报。"}</p></>}
+    {done && !isAction && <><div className="subscription-recipient"><span>{channel === "robot" ? "等待审核的群机器人" : "审核通过后，确认邮件将发送至"}</span><strong>{channel === "robot" ? groupName : email}</strong>{channel === "robot" && <small>申请发送方式：{robotSendModes[sendMode]}</small>}</div><p>{channel === "robot" ? "审核期间不会向群里发送消息。管理员通过申请后启用定时推送，可调整发送方式，并决定需要 @ 的成员。" : "请留意此邮箱的收件箱与垃圾邮件。完成审核和邮箱确认后，才会开始接收日报。"}</p></>}
     {action === "unsubscribe" && <p>确认退订后，将停止接收所有板块的日报。之后可重新申请。</p>}
     {action === "manage" && <p>修改板块将重新提交审核，审核期间暂停发送日报。</p>}
     {!done && !(action === "confirm" && verified) && <form onSubmit={submit}>
@@ -95,6 +110,7 @@ export default function SubscriptionForm({ action, token, initialCategory }: { a
         <label className="subscription-field"><span className="subscription-field-label">称呼 <small>选填</small></span><input name="name" autoComplete="name" maxLength={80} placeholder="怎么称呼你？" disabled={busy} /></label>
       </div>}
       {(!isAction || action === "manage") && <CategoryChoices selected={selected} onChange={setSelected} disabled={busy || (action === "manage" && !loaded)} />}
+      {!isAction && channel === "robot" && <RobotSendModeChoices value={sendMode} onChange={setSendMode} disabled={busy} />}
       {!isAction && <><label className="subscription-field">申请理由<textarea name="reason" maxLength={500} required rows={2} placeholder="简述你的研究、工作或学习方向，供管理员审核（最多 500 字）。" disabled={busy} /></label>
         <div className="subscription-trap" aria-hidden="true"><label>网站<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
         <label className="subscription-consent"><input name="consent" type="checkbox" required disabled={busy} /><span>{channel === "robot" ? "我有权配置此群机器人，并同意为审核与日报发送使用所填信息。通过审核后定时推送，@ 成员由管理员配置；调整或停止推送请联系管理员。" : "我同意为订阅审核与日报发送使用所填信息。审核通过并确认邮箱后开始接收，可随时退订。"}</span></label>
@@ -104,6 +120,6 @@ export default function SubscriptionForm({ action, token, initialCategory }: { a
     <p className="subscription-message" role="status">{message}</p>
     {error && <p className="subscription-error" role="alert">{error}</p>}
     {needsDetails && token && !loaded && error && <button type="button" onClick={() => { setError(""); setAttempt(value => value + 1); }}>重新读取订阅信息</button>}
-    {!isAction && !done && <p className="subscription-footnote">{channel === "robot" ? "审核期间不发送群消息。完整日报发布后，所选板块逐条送达，每个板块一条消息。" : "审核期间不发送邮件。请使用本人邮箱；已订阅用户可通过日报中的「管理订阅板块」修改选择。"}</p>}
+    {!isAction && !done && <p className="subscription-footnote">{channel === "robot" ? "审核期间不发送群消息。完整日报发布后，按审核通过的板块和发送方式推送；管理员可调整发送方式。" : "审核期间不发送邮件。请使用本人邮箱；已订阅用户可通过日报中的「管理订阅板块」修改选择。"}</p>}
   </section>;
 }

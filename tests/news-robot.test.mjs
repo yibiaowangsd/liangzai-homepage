@@ -14,7 +14,7 @@ function fixture(t) {
   const originalTimeout = globalThis.setTimeout;
   t.mock.method(globalThis, 'setTimeout', (callback, delay, ...args) => originalTimeout(callback, delay === 3100 ? 0 : delay, ...args));
   const db = new DatabaseSync(':memory:');
-  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql', '0006_robot_send_mode.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
   db.exec('CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)');
   const insert = db.prepare('INSERT INTO news VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'); let id = 0;
   for (const category of ['pqc', 'protocol', 'standards', 'security', 'ai']) for (let i = 0; i < 5; i++) insert.run(++id, `${date.replaceAll("-", "")}-${category}-${i}`, `${category} story ${i}`, '中文摘要', category, '一手来源', `https://example.com/${category}/${i}`, `${date}T08:00:00Z`, 'published');
@@ -511,4 +511,116 @@ test('manual delivery accepts all seven selected desks and reaches the seventh m
   assert.equal(f.requests.length, 7);
   assert.match(f.requests.at(-1).payload.textMsg.content, /7\/7 · NGCC 公钥征集/);
   assert.doesNotMatch(f.requests.at(-1).payload.textMsg.content, /测试覆盖说明/);
+});
+
+test('applicants choose a send mode; approval preserves it and duplicate applications cannot overwrite it', async t => {
+  const f = fixture(t); await f.apply({ send_mode: 'single' });
+  assert.equal(f.row().send_mode, 'single'); assert.equal(f.row().status, 'pending');
+  assert.equal(f.requests.length, 0);
+  const options = await (await f.api('/robot-subscriptions')).json();
+  assert.deepEqual(Object.keys(options.send_modes), ['single', 'multiple']); assert.equal(options.default_send_mode, 'multiple');
+  await f.approve(); assert.equal(f.row().send_mode, 'single');
+  const list = await (await f.api('/admin/robot-subscriptions?status=approved', undefined, true)).json();
+  assert.equal(list.data[0].send_mode, 'single');
+  await f.apply({ send_mode: 'multiple' }); assert.equal(f.row().send_mode, 'single');
+  await f.api(`/admin/robot-subscriptions/${f.row().id}/reject`, { note: '重新申请' }, true);
+  await f.apply({ send_mode: 'multiple' }); assert.equal(f.row().send_mode, 'multiple'); assert.equal(f.row().status, 'pending');
+});
+
+test('invalid send modes fail without changing applications or approved configuration', async t => {
+  const f = fixture(t);
+  const invalid = [null, true, [], {}, 'all', '__proto__', 'constructor'];
+  for (const send_mode of invalid) {
+    assert.equal((await f.api('/robot-subscriptions', { webhook: testUrl, name: '群', categories: ['ai'], reason: '学习', consent: true, send_mode })).status, 400);
+  }
+  await f.apply(); const path = `/admin/robot-subscriptions/${f.row().id}`;
+  for (const send_mode of invalid) assert.equal((await f.api(`${path}/approve`, { send_mode }, true)).status, 400);
+  assert.equal(f.row().status, 'pending'); assert.equal(f.row().send_mode, 'multiple');
+  await f.approve(); const before = f.row();
+  for (const send_mode of invalid) assert.equal((await f.api(`${path}/settings`, { categories: ['pqc', 'ai'], send_mode }, true)).status, 400);
+  assert.equal((await f.api(`${path}/settings`, { categories: ['pqc', 'ai'], send_mode: 'single' })).status, 401);
+  assert.deepEqual(f.row(), before); assert.equal(f.requests.length, 0);
+});
+
+test('single-message manual sends combine every selected board and retry the same click without duplication', async t => {
+  const f = fixture(t); await f.apply({ send_mode: 'single' });
+  await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  const path = `/admin/robot-subscriptions/${f.row().id}/send`, sendId = crypto.randomUUID();
+  const result = await (await f.api(path, { send_id: sendId, part: 0 }, true)).json();
+  assert.equal(result.ok, true); assert.equal(result.total, 1); assert.equal(result.next_part, 1); assert.equal(result.more, false);
+  assert.equal(f.requests.length, 1);
+  const message = f.requests[0].payload.textMsg;
+  assert.match(message.content, /后量子算法/); assert.match(message.content, /AI 前沿/);
+  for (const category of ['pqc', 'ai']) for (let i = 0; i < 5; i++) assert.ok(message.content.includes(`${category} story ${i} https://example.com/${category}/${i}`));
+  assert.equal(message.content.split(`量仔每日前沿 · ${date}`).length - 1, 1);
+  assert.equal(message.isMentioned, true); assert.deepEqual(message.mentionedMobileList, ['13800000000']);
+  assert.doesNotMatch(message.content, /中文摘要|测试覆盖说明/);
+  const duplicate = await (await f.api(path, { send_id: sendId, part: 0 }, true)).json();
+  assert.equal(duplicate.duplicate, true); assert.equal(f.requests.length, 1);
+  assert.equal((await f.api(path, { send_id: sendId, part: 1, version: result.version }, true)).status, 400);
+  assert.equal((await f.send()).sent, 0, 'Manual delivery still suppresses today\'s automatic replay');
+  assert.equal((await (await f.api(path, { part: 0 }, true)).json()).total, 1);
+  assert.equal(f.requests.length, 2, 'A separate deliberate click may resend the single digest');
+});
+
+test('automatic single-message delivery sends all approved boards once with one member reminder', async t => {
+  const f = fixture(t); await f.apply({ send_mode: 'single', categories: ['pqc', 'protocol', 'ai'] });
+  await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  assert.equal((await f.send()).sent, 1); assert.equal(f.requests.length, 1);
+  const message = f.requests[0].payload.textMsg;
+  for (const category of ['pqc', 'protocol', 'ai']) assert.ok(message.content.includes(`${category} story 4`));
+  assert.equal(message.isMentioned, true); assert.equal(f.record().next_part, 1); assert.equal(f.record().status, 'sent');
+  assert.equal(JSON.parse(f.record().payload).length, 1);
+  assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 1);
+});
+
+test('administrators can override the applicant mode, cancel old batches and reject stale mode edits', async t => {
+  const f = fixture(t); await f.apply({ send_mode: 'single' }); await f.approve(undefined, { send_mode: 'multiple' });
+  assert.equal(f.row().send_mode, 'multiple');
+  const path = `/admin/robot-subscriptions/${f.row().id}`, sendId = crypto.randomUUID();
+  const first = await (await f.api(`${path}/send`, { send_id: sendId, part: 0 }, true)).json();
+  assert.equal(first.more, true); const before = f.row();
+  assert.equal((await f.api(`${path}/settings`, { categories: ['pqc', 'ai'], send_mode: 'multiple', expected_send_mode: 'multiple' }, true)).status, 200);
+  assert.equal(f.row().version, before.version, 'Unchanged mode preserves the active batch');
+  assert.equal((await f.api(`${path}/settings`, { categories: ['pqc', 'ai'], send_mode: 'single', expected_send_mode: 'multiple' }, true)).status, 200);
+  assert.equal(f.row().send_mode, 'single'); assert.notEqual(f.row().version, before.version);
+  assert.equal(f.db.prepare('SELECT status FROM robot_manual_deliveries WHERE send_id = ?').get(sendId).status, 'cancelled');
+  assert.equal((await f.api(`${path}/send`, { send_id: sendId, part: 1, version: first.version, date }, true)).status, 409);
+  const saved = f.row();
+  assert.equal((await f.api(`${path}/settings`, { categories: ['pqc', 'ai'], send_mode: 'multiple', expected_send_mode: 'multiple' }, true)).status, 409);
+  assert.deepEqual(f.row(), saved); assert.equal(f.requests.length, 1);
+  const latest = await (await f.api(`${path}/send`, { part: 0 }, true)).json();
+  assert.equal(latest.total, 1); assert.equal(latest.more, false); assert.equal(f.requests.length, 2);
+});
+
+test('changing send mode stops the remaining messages of an automatic batch', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); let pauses = 0;
+  await f.send({ pause: async () => {
+    if (++pauses === 2) assert.equal((await f.api(`/admin/robot-subscriptions/${f.row().id}/settings`, { categories: ['pqc', 'ai'], send_mode: 'single' }, true)).status, 200);
+  } });
+  assert.equal(f.requests.length, 1); assert.equal(f.record().status, 'cancelled'); assert.equal(f.row().send_mode, 'single');
+});
+
+test('automatic multiple-message delivery can finish all seven boards and only mentions members once', async t => {
+  const f = fixture(t), categories = ['pqc', 'migration', 'protocol', 'standards', 'security', 'ai', 'ngcc'];
+  await f.apply({ categories }); await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  assert.equal(f.row().send_mode, 'multiple'); assert.equal((await f.send()).sent, 7);
+  assert.equal(f.requests.length, 7); assert.equal(f.record().next_part, 7); assert.equal(f.record().status, 'sent');
+  assert.match(f.requests.at(-1).payload.textMsg.content, /7\/7 · NGCC 公钥征集/);
+  assert.equal(f.requests.filter(request => request.payload.textMsg.isMentioned).length, 1);
+  assert.equal((await f.send()).sent, 0);
+});
+
+test('send-mode migration preserves existing subscriptions and delivery history', t => {
+  const db = new DatabaseSync(':memory:'); t.after(() => db.close()); db.exec('PRAGMA foreign_keys = ON');
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
+  db.prepare("INSERT INTO robot_subscribers (id, webhook_hash, webhook_ciphertext, webhook_display, categories, reason, consent_version, status, version) VALUES ('existing', 'hash', 'encrypted', 'display', '[\"ai\"]', 'test', 'v1', 'approved', 'existing-version')").run();
+  db.prepare("INSERT INTO robot_subscription_deliveries (id, subscriber_id, edition_date, version, payload, next_part, status, attempts, created_at, sent_at) VALUES ('history', 'existing', ?, 'existing-version', '[{},{}]', 2, 'sent', 1, 123, '2026-10-09T08:00:00Z')").run(date);
+  const before = db.prepare('SELECT * FROM robot_subscription_deliveries').get();
+  db.exec(readFileSync(new URL('../news-worker/migrations/0006_robot_send_mode.sql', import.meta.url), 'utf8'));
+  assert.equal(db.prepare('SELECT send_mode FROM robot_subscribers').get().send_mode, 'multiple');
+  assert.deepEqual(db.prepare('SELECT * FROM robot_subscription_deliveries').get(), before);
+  db.prepare('UPDATE robot_subscription_deliveries SET next_part = 7').run();
+  assert.throws(() => db.prepare("UPDATE robot_subscribers SET send_mode = 'unknown'").run());
+  assert.throws(() => db.prepare('UPDATE robot_subscription_deliveries SET next_part = 8').run());
 });

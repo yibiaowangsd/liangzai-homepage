@@ -3,6 +3,12 @@ import { RequestError, digest } from './subscriptions.js';
 const encoder = new TextEncoder();
 const encryptionSecret = env => env.ROBOT_WEBHOOK_SECRET || env.NEWSLETTER_TOKEN_SECRET || env.ADMIN_TOKEN;
 export const robotConfigured = env => Boolean(encryptionSecret(env));
+export const ROBOT_SEND_MODES = { single: '单条汇总', multiple: '按板块分多条' };
+
+export function normalizeSendMode(value = 'multiple') {
+  if (typeof value !== 'string' || !Object.hasOwn(ROBOT_SEND_MODES, value)) throw new RequestError('请选择单条汇总或按板块分多条。');
+  return value;
+}
 
 export function normalizeWebhook(value) {
   if (typeof value !== 'string' || value.length > 2048) throw new RequestError('请输入有效的机器人 webhook 地址。');

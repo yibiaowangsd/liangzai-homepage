@@ -26,7 +26,7 @@ test('workerd can send an approved digest again and rejects redirects without fo
   });
   t.after(() => mf.dispose());
   const db = await mf.getD1Database('DB');
-  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql']) {
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql', '0006_robot_send_mode.sql']) {
     const sql = readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8').replace(/--[^\n]*/g, '');
     for (const statement of sql.split(';').map(s => s.trim()).filter(Boolean)) await db.prepare(statement).run();
   }
@@ -57,7 +57,19 @@ test('workerd can send an approved digest again and rejects redirects without fo
   const beforeDuplicate = requests.length;
   const duplicate = await send(false, duplicateId);
   assert.equal(duplicate.duplicate, true); assert.equal(duplicate.sent, 0); assert.equal(requests.length, beforeDuplicate);
+  await db.prepare("INSERT INTO news VALUES (100, ?, 'protocol runtime story', 'summary', 'protocol', 'source', 'https://example.com/protocol', ?, 'published')").bind(`${date.replaceAll('-', '')}-runtime-protocol`, `${date}T08:00:00Z`).run();
+  const expanded = manifestFor((await db.prepare('SELECT slug, category FROM news').all()).results);
+  await db.prepare('UPDATE news_editions SET coverage = ?, slugs = ? WHERE date = ?').bind(expanded.coverage, expanded.slugs, date).run();
+  const configured = await mf.dispatchFetch(`https://api.wangyibiao.com/api/admin/robot-subscriptions/${id}/settings`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer test-review', Origin: 'https://wangyibiao.com' },
+    body: JSON.stringify({ categories: ['protocol', 'ai'], send_mode: 'single', expected_send_mode: 'multiple' }),
+  });
+  assert.equal(configured.status, 200);
+  const single = await send(); assert.equal(single.ok, true); assert.equal(single.total, 1); assert.equal(single.more, false);
+  assert.equal(requests.length, beforeDuplicate + 1);
+  assert.match(requests.at(-1).payload.textMsg.content, /protocol runtime story/);
+  assert.match(requests.at(-1).payload.textMsg.content, /story 4/);
   redirect = true;
   const rejected = await send(); assert.equal(rejected.ok, false); assert.equal(rejected.error_code, 'redirect_rejected');
-  assert.equal(requests.length, 5, 'No request is made to the redirect target');
+  assert.equal(requests.length, 6, 'No request is made to the redirect target');
 });
