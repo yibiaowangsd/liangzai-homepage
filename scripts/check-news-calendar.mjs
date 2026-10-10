@@ -120,15 +120,18 @@ try {
         await dialog.locator('[data-date="2026-09-30"]').click();
         await page.waitForURL("**/news?date=2026-09-30&category=protocol");
         await page.locator('.news-day-controls time[datetime="2026-09-30"]').waitFor();
+        await page.waitForLoadState("networkidle");
         await page.reload({ waitUntil: "networkidle" });
         assert.equal(await page.locator(".news-day-controls time").getAttribute("datetime"), "2026-09-30");
         const article = page.locator('.lead-copy h2 a');
         assert.equal(await article.getAttribute("href"), "/news/2026-09-30-protocol?date=2026-09-30&category=protocol");
         await article.click();
         await page.locator(".article-back").waitFor();
+        await page.waitForLoadState("networkidle");
         await page.locator(".article-back").click();
         await page.waitForURL("**/news?date=2026-09-30&category=protocol");
         await page.locator('.news-day-controls time[datetime="2026-09-30"]').waitFor();
+        await page.waitForLoadState("networkidle");
       }
 
       await page.goto(base + "/news?date=2026-10-10&category=protocol", { waitUntil: "networkidle" });
@@ -145,6 +148,7 @@ try {
       await page.keyboard.press("Enter");
       await page.waitForURL("**/news?date=2026-10-08&category=protocol");
       await page.locator('.news-day-controls time[datetime="2026-10-08"]').waitFor();
+      await page.waitForLoadState("networkidle");
       await trigger.click();
       await dialog.waitFor({ state: "visible" });
       await dialog.getByLabel("选择月份").selectOption("2026-08");
@@ -152,11 +156,13 @@ try {
       await dialog.getByRole("button", { name: "最新一期", exact: true }).click();
       await page.waitForURL("**/news?date=2026-10-10&category=protocol");
       await page.locator('.news-day-controls time[datetime="2026-10-10"]').waitFor();
+      await page.waitForLoadState("networkidle");
 
       await page.locator(".news-category-menu summary").click();
       await page.getByRole("navigation", { name: "新闻方向" }).getByRole("link", { name: "后量子算法", exact: true }).click();
       await page.waitForURL("**/news?date=2026-10-10&category=pqc");
       await page.locator('.lead-copy h2 a[href*="-pqc"]').waitFor();
+      await page.waitForLoadState("networkidle");
       await expect(page.locator(".news-category-menu")).toHaveJSProperty("open", false);
       await page.locator(".news-category-menu summary").click();
       await page.keyboard.press("Escape");
