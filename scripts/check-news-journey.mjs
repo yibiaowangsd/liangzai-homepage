@@ -21,6 +21,7 @@ const stories = [
   ['aws-practice', 'AWS 抗量子部署', 'protocol', '2026-10-10', 'AWS 部署正文'],
   ['ai-practice', 'AI 开发工具进展', 'ai', '2026-10-10', '开发正文'],
   ['old-body-match', '早期边缘代理实现', 'protocol', '2026-10-09', '原始来源日期：2026-10-08。AWS TLS 内容仅出现在正文。'],
+  ['cn-library', '铜锁混合协议发布', 'protocol', '2026-10-08', '混合密钥交换实现的发布说明。'],
 ];
 // The live archive orders equal timestamps by descending insertion ID.
 // Keep the fixture's intended reading sequence in that same order.
@@ -109,6 +110,11 @@ try {
         await expect(dialog.locator('.jump-result-count')).toHaveText('2 篇新闻 · 0 个栏目');
         await expect(dialog.getByRole('link', { name: /早期边缘代理实现/ })).toBeVisible();
         await page.screenshot({ path: resolve(output, `${engine}-${width}-search.png`) });
+        for (const query of ['tongsou', 'tong-suo', '铜锁']) {
+          await dialog.getByRole('searchbox').fill(query);
+          await expect(dialog.locator('.jump-result-count')).toHaveText('1 篇新闻 · 0 个栏目');
+          await expect(dialog.getByRole('link', { name: /铜锁混合协议发布/ })).toBeVisible();
+        }
         await dialog.getByRole('searchbox').fill('search-outage');
         await expect(dialog.locator('.jump-result-count')).toContainText('新闻搜索暂时不可用');
         await dialog.getByRole('searchbox').fill('AWS');
@@ -171,6 +177,11 @@ try {
 
         await page.locator('.jump-trigger').click();
         const labSearch = page.getByRole('dialog', { name: '搜索全站' });
+        await labSearch.getByRole('searchbox').fill('AWS');
+        await expect(labSearch.locator('.practice-search-status')).toHaveText('2 篇新闻 · 0 个栏目');
+        await labSearch.getByRole('searchbox').fill('tongsou');
+        await expect(labSearch.locator('.practice-search-status')).toHaveText('1 篇新闻 · 0 个栏目');
+        await expect(labSearch.getByRole('link', { name: /铜锁混合协议发布/ })).toBeVisible();
         await labSearch.getByRole('searchbox').fill('AWS');
         await expect(labSearch.locator('.practice-search-status')).toHaveText('2 篇新闻 · 0 个栏目');
         await labSearch.getByRole('link', { name: /AWS 抗量子部署/ }).click();
