@@ -80,7 +80,7 @@ try {
         const response = newsResponse(route.request().url());
         await route.fulfill({ status: response.status, contentType: "application/json", body: await response.text() });
       });
-      const page = await context.newPage();
+      let page = await context.newPage();
       const errors = [];
       const failedRequests = [];
       let documentNavigation = false;
@@ -89,17 +89,28 @@ try {
         try { return await action(); }
         finally { documentNavigation = false; }
       }
-      page.on("pageerror", error => errors.push({ message: String(error), documentNavigation }));
-      page.on("console", message => { if (message.type() === "error" && /hydration|did not match|React error/i.test(message.text())) errors.push({ message: message.text(), documentNavigation }); });
-      page.on("requestfailed", request => {
-        if (request.url().startsWith(base + "/") && request.url().includes(".rsc")) {
-          failedRequests.push({ url: request.url(), failure: request.failure()?.errorText || "", documentNavigation });
-        }
-      });
+      function observePage(target) {
+        target.on("pageerror", error => errors.push({ message: String(error), documentNavigation }));
+        target.on("console", message => { if (message.type() === "error" && /hydration|did not match|React error/i.test(message.text())) errors.push({ message: message.text(), documentNavigation }); });
+        target.on("requestfailed", request => {
+          if (request.url().startsWith(base + "/") && request.url().includes(".rsc")) {
+            failedRequests.push({ url: request.url(), failure: request.failure()?.errorText || "", documentNavigation });
+          }
+        });
+      }
+      observePage(page);
+      // A fresh document verifies the saved URL without letting old idle
+      // prefetch callbacks run into a forced reload of the same browser page.
+      async function openDocument(url, viewport = { width: 1440, height: 900 }) {
+        await page.close();
+        page = await context.newPage();
+        await page.setViewportSize(viewport);
+        observePage(page);
+        return page.goto(url, { waitUntil: "networkidle" });
+      }
 
       for (const width of [320, 390, 1440]) {
-        await page.setViewportSize({ width, height: 900 });
-        await navigateDocument(() => page.goto(base + "/news?category=protocol", { waitUntil: "networkidle" }));
+        await navigateDocument(() => openDocument(base + "/news?category=protocol", { width, height: 900 }));
         const trigger = page.locator(".news-day-controls .news-date-trigger");
         assert.equal(await trigger.boundingBox().then(bounds => bounds.height >= 44), true);
         await trigger.click();
@@ -133,7 +144,7 @@ try {
         await page.waitForURL("**/news?date=2026-09-30&category=protocol");
         await page.locator('.news-day-controls time[datetime="2026-09-30"]').waitFor();
         await page.waitForLoadState("networkidle");
-        await navigateDocument(() => page.reload({ waitUntil: "networkidle" }));
+        await navigateDocument(() => openDocument(page.url(), { width, height: 900 }));
         assert.equal(await page.locator(".news-day-controls time").getAttribute("datetime"), "2026-09-30");
         const article = page.locator('.lead-copy h2 a');
         assert.equal(await article.getAttribute("href"), "/news/2026-09-30-protocol?date=2026-09-30&category=protocol");
@@ -146,7 +157,7 @@ try {
         await page.waitForLoadState("networkidle");
       }
 
-      await navigateDocument(() => page.goto(base + "/news?date=2026-10-10&category=protocol", { waitUntil: "networkidle" }));
+      await navigateDocument(() => openDocument(base + "/news?date=2026-10-10&category=protocol"));
       const trigger = page.locator(".news-day-controls .news-date-trigger");
       await trigger.click();
       const dialog = page.getByRole("dialog", { name: "选择日刊日期" });

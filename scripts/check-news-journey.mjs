@@ -75,10 +75,15 @@ try {
           const response = url.searchParams.get('q') === 'search-outage' ? new Response('{}', { status: 503 }) : await newsWorker.fetch(new Request(url), newsEnv);
           await route.fulfill({ status: response.status, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: await response.text() });
         });
-        const page = await context.newPage();
+        let page = await context.newPage();
         const errors = [];
         page.on('pageerror', error => errors.push(String(error)));
-        const goto = path => page.goto(base + path, { waitUntil: 'networkidle' });
+        async function goto(path) {
+          await page.close();
+          page = await context.newPage();
+          page.on('pageerror', error => errors.push(String(error)));
+          return page.goto(base + path, { waitUntil: 'networkidle' });
+        }
         await goto('/news?date=2026-10-10');
         assert.doesNotMatch(await page.locator('.news-day-controls').innerText(), /条|第 .*期/);
 
