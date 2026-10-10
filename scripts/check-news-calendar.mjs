@@ -181,8 +181,10 @@ try {
       await page.setViewportSize({ width: 390, height: 420 });
       await page.locator(".news-day-controls .news-date-trigger").click();
       await darkDialog.waitFor({ state: "visible" });
-      const shortBounds = await darkDialog.boundingBox();
-      assert.ok(shortBounds.y >= 0 && shortBounds.y + shortBounds.height <= 421, `${engine} calendar fits a short viewport`);
+      await expect.poll(async () => {
+        const bounds = await darkDialog.boundingBox();
+        return bounds && bounds.y >= 0 && bounds.y + bounds.height <= 421;
+      }, { message: `${engine} calendar fits a short viewport` }).toBe(true);
       await page.screenshot({ path: resolve(output, `${engine}-short.png`), fullPage: false });
       assert.deepEqual(errors, [], `${engine} has no page or hydration errors`);
       console.log(`${engine}: calendar selection, keyboard, history, categories and responsive checks passed`);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useId, useLayoutEffect, useRef, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import { isEditionDate, monthCells, monthLabel, shiftEditionDate, shiftEditionMonth } from "./calendar";
 import { newsListingHref } from "./navigation";
@@ -43,19 +43,20 @@ export default function NewsDatePicker({
 
   // A native popover stays above the sticky toolbar and closes on outside click
   // or Escape. Position it within the viewport, including short mobile screens.
-  useEffect(() => {
+  const position = useCallback(() => {
+    if (!trigger.current || !calendar.current?.matches(":popover-open")) return;
+    const anchor = trigger.current.getBoundingClientRect();
+    const width = calendar.current.offsetWidth;
+    const height = calendar.current.offsetHeight;
+    const left = Math.max(12, Math.min(anchor.left + (anchor.width - width) / 2, window.innerWidth - width - 12));
+    const below = anchor.bottom + 8;
+    const top = below + height <= window.innerHeight - 12 ? below : Math.max(12, anchor.top - height - 8);
+    calendar.current.style.left = left + "px";
+    calendar.current.style.top = Math.min(top, Math.max(12, window.innerHeight - height - 12)) + "px";
+  }, []);
+
+  useLayoutEffect(() => {
     if (!open) return;
-    function position() {
-      if (!trigger.current || !calendar.current) return;
-      const anchor = trigger.current.getBoundingClientRect();
-      const width = calendar.current.offsetWidth;
-      const height = calendar.current.offsetHeight;
-      const left = Math.max(12, Math.min(anchor.left + (anchor.width - width) / 2, window.innerWidth - width - 12));
-      const below = anchor.bottom + 8;
-      const top = below + height <= window.innerHeight - 12 ? below : Math.max(12, anchor.top - height - 8);
-      calendar.current.style.left = left + "px";
-      calendar.current.style.top = Math.min(top, Math.max(12, window.innerHeight - height - 12)) + "px";
-    }
     position();
     if (focusDay.current) {
       calendar.current?.querySelector<HTMLButtonElement>(`[data-date="${focusedDate}"]`)?.focus({ preventScroll: true });
@@ -67,7 +68,7 @@ export default function NewsDatePicker({
       window.removeEventListener("resize", position);
       window.removeEventListener("scroll", position, true);
     };
-  }, [open, month, focusedDate]);
+  }, [open, month, focusedDate, position]);
 
   function showMonth(value: string) {
     const next = dates.find(day => day.startsWith(value)) || value + "-01";
@@ -136,9 +137,16 @@ export default function NewsDatePicker({
             focusDay.current = true;
             setMonth(initialDate.slice(0, 7));
             setFocusedDate(initialDate);
+            // beforetoggle runs while the popover is still hidden. Measure as
+            // soon as the native opening finishes, before the browser paints.
+            queueMicrotask(position);
           }
         }}
-        onToggle={event => setOpen((event.nativeEvent as ToggleEvent).newState === "open")}
+        onToggle={event => {
+          const nextOpen = (event.nativeEvent as ToggleEvent).newState === "open";
+          if (nextOpen) position();
+          setOpen(nextOpen);
+        }}
       >
         <header className="news-calendar-header">
           <strong>选择日刊日期</strong>
