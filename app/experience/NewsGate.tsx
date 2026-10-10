@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import StoryImage from "../news/StoryImage";
+import policy from "../../news/edition-policy.json";
 import {
   useCallback,
   useEffect,
@@ -29,13 +30,9 @@ type GatePayload = {
   data: GateItem[];
 };
 
-const labels: Record<string, string> = {
-  pqc: "后量子密码",
-  protocol: "抗量子协议",
-  standards: "标准动态",
-  security: "网络安全",
-  ai: "AI 前沿",
-};
+const labels: Record<string, string> = Object.fromEntries(
+  Object.entries(policy.categories).map(([key, value]) => [key, value.label]),
+);
 
 
 export default function NewsGate() {
