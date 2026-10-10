@@ -5,6 +5,7 @@ export { robotConfigured } from './robot-config.js';
 
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
 const pauseBetweenMessages = () => new Promise(resolve => setTimeout(resolve, 3100));
+const SECTION_NUMBERS = ['一', '二', '三', '四', '五', '六', '七'];
 function cleanText(value, limit) {
   // Prevent news text from adding fake sections, control characters or mass mentions.
   const text = String(value ?? '').replace(/[\x00-\x1f\x7f]/g, ' ').replace(/@/g, '＠').replace(/\s+/g, ' ').trim();
@@ -22,8 +23,8 @@ function sourceUrl(value) {
 export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTION_CATEGORIES), mentions = { mode: 'none', mobiles: [] }, options = {}) {
   const categories = normalizeCategories(selected);
   const sendMode = normalizeSendMode(options.send_mode);
-  const sections = categories.map(category => {
-    const label = SUBSCRIPTION_CATEGORIES[category];
+  const sections = categories.map((category, sectionIndex) => {
+    const label = `${SECTION_NUMBERS[sectionIndex]}、${SUBSCRIPTION_CATEGORIES[category]}`;
     const stories = items.filter(item => item.category === category).slice(0, 5);
     const lines = [];
     for (const [index, item] of stories.entries()) {
@@ -37,7 +38,7 @@ export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTIO
   if (sendMode === 'single') {
     return [message([`量仔每日前沿 · ${date}`, ...sections.map(section => [section.label, ...section.lines].join('\n'))].join('\n\n'), true)];
   }
-  return sections.map((section, part) => message([`量仔每日前沿 · ${date}`, `${part + 1}/${sections.length} · ${section.label}`, ...section.lines].join('\n').trim(), part === 0));
+  return sections.map((section, part) => message([`量仔每日前沿 · ${date}`, `${section.label}（${part + 1}/${sections.length}）`, ...section.lines].join('\n').trim(), part === 0));
 }
 
 class DeliveryError extends Error {

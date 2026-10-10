@@ -65,7 +65,7 @@ test('approved robot sends selected sections with administrator mentions only on
   const [first, second] = f.requests.map(r => r.payload.textMsg);
   assert.equal(first.isMentioned, true); assert.equal(first.mentionType, 2); assert.deepEqual(first.mentionedMobileList, ['13800000000','13900000000']);
   assert.equal(second.isMentioned, false); assert.equal(second.mentionedMobileList, undefined);
-  assert.match(first.content, /1\/2 · 后量子算法/); assert.match(second.content, /2\/2 · AI 前沿/);
+  assert.match(first.content, /一、后量子算法（1\/2）/); assert.match(second.content, /二、AI 前沿（2\/2）/);
   assert.equal(first.content.split('\n').filter(line => /^\d\. pqc story \d https:\/\/example.com\/pqc\/\d$/.test(line)).length, 5);
   assert.doesNotMatch(first.content + second.content, /中文摘要|一手来源|来源：|阅读原文：|protocol story|wangyibiao.com\/news/);
   assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 2);
@@ -252,7 +252,7 @@ test('compact digest keeps each short title beside its complete original link', 
     { category: 'ai', title: '量🚀'.repeat(40), source_url: 'https://example.com/long-title' },
   ], ['ai']);
   assert.deepEqual(message.textMsg.content.split('\n'), [
-    `量仔每日前沿 · ${date}`, '1/1 · AI 前沿',
+    `量仔每日前沿 · ${date}`, '一、AI 前沿（1/1）',
     '1. 简短标题 https://example.com/original?a=1&b=2',
     `2. ${'量🚀'.repeat(29)}量… https://example.com/long-title`,
   ]);
@@ -509,7 +509,7 @@ test('manual delivery accepts all seven selected desks and reaches the seventh m
     step = { send_id: step.send_id, part: result.next_part, version: result.version, date: result.date };
   }
   assert.equal(f.requests.length, 7);
-  assert.match(f.requests.at(-1).payload.textMsg.content, /7\/7 · NGCC 公钥征集/);
+  assert.match(f.requests.at(-1).payload.textMsg.content, /七、NGCC 公钥征集（7\/7）/);
   assert.doesNotMatch(f.requests.at(-1).payload.textMsg.content, /测试覆盖说明/);
 });
 
@@ -550,7 +550,7 @@ test('single-message manual sends combine every selected board and retry the sam
   assert.equal(result.ok, true); assert.equal(result.total, 1); assert.equal(result.next_part, 1); assert.equal(result.more, false);
   assert.equal(f.requests.length, 1);
   const message = f.requests[0].payload.textMsg;
-  assert.match(message.content, /后量子算法/); assert.match(message.content, /AI 前沿/);
+  assert.match(message.content, /^一、后量子算法$/m); assert.match(message.content, /^二、AI 前沿$/m);
   for (const category of ['pqc', 'ai']) for (let i = 0; i < 5; i++) assert.ok(message.content.includes(`${category} story ${i} https://example.com/${category}/${i}`));
   assert.equal(message.content.split(`量仔每日前沿 · ${date}`).length - 1, 1);
   assert.equal(message.isMentioned, true); assert.deepEqual(message.mentionedMobileList, ['13800000000']);
@@ -606,7 +606,10 @@ test('automatic multiple-message delivery can finish all seven boards and only m
   await f.apply({ categories }); await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
   assert.equal(f.row().send_mode, 'multiple'); assert.equal((await f.send()).sent, 7);
   assert.equal(f.requests.length, 7); assert.equal(f.record().next_part, 7); assert.equal(f.record().status, 'sent');
-  assert.match(f.requests.at(-1).payload.textMsg.content, /7\/7 · NGCC 公钥征集/);
+  assert.deepEqual(f.requests.map(request => request.payload.textMsg.content.split('\n')[1]), [
+    '一、后量子算法（1/7）', '二、抗量子迁移（2/7）', '三、抗量子协议（3/7）',
+    '四、标准动态（4/7）', '五、网络安全（5/7）', '六、AI 前沿（6/7）', '七、NGCC 公钥征集（7/7）',
+  ]);
   assert.equal(f.requests.filter(request => request.payload.textMsg.isMentioned).length, 1);
   assert.equal((await f.send()).sent, 0);
 });
