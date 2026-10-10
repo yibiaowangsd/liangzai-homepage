@@ -283,7 +283,7 @@ async function getEditions(env, page, pageSize, category) {
   const where = category ? "WHERE status = 'published' AND category = ?" : "WHERE status = 'published'";
   const args = category ? [category] : [];
   const includeManifest = !category || CORE_CATEGORIES.includes(category);
-  // Include explicitly empty desks in v2 archives so readers see the coverage note.
+  // Preserve explicitly empty desks in v2 archive metadata for edition validation.
   const datesQuery = `SELECT date(published_at, '+8 hours') AS edition_date FROM news ${where}
     ${includeManifest ? 'UNION SELECT date AS edition_date FROM news_editions' : ''}`;
   const countRow = await env.DB.prepare(`SELECT COUNT(DISTINCT edition_date) AS total_days FROM (${datesQuery})`).bind(...args).first();

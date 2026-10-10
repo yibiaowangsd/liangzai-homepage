@@ -86,15 +86,19 @@ test('a failure writing the manifest rolls back upserts and removals', async t =
   assert.equal(JSON.stringify(f.rows()), before);
 });
 
-test('new categories can be selected together; selected empty desks explain their coverage in both digests', async () => {
+test('new categories can be selected together without exposing internal coverage notes in digests', async () => {
   assert.deepEqual(normalizeCategories(CORE_CATEGORIES), CORE_CATEGORIES);
   const p = payload(); p.coverage.ngcc = { count: 0, note: '本期未发现可核实的新进展，已核对候选安全报告。' };
+  p.coverage.migration.note = '本期保留可实际阅读并核实的迁移部署案例，其他旧版选题已剔除。';
   const items = p.items.filter(item => item.category !== 'ngcc');
   const messages = buildRobotDigest(date, items, CORE_CATEGORIES, undefined, p.coverage);
   assert.equal(messages.length, 7); assert.match(messages.at(-1).textMsg.content, /7\/7 · NGCC 公钥征集/);
-  assert.ok(messages.at(-1).textMsg.content.includes(p.coverage.ngcc.note));
   const mail = await buildDigest({ ADMIN_TOKEN: 'test', NEWSLETTER_FROM: 'test@example.com' }, { id: 'test', email: 'reader@example.com', categories: '["migration","ngcc"]', token_version: 'v1' }, date, items, p.coverage);
-  assert.ok(mail.text.includes(p.coverage.ngcc.note)); assert.ok(mail.html.includes(p.coverage.ngcc.note));
+  for (const note of [p.coverage.ngcc.note, p.coverage.migration.note]) {
+    assert.ok(messages.every(message => !message.textMsg.content.includes(note)));
+    assert.ok(!mail.text.includes(note)); assert.ok(!mail.html.includes(note));
+  }
+  assert.ok(mail.text.includes(items.find(item => item.category === 'migration').title));
   assert.match(mail.subject, /抗量子迁移.*NGCC/);
 });
 
@@ -113,7 +117,7 @@ test('Python validator accepts complete v2 and documented shortfalls, rejecting 
 
 test('historical five-by-five editions still publish and qualify for legacy digest delivery', async t => {
   const f = fixture(t);
-  const legacy = JSON.parse(readFileSync(new URL('../news/inbox/2026-10-10.json', import.meta.url), 'utf8'));
+  const legacy = JSON.parse(readFileSync(new URL('../news/inbox/2026-10-08.json', import.meta.url), 'utf8'));
   const response = await f.publish(legacy); assert.equal(response.status, 200);
   assert.equal((await response.json()).inserted, 25);
   assert.deepEqual(await publishedCoverage(f.env, legacy.date, f.rows()), {});

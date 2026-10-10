@@ -19,7 +19,7 @@ NGCC 逐项记录候选编号/名称、参数集、规范/实现版本、稳定 
 
 逐条实际阅读足够的一手全文、release/changelog、代码变更、技术文档或实测记录。搜索摘要、论文摘要、聚合与漏洞索引只能找线索，不能独立支撑长文。优先 NIST、IETF Datatracker/RFC Editor、IACR/ePrint、arXiv 全文、国内主管部门/标准组织、ITU-T/ISO/3GPP、项目仓库、作者或厂商技术原文；无法核实则换选题或少报。记录原始日期、版本、证据及限制；不杜撰性能数字、标准状态、研究对象或参与单位。必要时交叉验证。
 
-按当前仓库 v2 Schema 生成严格 JSON：{"schema_version":2,"date":"YYYY-MM-DD","coverage":{七个category各含{"count":实际条数,"note":"覆盖说明"}},"items":[...]}。coverage 必须含全部七方向、每方向最多 5 条；少于 3 条时 note 至少 12 字，准确说明无新增、数量不足或不可访问的具体范围，不笼统声称全球没有新进展。正常方向 note 可为空。实际 items 总数与七类 count 一致。
+按当前仓库 v2 Schema 生成严格 JSON：{"schema_version":2,"date":"YYYY-MM-DD","coverage":{七个category各含{"count":实际条数,"note":"覆盖说明"}},"items":[...]}。coverage 必须含全部七方向、每方向最多 5 条；少于 3 条时 note 至少 12 字，准确说明无新增、数量不足或不可访问的具体范围，不笼统声称全球没有新进展。正常方向 note 可为空。note 是内部选编核验元数据，禁止放入新闻标题、摘要、正文以及网页、邮件、机器人消息。实际 items 总数与七类 count 一致。
 
 每篇包含 slug、title、summary、content、category、tags、source_name、source_url、cover_image、published_at、status。slug 以当日 YYYYMMDD- 开头，仅小写字母/数字/单连字符且唯一。summary 100—180 字中文。content 通常 600—1600 字、至少 600 字符和 5 个实质段落，每段至少 50 字符；按原文论证顺序用自己的语言较完整中文编译，保留主要事实、机制、证据、数据口径和限制，再用独立“## 量仔观察”写至少 80 字与该选题具体相关的本站判断。开头明确 ISO 原始日期，版本更新单独注明，技术回顾清楚标记。正文采用连续长文与少量小标题，不写要点卡片，不靠重复摘要、复述段落或通用建议凑字。事实、作者主张、本站分析分清。原文不足以支持长文时更换选题。版权资料受许可和引用限额约束，默认中文编译分析并保留入口；仅有合法权限时才全文翻译。
 

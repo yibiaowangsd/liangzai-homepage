@@ -33,19 +33,12 @@ function TopicDesk({
   category,
   items,
   listingHref,
-  note,
 }: {
   category: string;
   items: NewsItem[];
   listingHref: string;
-  note?: string;
 }) {
-  if (!items.length) return note ? (
-    <section className="desk" id={category}>
-      <header className="desk-head"><h3>{categoryLabels[category] || category}</h3><strong>00</strong></header>
-      <p className="desk-coverage-note">{note}</p>
-    </section>
-  ) : null;
+  if (!items.length) return null;
   const lead = items[0];
   const rest = items.slice(1);
 
@@ -58,7 +51,6 @@ function TopicDesk({
         <strong>{items.length.toString().padStart(2, "0")}</strong>
       </header>
 
-      {note && <p className="desk-coverage-note">{note}</p>}
       <div className="desk-layout">
         <article className="desk-lead">
           <Link
@@ -296,7 +288,6 @@ export default async function NewsPage({
                     category={key}
                     listingHref={listingHref}
                     items={edition.topics[key] || []}
-                    note={edition.coverage?.[key]?.note}
                   />
                 ))}
               </section>

@@ -19,13 +19,12 @@ function sourceUrl(value) {
   } catch { return null; }
 }
 
-export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTION_CATEGORIES), mentions = { mode: 'none', mobiles: [] }, coverage = {}) {
+export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTION_CATEGORIES), mentions = { mode: 'none', mobiles: [] }) {
   const categories = normalizeCategories(selected);
   return categories.map((category, part) => {
     const label = SUBSCRIPTION_CATEGORIES[category];
     const stories = items.filter(item => item.category === category).slice(0, 5);
     const lines = [`量仔每日前沿 · ${date}`, `${part + 1}/${categories.length} · ${label}`];
-    if (coverage[category]?.note) lines.push(cleanText(coverage[category].note, 600));
     for (const [index, item] of stories.entries()) {
       const original = sourceUrl(item.source_url);
       lines.push(`${index + 1}. ${cleanText(item.title, 60)}${original ? ` ${original}` : ''}`);
@@ -128,7 +127,7 @@ export async function sendManualRobotDigest(env, subscriberId, { send_id: sendId
     if (part !== 0) throw new RequestError('发送批次不存在，请重新点击立刻发送。', 409);
     const edition = await editionItems(env, date, categories);
     if (!edition) throw new RequestError('所选板块的当日日报尚未完整发布，暂不能发送。', 409);
-    const payload = buildRobotDigest(date, edition.items, categories, { mode: row.mention_mode, mobiles: JSON.parse(row.mention_mobiles) }, edition.coverage);
+    const payload = buildRobotDigest(date, edition.items, categories, { mode: row.mention_mode, mobiles: JSON.parse(row.mention_mobiles) });
     // This insert and Cron's claim each exclude the other's active work. A
     // completed manual batch also suppresses today's later automatic delivery.
     await env.DB.prepare(`INSERT INTO robot_manual_deliveries (send_id, subscriber_id, edition_date, version, payload, lease_until, created_at)
@@ -194,7 +193,7 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
     const edition = await editionItems(env, date);
     if (!edition) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
     for (const subscriber of subscribers) {
-      const payload = buildRobotDigest(date, edition.items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) }, edition.coverage);
+      const payload = buildRobotDigest(date, edition.items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) });
       // Respect today's legacy singleton history when the same group applies
       // after migration. Approval must not replay an already attempted edition.
       let fingerprint;

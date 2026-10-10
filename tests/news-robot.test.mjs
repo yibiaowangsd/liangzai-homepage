@@ -510,5 +510,5 @@ test('manual delivery accepts all seven selected desks and reaches the seventh m
   }
   assert.equal(f.requests.length, 7);
   assert.match(f.requests.at(-1).payload.textMsg.content, /7\/7 · NGCC 公钥征集/);
-  assert.match(f.requests.at(-1).payload.textMsg.content, /测试覆盖说明/);
+  assert.doesNotMatch(f.requests.at(-1).payload.textMsg.content, /测试覆盖说明/);
 });
