@@ -22,7 +22,9 @@ const stories = [
   ['ai-practice', 'AI 开发工具进展', 'ai', '2026-10-10', '开发正文'],
   ['old-body-match', '早期边缘代理实现', 'protocol', '2026-10-09', '原始来源日期：2026-10-08。AWS TLS 内容仅出现在正文。'],
 ];
-stories.forEach(([slug, title, category, date, content], index) => insert.run(index + 1, slug, title, '用于核验连续阅读与文章搜索的摘要。', content + '\n\n## 量仔观察\n\n本站分析。', category, '[]', '测试来源', null, '/news-covers/' + category + '.svg', date + 'T08:00:00+08:00', 'published'));
+// The live archive orders equal timestamps by descending insertion ID.
+// Keep the fixture's intended reading sequence in that same order.
+stories.forEach(([slug, title, category, date, content], index) => insert.run(stories.length - index, slug, title, '用于核验连续阅读与文章搜索的摘要。', content + '\n\n## 量仔观察\n\n本站分析。', category, '[]', '测试来源', null, '/news-covers/' + category + '.svg', date + 'T08:00:00+08:00', 'published'));
 const newsEnv = { DB: { prepare(sql) {
   const statement = db.prepare(sql);
   let args = [];
@@ -62,6 +64,9 @@ const output = resolve('outputs/news-journey');
 await mkdir(output, { recursive: true });
 
 try {
+  const editionResponse = await newsWorker.fetch(new Request('https://api.wangyibiao.com/api/news/editions?date=2026-10-10&category=protocol'), newsEnv);
+  const editionFixture = await editionResponse.json();
+  assert.deepEqual(editionFixture.data[0].topics.protocol.map(story => story.slug), ['tls-practice', 'aws-practice'], 'Fixture follows the real archive reading order');
   const engines = process.env.NEWS_JOURNEY_ENGINES?.split(',') || ['chromium', 'firefox', 'webkit'];
   for (const engine of engines) {
     const browserType = { chromium, firefox, webkit }[engine];
