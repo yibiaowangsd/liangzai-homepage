@@ -186,6 +186,27 @@ test("news pages preserve published content and accessible rendering", async (t)
       assert.deepEqual(sparseHighlights, ["pqc-0", "ai-0", "pqc-1", "ai-1", "pqc-2"].map((slug) => `/news/highlights-${slug}`));
     });
 
+    await t.test("seven directions appear in highlights and explicit empty-desk notes remain visible", async () => {
+      const categories = ["pqc", "migration", "protocol", "standards", "security", "ai", "ngcc"];
+      const items = categories.flatMap(category => Array.from({ length: 3 }, (_, index) => ({ ...publishedItems[0],
+        slug: `seven-${category}-${index}`, title: `${category} 七方向新闻 ${index}`, category,
+      })));
+      upstream = () => Response.json(editions(items));
+      const main = await render("/news");
+      const front = main.slice(main.indexOf('<section class="front-page">'), main.indexOf('<div class="edition-stack">'));
+      for (const category of categories) assert.ok(front.includes(`/news/seven-${category}-0`));
+      assert.match(main, /抗量子迁移/); assert.match(main, /NGCC 公钥征集/);
+      const sparse = editions(items.filter(item => item.category !== "ngcc"));
+      sparse.data[0].coverage = { ngcc: { count: 0, note: "本期未发现可核实的新进展；已核对候选报告。" } };
+      upstream = () => Response.json(sparse);
+      assert.ok((await render("/news")).includes(sparse.data[0].coverage.ngcc.note));
+      const empty = editions([]); empty.data = [{ date: "2026-10-11", total: 0, topics: {}, coverage: sparse.data[0].coverage }];
+      upstream = () => Response.json(empty);
+      const filtered = await render("/news?category=ngcc");
+      assert.ok(filtered.includes(sparse.data[0].coverage.ngcc.note));
+      assert.doesNotMatch(filtered, /下一版简报正在路上/);
+    });
+
     await t.test("source images retain their URL and use uncropped treatment", async () => {
       const items = [
         publishedItems[0],

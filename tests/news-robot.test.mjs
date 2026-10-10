@@ -1,3 +1,4 @@
+import { seedManifest } from './fixtures/news-manifest.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
@@ -13,10 +14,11 @@ function fixture(t) {
   const originalTimeout = globalThis.setTimeout;
   t.mock.method(globalThis, 'setTimeout', (callback, delay, ...args) => originalTimeout(callback, delay === 3100 ? 0 : delay, ...args));
   const db = new DatabaseSync(':memory:');
-  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
   db.exec('CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)');
   const insert = db.prepare('INSERT INTO news VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'); let id = 0;
-  for (const category of ['pqc', 'protocol', 'standards', 'security', 'ai']) for (let i = 0; i < 5; i++) insert.run(++id, `${date}-${category}-${i}`, `${category} story ${i}`, '中文摘要', category, '一手来源', `https://example.com/${category}/${i}`, `${date}T08:00:00Z`, 'published');
+  for (const category of ['pqc', 'protocol', 'standards', 'security', 'ai']) for (let i = 0; i < 5; i++) insert.run(++id, `${date.replaceAll("-", "")}-${category}-${i}`, `${category} story ${i}`, '中文摘要', category, '一手来源', `https://example.com/${category}/${i}`, `${date}T08:00:00Z`, 'published');
+  seedManifest(db, date);
   const DB = { prepare(sql) {
     const statement = db.prepare(sql); let args = [];
     return { bind(...values) { args = values; return this; }, async first() { return statement.get(...args); }, async all() { return { results: statement.all(...args) }; }, async run() { return { meta: { changes: Number(statement.run(...args).changes) } }; } };
@@ -63,7 +65,7 @@ test('approved robot sends selected sections with administrator mentions only on
   const [first, second] = f.requests.map(r => r.payload.textMsg);
   assert.equal(first.isMentioned, true); assert.equal(first.mentionType, 2); assert.deepEqual(first.mentionedMobileList, ['13800000000','13900000000']);
   assert.equal(second.isMentioned, false); assert.equal(second.mentionedMobileList, undefined);
-  assert.match(first.content, /1\/2 · 后量子密码/); assert.match(second.content, /2\/2 · AI 前沿/);
+  assert.match(first.content, /1\/2 · 后量子算法/); assert.match(second.content, /2\/2 · AI 前沿/);
   assert.equal(first.content.split('\n').filter(line => /^\d\. pqc story \d https:\/\/example.com\/pqc\/\d$/.test(line)).length, 5);
   assert.doesNotMatch(first.content + second.content, /中文摘要|一手来源|来源：|阅读原文：|protocol story|wangyibiao.com\/news/);
   assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 2);
@@ -118,6 +120,7 @@ test('member configuration change stops queued old mentions and uses new setting
   assert.equal(f.row().mention_mobiles, '["13900000000"]'); assert.equal((await f.send()).sent, 0);
   const tomorrow = new Date(Date.parse(date) + 86400000).toISOString().slice(0,10);
   f.db.prepare('UPDATE news SET published_at = ?').run(tomorrow + 'T08:00:00Z');
+  f.db.prepare("UPDATE news SET slug = ? || substr(slug, 9)").run(tomorrow.replaceAll('-', '')); seedManifest(f.db, tomorrow);
   await sendRobotDigest(f.env, tomorrow, { pause: async () => {} }); assert.deepEqual(f.requests[0].payload.textMsg.mentionedMobileList, ['13900000000']);
 });
 
@@ -393,6 +396,7 @@ test('manual delivery excludes concurrent and later cron sends today, while tomo
   assert.equal(list.data[0].manual_status, 'sent'); assert.match(list.data[0].delivery_message, /自动任务今天不再重复/);
   const tomorrow = new Date(Date.parse(date) + 86400000).toISOString().slice(0,10);
   f.db.prepare('UPDATE news SET published_at = ?').run(tomorrow + 'T08:00:00Z');
+  f.db.prepare("UPDATE news SET slug = ? || substr(slug, 9)").run(tomorrow.replaceAll('-', '')); seedManifest(f.db, tomorrow);
   assert.equal((await sendRobotDigest(f.env, tomorrow, { pause: async () => {} })).sent, 2);
 });
 
@@ -424,4 +428,21 @@ test('manual batch freezes content and cannot skip unsent sections', async t => 
   f.db.prepare('UPDATE news SET title = ?').run('edited after the first part');
   for (const part of [1, 2]) assert.equal((await (await f.api(path, { ...step, part }, true)).json()).ok, true);
   assert.equal(f.requests.length, 3); assert.doesNotMatch(f.requests.at(-1).payload.textMsg.content, /edited after/);
+});
+
+test('manual delivery accepts all seven selected desks and reaches the seventh message', async t => {
+  const f = fixture(t);
+  const categories = ['pqc', 'migration', 'protocol', 'standards', 'security', 'ai', 'ngcc'];
+  await f.apply({ categories }); await f.approve();
+  const path = `/admin/robot-subscriptions/${f.row().id}/send`;
+  let step = { send_id: crypto.randomUUID(), part: 0 };
+  for (let part = 0; part < 7; part++) {
+    const response = await f.api(path, step, true); assert.equal(response.status, 200);
+    const result = await response.json(); assert.equal(result.total, 7); assert.equal(result.next_part, part + 1);
+    assert.equal(result.more, part < 6);
+    step = { send_id: step.send_id, part: result.next_part, version: result.version, date: result.date };
+  }
+  assert.equal(f.requests.length, 7);
+  assert.match(f.requests.at(-1).payload.textMsg.content, /7\/7 · NGCC 公钥征集/);
+  assert.match(f.requests.at(-1).payload.textMsg.content, /测试覆盖说明/);
 });

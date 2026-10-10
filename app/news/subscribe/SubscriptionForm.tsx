@@ -2,12 +2,10 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 
-export const subscriptionCategories = {
-  pqc: "后量子密码", protocol: "抗量子协议", standards: "标准动态", security: "网络安全", ai: "AI 前沿",
-};
-const categoryDescriptions: Record<string, string> = {
-  pqc: "算法与密码迁移", protocol: "TLS、SSH 等协议", standards: "标准与规范动态", security: "漏洞与安全研究", ai: "模型与应用进展",
-};
+import policy from "../../../news/edition-policy.json";
+
+export const subscriptionCategories: Record<string, string> = Object.fromEntries(Object.entries(policy.categories).map(([key, value]) => [key, value.label]));
+const categoryDescriptions: Record<string, string> = Object.fromEntries(Object.entries(policy.categories).map(([key, value]) => [key, value.description]));
 export const subscriptionApi = "https://api.wangyibiao.com/api";
 export async function subscriptionRequest(path: string, body?: unknown, secret?: string) {
   const response = await fetch(subscriptionApi + path, {
@@ -23,7 +21,7 @@ export async function subscriptionRequest(path: string, body?: unknown, secret?:
 export function CategoryChoices({ selected, onChange, disabled }: {
   selected: string[]; onChange: (values: string[]) => void; disabled?: boolean;
 }) {
-  return <fieldset className="subscription-categories" disabled={disabled}><legend>订阅板块 <span>已选 {selected.length} / 5 · 可多选</span></legend>
+  return <fieldset className="subscription-categories" disabled={disabled}><legend>订阅板块 <span>已选 {selected.length} / {Object.keys(subscriptionCategories).length} · 可多选</span></legend>
     <div>{Object.entries(subscriptionCategories).map(([key, label]) => <label key={key}>
       <input type="checkbox" name="categories" value={key} checked={selected.includes(key)} onChange={event => onChange(event.target.checked ? [...selected, key] : selected.filter(value => value !== key))} />
       <span><strong>{label}</strong><small>{categoryDescriptions[key]}</small></span>

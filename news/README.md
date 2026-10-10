@@ -1,89 +1,62 @@
 # News publishing pipeline
 
-每日新闻采用“日报 / edition”结构，而不是无限文章流。
+每日新闻采用“日报 / edition”结构，一天一页。选题与写作详见 [选编规则](editorial-policy.md)，栏目与版本边界统一定义在 [edition-policy.json](edition-policy.json)。
 
-## 固定日报结构
+## 栏目与数量
 
-每天固定发布 25 条：
+从 **2026-10-11** 起采用七方向 v2：`pqc` 后量子算法、`migration` 抗量子迁移、`protocol` 抗量子协议、`standards` 标准动态、`security` 网络安全、`ai` AI 前沿、`ngcc` NGCC 公钥征集。
 
-- `pqc`：后量子密码 / 算法 / 实现 / 迁移，5 条
-- `protocol`：TLS / TLCP / SSH / IKE / IPsec 抗量子协议，5 条
-- `standards`：PQC 标准、RFC、草案和标准组织状态，5 条
-- `security`：密码与网络安全、威胁情报、攻防和安全产品，5 条
-- `ai`：AI 模型、Agent、开发工具和基础设施，5 条
+各方向优先 3—5 条，通常 21—35 条；证据不足可为 0—2 条，必须在 `coverage` 写明实际数量及具体原因，不能拿旧闻凑数。`coverage` 必须含全部七方向，不足三条的 `note` 至少 12 字，最多 600 字；正常方向可用空字符串，也可说明范围或资料限制。全期至少一篇；完全无可核实进展则不提交空文件、不删除已有日报。
 
-最终每天必须是 5 × 5 = 25 条。
+2026-10-10 及之前无 `schema_version` 的历史文件继续按五方向各五条验证，可幂等重发。已有历史文章和订阅选择不自动改写。v2 可用于主动升级历史版，但须完整核验全期；未来日期不可回退 v1。
 
-## 正文与来源规则
+## Daily payload v2
 
-摘要仅用于列表和标题下的导语（约100～180字），不能拿摘要充当详情正文。
-
-- 每篇详情采用新闻网站式连续长文，通常600～1600字，至少5个实质段落。先对原始资料做中文翻译或编译，保留主要事实、技术机制、论证、数据口径和限制；再用 `## 量仔观察` 分隔本站独立总结。不能把事实压缩成一句话，再靠通用建议凑长度。
-- 原文很长时按论证顺序进行较完整的编译；有合法全文翻译权限的资料可翻译全文。版权原文采用受许可及引用限额约束的编译，保留原文入口，不发布未经授权的全文译本。来源很短时补充有依据的背景与针对性分析；资料不足就换选题。
-- 正文开头明确原始发布日期。本站日报日期与原文日期分开，早期资料标明“近期回顾”或“研究／规范回顾”。优先近24小时，必要时回溯72小时；更早资料只选择仍有实质价值的内容，不能伪装成当天发布。
-- 实际阅读一手原文，不能只看搜索摘要。优先官方标准组织、主管部门、原始论文、项目仓库与厂商公告，国内外同等关注。来源不可访问或无法核实时更换来源。
-- 区分作者主张、已验证事实与本站推断。性能数字必须注明测试范围；产品区分宣布、预览、Beta和正式可用；规范区分草案、工作组、IESG批准、编辑队列及正式RFC，并说明类别。
-- 同一事件不跨栏目重复；历史事件仅在有实质更新时再报。补写历史详情保留已有slug和原文链接，以免旧链接失效。
-- 只用少量小标题辅助阅读，不把整篇写成要点卡片或多个重复摘要。每篇分析必须对应其具体机制、证据和限制。
-
-## Publishing flow
-
-1. ChatGPT 生成当天完整日报。
-2. 写入 `news/inbox/YYYY-MM-DD.json`。
-3. `.github/workflows/publish-news.yml` 调用 `news/validate-edition.py`，检查25条、每类5条、日期与slug、原文地址，以及长文、来源日期和独立分析结构。
-4. Workflow 调用 `POST https://api.wangyibiao.com/api/admin/news/batch`。
-5. Worker 按 `slug` 幂等 upsert，并同步移除当天新版日报中已不存在的旧条目。
-6. `/news` 通过 `/api/news/editions?page=N&pageSize=1` 按日报展示，一天一页，完整展示所选日报的新闻；分类筛选与文章返回保留页码。API 默认且固定 `pageSize=1`，兼容旧查询参数但不再合并多天。
-7. 已审核通过的群机器人在当日完整日报发布后，推送所选板块的摘要与原文链接；成员提醒由管理员配置，定时检查和发送记录防止重复群发。配置与异常处理见 [机器人日报](../news-worker/ROBOT.md)。
-
-## Required repository secrets
-
-- `NEWS_ADMIN_TOKEN`：与 Worker 的 `ADMIN_TOKEN` 一致。
-- `CLOUDFLARE_API_TOKEN`：用于部署 Worker。
-- `CLOUDFLARE_ACCOUNT_ID`：Worker 与 D1 所在 Cloudflare Account ID。
-
-不要把这些值提交到仓库。群机器人的 webhook 在订阅页提交并经管理员审核，不再从仓库 Secret 自动开通。Worker 可单独配置 `ROBOT_WEBHOOK_SECRET` 作为加密密钥；默认复用现有订阅签名或管理员 Secret，详见机器人日报文档。
-
-## Daily payload
+下面只展示结构，省略的 `items` 必须填写实际完整条目，不可直接发布此示例：
 
 ```json
 {
-  "date": "2026-10-01",
-  "items": [
-    {
-      "slug": "20261001-example-story",
-      "title": "示例标题",
-      "summary": "100～180 字中文摘要",
-      "content": "连续长文：原始资料的中文翻译／编译，明确原文日期，再用 ## 量仔观察 分隔独立总结；通常600～1600字",
-      "category": "pqc",
-      "tags": ["PQC", "IETF"],
-      "source_name": "IETF Datatracker",
-      "source_url": "https://example.com/source",
-      "cover_image": null,
-      "published_at": "2026-10-01T00:30:00Z",
-      "status": "published"
-    }
-  ]
+  "schema_version": 2,
+  "date": "2026-10-11",
+  "coverage": {
+    "pqc": {"count": 3, "note": ""},
+    "migration": {"count": 3, "note": ""},
+    "protocol": {"count": 3, "note": ""},
+    "standards": {"count": 3, "note": ""},
+    "security": {"count": 3, "note": ""},
+    "ai": {"count": 3, "note": ""},
+    "ngcc": {"count": 0, "note": "本期未发现可核实的新进展；已核对官方公告及候选安全报告。"}
+  },
+  "items": []
 }
 ```
 
-`published_at` 表示本站日报发布时间，使当天 25 条进入同一个 edition；原始来源发布日期写进正文。
+每篇含 `slug`、`title`、`summary`、`content`、`category`、`tags`、`source_name`、`source_url`、`cover_image`、`published_at`、`status`。slug 为当日 `YYYYMMDD-` 开头的小写字母/数字/单连字符，唯一且稳定。`summary` 为 100—180 字；`content` 通常 600—1600 字，至少 600 字符、5 个至少 50 字符的实质段落，开头有 ISO 来源日期，独立 `## 量仔观察` 后至少 80 字针对性分析。禁止重复段落或相同一手 URL 拆条，详见选编规则。
 
-## Idempotency
+`source_url` 使用实际阅读的一手 HTTPS 原文，不能为示例链接。`tags` 为非空字符串数组，可注明“实现发布”“互通测试”“部署实践”等实际事件类型。`cover_image` 可为 null，流水线抓取原文社交配图，失败使用相应栏目已有图片。`published_at` 用本站实际发布时间 ISO8601，全期均属同一北京时间日期；来源日期写正文，`status` 必须为 `published`。
 
-`slug` 是稳定唯一键：
+## 发布与完整性
 
-- 新 slug：insert
-- 已存在但内容变化：update
-- 完全一致：skip
-- 当日完整日报重发时，Worker 会删除当天不再出现在 JSON 中的旧 published 条目
+1. 读取 main 最新规则、发布流程和近 7 期数据，必要时查 30 天及 API，核对选题去重。API 分页始终一天一页，`pageSize=3` 不会返回三期，须逐页读取。
+2. 生成完整 `news/inbox/YYYY-MM-DD.json`，当天文件已有时先读最新版本再整体替换，保留未改事件的 slug。仅提交新闻数据文件。
+3. 运行 `python3 news/validate-edition.py news/inbox/YYYY-MM-DD.json`。v2 检查七方向、数量与缺稿说明，历史版检查 5×5；同时检查长文结构、日期和原文链接。
+4. `.github/workflows/publish-news.yml` 验证并提取配图，调用 `POST https://api.wangyibiao.com/api/admin/news/batch`。
+5. Worker 再核验日期、分类、数量、slug 与 coverage，将文章 upsert、移除同日不再出现的旧 published 条目、写入 `news_editions` 清单放在一个 D1 batch 事务中。失败整体回滚；新条目 insert，变更 update，完全相同 skip，过期同日条目 removed。
+6. `/api/news/editions?page=N&pageSize=1` 返回一整天，v2 还返回 `schema_version` 和 `coverage`；前端显示实际条数与缺稿说明。所有日期以北京时间分组。来源日期与本站发布日期分开。
+7. 邮件和机器人对照已提交清单与实际完整条目判定可发送，不再要求每类至少五条。所选栏目不足或为零时附带说明；保留已有审核、确认、退订和防重复机制。新增栏目需由订阅者自行选择，不扩大现有订阅。发布任务不主动调用发送端点。
+8. 提交后检查对应 Publish news to Cloudflare D1 的最终状态、inserted/updated/skipped/removed，并核对 API 全期实际数量、七类计数与 coverage；commit 成功不等于网站发布成功。失败查日志修正数据后重试，不为凑数或绕过校验改代码。
 
-这样定时任务重试不会产生重复新闻。
+## 运行配置
 
-## Local validation
+仓库 `NEWS_ADMIN_TOKEN` 与 Worker 的 `ADMIN_TOKEN` 匹配。部署通过既有 `CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`；不得查看、输出、写入或提交密钥值。迁移脚本 `news-worker/migrations/0005_news_editions.sql` 随 Worker 部署应用。
+
+群机器人和邮件配置见 [机器人日报](../news-worker/ROBOT.md)、[邮件订阅](../news-worker/SUBSCRIPTIONS.md)。既有审核与加密配置保持，文章编辑不授权向新收件人发送消息。
+
+## 验证
 
 ```bash
-python3 news/validate-edition.py news/inbox/2026-10-01.json
+python3 news/validate-edition.py news/inbox/*.json
+node --experimental-strip-types --test tests/news-edition-publishing.test.mjs tests/news-editions-api.test.mjs tests/news-robot.test.mjs tests/news-subscriptions.test.mjs
 ```
 
-发布前的最低结构要求：正文不少于600字符、至少5段，含来源日期与单独的“量仔观察”。此检查防止短摘要误发布；事实、翻译准确性与版权许可仍须逐条编辑核实。当天完整日报会替换D1中同日条目，提交前必须保留全部25条。
+结构校验不能替代一手阅读、事实核验、选题多样性和版权检查。

@@ -145,6 +145,9 @@ try {
     assert.equal(response.status(), 200);
     await page.getByRole('button', { name: '提交订阅申请' }).waitFor();
     assert.equal(await page.locator('.subscription-categories input:checked').count(), 1);
+    assert.equal(await page.locator('.subscription-categories input').count(), 7);
+    assert.equal(await page.locator('input[name=categories][value=migration]').count(), 1);
+    assert.equal(await page.locator('input[name=categories][value=ngcc]').count(), 1);
     assert.equal(await page.locator('input[name=categories][value=ai]').isChecked(), true);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `No horizontal overflow at ${width}`);
     await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
@@ -180,7 +183,7 @@ try {
     assert.equal(requests.length, 1, 'GET confirmation link cannot activate a subscription');
     assert.equal(await page.locator('.subscription-recipient strong').innerText(), confirmationEmail);
     assert.match(await page.locator('.subscription-topic-summary').innerText(), /AI 前沿/);
-    assert.match(await page.locator('.subscription-topic-summary').innerText(), /后量子密码/);
+    assert.match(await page.locator('.subscription-topic-summary').innerText(), /后量子算法/);
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `Confirmation email fits ${width}`);
     await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: resolve(output, `confirm-${width}.png`), fullPage: true });

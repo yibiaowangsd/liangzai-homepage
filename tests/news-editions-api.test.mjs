@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import worker from "../news-worker/index.js";
 
 function fixtureDatabase() {
   const db = new DatabaseSync(":memory:");
+  db.exec(readFileSync(new URL("../news-worker/migrations/0005_news_editions.sql", import.meta.url), "utf8"));
   db.exec(`CREATE TABLE news (
     id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT,
     tags TEXT, source_name TEXT, source_url TEXT, cover_image TEXT,

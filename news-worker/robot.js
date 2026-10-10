@@ -1,3 +1,4 @@
+import { publishedCoverage, CORE_CATEGORIES } from './edition.js';
 import { SUBSCRIPTION_CATEGORIES, normalizeCategories, digest, RequestError } from './subscriptions.js';
 import { robotConfigured, decryptWebhook } from './robot-config.js';
 export { robotConfigured } from './robot-config.js';
@@ -18,12 +19,13 @@ function sourceUrl(value) {
   } catch { return null; }
 }
 
-export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTION_CATEGORIES), mentions = { mode: 'none', mobiles: [] }) {
+export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTION_CATEGORIES), mentions = { mode: 'none', mobiles: [] }, coverage = {}) {
   const categories = normalizeCategories(selected);
   return categories.map((category, part) => {
     const label = SUBSCRIPTION_CATEGORIES[category];
     const stories = items.filter(item => item.category === category).slice(0, 5);
     const lines = [`量仔每日前沿 · ${date}`, `${part + 1}/${categories.length} · ${label}`];
+    if (coverage[category]?.note) lines.push(cleanText(coverage[category].note, 600));
     for (const [index, item] of stories.entries()) {
       const original = sourceUrl(item.source_url);
       lines.push(`${index + 1}. ${cleanText(item.title, 60)}${original ? ` ${original}` : ''}`);
@@ -105,14 +107,15 @@ export async function sendRobotConnectionTest(env, subscriberId, testId) {
   }
 }
 
-async function editionItems(env, date, selected = Object.keys(SUBSCRIPTION_CATEGORIES)) {
-  const { results: items = [] } = await env.DB.prepare("SELECT slug, title, summary, category, source_name, source_url FROM news WHERE status = 'published' AND substr(published_at, 1, 10) = ? ORDER BY published_at DESC, id DESC").bind(date).all();
-  return selected.every(key => items.filter(item => item.category === key).length >= 5) ? items : null;
+async function editionItems(env, date, selected = null) {
+  const { results: items = [] } = await env.DB.prepare("SELECT slug, title, summary, category, source_name, source_url, published_at, status FROM news WHERE status = 'published' AND date(published_at, '+8 hours') = ? ORDER BY published_at DESC, id DESC").bind(date).all();
+  const coverage = await publishedCoverage(env, date, items, selected);
+  return coverage ? { items, coverage } : null;
 }
 
 export async function sendManualRobotDigest(env, subscriberId, { send_id: sendId, part, version, date = today(), pause = pauseBetweenMessages } = {}) {
   if (!robotConfigured(env)) throw new RequestError('机器人服务尚未配置。', 503);
-  if (!/^[a-f0-9-]{36}$/.test(sendId || '') || !Number.isSafeInteger(part) || part < 0 || part > 4) throw new RequestError('发送操作已更新，请刷新页面后重试。');
+  if (!/^[a-f0-9-]{36}$/.test(sendId || '') || !Number.isSafeInteger(part) || part < 0 || part >= CORE_CATEGORIES.length) throw new RequestError('发送操作已更新，请刷新页面后重试。');
   if (date !== today()) throw new RequestError('日报日期已变化，请重新点击立刻发送。', 409);
   const row = await env.DB.prepare("SELECT * FROM robot_subscribers WHERE id = ? AND status = 'approved'").bind(subscriberId).first();
   if (!row) throw new RequestError('只有审核通过的机器人可以立刻发送。', 409);
@@ -123,9 +126,9 @@ export async function sendManualRobotDigest(env, subscriberId, { send_id: sendId
   let job = await env.DB.prepare('SELECT * FROM robot_manual_deliveries WHERE send_id = ?').bind(sendId).first();
   if (!job) {
     if (part !== 0) throw new RequestError('发送批次不存在，请重新点击立刻发送。', 409);
-    const items = await editionItems(env, date, categories);
-    if (!items) throw new RequestError('所选板块的当日日报尚未完整发布，暂不能发送。', 409);
-    const payload = buildRobotDigest(date, items, categories, { mode: row.mention_mode, mobiles: JSON.parse(row.mention_mobiles) });
+    const edition = await editionItems(env, date, categories);
+    if (!edition) throw new RequestError('所选板块的当日日报尚未完整发布，暂不能发送。', 409);
+    const payload = buildRobotDigest(date, edition.items, categories, { mode: row.mention_mode, mobiles: JSON.parse(row.mention_mobiles) }, edition.coverage);
     // This insert and Cron's claim each exclude the other's active work. A
     // completed manual batch also suppresses today's later automatic delivery.
     await env.DB.prepare(`INSERT INTO robot_manual_deliveries (send_id, subscriber_id, edition_date, version, payload, lease_until, created_at)
@@ -188,10 +191,10 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
     WHERE s.status = 'approved' AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries m WHERE m.subscriber_id = s.id AND m.edition_date = ?) AND (? IS NULL OR s.id = ?) AND NOT EXISTS (SELECT 1 FROM robot_subscription_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
     ORDER BY s.created_at, s.id LIMIT 5`).bind(date, subscriberId, subscriberId, date).all();
   if (subscribers.length) {
-    const items = await editionItems(env, date);
-    if (!items) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
+    const edition = await editionItems(env, date);
+    if (!edition) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
     for (const subscriber of subscribers) {
-      const payload = buildRobotDigest(date, items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) });
+      const payload = buildRobotDigest(date, edition.items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) }, edition.coverage);
       // Respect today's legacy singleton history when the same group applies
       // after migration. Approval must not replay an already attempted edition.
       let fingerprint;

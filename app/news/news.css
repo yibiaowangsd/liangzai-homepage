@@ -1001,3 +1001,5 @@
   .news-subscription-banner h2 { font-size: 17px; }
   .newsroom .news-subscribe-link { grid-column: 1 / -1; }
 }
+
+.desk-coverage-note { color: var(--soft); line-height: 1.8; margin: 16px 0 24px; overflow-wrap: anywhere; }

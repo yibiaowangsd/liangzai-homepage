@@ -58,7 +58,7 @@ export default function ReviewConsole() {
     setBusy(true); setSendingId(row.id); setMessage(""); setError("");
     try {
       let step: { send_id: string; part: number; version?: string; date?: string } = { send_id: crypto.randomUUID(), part: 0 };
-      for (let count = 0; count < 5; count++) {
+      for (let count = 0; count < Object.keys(subscriptionCategories).length; count++) {
         const result = await subscriptionRequest(`/admin/robot-subscriptions/${row.id}/send`, step, secret);
         const notice = `${row.applicant_name || "群机器人"}：${result.message}`;
         if (result.ok === false) { setMessage(""); setError(notice); break; }

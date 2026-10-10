@@ -7,6 +7,7 @@ on:
       - 'news/inbox/*.json'
       - '.github/workflows/publish-news.yml'
       - 'news/validate-edition.py'
+      - 'news/edition-policy.json'
   workflow_dispatch:
     inputs:
       file:
@@ -124,13 +125,8 @@ jobs:
           path = pathlib.Path(sys.argv[1])
           data = json.loads(path.read_text(encoding="utf-8"))
 
-          fallback = {
-              "pqc": "https://wangyibiao.com/news-covers/pqc.svg",
-              "protocol": "https://wangyibiao.com/news-covers/protocol.svg",
-              "standards": "https://wangyibiao.com/news-covers/standards.svg",
-              "security": "https://wangyibiao.com/news-covers/security.svg",
-              "ai": "https://wangyibiao.com/news-covers/ai.svg",
-          }
+          policy = json.loads(pathlib.Path("news/edition-policy.json").read_text(encoding="utf-8"))
+          fallback = {key: "https://wangyibiao.com" + desk["cover"] for key, desk in policy["categories"].items()}
 
           patterns = [
               re.compile(r'<meta[^>]+property=["\']og:image(?::secure_url)?["\'][^>]+content=["\']([^"\']+)["\']', re.I),

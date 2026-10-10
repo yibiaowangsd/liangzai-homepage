@@ -27,7 +27,7 @@ const defaults: Record<string, {
     image: string;
     keyword: string;
 }> = {
-    pqc: { image: kem, keyword: "PQC / 后量子密码" }, protocol: { image: network, keyword: "PROTOCOL / 安全连接" },
+    pqc: { image: kem, keyword: "PQC / 后量子算法" }, migration: { image: network, keyword: "MIGRATION / 抗量子迁移" }, ngcc: { image: signature, keyword: "NGCC / 公钥征集" }, protocol: { image: network, keyword: "PROTOCOL / 安全连接" },
     standards: { image: signature, keyword: "STANDARDS / 标准进展" }, security: { image: network, keyword: "SECURITY / 网络安全" },
     ai: { image: chip, keyword: "AI / 人工智能" }, industry: { image: chip, keyword: "TECH / 产业进展" },
 };

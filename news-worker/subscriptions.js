@@ -1,6 +1,5 @@
-export const SUBSCRIPTION_CATEGORIES = {
-  pqc: '后量子密码', protocol: '抗量子协议', standards: '标准动态', security: '网络安全', ai: 'AI 前沿',
-};
+import { CATEGORY_LABELS, publishedCoverage } from './edition.js';
+export const SUBSCRIPTION_CATEGORIES = CATEGORY_LABELS;
 const SITE = 'https://wangyibiao.com';
 const API = 'https://api.wangyibiao.com';
 const encoder = new TextEncoder();
@@ -17,7 +16,7 @@ export function cleanString(value, max, required = false) {
   return value.trim();
 }
 export function normalizeCategories(values) {
-  if (!Array.isArray(values) || !values.length || values.length > 5 || values.some(v => typeof v !== 'string' || !SUBSCRIPTION_CATEGORIES[v])) {
+  if (!Array.isArray(values) || !values.length || values.length > Object.keys(SUBSCRIPTION_CATEGORIES).length || values.some(v => typeof v !== 'string' || !SUBSCRIPTION_CATEGORIES[v])) {
     throw new RequestError('请至少选择一个有效新闻板块。');
   }
   return Object.keys(SUBSCRIPTION_CATEGORIES).filter(key => values.includes(key));
@@ -147,29 +146,30 @@ function originalSource(value) {
     return ['http:', 'https:'].includes(url.protocol) ? url.href : null;
   } catch { return null; }
 }
-export async function buildDigest(env, subscriber, date, items) {
+export async function buildDigest(env, subscriber, date, items, coverage = {}) {
   const categories = normalizeCategories(JSON.parse(subscriber.categories));
   const manage = `${SITE}/news/subscribe?action=manage&token=${encodeURIComponent(await subscriptionToken(env, subscriber, 'manage'))}`;
   const unsubscribeToken = await subscriptionToken(env, subscriber, 'unsubscribe');
   const unsubscribe = `${SITE}/news/subscribe?action=unsubscribe&token=${encodeURIComponent(unsubscribeToken)}`;
   const oneClick = `${API}/api/subscriptions/unsubscribe?token=${encodeURIComponent(unsubscribeToken)}`;
-  const sections = categories.map(category => ({ label: SUBSCRIPTION_CATEGORIES[category], items: items.filter(item => item.category === category).slice(0, 5).map(item => ({ ...item, original: originalSource(item.source_url) })) }));
-  const text = [`量仔每日前沿 · ${date}`, ...sections.flatMap(section => [section.label, ...section.items.map(item => `${item.title}\n${item.summary || ''}\n${item.original ? `阅读原文：${item.original}` : '原始来源暂未提供链接。'}`)]), `管理订阅：${manage}`, `退订：${unsubscribe}`].join('\n\n');
-  const html = `<html lang="zh-CN"><body style="margin:0;background:#f5f3ed;color:#202321;font:16px/1.8 Arial,sans-serif"><main style="max-width:680px;margin:auto;padding:32px 24px"><h1 style="font-size:28px">量仔每日前沿</h1><p>${date} · 仅包含你已获批订阅的板块</p>${sections.map(section => `<h2 style="margin-top:32px;border-bottom:1px solid #d4d6ce">${escapeHtml(section.label)}</h2>${section.items.map(item => `<article style="margin:24px 0"><h3>${item.original ? `<a style="color:#263c32" href="${escapeHtml(item.original)}">${escapeHtml(item.title)}</a>` : escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p><p style="font-size:13px">${escapeHtml(item.source_name || '原始来源')} · ${item.original ? `<a href="${escapeHtml(item.original)}">阅读原文</a>` : '原始来源暂未提供链接。'}</p></article>`).join('')}`).join('')}<hr><p style="font-size:13px">你收到此邮件是因为订阅申请已通过审核并确认邮箱。<br><a href="${escapeHtml(manage)}">管理订阅板块</a> · <a href="${escapeHtml(unsubscribe)}">退订日报</a></p></main></body></html>`;
+  const sections = categories.map(category => ({ label: SUBSCRIPTION_CATEGORIES[category], note: coverage[category]?.note || '', items: items.filter(item => item.category === category).slice(0, 5).map(item => ({ ...item, original: originalSource(item.source_url) })) }));
+  const text = [`量仔每日前沿 · ${date}`, ...sections.flatMap(section => [section.label, ...(section.note ? [section.note] : []), ...section.items.map(item => `${item.title}\n${item.summary || ''}\n${item.original ? `阅读原文：${item.original}` : '原始来源暂未提供链接。'}`)]), `管理订阅：${manage}`, `退订：${unsubscribe}`].join('\n\n');
+  const html = `<html lang="zh-CN"><body style="margin:0;background:#f5f3ed;color:#202321;font:16px/1.8 Arial,sans-serif"><main style="max-width:680px;margin:auto;padding:32px 24px"><h1 style="font-size:28px">量仔每日前沿</h1><p>${date} · 仅包含你已获批订阅的板块</p>${sections.map(section => `<h2 style="margin-top:32px;border-bottom:1px solid #d4d6ce">${escapeHtml(section.label)}</h2>${section.note ? `<p>${escapeHtml(section.note)}</p>` : ''}${section.items.map(item => `<article style="margin:24px 0"><h3>${item.original ? `<a style="color:#263c32" href="${escapeHtml(item.original)}">${escapeHtml(item.title)}</a>` : escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p><p style="font-size:13px">${escapeHtml(item.source_name || '原始来源')} · ${item.original ? `<a href="${escapeHtml(item.original)}">阅读原文</a>` : '原始来源暂未提供链接。'}</p></article>`).join('')}`).join('')}<hr><p style="font-size:13px">你收到此邮件是因为订阅申请已通过审核并确认邮箱。<br><a href="${escapeHtml(manage)}">管理订阅板块</a> · <a href="${escapeHtml(unsubscribe)}">退订日报</a></p></main></body></html>`;
   return { from: env.NEWSLETTER_FROM, to: [subscriber.email], subject: `量仔每日前沿｜${date}｜${sections.map(s => s.label).join(' · ')}`, html, text,
     headers: { 'List-Unsubscribe': `<${oneClick}>`, 'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click' } };
 }
 export async function sendDailyDigest(env, date = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date())) {
   if (!mailConfigured(env)) return { ok: true, enabled: false, sent: 0, message: '邮件服务未配置，未发送任何邮件。' };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new RequestError('日报日期无效。');
-  const { results: items = [] } = await env.DB.prepare("SELECT slug, title, summary, category, source_name, source_url FROM news WHERE status = 'published' AND substr(published_at, 1, 10) = ? ORDER BY published_at DESC, id DESC").bind(date).all();
-  if (!Object.keys(SUBSCRIPTION_CATEGORIES).every(key => items.filter(item => item.category === key).length >= 5)) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次自动发送。' };
+  const { results: items = [] } = await env.DB.prepare("SELECT slug, title, summary, category, source_name, source_url, published_at, status FROM news WHERE status = 'published' AND date(published_at, '+8 hours') = ? ORDER BY published_at DESC, id DESC").bind(date).all();
+  const coverage = await publishedCoverage(env, date, items);
+  if (!coverage) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次自动发送。' };
   const { results: subscribers = [] } = await env.DB.prepare(`SELECT s.* FROM newsletter_subscribers s
     WHERE s.status = 'approved' AND s.email_verified_at IS NOT NULL AND NOT EXISTS
     (SELECT 1 FROM newsletter_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
     ORDER BY s.created_at LIMIT 20`).bind(date).all();
   for (const subscriber of subscribers) {
-    const payload = await buildDigest(env, subscriber, date, items);
+    const payload = await buildDigest(env, subscriber, date, items, coverage);
     await env.DB.prepare('INSERT INTO newsletter_deliveries (id, subscriber_id, edition_date, categories, token_version, payload, created_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(subscriber_id, edition_date) DO NOTHING').bind(crypto.randomUUID(), subscriber.id, date, subscriber.categories, subscriber.token_version, JSON.stringify(payload), Date.now()).run();
   }
   const now = Date.now();

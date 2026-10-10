@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'news-worker/**'
+      - 'news/edition-policy.json'
       - '.github/workflows/deploy-news-worker.yml'
   workflow_dispatch:
 
@@ -79,7 +80,7 @@ jobs:
           }
           EOF
 
-      - name: Apply subscription schema
+      - name: Apply news and subscription schema
         shell: bash
         run: |
           set -euo pipefail

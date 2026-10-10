@@ -14,30 +14,38 @@ import {
 export const metadata: Metadata = {
   title: "每日前沿 · 量仔",
   description:
-    "每天五个方向、每个方向五条：后量子密码、抗量子协议、标准动态、网络安全与 AI 前沿。",
+    "七个方向，每方向优先 3—5 条：后量子算法、抗量子迁移、抗量子协议、标准动态、网络安全、AI 前沿与 NGCC 公钥征集。",
 };
 
 function selectHighlights(topics: Record<string, NewsItem[]>, categories: readonly string[]) {
   const stories: NewsItem[] = [];
+  const limit = Math.max(5, categories.filter(key => topics[key]?.length).length);
   // Take one story from every direction before filling any remaining slots.
-  for (let index = 0; stories.length < 5; index += 1) {
+  for (let index = 0; stories.length < limit; index += 1) {
     const round = categories.flatMap((key) => topics[key]?.slice(index, index + 1) || []);
     if (!round.length) break;
     stories.push(...round);
   }
-  return stories.slice(0, 5);
+  return stories.slice(0, limit);
 }
 
 function TopicDesk({
   category,
   items,
   listingHref,
+  note,
 }: {
   category: string;
   items: NewsItem[];
   listingHref: string;
+  note?: string;
 }) {
-  if (!items.length) return null;
+  if (!items.length) return note ? (
+    <section className="desk" id={category}>
+      <header className="desk-head"><h3>{categoryLabels[category] || category}</h3><strong>00</strong></header>
+      <p className="desk-coverage-note">{note}</p>
+    </section>
+  ) : null;
   const lead = items[0];
   const rest = items.slice(1);
 
@@ -50,6 +58,7 @@ function TopicDesk({
         <strong>{items.length.toString().padStart(2, "0")}</strong>
       </header>
 
+      {note && <p className="desk-coverage-note">{note}</p>}
       <div className="desk-layout">
         <article className="desk-lead">
           <Link
@@ -135,7 +144,7 @@ export default async function NewsPage({
     ? selectHighlights(newest.topics, category ? [category] : editionCategories)
     : [];
   const heroLead = heroStories[0];
-  const heroSide = heroStories.slice(1, 5);
+  const heroSide = heroStories.slice(1);
 
   const makeHref = (pageNumber: number, nextCategory = category) =>
     newsListingHref({ page: pageNumber, category: nextCategory });
@@ -195,14 +204,14 @@ export default async function NewsPage({
           <h2>新闻暂时无法载入</h2>
           <p>请稍后刷新，继续阅读最新消息。</p>
         </section>
-      ) : !newest || !heroLead ? (
+      ) : !newest ? (
         <section className="news-state">
           <h2>下一版简报正在路上</h2>
           <p>自动发布完成后，这里会直接读取最新一期。</p>
         </section>
       ) : (
         <>
-          <section className="front-page">
+          {heroLead && <section className="front-page">
             <div className="edition-label">
               <time dateTime={newest.date}>
                 {newest.date.replaceAll("-", ".")}
@@ -269,7 +278,7 @@ export default async function NewsPage({
                 </article>
               ))}
             </aside>
-          </section>
+          </section>}
 
           <div className="edition-stack">
             {editions.map((edition) => (
@@ -287,6 +296,7 @@ export default async function NewsPage({
                     category={key}
                     listingHref={listingHref}
                     items={edition.topics[key] || []}
+                    note={edition.coverage?.[key]?.note}
                   />
                 ))}
               </section>
@@ -330,8 +340,8 @@ export default async function NewsPage({
       <footer className="news-method-note">
         <span>选编说明</span>
         <p>
-          默认优先原始标准、论文、官方博客与项目仓库。每日五个方向各 5 条； 当
-          24 小时内信息不足时向前回溯，但保留真实来源日期，不用旧闻冒充新发布。
+          七个方向各优先选编 3—5 条，兼顾研究、实现、测试与部署。逐条阅读一手来源，
+          标明原始日期；信息不足时说明覆盖缺口，不用重复旧闻凑数。
         </p>
       </footer>
     </main>

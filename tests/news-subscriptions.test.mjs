@@ -1,3 +1,4 @@
+import { seedManifest } from './fixtures/news-manifest.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
@@ -11,12 +12,14 @@ function fixture(t, mail = true) {
   db.exec(readFileSync(new URL('../news-worker/migrations/0001_subscriptions.sql', import.meta.url), 'utf8'));
   db.exec(readFileSync(new URL('../news-worker/migrations/0003_robot_subscriptions.sql', import.meta.url), 'utf8'));
   db.exec(readFileSync(new URL('../news-worker/migrations/0004_robot_manual_deliveries.sql', import.meta.url), 'utf8'));
+  db.exec(readFileSync(new URL('../news-worker/migrations/0005_news_editions.sql', import.meta.url), 'utf8'));
   db.exec(`CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)`);
   const insert = db.prepare('INSERT INTO news VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
   let id = 0;
   for (const category of ['pqc', 'protocol', 'standards', 'security', 'ai']) {
-    for (let i = 0; i < 5; i++) insert.run(++id, `${date}-${category}-${i}`, `${category} story ${i}`, '<script>unsafe</script>摘要', category, 'Official', 'https://example.com/source', `${date}T08:00:00Z`, 'published');
+    for (let i = 0; i < 5; i++) insert.run(++id, `${date.replaceAll("-", "")}-${category}-${i}`, `${category} story ${i}`, '<script>unsafe</script>摘要', category, 'Official', 'https://example.com/source', `${date}T08:00:00Z`, 'published');
   }
+  seedManifest(db, date);
   const DB = { prepare(sql) {
     const statement = db.prepare(sql); let args = [];
     return { bind(...values) { args = values; return this; }, async first() { return statement.get(...args); }, async all() { return { results: statement.all(...args) }; }, async run() { return { meta: { changes: Number(statement.run(...args).changes) } }; } };
@@ -78,7 +81,7 @@ test('digest titles and reading links go straight to original sources; missing o
   const f = fixture(t);
   const row = await f.apply('reader@example.com', ['pqc']);
   for (const [index, url] of [[0, 'https://example.com/original?part=1&lang=zh'], [1, null], [2, 'javascript:alert(1)'], [3, '/news/fallback']]) {
-    f.db.prepare('UPDATE news SET source_url = ? WHERE slug = ?').run(url, `${date}-pqc-${index}`);
+    f.db.prepare('UPDATE news SET source_url = ? WHERE slug = ?').run(url, `${date.replaceAll("-", "")}-pqc-${index}`);
   }
   const items = f.db.prepare('SELECT * FROM news').all();
   const digest = await buildDigest(f.env, row, date, items);

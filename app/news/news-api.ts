@@ -1,3 +1,5 @@
+import policy from "../../news/edition-policy.json";
+
 export type NewsItem = {
   id: number;
   slug: string;
@@ -19,6 +21,8 @@ export type NewsEdition = {
   date: string;
   total: number;
   topics: Record<string, NewsItem[]>;
+  schema_version?: number;
+  coverage?: Record<string, { count: number; note: string }>;
 };
 
 export type EditionsPayload = {
@@ -33,34 +37,15 @@ export type EditionsPayload = {
 
 export const NEWS_API = "https://api.wangyibiao.com";
 
-export const coreCategories = ["pqc", "protocol", "standards", "security", "ai"] as const;
-
+export const coreCategories = Object.keys(policy.categories) as (keyof typeof policy.categories)[];
 export const categoryLabels: Record<string, string> = {
-  pqc: "后量子密码",
-  protocol: "抗量子协议",
-  standards: "标准动态",
-  security: "网络安全",
-  ai: "AI 前沿",
-  industry: "产业动态",
-  daily: "每日前沿",
+  ...Object.fromEntries(Object.entries(policy.categories).map(([key, value]) => [key, value.label])),
+  industry: "产业动态", daily: "每日前沿",
 };
-
-export const categoryEnglish: Record<string, string> = {
-  pqc: "POST-QUANTUM",
-  protocol: "PROTOCOLS",
-  standards: "STANDARDS",
-  security: "SECURITY",
-  ai: "ARTIFICIAL INTELLIGENCE",
-};
-
+export const categoryEnglish: Record<string, string> = Object.fromEntries(Object.entries(policy.categories).map(([key, value]) => [key, value.english]));
 export const categoryCovers: Record<string, string> = {
-  pqc: "/news-covers/pqc.svg",
-  protocol: "/news-covers/protocol.svg",
-  standards: "/news-covers/standards.svg",
-  security: "/news-covers/security.svg",
-  ai: "/news-covers/ai.svg",
-  industry: "/news-covers/ai.svg",
-  daily: "/news-covers/pqc.svg",
+  ...Object.fromEntries(Object.entries(policy.categories).map(([key, value]) => [key, value.cover])),
+  industry: "/news-covers/ai.svg", daily: "/news-covers/pqc.svg",
 };
 
 export { coverFor } from "./keyword-cover";

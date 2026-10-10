@@ -1,13 +1,12 @@
 import { handleRobotSubscriptions } from "./robot-subscriptions.js";
 import { handleSubscriptions, sendDailyDigest, readBody, RequestError } from "./subscriptions.js";
 import { robotConfigured, robotStatus, sendRobotDigest, sendRobotConnectionTest, sendManualRobotDigest } from "./robot.js";
+import { CORE_CATEGORIES, validateEdition, beijingDate } from "./edition.js";
 
 const ALLOWED_ORIGINS = new Set([
   "https://wangyibiao.com",
   "https://www.wangyibiao.com",
 ]);
-
-const CORE_CATEGORIES = ["pqc", "protocol", "standards", "security", "ai"];
 
 const ALLOWED_CATEGORIES = new Set([
   ...CORE_CATEGORIES,
@@ -17,7 +16,7 @@ const ALLOWED_CATEGORIES = new Set([
 ]);
 
 const ALLOWED_STATUSES = new Set(["draft", "published"]);
-const MAX_BATCH_ITEMS = 30;
+const MAX_BATCH_ITEMS = 35;
 
 function corsHeaders(request) {
   const origin = request.headers.get("Origin");
@@ -168,7 +167,7 @@ function isAdmin(request, env) {
   return authorization === `Bearer ${env.ADMIN_TOKEN}`;
 }
 
-async function publishItems(env, rawItems) {
+async function publishItems(env, rawItems, edition = null) {
   if (!Array.isArray(rawItems) || rawItems.length === 0) {
     throw new Error("items must be a non-empty array");
   }
@@ -183,6 +182,7 @@ async function publishItems(env, rawItems) {
   for (const raw of rawItems) {
     const item = normalizeItem(raw);
     if (seen.has(item.slug)) {
+      if (edition) throw new Error('edition items must have unique slugs');
       duplicateSlugs.push(item.slug);
       continue;
     }
@@ -190,6 +190,7 @@ async function publishItems(env, rawItems) {
     items.push(item);
   }
 
+  const manifest = edition ? validateEdition(edition, items) : null;
   const changes = [];
   let skipped = duplicateSlugs.length;
 
@@ -251,13 +252,25 @@ async function publishItems(env, rawItems) {
     changes.push({ type: existing ? "updated" : "inserted", slug: item.slug, statement });
   }
 
-  if (changes.length) {
-    await env.DB.batch(changes.map((change) => change.statement));
+  const statements = changes.map(change => change.statement);
+  let deleteIndex = -1;
+  if (edition) {
+    deleteIndex = statements.length;
+    statements.push(env.DB.prepare(`DELETE FROM news WHERE status = 'published'
+      AND date(published_at, '+8 hours') = ? AND slug NOT IN (${items.map(() => '?').join(',')})`)
+      .bind(edition.date, ...items.map(item => item.slug)));
+    if (manifest) statements.push(env.DB.prepare(`INSERT INTO news_editions (date, schema_version, coverage, slugs)
+      VALUES (?, 2, ?, ?) ON CONFLICT(date) DO UPDATE SET schema_version = 2, coverage = excluded.coverage,
+      slugs = excluded.slugs, updated_at = datetime('now')`)
+      .bind(edition.date, JSON.stringify(manifest.coverage), JSON.stringify(manifest.slugs)));
+    else statements.push(env.DB.prepare('DELETE FROM news_editions WHERE date = ?').bind(edition.date));
   }
+  const results = statements.length ? await env.DB.batch(statements) : [];
 
   return {
     ok: true,
     items,
+    removed: deleteIndex < 0 ? 0 : Number(results[deleteIndex].meta?.changes || 0),
     inserted: changes.filter((change) => change.type === "inserted").length,
     updated: changes.filter((change) => change.type === "updated").length,
     skipped,
@@ -266,54 +279,19 @@ async function publishItems(env, rawItems) {
   };
 }
 
-async function syncEdition(env, date, slugs) {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !slugs.length) return 0;
-
-  const placeholders = slugs.map(() => "?").join(", ");
-  const result = await env.DB.prepare(`
-    DELETE FROM news
-    WHERE status = 'published'
-      AND substr(published_at, 1, 10) = ?
-      AND slug NOT IN (${placeholders})
-  `).bind(date, ...slugs).run();
-
-  return Number(result.meta?.changes || 0);
-}
-
 async function getEditions(env, page, pageSize, category) {
-  const where = category
-    ? "WHERE status = 'published' AND category = ?"
-    : "WHERE status = 'published'";
-  const countArgs = category ? [category] : [];
-
-  const countRow = await env.DB.prepare(`
-    SELECT COUNT(DISTINCT substr(published_at, 1, 10)) AS total_days
-    FROM news
-    ${where}
-  `).bind(...countArgs).first();
-
+  const where = category ? "WHERE status = 'published' AND category = ?" : "WHERE status = 'published'";
+  const args = category ? [category] : [];
+  const includeManifest = !category || CORE_CATEGORIES.includes(category);
+  // Include explicitly empty desks in v2 archives so readers see the coverage note.
+  const datesQuery = `SELECT date(published_at, '+8 hours') AS edition_date FROM news ${where}
+    ${includeManifest ? 'UNION SELECT date AS edition_date FROM news_editions' : ''}`;
+  const countRow = await env.DB.prepare(`SELECT COUNT(DISTINCT edition_date) AS total_days FROM (${datesQuery})`).bind(...args).first();
   const totalDays = Number(countRow?.total_days || 0);
   const totalPages = Math.max(1, Math.ceil(totalDays / pageSize));
   const safePage = Math.min(Math.max(page, 1), totalPages);
   const offset = (safePage - 1) * pageSize;
-
-  const datesStatement = category
-    ? env.DB.prepare(`
-        SELECT substr(published_at, 1, 10) AS edition_date
-        FROM news
-        WHERE status = 'published' AND category = ?
-        GROUP BY edition_date
-        ORDER BY edition_date DESC
-        LIMIT ? OFFSET ?
-      `).bind(category, pageSize, offset)
-    : env.DB.prepare(`
-        SELECT substr(published_at, 1, 10) AS edition_date
-        FROM news
-        WHERE status = 'published'
-        GROUP BY edition_date
-        ORDER BY edition_date DESC
-        LIMIT ? OFFSET ?
-      `).bind(pageSize, offset);
+  const datesStatement = env.DB.prepare(`SELECT DISTINCT edition_date FROM (${datesQuery}) ORDER BY edition_date DESC LIMIT ? OFFSET ?`).bind(...args, pageSize, offset);
 
   const datesResult = await datesStatement.all();
   const dates = (datesResult.results || []).map((row) => row.edition_date).filter(Boolean);
@@ -333,7 +311,7 @@ async function getEditions(env, page, pageSize, category) {
         FROM news
         WHERE status = 'published'
           AND category = ?
-          AND substr(published_at, 1, 10) IN (${placeholders})
+          AND date(published_at, '+8 hours') IN (${placeholders})
         ORDER BY published_at DESC, id DESC
       `).bind(category, ...dates)
     : env.DB.prepare(`
@@ -341,7 +319,7 @@ async function getEditions(env, page, pageSize, category) {
                source_name, source_url, cover_image, published_at
         FROM news
         WHERE status = 'published'
-          AND substr(published_at, 1, 10) IN (${placeholders})
+          AND date(published_at, '+8 hours') IN (${placeholders})
         ORDER BY published_at DESC, id DESC
       `).bind(...dates);
 
@@ -358,12 +336,18 @@ async function getEditions(env, page, pageSize, category) {
   );
 
   for (const row of rowsResult.results || []) {
-    const date = String(row.published_at).slice(0, 10);
+    const date = beijingDate(row.published_at);
     const edition = byDate.get(date);
     if (!edition) continue;
     edition.total += 1;
     if (!edition.topics[row.category]) edition.topics[row.category] = [];
     edition.topics[row.category].push(row);
+  }
+
+  const manifests = await env.DB.prepare(`SELECT date, schema_version, coverage FROM news_editions WHERE date IN (${placeholders})`).bind(...dates).all();
+  for (const manifest of manifests.results || []) {
+    const edition = byDate.get(manifest.date);
+    if (edition) Object.assign(edition, { schema_version: manifest.schema_version, coverage: JSON.parse(manifest.coverage) });
   }
 
   return {
@@ -374,7 +358,7 @@ async function getEditions(env, page, pageSize, category) {
 
 async function getFeatured(env, limit) {
   const latest = await env.DB.prepare(`
-    SELECT substr(published_at, 1, 10) AS edition_date
+    SELECT date(published_at, '+8 hours') AS edition_date
     FROM news
     WHERE status = 'published'
     ORDER BY published_at DESC, id DESC
@@ -389,7 +373,7 @@ async function getFeatured(env, limit) {
            source_name, source_url, cover_image, published_at
     FROM news
     WHERE status = 'published'
-      AND substr(published_at, 1, 10) = ?
+      AND date(published_at, '+8 hours') = ?
     ORDER BY published_at DESC, id DESC
     LIMIT 100
   `).bind(editionDate).all();
@@ -572,17 +556,12 @@ export default {
           return json(request, { error: "Invalid JSON body" }, 400);
         }
 
-        const result = await publishItems(env, body.items);
-        const date = typeof body.date === "string" ? body.date : null;
-        const publishedSlugs = result.items
-          .filter((item) => item.status === "published")
-          .map((item) => item.slug);
-        const removed = date ? await syncEdition(env, date, publishedSlugs) : 0;
+        const result = await publishItems(env, body.items, body.date === undefined ? null : body);
+        const date = body.date || null;
         const { items, ...publicResult } = result;
 
         return json(request, {
           ...publicResult,
-          removed,
           date,
         });
       }
@@ -591,7 +570,7 @@ export default {
     } catch (error) {
       console.error(error);
       const message = error instanceof Error ? error.message : "Unknown error";
-      const clientError = /required|must be|unsupported|items/.test(message);
+      const clientError = /required|must\b|unsupported|items/.test(message);
       return json(
         request,
         {

@@ -1,3 +1,4 @@
+import { manifestFor } from './fixtures/news-manifest.mjs';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { readFileSync } from 'node:fs';
@@ -25,14 +26,16 @@ test('workerd can send an approved digest again and rejects redirects without fo
   });
   t.after(() => mf.dispose());
   const db = await mf.getD1Database('DB');
-  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql']) {
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql']) {
     const sql = readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8').replace(/--[^\n]*/g, '');
     for (const statement of sql.split(';').map(s => s.trim()).filter(Boolean)) await db.prepare(statement).run();
   }
   await db.prepare('CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)').run();
   const ciphertext = await encryptWebhook({ ADMIN_TOKEN: 'test-admin' }, id, webhook);
   await db.prepare("INSERT INTO robot_subscribers (id, webhook_hash, webhook_ciphertext, webhook_display, categories, reason, consent_version, status, version) VALUES (?, 'runtime-hash', ?, 'example', '[\"ai\"]', 'test', 'robot-daily-v1', 'approved', 'runtime-version')").bind(id, ciphertext).run();
-  for (let i = 0; i < 5; i++) await db.prepare("INSERT INTO news VALUES (?, ?, ?, 'summary', 'ai', 'source', ?, ?, 'published')").bind(i, `runtime-${i}`, `story ${i}`, `https://example.com/story/${i}`, `${date}T08:00:00Z`).run();
+  for (let i = 0; i < 5; i++) await db.prepare("INSERT INTO news VALUES (?, ?, ?, 'summary', 'ai', 'source', ?, ?, 'published')").bind(i, `${date.replaceAll("-", "")}-runtime-${i}`, `story ${i}`, `https://example.com/story/${i}`, `${date}T08:00:00Z`).run();
+  const manifest = manifestFor((await db.prepare('SELECT slug, category FROM news').all()).results);
+  await db.prepare('INSERT INTO news_editions (date, schema_version, coverage, slugs) VALUES (?, 2, ?, ?)').bind(date, manifest.coverage, manifest.slugs).run();
   const send = async (operational = false, sendId = crypto.randomUUID(), allowBusy = false) => {
     const response = await mf.dispatchFetch(operational ? `https://api.wangyibiao.com/api/admin/robot/send` : `https://api.wangyibiao.com/api/admin/robot-subscriptions/${id}/send`, {
       method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: operational ? 'Bearer test-admin' : 'Bearer test-review', Origin: 'https://wangyibiao.com' }, body: JSON.stringify({ send_id: sendId, part: 0, ...(operational ? { subscriber_id: id } : {}) }),
