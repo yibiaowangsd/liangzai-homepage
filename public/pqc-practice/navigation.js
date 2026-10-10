@@ -1,3 +1,5 @@
+import { normalizeSearchQuery, searchPublishedNews } from '/assets/news-search.js?v=20261010-article-search';
+
 // Settings stay in a small dropdown; full-site navigation belongs to search.
 const trigger = document.querySelector(".menu-toggle");
 const source = document.querySelector(".site-nav");
@@ -92,19 +94,68 @@ if (trigger && source) {
   heading.append(name, close);
   const nav = source.cloneNode(true);
   nav.className = "";
-  nav.setAttribute("aria-label", "搜索结果");
+  nav.setAttribute("aria-label", "栏目导航");
   const search = document.createElement("label");
   search.className = "practice-search";
   search.textContent = "搜索全站";
   const input = document.createElement("input");
   input.type = "search";
-  input.placeholder = "搜索算法、新闻或角色";
+  input.placeholder = "搜索文章、算法或栏目，如 AWS、ML-KEM";
+  input.maxLength = 120;
   search.append(input);
-  input.addEventListener("input", () => {
-    const query = input.value.trim().toLowerCase();
-    nav.querySelectorAll("a").forEach(link => { link.hidden = !link.textContent.toLowerCase().includes(query); });
-  });
-  menu.append(heading, search, nav);
+  const feedback = document.createElement('p');
+  feedback.className = 'practice-search-status';
+  feedback.setAttribute('role', 'status');
+  const articles = document.createElement('nav');
+  articles.className = 'practice-news-results';
+  articles.setAttribute('aria-label', '新闻文章');
+  let searchTimer, searchController;
+  function stopSearch() {
+    clearTimeout(searchTimer);
+    searchController?.abort();
+  }
+  function updateSearch() {
+    stopSearch();
+    const query = normalizeSearchQuery(input.value);
+    nav.querySelectorAll('a').forEach(link => { link.hidden = !link.textContent.toLowerCase().includes(query.toLowerCase()); });
+    const destinations = nav.querySelectorAll('a:not([hidden])').length;
+    articles.replaceChildren();
+    articles.hidden = true;
+    feedback.textContent = query ? '正在搜索新闻…' : '所有栏目';
+    if (!query) return;
+    const controller = new AbortController();
+    searchController = controller;
+    searchTimer = setTimeout(async () => {
+      try {
+        const { results, total } = await searchPublishedNews(query, { signal: controller.signal });
+        if (controller.signal.aborted || !opened) return;
+        feedback.textContent = `${total > results.length ? `显示 ${results.length} / ${total}` : results.length} 篇新闻 · ${destinations} 个栏目`;
+        if (!results.length && !destinations) feedback.textContent = '没有找到匹配的文章或栏目。试试其他关键词。';
+        if (results.length) {
+          articles.hidden = false;
+          const title = document.createElement('h3');
+          title.textContent = '新闻文章';
+          articles.append(title);
+          for (const item of results) {
+            const link = document.createElement('a');
+            link.href = item.href;
+            const name = document.createElement('strong');
+            name.textContent = item.name;
+            const detail = document.createElement('small');
+            detail.textContent = [item.date, item.source].filter(Boolean).join(' · ');
+            const summary = document.createElement('span');
+            summary.textContent = item.description;
+            link.append(name, detail, summary);
+            articles.append(link);
+          }
+        }
+      } catch {
+        if (!controller.signal.aborted && opened) feedback.textContent = '新闻搜索暂时不可用，可继续浏览栏目';
+      }
+    }, 250);
+  }
+  input.addEventListener('input', updateSearch);
+  menu.append(heading, search, feedback, articles, nav);
   document.body.append(menu);
   let opened = false;
   let previousOverflow = "";
@@ -114,6 +165,8 @@ if (trigger && source) {
     opened = open;
     if (open) {
       setSettingsOpen(false);
+      input.value = '';
+      updateSearch();
       previousFocus = document.activeElement;
       previousOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
@@ -121,6 +174,7 @@ if (trigger && source) {
       else menu.setAttribute("open", "");
       input.focus();
     } else {
+      stopSearch();
       if (typeof menu.close === "function") menu.close();
       else menu.removeAttribute("open");
       document.body.style.overflow = previousOverflow;
@@ -141,13 +195,24 @@ if (trigger && source) {
     setSearchOpen(false);
   });
   menu.addEventListener("close", () => setSearchOpen(false));
-  nav.addEventListener("click", event => {
+  menu.addEventListener("click", event => {
     if (event.target.closest("a")) setSearchOpen(false);
   });
   menu.addEventListener("keydown", event => {
     if (event.key === "Escape") {
       event.preventDefault();
       setSearchOpen(false);
+    }
+    const links = [...menu.querySelectorAll('a:not([hidden])')];
+    if (event.key === 'Enter' && event.target === input && links.length) {
+      event.preventDefault();
+      links[0].click();
+    }
+    if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && links.length) {
+      event.preventDefault();
+      const index = links.indexOf(document.activeElement);
+      const next = event.key === 'ArrowDown' ? (index + 1) % links.length : index <= 0 ? links.length - 1 : index - 1;
+      links[next].focus();
     }
     if (event.key !== "Tab") return;
     const items = [...menu.querySelectorAll("button, input, a:not([hidden])")];

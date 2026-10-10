@@ -163,7 +163,6 @@ export default async function NewsPage({
             <Link href={makeHref(Math.max(meta.page - 1, 1))} aria-label="查看较新一天" aria-disabled={meta.page <= 1} tabIndex={meta.page <= 1 ? -1 : undefined}>←</Link>
             <div>
               <NewsDatePicker key={selectedDate} date={selectedDate} dates={availableDates} category={category} />
-              <span>{newest ? `${newest.total} 条 · 第 ${meta.page} / ${meta.totalPages} 期` : "该日期暂无日报"}</span>
             </div>
             <Link href={makeHref(Math.min(meta.page + 1, meta.totalPages))} aria-label="查看较早一天" aria-disabled={meta.page >= meta.totalPages} tabIndex={meta.page >= meta.totalPages ? -1 : undefined}>→</Link>
           </nav>

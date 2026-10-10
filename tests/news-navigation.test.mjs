@@ -90,6 +90,26 @@ test("all news entry points round-trip their category and archive page", async (
       assert.match(listing, /href="\/news\?category=protocol">阅读最新一期/);
       assert.doesNotMatch(listing, /return-context-0/);
     });
+    await t.test("date toolbar does not display article counts or edition numbers", async () => {
+      const listing = await render("/news");
+      const toolbar = listing.match(/<nav\b[^>]*class="news-day-controls"[\s\S]*?<\/nav>/)?.[0];
+      assert.ok(toolbar);
+      assert.doesNotMatch(toolbar, /条|第 .*期/);
+    });
+    await t.test("article footer returns to its own edition and continues through the selected category", async () => {
+      const detail = await render("/news/" + stories[0].slug + "?page=2&category=protocol");
+      const nav = detail.match(/<nav\b[^>]*class="article-reading-nav"[\s\S]*?<\/nav>/)?.[0];
+      assert.ok(nav);
+      assert.match(nav, /href="\/news\?date=2026-10-02&amp;category=protocol"/);
+      assert.match(nav, /返回本期/);
+      assert.match(nav, /下一篇/);
+      assert.match(nav, /href="\/news\/return-context-1\?date=2026-10-02&amp;category=protocol"/);
+      assert.equal(editionRequests.at(-1).searchParams.get('date'), '2026-10-02');
+      const last = await render("/news/" + stories.at(-1).slug + "?category=protocol");
+      const lastNav = last.match(/<nav\b[^>]*class="article-reading-nav"[\s\S]*?<\/nav>/)?.[0];
+      assert.match(lastNav, /返回本期/);
+      assert.doesNotMatch(lastNav, /下一篇/);
+    });
   } finally {
     globalThis.fetch = originalFetch;
   }

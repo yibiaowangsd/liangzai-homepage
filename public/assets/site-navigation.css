@@ -314,5 +314,13 @@ html .site-chrome .site-settings .menu-toggle > span { display: block; line-heig
 }
 
 .practice-mobile-menu nav a[hidden] { display: none; }
+.practice-search-status { margin: 20px 0 0; color: var(--theme-muted); font-size: 13px; line-height: 1.8; }
+.practice-mobile-menu .practice-news-results[hidden] { display: none; }
+.practice-news-results h3 { margin: 8px 0; font-size: 14px; font-weight: 600; }
+.practice-mobile-menu .practice-news-results a { display: grid; gap: 8px; font-size: 16px; line-height: 1.7; overflow-wrap: anywhere; }
+.practice-news-results a::before { display: none; }
+.practice-news-results strong { font-weight: 650; }
+.practice-news-results small { font-size: 12px; color: var(--theme-muted); }
+.practice-news-results span { font-size: 13px; color: var(--theme-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 html .site-chrome .jump-trigger { display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px; border: 1px solid var(--theme-control-border); border-radius: 10px; background: var(--theme-surface); color: var(--theme-ink); font: 500 var(--type-caption)/1.4 var(--font-sans); cursor: pointer; }

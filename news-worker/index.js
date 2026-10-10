@@ -2,6 +2,7 @@ import { handleRobotSubscriptions } from "./robot-subscriptions.js";
 import { handleSubscriptions, sendDailyDigest, readBody, RequestError } from "./subscriptions.js";
 import { robotConfigured, robotStatus, sendRobotDigest, sendRobotConnectionTest, sendManualRobotDigest } from "./robot.js";
 import { CORE_CATEGORIES, validateEdition, beijingDate } from "./edition.js";
+import { getNewsSearch, parseNewsSearch } from "./news-search.js";
 
 const ALLOWED_ORIGINS = new Set([
   "https://wangyibiao.com",
@@ -488,6 +489,12 @@ export default {
         const parsedLimit = Number.parseInt(url.searchParams.get("limit") || "6", 10);
         const limit = Math.min(Math.max(parsedLimit || 6, 1), 10);
         return json(request, await getFeatured(env, limit));
+      }
+
+      if (request.method === "GET" && url.pathname === "/api/news/search") {
+        const options = parseNewsSearch(url.searchParams);
+        if (!options) return json(request, { error: "Invalid search query or limit" }, 400);
+        return json(request, await getNewsSearch(env, options));
       }
 
       if (request.method === "GET" && url.pathname === "/api/news") {

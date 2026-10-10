@@ -24,6 +24,7 @@ on:
       - 'tests/site-usability.test.mjs'
       - 'tests/cinema-details.test.mjs'
       - 'public/assets/site-navigation.css'
+      - 'public/assets/news-search.js'
       - 'public/pqc-practice/**'
       - 'tests/browser-compat.test.mjs'
       - 'tests/kex-worker-flow.test.mjs'
@@ -39,6 +40,7 @@ on:
       - 'tests/news-*.test.mjs'
       - 'scripts/check-subscriptions.mjs'
       - 'scripts/check-news-calendar.mjs'
+      - 'scripts/check-news-journey.mjs'
       - 'news/validate-edition.py'
       - 'news/edition-policy.json'
       - 'app/page.tsx'
@@ -75,6 +77,7 @@ on:
       - 'tests/site-usability.test.mjs'
       - 'tests/cinema-details.test.mjs'
       - 'public/assets/site-navigation.css'
+      - 'public/assets/news-search.js'
       - 'public/pqc-practice/**'
       - 'tests/browser-compat.test.mjs'
       - 'tests/kex-worker-flow.test.mjs'
@@ -90,6 +93,7 @@ on:
       - 'tests/news-*.test.mjs'
       - 'scripts/check-subscriptions.mjs'
       - 'scripts/check-news-calendar.mjs'
+      - 'scripts/check-news-journey.mjs'
       - 'news/validate-edition.py'
       - 'news/edition-policy.json'
       - 'app/page.tsx'
@@ -128,6 +132,7 @@ jobs:
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: node scripts/check-subscriptions.mjs
       - run: node scripts/check-news-calendar.mjs
+      - run: node scripts/check-news-journey.mjs
       - run: npm run test:layout
       - uses: actions/upload-artifact@v4
         if: always()
@@ -137,4 +142,5 @@ jobs:
             outputs/responsive/
             outputs/subscriptions/
             outputs/news-calendar/
+            outputs/news-journey/
           retention-days: 7

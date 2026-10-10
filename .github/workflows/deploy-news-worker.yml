@@ -112,6 +112,7 @@ jobs:
             "https://api.wangyibiao.com/api/subscriptions" \
             "https://api.wangyibiao.com/api/robot-subscriptions" \
             "https://api.wangyibiao.com/api/news/featured?limit=6" \
+            "https://api.wangyibiao.com/api/news/search?q=AWS" \
             "https://api.wangyibiao.com/api/news/editions?page=1&pageSize=1"; do
             echo "Checking $url"
             response="$(curl --fail --silent --show-error --retry 3 --retry-all-errors --max-time 30 "$url")"
@@ -131,6 +132,10 @@ jobs:
               assert payload["meta"]["pageSize"] == 1, "Expected one day per page"
               assert len(payload["data"]) <= 1, "Multiple dates returned on one page"
               assert payload["meta"]["totalPages"] == max(1, payload["meta"]["totalDays"]), "Page count must match edition dates"
+          if "/api/news/search" in sys.argv[1]:
+              assert isinstance(payload["data"], list), "Expected article search results"
+              assert payload["meta"]["count"] == len(payload["data"])
+              assert payload["meta"]["total"] >= payload["meta"]["count"]
           ' "$url" <<< "$response"
           done
 

@@ -3,11 +3,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import StoryImage from "../StoryImage";
-import { newsListingHref, parseNewsContext, type NewsSearchParams } from "../navigation";
+import { newsListingHref, newsStoryHref, parseNewsContext, type NewsSearchParams } from "../navigation";
+import { nextEditionStory } from "../reading";
+import { newsEditionDate } from "../../../public/assets/news-search.js";
 import {
   categoryLabels,
   formatNewsDate,
   getNewsDetail,
+  getNewsEditions,
   parseTags,
 } from "../news-api";
 
@@ -79,9 +82,16 @@ export default async function NewsDetailPage({
   searchParams: Promise<NewsSearchParams>;
 }) {
   const { slug } = await params;
-  const listingHref = newsListingHref(parseNewsContext(await searchParams));
+  const context = parseNewsContext(await searchParams);
+  const listingHref = newsListingHref(context);
   const item = await getNewsDetail(slug);
   if (!item || !item.content) notFound();
+
+  const editionDate = newsEditionDate(item.published_at);
+  const readingCategory = context.category === item.category ? context.category : undefined;
+  const editionHref = newsListingHref({ page: 1, category: readingCategory, date: editionDate || undefined });
+  const edition = editionDate ? await getNewsEditions(1, 1, readingCategory, editionDate).catch(() => null) : null;
+  const nextStory = nextEditionStory(edition?.data.find(value => value.date === editionDate), item.slug, readingCategory);
 
   const tags = parseTags(item.tags);
   const readingMinutes = Math.max(1, Math.ceil(item.content.replace(/\s/g, "").length / 350));
@@ -128,6 +138,16 @@ export default async function NewsDetailPage({
               正文为原始资料的中文编译，长原文保留主要事实与论证；“量仔观察”是本站的独立总结与分析。原始发布日期见正文，页首日期为本站日报日期。
             </p>
           </footer>
+          <nav className="article-reading-nav" aria-label="本期连续阅读">
+            <Link className="article-edition-return" href={editionHref}>
+              <span>返回本期</span>
+              <small>{editionDate}{readingCategory ? ` · ${categoryLabels[readingCategory]}` : " · 全部新闻"}</small>
+            </Link>
+            {nextStory && <Link className="article-next-story" href={newsStoryHref(nextStory.slug, editionHref)}>
+              <span>下一篇 · {categoryLabels[nextStory.category] || nextStory.category}</span>
+              <strong>{nextStory.title}</strong>
+            </Link>}
+          </nav>
         </div>
       </article>
     </main>

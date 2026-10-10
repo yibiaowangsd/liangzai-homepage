@@ -267,6 +267,10 @@ function read(id) {
 function write(id, bytes) { $(`#${id}`).value = hex(bytes); $(`#${id}`).removeAttribute('aria-invalid'); }
 function result(label = '等待双方操作') {
   flowOutcome = null;
+  // A verdict only applies to the exact inputs used in that calculation.
+  // Every reset/edit clears both the result card and the live status above it.
+  $('#message').textContent = label;
+  $('#message').className = 'message';
   $('#manual-result').classList.remove('pass', 'fail');
   $('#manual-summary').textContent = label;
   $('#fact-one').textContent = '待检查'; $('#fact-one').className = '';
@@ -652,6 +656,12 @@ document.querySelectorAll('[data-copy]').forEach(button => button.addEventListen
   catch { status('复制失败：请检查浏览器剪贴板权限。', 'error'); }
 }));
 const missing = missingBrowserFeatures();
+const algorithmLinks = { 'ml-kem': 'mlkem', 'ml-dsa': 'mldsa', 'slh-dsa': 'slhdsa' };
+const requestedAlgorithm = new URL(location.href).searchParams.get('algorithm');
+if (Object.hasOwn(algorithmLinks, requestedAlgorithm)) {
+  $('#family').value = algorithmLinks[requestedAlgorithm];
+  $('#family').dispatchEvent(new Event('change'));
+}
 if (missing.length) {
   runtime('浏览器环境不可用', 'error');
   status(`当前浏览器缺少 ${missing.join('、')}，请使用支持这些功能的浏览器。`, 'error');

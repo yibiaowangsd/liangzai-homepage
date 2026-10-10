@@ -601,7 +601,7 @@ export default function ArsenalLab() {
         <div className="algorithm-directory-grid">
           {weapons.filter((item) => `${item.name} ${item.role} ${item.principle} ${item.simple}`.toLowerCase().includes(catalogQuery.trim().toLowerCase())).map((item) => {
             const visual = heroWeapons.find((entry) => entry.name === item.name);
-            return <article key={item.id}><img src={visual?.image} alt={visual ? `${item.name} · ${visual.note}` : item.name} width="768" height="768" loading="lazy" /><div><span>{item.role}</span><h3>{item.name}</h3><p>{item.simple}</p><small>{item.status} · {item.id === "fn-dsa" ? "原理参考，未接入本地运行" : "可在浏览器运行"}</small><a href="#weapons" onClick={() => chooseWeapon(item.id)}>查看原理与参数</a>{item.id !== "fn-dsa" && <a href="/pqc-practice">进入实验室选择 {item.name}</a>}</div></article>;
+            return <article key={item.id}><img src={visual?.image} alt={visual ? `${item.name} · ${visual.note}` : item.name} width="768" height="768" loading="lazy" /><div><span>{item.role}</span><h3>{item.name}</h3><p>{item.simple}</p><small>{item.status} · {item.id === "fn-dsa" ? "原理参考，未接入本地运行" : "可在浏览器运行"}</small><a href="#weapons" onClick={() => chooseWeapon(item.id)}>查看原理与参数</a>{item.id !== "fn-dsa" && <a href={`/pqc-practice/index.html?algorithm=${item.id}`}>进入实验室选择 {item.name}</a>}</div></article>;
           })}
         </div>
         {!weapons.some((item) => `${item.name} ${item.role} ${item.principle} ${item.simple}`.toLowerCase().includes(catalogQuery.trim().toLowerCase())) && <p role="status" className="algorithm-empty">没有匹配的算法。试试 ML-KEM、签名或哈希。</p>}
