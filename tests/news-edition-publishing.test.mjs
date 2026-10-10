@@ -92,7 +92,7 @@ test('new categories can be selected together without exposing internal coverage
   p.coverage.migration.note = '本期保留可实际阅读并核实的迁移部署案例，其他旧版选题已剔除。';
   const items = p.items.filter(item => item.category !== 'ngcc');
   const messages = buildRobotDigest(date, items, CORE_CATEGORIES, undefined, p.coverage);
-  assert.equal(messages.length, 7); assert.match(messages.at(-1).textMsg.content, /7\/7 · NGCC 公钥征集/);
+  assert.equal(messages.length, 7); assert.match(messages.at(-1).textMsg.content, /七、NGCC 公钥征集（7\/7）/);
   const mail = await buildDigest({ ADMIN_TOKEN: 'test', NEWSLETTER_FROM: 'test@example.com' }, { id: 'test', email: 'reader@example.com', categories: '["migration","ngcc"]', token_version: 'v1' }, date, items, p.coverage);
   for (const note of [p.coverage.ngcc.note, p.coverage.migration.note]) {
     assert.ok(messages.every(message => !message.textMsg.content.includes(note)));
