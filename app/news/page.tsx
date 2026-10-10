@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import StoryImage from "./StoryImage";
 import NewsDatePicker from "./NewsDatePicker";
+import NewsCategoryMenu from "./NewsCategoryMenu";
 import { newsListingHref, newsStoryHref, parseNewsContext, type NewsSearchParams } from "./navigation";
 import {
   categoryLabels,
@@ -167,7 +168,7 @@ export default async function NewsPage({
             <Link href={makeHref(Math.min(meta.page + 1, meta.totalPages))} aria-label="查看较早一天" aria-disabled={meta.page >= meta.totalPages} tabIndex={meta.page >= meta.totalPages ? -1 : undefined}>→</Link>
           </nav>
         )}
-        <details className="news-category-menu">
+        <NewsCategoryMenu className="news-category-menu">
           <summary>
             <span>{category ? categoryLabels[category] : "全部新闻"}</span>
             <i aria-hidden="true">⌄</i>
@@ -186,7 +187,7 @@ export default async function NewsPage({
               </Link>
             ))}
           </nav>
-        </details>
+        </NewsCategoryMenu>
       </section>
 
       <section className="news-subscription-banner" aria-labelledby="news-subscription-title">

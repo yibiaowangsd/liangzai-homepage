@@ -157,6 +157,13 @@ try {
       await page.getByRole("navigation", { name: "新闻方向" }).getByRole("link", { name: "后量子算法", exact: true }).click();
       await page.waitForURL("**/news?date=2026-10-10&category=pqc");
       await page.locator('.lead-copy h2 a[href*="-pqc"]').waitFor();
+      await expect(page.locator(".news-category-menu")).toHaveJSProperty("open", false);
+      await page.locator(".news-category-menu summary").click();
+      await page.keyboard.press("Escape");
+      await expect(page.locator(".news-category-menu")).toHaveJSProperty("open", false);
+      await page.locator(".news-category-menu summary").click();
+      await page.getByRole("heading", { name: "前沿新闻", exact: true }).click();
+      await expect(page.locator(".news-category-menu")).toHaveJSProperty("open", false);
       await page.locator(".edition-label .news-date-trigger").click();
       await page.getByRole("dialog", { name: "选择日刊日期" }).waitFor({ state: "visible" });
       await page.keyboard.press("Escape");
