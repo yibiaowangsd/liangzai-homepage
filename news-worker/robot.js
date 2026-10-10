@@ -33,8 +33,11 @@ export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTIO
     }
     return { label, lines };
   });
-  const message = (content, first) => ({ type: 'text', textMsg: { content, isMentioned: first && mentions.mode === 'members',
-    ...(first && mentions.mode === 'members' ? { mentionType: 2, mentionedMobileList: mentions.mobiles } : {}) } });
+  const message = (content, first) => {
+    const isMentioned = first && ['members', 'all'].includes(mentions.mode);
+    return { type: 'text', textMsg: { content, isMentioned,
+      ...(isMentioned ? mentions.mode === 'all' ? { mentionType: 1 } : { mentionType: 2, mentionedMobileList: mentions.mobiles } : {}) } };
+  };
   if (sendMode === 'single') {
     return [message([`量仔每日前沿 · ${date}`, ...sections.map(section => [section.label, ...section.lines].join('\n'))].join('\n\n'), true)];
   }

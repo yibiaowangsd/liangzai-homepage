@@ -14,7 +14,7 @@ function fixture(t) {
   const originalTimeout = globalThis.setTimeout;
   t.mock.method(globalThis, 'setTimeout', (callback, delay, ...args) => originalTimeout(callback, delay === 3100 ? 0 : delay, ...args));
   const db = new DatabaseSync(':memory:');
-  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql', '0006_robot_send_mode.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql', '0006_robot_send_mode.sql', '0007_robot_mention_all.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
   db.exec('CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)');
   const insert = db.prepare('INSERT INTO news VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'); let id = 0;
   for (const category of ['pqc', 'protocol', 'standards', 'security', 'ai']) for (let i = 0; i < 5; i++) insert.run(++id, `${date.replaceAll("-", "")}-${category}-${i}`, `${category} story ${i}`, '中文摘要', category, '一手来源', `https://example.com/${category}/${i}`, `${date}T08:00:00Z`, 'published');
@@ -233,7 +233,7 @@ test('validation prevents SSRF, untrusted origins, oversized inputs and invalid 
   assert.equal((await f.api('/robot-subscriptions', {}, false, { Origin: 'https://evil.test' })).status, 403);
   assert.equal((await f.api('/robot-subscriptions', { reason: 'x'.repeat(9000) })).status, 413);
   await f.apply();
-  for (const body of [{ mention_mode: 'all' }, { mention_mode: 'members', mention_mobiles: [] }, { mention_mode: 'members', mention_mobiles: ['@all'] }]) assert.equal((await f.api(`/admin/robot-subscriptions/${f.row().id}/approve`, body, true)).status, 400);
+  for (const body of [{ mention_mode: 'unknown' }, { mention_mode: 'members', mention_mobiles: [] }, { mention_mode: 'members', mention_mobiles: ['@all'] }]) assert.equal((await f.api(`/admin/robot-subscriptions/${f.row().id}/approve`, body, true)).status, 400);
   assert.equal(f.row().status, 'pending'); assert.equal(f.requests.length, 0);
 });
 
@@ -626,4 +626,80 @@ test('send-mode migration preserves existing subscriptions and delivery history'
   db.prepare('UPDATE robot_subscription_deliveries SET next_part = 7').run();
   assert.throws(() => db.prepare("UPDATE robot_subscribers SET send_mode = 'unknown'").run());
   assert.throws(() => db.prepare('UPDATE robot_subscription_deliveries SET next_part = 8').run());
+});
+
+for (const sendMode of ['single', 'multiple']) test(`administrator-approved @all is applied once in automatic and manual ${sendMode} delivery`, async t => {
+  const f = fixture(t); await f.apply({ send_mode: sendMode, mention_mode: 'all' });
+  assert.equal(f.row().mention_mode, 'none', 'An applicant cannot choose a group reminder');
+  const path = `/admin/robot-subscriptions/${f.row().id}`;
+  assert.equal((await f.api(`${path}/approve`, { mention_mode: 'all' })).status, 401);
+  await f.approve(undefined, { mention_mode: 'all', mention_mobiles: ['13800000000'] });
+  assert.equal(f.row().mention_mode, 'all'); assert.equal(f.row().mention_mobiles, '[]');
+  const approved = f.row(); await f.apply({ mention_mode: 'none' }); assert.deepEqual(f.row(), approved);
+  const total = sendMode === 'single' ? 1 : 2;
+  const check = messages => {
+    assert.equal(messages.length, total);
+    assert.equal(messages[0].textMsg.isMentioned, true); assert.equal(messages[0].textMsg.mentionType, 1);
+    for (const [part, message] of messages.entries()) {
+      assert.equal(message.textMsg.mentionedMobileList, undefined);
+      if (part > 0) { assert.equal(message.textMsg.isMentioned, false); assert.equal(message.textMsg.mentionType, undefined); }
+    }
+  };
+  assert.equal((await f.send()).sent, total); check(f.requests.map(r => r.payload));
+  assert.equal((await f.send()).sent, 0);
+  const sendId = crypto.randomUUID(); let step = { send_id: sendId, part: 0 };
+  for (let part = 0; part < total; part++) {
+    const response = await f.api(`${path}/send`, step, true); assert.equal(response.status, 200);
+    const result = await response.json(); assert.equal(result.ok, true); assert.equal(result.total, total);
+    step = { send_id: sendId, part: result.next_part, version: result.version, date: result.date };
+  }
+  check(f.requests.slice(total).map(r => r.payload));
+  const list = await (await f.api('/admin/robot-subscriptions?status=approved', undefined, true)).json();
+  assert.equal(list.data[0].mention_mode, 'all'); assert.equal(list.data[0].mention_mobiles, '[]');
+});
+
+test('changing reminders to @all cancels old parts and turning reminders off removes group notification', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(undefined, { mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  assert.equal((await f.send({ maxMessages: 1 })).sent, 1); assert.equal(f.record().status, 'pending');
+  const path = `/admin/robot-subscriptions/${f.row().id}`, version = f.row().version;
+  assert.equal((await f.api(`${path}/settings`, { categories: ['pqc', 'ai'], mention_mode: 'all' }, true)).status, 200);
+  assert.notEqual(f.row().version, version); assert.equal(f.record().status, 'cancelled');
+  assert.equal(f.row().mention_mobiles, '[]'); assert.equal((await f.send()).sent, 0);
+  const first = await (await f.api(`${path}/send`, { part: 0 }, true)).json();
+  assert.equal(first.ok, true); assert.equal(first.more, true); assert.equal(f.requests.at(-1).payload.textMsg.mentionType, 1);
+  const unchanged = f.row().version;
+  assert.equal((await f.api(`${path}/settings`, { categories: ['pqc', 'ai'], mention_mode: 'all' }, true)).status, 200);
+  assert.equal(f.row().version, unchanged);
+  assert.equal((await f.api(`${path}/mentions`, { mention_mode: 'none' }, true)).status, 200);
+  assert.equal(f.row().mention_mode, 'none'); assert.equal(f.row().mention_mobiles, '[]');
+  assert.equal((await f.api(`${path}/send`, { send_id: first.send_id, part: 1, version: first.version, date: first.date }, true)).status, 409);
+  assert.equal((await (await f.api(`${path}/send`, { part: 0 }, true)).json()).ok, true);
+  const message = f.requests.at(-1).payload.textMsg;
+  assert.equal(message.isMentioned, false); assert.equal(message.mentionType, undefined); assert.equal(message.mentionedMobileList, undefined);
+});
+
+test('@all migration preserves encrypted credentials, reminder choices, versions and related delivery histories', t => {
+  const db = new DatabaseSync(':memory:'); t.after(() => db.close()); db.exec('PRAGMA foreign_keys = ON');
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql', '0006_robot_send_mode.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
+  for (const mode of ['none', 'members']) db.prepare(`INSERT INTO robot_subscribers
+    (id, webhook_hash, webhook_ciphertext, webhook_display, categories, reason, consent_version, status, version, mention_mode, mention_mobiles, send_mode)
+    VALUES (?, ?, 'encrypted-value', 'display', '["ai"]', 'test', 'v1', 'approved', 'preserved-version', ?, ?, 'single')`)
+    .run(mode, `hash-${mode}`, mode, mode === 'members' ? '["13800000000"]' : '[]');
+  db.prepare("INSERT INTO robot_subscription_deliveries (id, subscriber_id, edition_date, version, payload, status, created_at) VALUES ('auto', 'members', ?, 'preserved-version', '[{}]', 'sent', 123)").run(date);
+  db.prepare("INSERT INTO robot_manual_deliveries (send_id, subscriber_id, edition_date, version, payload, status, lease_until, created_at) VALUES ('manual', 'members', ?, 'preserved-version', '[{}]', 'sent', 0, 456)").run(date);
+  db.prepare("INSERT INTO robot_manual_receipts (send_id, part, result) VALUES ('manual', 0, '{\"ok\":true}')").run();
+  const tables = ['robot_subscribers', 'robot_subscription_deliveries', 'robot_manual_deliveries', 'robot_manual_receipts'];
+  const before = tables.map(table => db.prepare(`SELECT * FROM ${table}`).all());
+  db.exec('BEGIN');
+  try { db.exec(readFileSync(new URL('../news-worker/migrations/0007_robot_mention_all.sql', import.meta.url), 'utf8')); db.exec('COMMIT'); }
+  catch (error) { db.exec('ROLLBACK'); throw error; }
+  for (const [index, table] of tables.entries()) assert.deepEqual(db.prepare(`SELECT * FROM ${table}`).all(), before[index]);
+  assert.deepEqual(db.prepare('PRAGMA foreign_key_check').all(), []);
+  assert.equal(db.prepare("PRAGMA table_info('robot_subscribers')").all().some(column => column.name === 'mention_mode_previous'), false);
+  db.prepare("UPDATE robot_subscribers SET mention_mode = 'all' WHERE id = 'members'").run();
+  assert.equal(db.prepare("SELECT mention_mode FROM robot_subscribers WHERE id = 'members'").get().mention_mode, 'all');
+  assert.throws(() => db.prepare("UPDATE robot_subscribers SET mention_mode = 'unknown'").run());
+  assert.throws(() => db.prepare('UPDATE robot_subscribers SET mention_mode = NULL').run());
+  assert.throws(() => db.prepare("UPDATE robot_subscribers SET webhook_hash = 'hash-none' WHERE id = 'members'").run());
+  assert.throws(() => db.prepare("UPDATE robot_manual_deliveries SET subscriber_id = 'missing'").run());
 });

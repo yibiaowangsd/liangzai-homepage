@@ -44,8 +44,8 @@ export async function decryptWebhook(env, subscriber) {
 }
 export function normalizeMentions(body) {
   const mode = body.mention_mode ?? 'none';
-  if (!['none', 'members'].includes(mode)) throw new RequestError('请选择不 @ 或指定成员。');
-  if (mode === 'none') return { mode, mobiles: [] };
+  if (!['none', 'members', 'all'].includes(mode)) throw new RequestError('请选择不 @ 成员、@ 指定成员或 @ 全体成员。');
+  if (mode !== 'members') return { mode, mobiles: [] };
   if (!Array.isArray(body.mention_mobiles) || !body.mention_mobiles.length || body.mention_mobiles.length > 20 ||
       body.mention_mobiles.some(value => typeof value !== 'string' || !/^\d{11,15}$/.test(value))) {
     throw new RequestError('请填写 1 至 20 位成员的手机号，每个号码为 11 至 15 位数字。');
