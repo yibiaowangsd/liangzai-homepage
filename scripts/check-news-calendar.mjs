@@ -3,6 +3,7 @@ import { createServer } from "node:http";
 import { mkdir, readFile, stat } from "node:fs/promises";
 import { extname, resolve, sep } from "node:path";
 import { chromium, firefox, webkit } from "playwright";
+import { expect } from "playwright/test";
 
 // Render the production build against a deterministic archive. No live API,
 // account, mail or robot delivery is involved in these interactions.
@@ -92,7 +93,7 @@ try {
         await trigger.click();
         const dialog = page.getByRole("dialog", { name: "选择日刊日期" });
         await dialog.waitFor({ state: "visible" });
-        assert.equal(await trigger.getAttribute("aria-expanded"), "true");
+        await expect(trigger).toHaveAttribute("aria-expanded", "true");
         const bounds = await dialog.boundingBox();
         assert.ok(bounds.x >= 0 && bounds.x + bounds.width <= width + 1, `${engine} calendar fits ${width}`);
         assert.ok(bounds.y >= 0 && bounds.y + bounds.height <= 900 + 1);
@@ -105,7 +106,7 @@ try {
         assert.equal(await dialog.isVisible(), true);
         await page.keyboard.press("Escape");
         await dialog.waitFor({ state: "hidden" });
-        assert.equal(await trigger.evaluate(element => element === document.activeElement), true, "Escape restores trigger focus");
+        await expect(trigger, "Escape restores trigger focus").toBeFocused();
 
         await trigger.click();
         await dialog.waitFor({ state: "visible" });
@@ -115,7 +116,7 @@ try {
         await trigger.click();
         await dialog.waitFor({ state: "visible" });
         await dialog.getByRole("button", { name: "上一个月", exact: true }).click();
-        assert.equal(await dialog.getByLabel("选择月份").inputValue(), "2026-09");
+        await expect(dialog.getByLabel("选择月份")).toHaveValue("2026-09");
         await dialog.locator('[data-date="2026-09-30"]').click();
         await page.waitForURL("**/news?date=2026-09-30&category=protocol");
         await page.locator('.news-day-controls time[datetime="2026-09-30"]').waitFor();
@@ -137,7 +138,7 @@ try {
       await dialog.waitFor({ state: "visible" });
       await dialog.locator('[data-date="2026-10-10"]').focus();
       await page.keyboard.press("ArrowLeft");
-      assert.equal(await page.locator("button:focus").getAttribute("data-date"), "2026-10-09");
+      await expect(page.locator("button:focus")).toHaveAttribute("data-date", "2026-10-09");
       await page.keyboard.press("Enter");
       assert.equal(await dialog.isVisible(), true);
       await page.keyboard.press("ArrowLeft");
@@ -147,7 +148,7 @@ try {
       await trigger.click();
       await dialog.waitFor({ state: "visible" });
       await dialog.getByLabel("选择月份").selectOption("2026-08");
-      assert.equal(await dialog.getByRole("button", { name: "上一个月", exact: true }).isDisabled(), true);
+      await expect(dialog.getByRole("button", { name: "上一个月", exact: true })).toBeDisabled();
       await dialog.getByRole("button", { name: "最新一期", exact: true }).click();
       await page.waitForURL("**/news?date=2026-10-10&category=protocol");
       await page.locator('.news-day-controls time[datetime="2026-10-10"]').waitFor();
