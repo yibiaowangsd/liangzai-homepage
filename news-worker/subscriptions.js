@@ -16,7 +16,7 @@ export function cleanString(value, max, required = false) {
   return value.trim();
 }
 export function normalizeCategories(values) {
-  if (!Array.isArray(values) || !values.length || values.length > Object.keys(SUBSCRIPTION_CATEGORIES).length || values.some(v => typeof v !== 'string' || !SUBSCRIPTION_CATEGORIES[v])) {
+  if (!Array.isArray(values) || !values.length || values.length > Object.keys(SUBSCRIPTION_CATEGORIES).length || values.some(v => typeof v !== 'string' || !Object.hasOwn(SUBSCRIPTION_CATEGORIES, v))) {
     throw new RequestError('请至少选择一个有效新闻板块。');
   }
   return Object.keys(SUBSCRIPTION_CATEGORIES).filter(key => values.includes(key));
@@ -170,7 +170,10 @@ export async function sendDailyDigest(env, date = new Intl.DateTimeFormat('en-CA
     ORDER BY s.created_at LIMIT 20`).bind(date).all();
   for (const subscriber of subscribers) {
     const payload = await buildDigest(env, subscriber, date, items, coverage);
-    await env.DB.prepare('INSERT INTO newsletter_deliveries (id, subscriber_id, edition_date, categories, token_version, payload, created_at) VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT(subscriber_id, edition_date) DO NOTHING').bind(crypto.randomUUID(), subscriber.id, date, subscriber.categories, subscriber.token_version, JSON.stringify(payload), Date.now()).run();
+    await env.DB.prepare(`INSERT INTO newsletter_deliveries (id, subscriber_id, edition_date, categories, token_version, payload, created_at)
+      SELECT ?, id, ?, categories, token_version, ?, ? FROM newsletter_subscribers
+      WHERE id = ? AND status = 'approved' AND email_verified_at IS NOT NULL AND categories = ? AND token_version = ?
+      ON CONFLICT(subscriber_id, edition_date) DO NOTHING`).bind(crypto.randomUUID(), date, JSON.stringify(payload), Date.now(), subscriber.id, subscriber.categories, subscriber.token_version).run();
   }
   const now = Date.now();
   // Freeze retry payloads and stop before the provider's 24-hour deduplication window expires.
@@ -183,18 +186,19 @@ export async function sendDailyDigest(env, date = new Intl.DateTimeFormat('en-CA
       WHERE id = ? AND status IN ('pending','sending') AND lease_until < ? AND attempts < 5 RETURNING *`).bind(Date.now() + 300000, lease, job.id, Date.now()).first();
     if (!claimed) continue;
     if (sent > 0) await new Promise(resolve => setTimeout(resolve, 550));
-    const current = await env.DB.prepare('SELECT status, email_verified_at, categories, token_version FROM newsletter_subscribers WHERE id = ?').bind(claimed.subscriber_id).first();
+    const current = await env.DB.prepare(`SELECT s.status, s.email_verified_at, s.categories, s.token_version FROM newsletter_subscribers s
+      JOIN newsletter_deliveries d ON d.subscriber_id = s.id WHERE d.id = ? AND d.status = 'sending' AND d.lease_token = ?`).bind(job.id, lease).first();
     if (current?.status !== 'approved' || !current.email_verified_at || current.categories !== claimed.categories || current.token_version !== claimed.token_version) {
       await env.DB.prepare("UPDATE newsletter_deliveries SET status = 'cancelled', lease_until = 0 WHERE id = ? AND lease_token = ?").bind(job.id, lease).run();
       continue;
     }
     try {
       const providerId = await sendMail(env, JSON.parse(claimed.payload), `newsletter-daily/${claimed.subscriber_id}/${date}`);
-      await env.DB.prepare("UPDATE newsletter_deliveries SET status = 'sent', provider_id = ?, sent_at = datetime('now'), lease_until = 0, error = NULL WHERE id = ? AND lease_token = ?").bind(providerId, job.id, lease).run();
+      await env.DB.prepare("UPDATE newsletter_deliveries SET status = 'sent', provider_id = ?, sent_at = datetime('now'), lease_until = 0, error = NULL WHERE id = ? AND lease_token = ? AND status = 'sending'").bind(providerId, job.id, lease).run();
       sent++;
     } catch {
       // An uncertain provider outcome always retries the same key and frozen payload.
-      await env.DB.prepare('UPDATE newsletter_deliveries SET status = ?, error = ?, lease_until = ? WHERE id = ? AND lease_token = ?').bind(claimed.attempts >= 5 ? 'failed' : 'pending', 'mail_provider_error', Date.now() + 60000, job.id, lease).run();
+      await env.DB.prepare("UPDATE newsletter_deliveries SET status = ?, error = ?, lease_until = ? WHERE id = ? AND lease_token = ? AND status = 'sending'").bind(claimed.attempts >= 5 ? 'failed' : 'pending', 'mail_provider_error', Date.now() + 60000, job.id, lease).run();
       failed++;
       break; // Also handles provider throttling; next cron continues without a burst.
     }
@@ -262,7 +266,7 @@ export async function handleSubscriptions(request, env, json) {
     if (request.method === 'POST' && url.pathname === '/api/admin/subscriptions/send') {
       return json(request, await sendDailyDigest(env));
     }
-    const review = url.pathname.match(/^\/api\/admin\/subscriptions\/([a-z0-9-]{36})\/(approve|reject|resend)$/);
+    const review = url.pathname.match(/^\/api\/admin\/subscriptions\/([a-z0-9-]{36})\/(approve|reject|resend|settings)$/);
     if (request.method === 'POST' && review) {
       const [, id, action] = review;
       const body = await readBody(request);
@@ -274,13 +278,40 @@ export async function handleSubscriptions(request, env, json) {
         await stopSubscription(env, id, 'rejected', note);
         return json(request, { ok: true, message: '申请已拒绝，日报发送已停止。' });
       }
+      if (['approve', 'settings'].includes(action) && body.expected_categories !== undefined && JSON.stringify(normalizeCategories(body.expected_categories)) !== subscriber.categories) {
+        throw new RequestError('订阅板块已被其他操作修改，请刷新后重试。', 409);
+      }
+      const categories = action === 'settings' || (action === 'approve' && body.categories !== undefined)
+        ? JSON.stringify(normalizeCategories(body.categories)) : subscriber.categories;
+      if (action === 'settings') {
+        if (subscriber.status !== 'approved') throw new RequestError('请先通过申请，再调整发送板块。', 409);
+        if (categories === subscriber.categories) return json(request, { ok: true, message: '发送板块未变化，原发送安排保持不变。' });
+        const result = await env.DB.batch([
+          env.DB.prepare(`UPDATE newsletter_subscribers SET categories = ?,
+            confirmation_generation = confirmation_generation + CASE WHEN email_verified_at IS NULL THEN 1 ELSE 0 END,
+            confirmation_sent_at = CASE WHEN email_verified_at IS NULL THEN NULL ELSE confirmation_sent_at END,
+            updated_at = datetime('now') WHERE id = ? AND status = 'approved' AND token_version = ? AND categories = ?`)
+            .bind(categories, id, subscriber.token_version, subscriber.categories),
+          env.DB.prepare(`UPDATE newsletter_deliveries SET status = 'cancelled', lease_until = 0, lease_token = NULL
+            WHERE subscriber_id = ? AND status IN ('pending','sending') AND categories != ?
+            AND EXISTS (SELECT 1 FROM newsletter_subscribers WHERE id = ? AND status = 'approved' AND token_version = ? AND categories = ?)`)
+            .bind(id, categories, id, subscriber.token_version, categories),
+        ]);
+        if (result[0].meta.changes !== 1) throw new RequestError('申请已被其他操作修改，请刷新后重试。', 409);
+        // Keep signed management, unsubscribe and confirmation links valid. The
+        // confirmation page reads the current selection before activation.
+        return json(request, { ok: true, message: subscriber.email_verified_at
+          ? '发送板块已保存，新发送使用所选内容；当天已有发送记录时不自动重发。'
+          : '发送板块已保存；收件人确认邮箱后才会开始发送，可重发确认邮件告知新板块。' });
+      }
       if (!mailConfigured(env)) throw new RequestError('请先配置 RESEND_API_KEY 和 NEWSLETTER_FROM，再通过申请。', 503);
       if (action === 'approve' && subscriber.status !== 'pending') throw new RequestError('仅待审核申请可以通过。', 409);
       if (action === 'resend' && (subscriber.status !== 'approved' || subscriber.email_verified_at)) throw new RequestError('只有已通过但尚未确认邮箱的申请可以重发确认邮件。', 409);
       const expires = subscriber.confirmation_expires_at > Date.now() ? subscriber.confirmation_expires_at : Date.now() + 7 * 86400000;
       // A failed/uncertain attempt keeps its key; an explicit resend after success starts a new attempt.
-      const generation = action === 'resend' && subscriber.confirmation_sent_at ? 1 : 0;
-      await env.DB.prepare("UPDATE newsletter_subscribers SET status = 'approved', confirmation_expires_at = ?, confirmation_generation = confirmation_generation + ?, confirmation_sent_at = NULL, review_note = '', reviewed_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND status = ?").bind(expires, generation, id, subscriber.status).run();
+      const generation = (action === 'resend' && subscriber.confirmation_sent_at) || categories !== subscriber.categories ? 1 : 0;
+      const result = await env.DB.prepare("UPDATE newsletter_subscribers SET status = 'approved', categories = ?, confirmation_expires_at = ?, confirmation_generation = confirmation_generation + ?, confirmation_sent_at = NULL, review_note = '', reviewed_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND status = ? AND token_version = ? AND categories = ?").bind(categories, expires, generation, id, subscriber.status, subscriber.token_version, subscriber.categories).run();
+      if (result.meta.changes !== 1) throw new RequestError('申请已被其他操作修改，请刷新后重试。', 409);
       const updated = await env.DB.prepare('SELECT * FROM newsletter_subscribers WHERE id = ?').bind(id).first();
       if (updated.status !== 'approved') throw new RequestError('申请状态已变化，请刷新列表。', 409);
       if (!updated.email_verified_at) await confirmation(env, updated);

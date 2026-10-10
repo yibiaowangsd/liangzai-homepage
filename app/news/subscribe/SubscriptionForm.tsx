@@ -18,10 +18,10 @@ export async function subscriptionRequest(path: string, body?: unknown, secret?:
   if (!response.ok) throw new Error(result.error || "提交失败，请稍后再试。");
   return result;
 }
-export function CategoryChoices({ selected, onChange, disabled }: {
-  selected: string[]; onChange: (values: string[]) => void; disabled?: boolean;
+export function CategoryChoices({ selected, onChange, disabled, legend = "订阅板块" }: {
+  selected: string[]; onChange: (values: string[]) => void; disabled?: boolean; legend?: string;
 }) {
-  return <fieldset className="subscription-categories" disabled={disabled}><legend>订阅板块 <span>已选 {selected.length} / {Object.keys(subscriptionCategories).length} · 可多选</span></legend>
+  return <fieldset className="subscription-categories" disabled={disabled}><legend>{legend} <span>已选 {selected.length} / {Object.keys(subscriptionCategories).length} · 可多选</span></legend>
     <div>{Object.entries(subscriptionCategories).map(([key, label]) => <label key={key}>
       <input type="checkbox" name="categories" value={key} checked={selected.includes(key)} onChange={event => onChange(event.target.checked ? [...selected, key] : selected.filter(value => value !== key))} />
       <span><strong>{label}</strong><small>{categoryDescriptions[key]}</small></span>

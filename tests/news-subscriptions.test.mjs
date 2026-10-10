@@ -203,6 +203,96 @@ test('rejection requires a reason and stops an approved subscriber', async t => 
   assert.equal((await f.api(`/admin/subscriptions/${row.id}/approve`, {}, true)).status, 409);
 });
 
+test('administrator chooses approved sections before confirmation and delivery', async t => {
+  const f = fixture(t); const row = await f.apply();
+  const response = await f.api(`/admin/subscriptions/${row.id}/approve`, { categories: ['ngcc', 'security', 'migration'], expected_categories: ['pqc', 'ai'] }, true);
+  assert.equal(response.status, 200);
+  const saved = f.db.prepare('SELECT * FROM newsletter_subscribers').get();
+  assert.equal(saved.categories, '["migration","security","ngcc"]');
+  assert.equal(saved.email_verified_at, null);
+  assert.match(f.mails[0].message.text, /抗量子迁移、网络安全、NGCC 公钥征集/);
+  assert.equal((await sendDailyDigest(f.env, date)).sent, 0);
+  await f.confirm(row); assert.equal((await sendDailyDigest(f.env, date)).sent, 1);
+  assert.match(f.mails.at(-1).message.text, /security story/);
+  assert.doesNotMatch(f.mails.at(-1).message.text, /pqc story|ai story/);
+});
+
+test('admin section edits preserve approval, verified identity and signed links; sending uses the saved choice', async t => {
+  const f = fixture(t); const row = await f.apply(); await f.approve(row); await f.confirm(row);
+  const manage = await subscriptionToken(f.env, row, 'manage');
+  const unsubscribe = await subscriptionToken(f.env, row, 'unsubscribe');
+  const response = await f.api(`/admin/subscriptions/${row.id}/settings`, { categories: ['security', 'protocol'], expected_categories: ['pqc', 'ai'] }, true);
+  assert.equal(response.status, 200); assert.equal(f.mails.length, 1, 'Saving sends no email');
+  const saved = f.db.prepare('SELECT * FROM newsletter_subscribers').get();
+  assert.equal(saved.status, 'approved'); assert.ok(saved.email_verified_at); assert.equal(saved.token_version, row.token_version);
+  assert.deepEqual((await (await f.api(`/subscriptions/settings?token=${manage}`)).json()).categories, ['protocol', 'security']);
+  assert.equal((await sendDailyDigest(f.env, date)).sent, 1);
+  assert.match(f.mails.at(-1).message.text, /protocol story/); assert.match(f.mails.at(-1).message.text, /security story/);
+  assert.doesNotMatch(f.mails.at(-1).message.text, /pqc story|ai story/);
+  assert.equal((await f.api(`/admin/subscriptions/${row.id}/settings`, { categories: ['ai'] }, true)).status, 200);
+  assert.equal((await sendDailyDigest(f.env, date)).sent, 0, 'Changing sections never causes a duplicate daily email');
+  assert.equal((await f.api('/subscriptions/unsubscribe', { token: unsubscribe })).status, 200);
+  assert.equal(f.db.prepare('SELECT status FROM newsletter_subscribers').get().status, 'unsubscribed');
+});
+
+test('section changes cancel queued email and a late provider error cannot revive the old payload', async t => {
+  const f = fixture(t); const row = await f.apply(); await f.approve(row); await f.confirm(row);
+  t.mock.method(globalThis, 'fetch', async () => {
+    assert.equal((await f.api(`/admin/subscriptions/${row.id}/settings`, { categories: ['ai'] }, true)).status, 200);
+    throw new Error('provider outcome unknown');
+  });
+  await sendDailyDigest(f.env, date);
+  assert.equal(f.db.prepare('SELECT status FROM newsletter_deliveries').get().status, 'cancelled');
+  assert.equal((await f.api(`/admin/subscriptions/${row.id}/settings`, { categories: ['pqc', 'ai'] }, true)).status, 200);
+  assert.equal((await sendDailyDigest(f.env, date)).sent, 0, 'Restoring a prior selection cannot revive an old batch');
+});
+
+test('changing unverified sections keeps confirmation required and gives its new content a new resend key', async t => {
+  const f = fixture(t); const row = await f.apply(); f.setFail(true);
+  assert.equal((await f.api(`/admin/subscriptions/${row.id}/approve`, {}, true)).status, 502);
+  const previous = f.mails.at(-1);
+  const before = f.db.prepare('SELECT * FROM newsletter_subscribers').get();
+  const token = await subscriptionToken(f.env, before, 'confirm');
+  assert.equal((await f.api(`/admin/subscriptions/${row.id}/settings`, { categories: ['ai'] }, true)).status, 200);
+  assert.equal(f.mails.length, 1);
+  const confirmation = await (await f.api(`/subscriptions/confirm?token=${token}`)).json();
+  assert.deepEqual(confirmation.categories, ['ai']); assert.equal(confirmation.email_verified, false);
+  f.setFail(false);
+  assert.equal((await f.api(`/admin/subscriptions/${row.id}/resend`, {}, true)).status, 200);
+  assert.notEqual(f.mails.at(-1).key, previous.key);
+  assert.match(f.mails.at(-1).message.text, /订阅板块：AI 前沿/);
+  assert.equal((await sendDailyDigest(f.env, date)).sent, 0);
+});
+
+test('admin section validation, authentication and stale edits leave the subscription untouched', async t => {
+  const f = fixture(t); const row = await f.apply(); const path = `/admin/subscriptions/${row.id}`;
+  assert.equal((await f.api(`${path}/settings`, { categories: ['ai'] }, true)).status, 409);
+  for (const categories of [[], ['unknown'], ['constructor'], ['__proto__'], null]) {
+    assert.equal((await f.api(`${path}/approve`, { categories }, true)).status, 400);
+  }
+  assert.equal(f.db.prepare('SELECT status FROM newsletter_subscribers').get().status, 'pending');
+  await f.approve(row);
+  const before = f.db.prepare('SELECT * FROM newsletter_subscribers').get();
+  assert.equal((await f.api(`${path}/settings`, { categories: ['ai'] })).status, 401);
+  assert.equal((await f.api(`${path}/settings`, { categories: ['ai'] }, true, { Origin: 'https://evil.test' })).status, 403);
+  assert.equal((await f.api(`${path}/settings`, { categories: ['ai'], expected_categories: ['security'] }, true)).status, 409);
+  for (const categories of [undefined, [], ['unknown'], ['constructor'], ['__proto__'], null]) {
+    assert.equal((await f.api(`${path}/settings`, { categories }, true)).status, 400);
+  }
+  assert.deepEqual(f.db.prepare('SELECT * FROM newsletter_subscribers').get(), before);
+});
+
+test('saving unchanged email sections preserves the pending retry and configuration works while mail is unavailable', async t => {
+  const f = fixture(t); const row = await f.apply(); await f.approve(row); await f.confirm(row);
+  f.setFail(true); await sendDailyDigest(f.env, date);
+  const before = f.db.prepare('SELECT * FROM newsletter_deliveries').get();
+  assert.equal((await f.api(`/admin/subscriptions/${row.id}/settings`, { categories: ['ai', 'pqc'] }, true)).status, 200);
+  assert.deepEqual(f.db.prepare('SELECT * FROM newsletter_deliveries').get(), before);
+  delete f.env.RESEND_API_KEY;
+  assert.equal((await f.api(`/admin/subscriptions/${row.id}/settings`, { categories: ['security'] }, true)).status, 200);
+  assert.equal(f.db.prepare('SELECT status FROM newsletter_deliveries').get().status, 'cancelled');
+});
+
 test('incomplete editions wait, failed delivery retries freeze the payload and provider key', async t => {
   const f = fixture(t); const row = await f.apply(); await f.approve(row); await f.confirm(row);
   f.db.prepare("UPDATE news SET status = 'draft' WHERE category = 'protocol'").run();

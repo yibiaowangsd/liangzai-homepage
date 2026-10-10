@@ -91,6 +91,72 @@ test('public duplicate cannot overwrite approved topics or admin member configur
   assert.deepEqual(f.row(), before);
 });
 
+test('administrator overrides application sections and both automatic and manual sends use the saved choice', async t => {
+  const f = fixture(t); await f.apply();
+  await f.approve(undefined, { categories: ['security', 'protocol'], expected_categories: ['pqc', 'ai'], mention_mode: 'members', mention_mobiles: ['13800000000'] });
+  assert.equal(f.row().categories, '["protocol","security"]');
+  assert.equal((await f.send()).sent, 2);
+  assert.match(f.requests[0].payload.textMsg.content, /protocol story/);
+  assert.match(f.requests[1].payload.textMsg.content, /security story/);
+  const version = f.row().version;
+  assert.equal((await f.api(`/admin/robot-subscriptions/${f.row().id}/settings`, { categories: ['ai'] }, true)).status, 200);
+  assert.notEqual(f.row().version, version); assert.equal(f.row().mention_mobiles, '["13800000000"]');
+  const manual = await f.api(`/admin/robot-subscriptions/${f.row().id}/send`, { part: 0 }, true);
+  assert.equal(manual.status, 200); assert.equal((await manual.json()).more, false);
+  assert.match(f.requests.at(-1).payload.textMsg.content, /ai story/);
+  assert.doesNotMatch(f.requests.at(-1).payload.textMsg.content, /pqc story|protocol story|security story/);
+  assert.deepEqual(f.requests.at(-1).payload.textMsg.mentionedMobileList, ['13800000000']);
+});
+
+test('section configuration stops remaining automatic messages and the next edition uses new sections', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); let parts = 0;
+  await f.send({ pause: async () => {
+    if (++parts === 2) assert.equal((await f.api(`/admin/robot-subscriptions/${f.row().id}/settings`, { categories: ['security'] }, true)).status, 200);
+  } });
+  assert.equal(f.requests.length, 1); assert.equal(f.record().status, 'cancelled');
+  assert.equal((await f.send()).sent, 0);
+  const tomorrow = new Date(Date.parse(date) + 86400000).toISOString().slice(0, 10);
+  f.db.prepare('UPDATE news SET published_at = ?').run(tomorrow + 'T08:00:00Z');
+  f.db.prepare('UPDATE news SET slug = ? || substr(slug, 9)').run(tomorrow.replaceAll('-', '')); seedManifest(f.db, tomorrow);
+  assert.equal((await sendRobotDigest(f.env, tomorrow, { pause: async () => {} })).sent, 1);
+  assert.match(f.requests.at(-1).payload.textMsg.content, /security story/);
+});
+
+test('section configuration cancels a manual batch and only a new click can send the updated boards', async t => {
+  const f = fixture(t); await f.apply(); await f.approve(); const path = `/admin/robot-subscriptions/${f.row().id}`;
+  const sendId = crypto.randomUUID();
+  const first = await (await f.api(`${path}/send`, { part: 0, send_id: sendId }, true)).json();
+  assert.equal(first.more, true);
+  assert.equal((await f.api(`${path}/settings`, { categories: ['security', 'migration', 'ngcc'] }, true)).status, 200);
+  assert.equal(f.row().categories, '["migration","security","ngcc"]');
+  assert.equal(f.db.prepare('SELECT status FROM robot_manual_deliveries WHERE send_id = ?').get(sendId).status, 'cancelled');
+  assert.equal((await f.api(`${path}/send`, { part: 1, send_id: sendId, version: first.version, date: first.date }, true)).status, 409);
+  assert.equal(f.requests.length, 1);
+  await f.api(`${path}/settings`, { categories: ['security'] }, true);
+  const next = await (await f.api(`${path}/send`, { part: 0 }, true)).json();
+  assert.equal(next.ok, true); assert.equal(next.more, false);
+  assert.match(f.requests.at(-1).payload.textMsg.content, /security story/);
+});
+
+test('robot configuration rejects invalid, stale and unauthorized edits; unchanged choices keep the active batch', async t => {
+  const f = fixture(t); await f.apply(); const path = `/admin/robot-subscriptions/${f.row().id}`;
+  assert.equal((await f.api(`${path}/settings`, { categories: ['ai'] }, true)).status, 409);
+  for (const categories of [[], ['unknown'], ['constructor'], ['__proto__'], null]) {
+    assert.equal((await f.api(`${path}/approve`, { categories }, true)).status, 400);
+  }
+  await f.approve();
+  await f.api(`${path}/send`, { part: 0 }, true);
+  const before = f.row(); const batch = f.db.prepare('SELECT * FROM robot_manual_deliveries').get();
+  assert.equal((await f.api(`${path}/settings`, { categories: ['ai'] })).status, 401);
+  assert.equal((await f.api(`${path}/settings`, { categories: ['ai'] }, true, { Origin: 'https://evil.test' })).status, 403);
+  assert.equal((await f.api(`${path}/settings`, { categories: ['ai'], expected_categories: ['security'] }, true)).status, 409);
+  for (const categories of [undefined, [], ['unknown'], ['constructor'], ['__proto__'], null]) {
+    assert.equal((await f.api(`${path}/settings`, { categories }, true)).status, 400);
+  }
+  assert.equal((await f.api(`${path}/settings`, { categories: ['ai', 'pqc'] }, true)).status, 200);
+  assert.deepEqual(f.row(), before); assert.deepEqual(f.db.prepare('SELECT * FROM robot_manual_deliveries').get(), batch);
+});
+
 test('multiple groups have separate approval, chosen boards and daily delivery records', async t => {
   const f = fixture(t); await f.apply(); await f.approve();
   await f.apply({ webhook: testUrl.replace('test-only-key', 'second-test-key'), name: '第二群', categories: ['security'] });

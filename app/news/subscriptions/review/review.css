@@ -95,6 +95,12 @@
 .review-channels { display: flex; gap: 8px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--theme-border); }
 .subscription-review .review-channels button { min-width: 120px; background: transparent; }
 .subscription-review .review-channels button[aria-pressed=true] { background: var(--theme-accent-soft); border-color: var(--theme-accent); color: var(--theme-accent); font-weight: 600; }
-.review-mention-config { margin-top: 20px; padding: 20px; border: 1px solid var(--theme-border); border-radius: 10px; background: var(--theme-bg); }
-.review-mention-config h3 { color: var(--theme-ink); font-size: 15px; }
-.review-mention-config > p { color: var(--theme-muted); font-size: 12px; }
+.review-content-config { margin-top: 20px; padding: 20px; border: 1px solid var(--theme-border); border-radius: 10px; background: var(--theme-bg); }
+.review-content-config h3 { color: var(--theme-ink); font-size: 15px; }
+.review-content-config > p { color: var(--theme-muted); font-size: 12px; }
+.review-content-config > p.subscription-error { color: var(--theme-danger); }
+@media (max-width: 640px) {
+  .review-content-config { padding: 16px 12px; }
+  .review-content-config .subscription-categories > div { grid-template-columns: minmax(0, 1fr); }
+  .review-content-config .subscription-categories legend > span { display: block; margin-left: 0; margin-top: 4px; }
+}

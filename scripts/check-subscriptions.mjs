@@ -63,6 +63,7 @@ try {
   const requests = [];
   let approved = false;
   let mailReady = true;
+  let failConfiguration = false;
   let applications = [
     { id: 'test-application', email: 'reader@example.com', categories: '["pqc","protocol","ai"]', applicant_name: '研究读者', reason: '关注抗量子协议的实现与迁移，希望持续跟进标准和开源进展。', status: 'pending', created_at: '2026-10-09 04:00:00', email_verified_at: null },
     { id: 'test-long-email', email: 'reader.with.a.long.address@example.com', categories: '["security","standards"]', applicant_name: '工程读者', reason: '跟进密码与网络安全的实践进展。', status: 'pending', created_at: '2026-10-09 03:00:00', email_verified_at: null },
@@ -95,9 +96,13 @@ try {
       reviewRequests.push({ url: request.url(), body: request.postDataJSON() });
       const [, id, action] = url.pathname.match(/\/subscriptions\/([^/]+)\/([^/]+)$/) || [];
       const row = applications.find(row => row.id === id);
+      if (action === 'settings' && failConfiguration) {
+        await route.fulfill({ status: 503, contentType: 'application/json', body: '{"error":"保存暂不可用，请重试。"}' }); return;
+      }
+      if (['approve', 'settings'].includes(action)) row.categories = JSON.stringify(request.postDataJSON().categories);
       if (action === 'approve') { approved = true; row.status = 'approved'; }
       if (action === 'reject') { row.status = 'rejected'; row.review_note = request.postDataJSON().note; }
-      await route.fulfill({ headers: { 'Access-Control-Allow-Origin': base }, contentType: 'application/json', body: JSON.stringify({ ok: true, message: action === 'resend' ? '确认邮件已重发。' : action === 'reject' ? '已拒绝申请。' : '已通过审核，等待邮箱确认。' }) }); return;
+      await route.fulfill({ headers: { 'Access-Control-Allow-Origin': base }, contentType: 'application/json', body: JSON.stringify({ ok: true, message: action === 'settings' ? '发送板块已保存。' : action === 'resend' ? '确认邮件已重发。' : action === 'reject' ? '已拒绝申请。' : '已通过审核，等待邮箱确认。' }) }); return;
     }
     const status = url.searchParams.get('status');
     const pageNumber = Number(url.searchParams.get('page') || 1);
@@ -122,8 +127,9 @@ try {
         await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, sent: 1, more: next < 2, next_part: next, total: 2, version: 'example-approved-version', date: '2026-10-09', message: next < 2 ? '本次已发送 1 / 2 条，正在继续…' : '本次当日日报已发送，共 2 条消息。再次点击可重新发送。' }) }); return;
       }
       robotApplication.status = action === 'reject' ? 'rejected' : 'approved';
+      if (['approve', 'settings'].includes(action)) robotApplication.categories = JSON.stringify(body.categories);
       if (action !== 'reject') { robotApplication.mention_mode = body.mention_mode; robotApplication.mention_mobiles = JSON.stringify(body.mention_mobiles); }
-      await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, message: action === 'mentions' ? '@ 成员配置已更新，下一份日报生效。' : action === 'reject' ? '已拒绝申请并停止后续推送。' : '已通过审核，完整日报发布后自动推送。' }) }); return;
+      await route.fulfill({ contentType: 'application/json', body: JSON.stringify({ ok: true, message: action === 'settings' ? '发送配置已保存。' : action === 'reject' ? '已拒绝申请并停止后续推送。' : '已通过审核，完整日报发布后自动推送。' }) }); return;
     }
     const status = new URL(request.url()).searchParams.get('status');
     const data = status === 'all' || robotApplication.status === status ? [robotApplication] : [];
@@ -239,9 +245,28 @@ try {
   await page.getByRole('alert').filter({ hasText: '请填写拒绝理由' }).waitFor();
   assert.equal(reviewRequests.length, 0, 'Rejection without a reason sends no request');
   await application.getByRole('button', { name: '取消', exact: true }).click();
-  await application.getByRole('button', { name: '通过申请', exact: true }).click();
+  await application.getByRole('button', { name: '配置并审核', exact: true }).click();
+  assert.equal(await application.getByRole('checkbox').count(), 7);
+  assert.equal(await page.getByRole('button', { name: '发送当日日报', exact: true }).isEnabled(), false, 'Save or cancel before sending an email digest');
+  assert.equal(reviewRequests.length, 0, 'Opening configuration does not approve or send');
+  for (const checkbox of await application.getByRole('checkbox').all()) await checkbox.uncheck();
+  assert.equal(await application.getByRole('button', { name: '通过并发送确认邮件', exact: true }).isEnabled(), false);
+  await application.getByRole('button', { name: '全选板块', exact: true }).click();
+  assert.equal(await application.locator('input:checked').count(), 7);
+  await application.getByRole('button', { name: '恢复当前选择', exact: true }).click();
+  assert.equal(await application.locator('input:checked').count(), 3);
+  await application.getByRole('checkbox', { name: /抗量子迁移/ }).check();
+  await application.getByRole('checkbox', { name: /NGCC 公钥征集/ }).check();
+  for (const width of [320, 390, 1440]) {
+    await page.setViewportSize({ width, height: 1100 });
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), true, `Email configuration fits ${width}`);
+    await page.screenshot({ path: resolve(output, `review-content-${width}.png`), fullPage: true });
+  }
+  await application.getByRole('button', { name: '通过并发送确认邮件', exact: true }).click();
   await page.getByRole('status').filter({ hasText: '已通过审核' }).waitFor();
   assert.equal(approved, true);
+  assert.deepEqual(reviewRequests.at(-1).body.categories, ['pqc', 'protocol', 'ai', 'migration', 'ngcc']);
+  assert.deepEqual(reviewRequests.at(-1).body.expected_categories, ['pqc', 'protocol', 'ai']);
   await page.getByRole('button', { name: '已通过', exact: true }).click();
   await page.getByRole('heading', { name: 'verified@example.com', exact: true }).waitFor();
   assert.equal(await page.locator('.review-application').count(), 3);
@@ -250,6 +275,25 @@ try {
   assert.match(reviewRequests.at(-1).url, /\/resend$/);
   const verified = page.locator('.review-application').filter({ has: page.getByRole('heading', { name: 'verified@example.com', exact: true }) });
   assert.equal(await verified.getByRole('button', { name: '重发确认邮件', exact: true }).count(), 0, 'Verified subscriber needs no confirmation resend');
+  await verified.getByRole('button', { name: '配置发送内容', exact: true }).click();
+  await verified.getByRole('checkbox', { name: /抗量子迁移/ }).check();
+  const beforeCancel = reviewRequests.length;
+  await verified.getByRole('button', { name: '取消', exact: true }).click();
+  assert.equal(reviewRequests.length, beforeCancel, 'Cancelling does not save');
+  await verified.getByRole('button', { name: '配置发送内容', exact: true }).click();
+  assert.equal(await verified.getByRole('checkbox', { name: /抗量子迁移/ }).isChecked(), false, 'Reopening discards unsaved choices');
+  await verified.getByRole('checkbox', { name: /抗量子迁移/ }).check();
+  failConfiguration = true;
+  await verified.getByRole('button', { name: '保存发送配置', exact: true }).click();
+  await page.getByRole('alert').filter({ hasText: '保存暂不可用' }).waitFor();
+  await page.locator('.review-console[aria-busy="false"]').waitFor();
+  assert.equal(await verified.getByRole('checkbox', { name: /抗量子迁移/ }).isChecked(), true, 'Failed save keeps the draft for retry');
+  failConfiguration = false;
+  await verified.getByRole('button', { name: '保存发送配置', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '发送板块已保存' }).waitFor();
+  assert.match(reviewRequests.at(-1).url, /\/settings$/);
+  assert.deepEqual(reviewRequests.at(-1).body.categories, ['ai', 'migration']);
+  await verified.locator('.review-topics').getByText('抗量子迁移', { exact: true }).waitFor();
   await verified.getByRole('button', { name: '撤销批准并停止发送', exact: true }).click();
   await verified.getByLabel('拒绝理由').fill('测试撤销原因');
   await verified.getByRole('button', { name: '确认撤销', exact: true }).click();
@@ -262,7 +306,7 @@ try {
   mailReady = false;
   await page.getByRole('button', { name: '待审核', exact: true }).click();
   await page.getByRole('heading', { name: 'reader.with.a.long.address@example.com', exact: true }).waitFor();
-  assert.equal(await page.getByRole('button', { name: '通过申请', exact: true }).isEnabled(), false, 'Missing mail service blocks approval');
+  assert.equal(await page.getByRole('button', { name: '配置并审核', exact: true }).isEnabled(), false, 'Missing mail service blocks approval');
   assert.equal(await page.getByRole('button', { name: '发送当日日报', exact: true }).isEnabled(), false, 'Missing mail service blocks delivery');
   mailReady = true;
   applications = Array.from({ length: 51 }, (_, i) => ({ id: `page-test-${i}`, email: `page-${i}@example.com`, categories: '["ai"]', applicant_name: '分页测试', reason: '测试申请', status: 'pending', created_at: '2026-10-09 04:00:00', email_verified_at: null }));
@@ -305,6 +349,8 @@ try {
   await page.getByRole('heading', { name: 'imtwo.zdxlz.com · key …demo', exact: true }).waitFor();
   assert.equal(await page.getByRole('button', { name: '立刻发送', exact: true }).count(), 0, 'Pending robots cannot send manually');
   await page.getByRole('button', { name: '配置并审核', exact: true }).click();
+  await page.getByRole('checkbox', { name: /AI 前沿/ }).uncheck();
+  await page.getByRole('checkbox', { name: /网络安全/ }).check();
   await page.getByLabel('提醒方式').selectOption('members');
   await page.getByLabel('成员手机号').fill('13800000000\n13900000000');
   for (const width of [320, 390, 1440]) {
@@ -320,6 +366,7 @@ try {
   await page.getByRole('button', { name: '通过并启用', exact: true }).click();
   await page.getByRole('status').filter({ hasText: '已通过审核' }).waitFor();
   assert.deepEqual(robotReviews[0].body.mention_mobiles, ['13800000000', '13900000000']);
+  assert.deepEqual(robotReviews[0].body.categories, ['pqc', 'security']);
   await page.getByRole('button', { name: '已通过', exact: true }).click();
   await page.getByText('指定成员：13800000000、13900000000', { exact: true }).waitFor();
   await page.getByRole('button', { name: '立刻发送', exact: true }).waitFor();
@@ -359,18 +406,23 @@ try {
     await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
     await page.screenshot({ path: resolve(output, `robot-manual-${width}.png`), fullPage: true });
   }
-  await page.getByRole('button', { name: '配置 @ 成员', exact: true }).click();
+  await page.getByRole('button', { name: '配置发送内容', exact: true }).click();
+  assert.equal(await page.getByRole('button', { name: '立刻发送', exact: true }).isEnabled(), false, 'Save or cancel before manually sending');
+  await page.getByRole('checkbox', { name: /抗量子迁移/ }).check();
+  await page.getByRole('checkbox', { name: /NGCC 公钥征集/ }).check();
   await page.getByLabel('提醒方式').selectOption('none');
-  await page.getByRole('button', { name: '保存成员配置', exact: true }).click();
-  await page.getByRole('status').filter({ hasText: '成员配置已更新' }).waitFor();
+  await page.getByRole('button', { name: '保存发送配置', exact: true }).click();
+  await page.getByRole('status').filter({ hasText: '发送配置已保存' }).waitFor();
   assert.equal(robotReviews.at(-1).body.mention_mode, 'none');
+  assert.deepEqual(robotReviews.at(-1).body.categories, ['pqc', 'security', 'migration', 'ngcc']);
+  await page.locator('.review-topics').getByText('NGCC 公钥征集', { exact: true }).waitFor();
   await page.getByRole('button', { name: '撤销批准并停止发送', exact: true }).click();
   await page.getByLabel('拒绝理由').fill('管理员停止推送');
   await page.getByRole('button', { name: '确认撤销', exact: true }).click();
   await page.getByRole('status').filter({ hasText: '停止后续推送' }).waitFor();
   await page.getByRole('button', { name: '退出', exact: true }).click();
   assert.equal(await page.getByLabel('管理员审核口令').inputValue(), '');
-  console.log('Subscription browser checks passed: visible news/home entries, desktop/mobile form, signed recipient display, invalid links, approval console explicit confirmation, robot channel applications, administrator member configuration and revocation.');
+  console.log('Subscription browser checks passed: news/home entries, desktop/mobile form, signed recipient, approval, seven-section email/robot configuration, validation, cancel/retry, administrator mentions, manual sending and revocation.');
 } finally {
   if (browser) await browser.close();
   await new Promise(resolve => server.close(resolve));

@@ -78,7 +78,7 @@ export async function handleRobotSubscriptions(request, env, json) {
         ${where} ORDER BY s.created_at DESC, s.id LIMIT 50 OFFSET ?`).bind(date, date, ...args, (page - 1) * 50).all();
       return json(request, { data: data.map(row => ({ ...row, delivery_message: deliveryMessage(row.delivery_status ? { status: row.delivery_status, error: row.delivery_error, next_part: row.next_part, total_parts: row.total_parts } : null, row.manual_status) })), total: count.total, page, robot_ready: robotConfigured(env) });
     }
-    const match = url.pathname.match(/^\/api\/admin\/robot-subscriptions\/([a-f0-9-]{36})\/(approve|reject|mentions|send|retry)$/);
+    const match = url.pathname.match(/^\/api\/admin\/robot-subscriptions\/([a-f0-9-]{36})\/(approve|reject|mentions|settings|send|retry)$/);
     if (request.method === 'POST' && match) {
       const [, id, action] = match;
       const body = await readBody(request);
@@ -91,17 +91,28 @@ export async function handleRobotSubscriptions(request, env, json) {
         return json(request, await sendManualRobotDigest(env, id, { send_id: body.send_id, part: body.part, version: body.version, date: body.date }));
       }
       if (action === 'approve' && row.status !== 'pending') throw new RequestError('只有待审核申请可以通过。', 409);
-      if (action === 'mentions' && row.status !== 'approved') throw new RequestError('请先通过申请，再调整成员配置。', 409);
+      if (['mentions', 'settings'].includes(action) && row.status !== 'approved') throw new RequestError('请先通过申请，再调整发送配置。', 409);
       if (action === 'reject' && !['pending','approved'].includes(row.status)) throw new RequestError('此申请已处理。', 409);
-      if (action !== 'reject' && !robotConfigured(env)) throw new RequestError('机器人订阅服务尚未配置。', 503);
+      if (action === 'approve' && !robotConfigured(env)) throw new RequestError('机器人订阅服务尚未配置。', 503);
       const note = cleanString(body.note || '', 500, action === 'reject');
-      const mentions = action === 'reject' ? { mode: 'none', mobiles: [] } : normalizeMentions(body);
+      if (['approve', 'settings'].includes(action) && body.expected_categories !== undefined && JSON.stringify(normalizeCategories(body.expected_categories)) !== row.categories) {
+        throw new RequestError('订阅板块已被其他操作修改，请刷新后重试。', 409);
+      }
+      const categories = action === 'settings' || (action === 'approve' && body.categories !== undefined)
+        ? JSON.stringify(normalizeCategories(body.categories)) : row.categories;
+      const mentions = action === 'reject' ? { mode: 'none', mobiles: [] } : normalizeMentions({
+        mention_mode: body.mention_mode ?? row.mention_mode,
+        mention_mobiles: body.mention_mobiles ?? JSON.parse(row.mention_mobiles),
+      });
+      if (action === 'settings' && categories === row.categories && mentions.mode === row.mention_mode && JSON.stringify(mentions.mobiles) === row.mention_mobiles) {
+        return json(request, { ok: true, message: '发送配置未变化，原发送安排保持不变。' });
+      }
       const version = crypto.randomUUID();
       const status = action === 'reject' ? 'rejected' : 'approved';
       const result = await env.DB.batch([
-        env.DB.prepare(`UPDATE robot_subscribers SET status = ?, mention_mode = ?, mention_mobiles = ?, version = ?,
+        env.DB.prepare(`UPDATE robot_subscribers SET status = ?, categories = ?, mention_mode = ?, mention_mobiles = ?, version = ?,
           review_note = ?, reviewed_at = datetime('now'), updated_at = datetime('now') WHERE id = ? AND version = ?`)
-          .bind(status, mentions.mode, JSON.stringify(mentions.mobiles), version, action === 'mentions' ? row.review_note : note, id, row.version),
+          .bind(status, categories, mentions.mode, JSON.stringify(mentions.mobiles), version, ['mentions', 'settings'].includes(action) ? row.review_note : note, id, row.version),
         env.DB.prepare(`UPDATE robot_subscription_deliveries SET status = 'cancelled', lease_until = 0 WHERE subscriber_id = ?
           AND status IN ('pending','sending') AND version != ? AND EXISTS (SELECT 1 FROM robot_subscribers WHERE id = ? AND version = ?)`)
           .bind(id, version, id, version),
@@ -110,7 +121,7 @@ export async function handleRobotSubscriptions(request, env, json) {
           .bind(id, version, id, version),
       ]);
       if (result[0].meta.changes !== 1) throw new RequestError('申请已被其他操作修改，请刷新后重试。', 409);
-      return json(request, { ok: true, message: action === 'reject' ? '已拒绝申请并停止后续推送。' : action === 'mentions' ? '@ 成员配置已更新，下一份日报生效。' : '已通过审核，完整日报发布后自动推送。' });
+      return json(request, { ok: true, message: action === 'reject' ? '已拒绝申请并停止后续推送。' : action === 'settings' ? '发送配置已保存，旧配置的剩余消息已停止；下次推送使用新配置，也可点击「立刻发送」。' : action === 'mentions' ? '@ 成员配置已更新，下一份日报生效。' : '已通过审核，完整日报发布后自动推送所选板块。' });
     }
     return json(request, { error: '不支持的请求。' }, 405);
   } catch (error) { return json(request, { error: error instanceof RequestError ? error.message : '机器人订阅服务暂不可用，请稍后再试。' }, error instanceof RequestError ? error.status : 500); }
