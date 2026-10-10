@@ -38,6 +38,7 @@ on:
       - 'tests/about-push-image.test.mjs'
       - 'tests/news-*.test.mjs'
       - 'scripts/check-subscriptions.mjs'
+      - 'scripts/check-news-calendar.mjs'
       - 'news/validate-edition.py'
       - 'news/edition-policy.json'
       - 'app/page.tsx'
@@ -88,6 +89,7 @@ on:
       - 'tests/about-push-image.test.mjs'
       - 'tests/news-*.test.mjs'
       - 'scripts/check-subscriptions.mjs'
+      - 'scripts/check-news-calendar.mjs'
       - 'news/validate-edition.py'
       - 'news/edition-policy.json'
       - 'app/page.tsx'
@@ -125,6 +127,7 @@ jobs:
       - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs tests/site-theme.test.mjs tests/site-typography.test.mjs tests/layout-redesign.test.mjs tests/mobile-sidebar.test.mjs tests/reading-workspaces.test.mjs
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: node scripts/check-subscriptions.mjs
+      - run: node scripts/check-news-calendar.mjs
       - run: npm run test:layout
       - uses: actions/upload-artifact@v4
         if: always()
@@ -133,4 +136,5 @@ jobs:
           path: |
             outputs/responsive/
             outputs/subscriptions/
+            outputs/news-calendar/
           retention-days: 7

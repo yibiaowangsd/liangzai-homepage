@@ -4,6 +4,8 @@ import { readFileSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import worker from "../news-worker/index.js";
 
+const availableDates = ["2026-10-03", "2026-10-02", "2026-09-30"];
+
 function fixtureDatabase() {
   const db = new DatabaseSync(":memory:");
   db.exec(readFileSync(new URL("../news-worker/migrations/0005_news_editions.sql", import.meta.url), "utf8"));
@@ -27,6 +29,7 @@ function fixtureDatabase() {
   // Adapt actual SQLite queries to the D1 interface used by the Worker.
   return {
     close: () => db.close(),
+    publish: (date, timestamp = `${date}T07:00:00Z`) => insert.run(++id, `${date}-new`, "New edition", "Summary", "pqc", timestamp, "published"),
     env: { DB: { prepare(sql) {
       const statement = db.prepare(sql);
       let args = [];
@@ -50,7 +53,7 @@ test("edition API paginates complete published days, preserving categories and l
     await t.test("three distinct dates each get one full page, including the last day", async () => {
       for (const [index, date] of ["2026-10-03", "2026-10-02", "2026-09-30"].entries()) {
         const result = await request(`?page=${index + 1}`);
-        assert.deepEqual(result.meta, { page: index + 1, pageSize: 1, totalDays: 3, totalPages: 3 });
+        assert.deepEqual(result.meta, { page: index + 1, pageSize: 1, totalDays: 3, totalPages: 3, dates: availableDates });
         assert.equal(result.data.length, 1);
         assert.equal(result.data[0].date, date);
         assert.equal(result.data[0].total, 21);
@@ -63,7 +66,7 @@ test("edition API paginates complete published days, preserving categories and l
     await t.test("category filtering counts dates rather than stories and clamps old page links", async () => {
       for (const page of [1, 2, 3, 999]) {
         const result = await request(`?category=protocol&page=${page}&pageSize=3`);
-        assert.deepEqual(result.meta, { page: Math.min(page, 3), pageSize: 1, totalDays: 3, totalPages: 3 });
+        assert.deepEqual(result.meta, { page: Math.min(page, 3), pageSize: 1, totalDays: 3, totalPages: 3, dates: availableDates });
         assert.equal(result.data.length, 1);
         assert.equal(result.data[0].total, 7);
         assert.equal(result.data[0].topics.protocol.length, 7);
@@ -83,10 +86,37 @@ test("edition API paginates complete published days, preserving categories and l
     });
     await t.test("empty categories and unsupported categories retain explicit responses", async () => {
       assert.deepEqual(await request("?category=standards&page=999"), {
-        data: [], meta: { page: 1, pageSize: 1, totalDays: 0, totalPages: 1 },
+        data: [], meta: { page: 1, pageSize: 1, totalDays: 0, totalPages: 1, dates: [] },
       });
       const response = await worker.fetch(new Request("https://api.wangyibiao.com/api/news/editions?category=invalid"), fixture.env);
       assert.equal(response.status, 400);
+    });
+    await t.test("a calendar date resolves its edition and retains category filtering", async () => {
+      const result = await request("?date=2026-10-02&page=1&category=protocol");
+      assert.equal(result.meta.page, 2);
+      assert.deepEqual(result.meta.dates, availableDates);
+      assert.equal(result.data[0].date, "2026-10-02");
+      assert.equal(result.data[0].total, 7);
+      assert.equal(result.data[0].topics.pqc.length, 0);
+      const unavailable = await request("?date=2026-10-01");
+      assert.deepEqual(unavailable.data, []);
+      assert.deepEqual(unavailable.meta.dates, availableDates);
+    });
+    await t.test("invalid, impossible and duplicate dates are rejected", async () => {
+      for (const query of ["date=", "date=nope", "date=2026-2-01", "date=2026-02-29", "date=2026-09-31", "date=2026-10-02&date=2026-10-03"]) {
+        const response = await worker.fetch(new Request("https://api.wangyibiao.com/api/news/editions?" + query), fixture.env);
+        assert.equal(response.status, 400, query);
+      }
+    });
+    await t.test("publishing a newer Beijing day shifts pages without changing a date link", async () => {
+      // UTC is still October 3, but the new edition belongs to Beijing October 4.
+      fixture.publish("2026-10-04", "2026-10-03T16:05:00Z");
+      const result = await request("?date=2026-10-02");
+      assert.equal(result.meta.page, 3);
+      assert.equal(result.meta.totalDays, 4);
+      assert.deepEqual(result.meta.dates, ["2026-10-04", ...availableDates]);
+      assert.equal(result.data[0].date, "2026-10-02");
+      assert.equal(result.data[0].total, 21);
     });
   } finally { fixture.close(); }
 });

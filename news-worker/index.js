@@ -279,27 +279,29 @@ async function publishItems(env, rawItems, edition = null) {
   };
 }
 
-async function getEditions(env, page, pageSize, category) {
+async function getEditions(env, page, pageSize, category, requestedDate) {
   const where = category ? "WHERE status = 'published' AND category = ?" : "WHERE status = 'published'";
   const args = category ? [category] : [];
   const includeManifest = !category || CORE_CATEGORIES.includes(category);
   // Preserve explicitly empty desks in v2 archive metadata for edition validation.
   const datesQuery = `SELECT date(published_at, '+8 hours') AS edition_date FROM news ${where}
     ${includeManifest ? 'UNION SELECT date AS edition_date FROM news_editions' : ''}`;
-  const countRow = await env.DB.prepare(`SELECT COUNT(DISTINCT edition_date) AS total_days FROM (${datesQuery})`).bind(...args).first();
-  const totalDays = Number(countRow?.total_days || 0);
+  const datesResult = await env.DB.prepare(`SELECT DISTINCT edition_date FROM (${datesQuery}) ORDER BY edition_date DESC`).bind(...args).all();
+  const availableDates = (datesResult.results || []).map((row) => row.edition_date).filter(Boolean);
+  const totalDays = availableDates.length;
   const totalPages = Math.max(1, Math.ceil(totalDays / pageSize));
-  const safePage = Math.min(Math.max(page, 1), totalPages);
+  const dateIndex = requestedDate ? availableDates.indexOf(requestedDate) : -1;
+  const safePage = dateIndex >= 0 ? Math.floor(dateIndex / pageSize) + 1 : Math.min(Math.max(page, 1), totalPages);
   const offset = (safePage - 1) * pageSize;
-  const datesStatement = env.DB.prepare(`SELECT DISTINCT edition_date FROM (${datesQuery}) ORDER BY edition_date DESC LIMIT ? OFFSET ?`).bind(...args, pageSize, offset);
-
-  const datesResult = await datesStatement.all();
-  const dates = (datesResult.results || []).map((row) => row.edition_date).filter(Boolean);
+  // Date links stay stable when publishing a new edition shifts page numbers.
+  // An unavailable date must not silently display a different day's stories.
+  const dates = requestedDate && dateIndex < 0 ? [] : availableDates.slice(offset, offset + pageSize);
+  const meta = { page: safePage, pageSize, totalDays, totalPages, dates: availableDates };
 
   if (!dates.length) {
     return {
       data: [],
-      meta: { page: safePage, pageSize, totalDays, totalPages },
+      meta,
     };
   }
 
@@ -352,7 +354,7 @@ async function getEditions(env, page, pageSize, category) {
 
   return {
     data: dates.map((date) => byDate.get(date)),
-    meta: { page: safePage, pageSize, totalDays, totalPages },
+    meta,
   };
 }
 
@@ -472,8 +474,14 @@ export default {
         if (category && !ALLOWED_CATEGORIES.has(category)) {
           return json(request, { error: "Unsupported category" }, 400);
         }
+        const date = url.searchParams.get("date");
+        if (date !== null && (url.searchParams.getAll("date").length !== 1 ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date)) ||
+            new Date(date).toISOString().slice(0, 10) !== date)) {
+          return json(request, { error: "date must be a valid edition date (YYYY-MM-DD)" }, 400);
+        }
 
-        return json(request, await getEditions(env, page, pageSize, category));
+        return json(request, await getEditions(env, page, pageSize, category, date));
       }
 
       if (request.method === "GET" && url.pathname === "/api/news/featured") {

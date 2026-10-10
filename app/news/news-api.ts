@@ -32,6 +32,7 @@ export type EditionsPayload = {
     pageSize: number;
     totalDays: number;
     totalPages: number;
+    dates?: string[];
   };
 };
 
@@ -90,12 +91,14 @@ export async function getNewsEditions(
   page = 1,
   pageSize = 1,
   category?: string,
+  date?: string,
 ): Promise<EditionsPayload> {
   const url = new URL("/api/news/editions", NEWS_API);
   url.searchParams.set("page", String(page));
   // Retain the old pageSize argument while enforcing one complete edition per page.
   url.searchParams.set("pageSize", String(Math.min(Math.max(pageSize || 1, 1), 1)));
   if (category) url.searchParams.set("category", category);
+  if (date) url.searchParams.set("date", date);
 
   const response = await fetch(url, {
     cache: "no-store",

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import StoryImage from "./StoryImage";
+import NewsDatePicker from "./NewsDatePicker";
 import { newsListingHref, newsStoryHref, parseNewsContext, type NewsSearchParams } from "./navigation";
 import {
   categoryLabels,
@@ -110,13 +111,13 @@ export default async function NewsPage({
   searchParams: Promise<NewsSearchParams>;
 }) {
   const params = await searchParams;
-  const { page: requestedPage, category } = parseNewsContext(params);
+  const { page: requestedPage, category, date } = parseNewsContext(params);
 
   let payload: Awaited<ReturnType<typeof getNewsEditions>> | null = null;
   let failed = false;
 
   try {
-    payload = await getNewsEditions(requestedPage, 1, category);
+    payload = await getNewsEditions(requestedPage, 1, category, date);
   } catch {
     failed = true;
   }
@@ -129,6 +130,8 @@ export default async function NewsPage({
     totalPages: 1,
   };
   const newest = editions[0];
+  const availableDates = meta.dates || editions.map(edition => edition.date);
+  const selectedDate = newest?.date || date;
   const editionCategories = newest
     ? [...coreCategories, ...Object.keys(newest.topics).filter((key) => !coreCategories.includes(key as (typeof coreCategories)[number]))]
     : [...coreCategories];
@@ -140,7 +143,8 @@ export default async function NewsPage({
 
   const makeHref = (pageNumber: number, nextCategory = category) =>
     newsListingHref({ page: pageNumber, category: nextCategory });
-  const listingHref = makeHref(meta.page);
+  const listingHref = newsListingHref({ page: meta.page, category, date });
+  const categoryHref = (nextCategory?: string) => newsListingHref({ page: 1, category: nextCategory, date });
 
   const paginationPages = Array.from(
     { length: meta.totalPages },
@@ -153,12 +157,12 @@ export default async function NewsPage({
         <div className="news-toolbar-title">
           <h1>前沿新闻</h1>
         </div>
-        {newest && (
+        {!failed && selectedDate && (
           <nav className="news-day-controls" aria-label="本期日期与日刊切换">
             <Link href={makeHref(Math.max(meta.page - 1, 1))} aria-label="查看较新一天" aria-disabled={meta.page <= 1} tabIndex={meta.page <= 1 ? -1 : undefined}>←</Link>
             <div>
-              <time dateTime={newest.date}>{formatEditionDate(newest.date)}</time>
-              <span>{newest.total} 条 · 第 {meta.page} / {meta.totalPages} 期</span>
+              <NewsDatePicker key={selectedDate} date={selectedDate} dates={availableDates} category={category} />
+              <span>{newest ? `${newest.total} 条 · 第 ${meta.page} / ${meta.totalPages} 期` : "该日期暂无日报"}</span>
             </div>
             <Link href={makeHref(Math.min(meta.page + 1, meta.totalPages))} aria-label="查看较早一天" aria-disabled={meta.page >= meta.totalPages} tabIndex={meta.page >= meta.totalPages ? -1 : undefined}>→</Link>
           </nav>
@@ -169,13 +173,13 @@ export default async function NewsPage({
             <i aria-hidden="true">⌄</i>
           </summary>
           <nav aria-label="新闻方向">
-            <Link href="/news" aria-current={!category ? "page" : undefined}>
+            <Link href={categoryHref()} aria-current={!category ? "page" : undefined}>
               <span>全部新闻</span>
             </Link>
             {coreCategories.map((key) => (
               <Link
                 key={key}
-                href={makeHref(1, key)}
+                href={categoryHref(key)}
                 aria-current={category === key ? "page" : undefined}
               >
                 <span>{categoryLabels[key]}</span>
@@ -198,16 +202,14 @@ export default async function NewsPage({
         </section>
       ) : !newest ? (
         <section className="news-state">
-          <h2>下一版简报正在路上</h2>
-          <p>自动发布完成后，这里会直接读取最新一期。</p>
+          <h2>{date ? "该日期暂无日报" : "下一版简报正在路上"}</h2>
+          {date ? <p>请选择日历中已发布的日期，或<Link href={newsListingHref({ page: 1, category })}>阅读最新一期</Link>。</p> : <p>自动发布完成后，这里会直接读取最新一期。</p>}
         </section>
       ) : (
         <>
           {heroLead && <section className="front-page">
             <div className="edition-label">
-              <time dateTime={newest.date}>
-                {newest.date.replaceAll("-", ".")}
-              </time>
+              <NewsDatePicker key={newest.date} date={newest.date} dates={availableDates} category={category} variant="stamp" />
               <strong>{formatEditionDate(newest.date)}</strong>
               <span>{newest.total} 条新闻</span>
             </div>
@@ -277,7 +279,7 @@ export default async function NewsPage({
               <section className="edition" key={edition.date}>
                 <header className="edition-head">
                   <div>
-                    <h2>{formatEditionDate(edition.date)}</h2>
+                    <NewsDatePicker key={edition.date} date={edition.date} dates={availableDates} category={category} variant="heading" />
                   </div>
                   <p>{edition.total} 条 · {category ? categoryLabels[category] : "当日全部新闻"} · 一天一页</p>
                 </header>

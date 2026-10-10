@@ -919,7 +919,7 @@
 .news-day-controls { display: flex; align-items: center; gap: 12px; }
 .news-day-controls > div { display: grid; gap: 4px; text-align: center; }
 .news-day-controls time { font-size: 13px; font-weight: 650; }
-.news-day-controls span { color: var(--soft); font-size: 11px; }
+.news-day-controls > div > span { color: var(--soft); font-size: 11px; }
 .news-day-controls > a {
   display: grid; place-items: center; width: 44px; min-height: 44px;
   border: 1px solid var(--theme-control-border); border-radius: 10px;
@@ -982,12 +982,96 @@
 /* Chinese titles need natural tracking; publication metadata stays secondary. */
 .newsroom :is(.lead-kicker, .desk-kicker),
 .news-category-menu > nav small,
-.news-day-controls span, .edition-label { font-size: var(--type-caption); letter-spacing: 0; }
+.news-day-controls > div > span, .edition-label { font-size: var(--type-caption); letter-spacing: 0; }
 .newsroom :is(h1,h2,h3,h4) { letter-spacing: 0; }
 .newsroom :is(h2,h3,h4) a:hover { text-decoration: underline; text-underline-offset: .2em; }
 .article-byline { font-size: var(--type-caption); line-height: 1.8; }
 .article-body :is(h2,h3) { letter-spacing: 0; }
 @media (max-width: 780px) { .news-toolbar { position: static; } }
+
+/* Dates open a month calendar; published editions are the selectable days. */
+.news-date-picker { min-width: 0; }
+.news-date-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  max-width: 100%;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.news-date-trigger svg { width: 18px; height: 18px; flex-shrink: 0; color: var(--accent-dark); }
+.news-date-trigger:hover, .news-date-trigger[aria-expanded="true"] { background: var(--theme-accent-soft); border-color: var(--rule); }
+.news-date-picker--stamp .news-date-trigger { padding-inline: 0; }
+.news-date-picker--heading .news-date-trigger { justify-content: start; padding-left: 0; text-align: left; }
+.news-date-picker--heading .news-date-trigger svg { width: 22px; height: 22px; }
+.news-calendar {
+  position: fixed;
+  inset: auto;
+  top: 12px;
+  left: 12px;
+  width: min(350px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  margin: 0;
+  padding: 16px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  border: 1px solid var(--theme-control-border);
+  border-radius: 16px;
+  background: var(--theme-surface);
+  color: var(--theme-ink);
+  font: 400 14px/1.5 var(--font-sans);
+  text-align: left;
+  box-shadow: 0 16px 48px var(--theme-shadow);
+}
+.news-calendar button, .news-calendar select { color: inherit; font-family: inherit; }
+.news-calendar-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.news-calendar-header strong { font-size: 16px; }
+.news-calendar-header button, .news-calendar-month-nav button {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+.news-calendar-header button:hover, .news-calendar-month-nav button:not(:disabled):hover { background: var(--theme-accent-soft); }
+.news-calendar-month-nav { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; gap: 8px; margin-block: 6px 12px; }
+.news-calendar-month-nav select { width: 100%; min-width: 0; min-height: 44px; padding: 6px 10px; border: 1px solid var(--rule); border-radius: 8px; background: var(--theme-surface); font-size: 15px; font-weight: 650; cursor: pointer; }
+.news-calendar button:disabled { opacity: .35; cursor: default; }
+.news-calendar-announcement { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); }
+.news-calendar-grid { width: 100%; border-collapse: separate; border-spacing: 2px 4px; table-layout: fixed; text-align: center; }
+.news-calendar-grid th { padding-bottom: 4px; color: var(--soft); font-size: 12px; font-weight: 500; }
+.news-calendar-grid td { padding: 0; height: 40px; }
+.news-calendar-grid button { position: relative; width: 100%; min-height: 40px; padding: 4px 0 8px; border: 1px solid transparent; border-radius: 8px; background: transparent; font-size: 14px; line-height: 1.5; cursor: pointer; }
+.news-calendar-grid .is-published { font-weight: 650; }
+.news-calendar-grid .is-published::after { content: ""; position: absolute; bottom: 5px; left: calc(50% - 2px); width: 4px; height: 4px; border-radius: 50%; background: var(--accent-dark); }
+.news-calendar-grid button[aria-disabled="true"] { color: var(--soft); opacity: .5; cursor: default; }
+.news-calendar-grid .is-published:hover { background: var(--theme-accent-soft); border-color: var(--rule); }
+.news-calendar-grid td[aria-selected="true"] button { background: var(--accent-dark); color: var(--theme-on-accent); }
+.news-calendar-grid td[aria-selected="true"] button::after { background: currentColor; }
+.news-calendar-grid button:focus-visible { outline-offset: 0; }
+.news-calendar-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rule); }
+.news-calendar-footer p { margin: 0; color: var(--soft); font-size: 12px; }
+.news-calendar-footer button { min-height: 44px; padding: 6px 10px; border: 0; border-radius: 8px; background: var(--theme-accent-soft); color: var(--accent-dark); font-size: 13px; font-weight: 650; cursor: pointer; }
+.news-calendar-footer button:hover { text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 380px) {
+  .news-day-controls { gap: 6px; }
+  .news-date-picker--toolbar .news-date-trigger { gap: 5px; padding-inline: 2px; }
+  .news-calendar { padding: 12px; }
+}
 
 .news-subscription-banner { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 20px; padding: 22px var(--news-gutter); border-bottom: 1px solid var(--rule); background: color-mix(in srgb, var(--accent-dark) 5%, var(--paper)); }
 .news-subscription-banner > svg { width: 32px; height: 32px; color: var(--accent-dark); }
