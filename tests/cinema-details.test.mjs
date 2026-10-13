@@ -42,7 +42,7 @@ test('literal page headings omit sentence-ending full stops but preserve body pr
     }
   }
   const home = await read('app/QuantumHome.tsx');
-  assert.match(home, /让算法走向可用的连接。/);
+  assert.match(home, /关注标准、网络安全、AI 与 NGCC 公钥征集的新进展。/);
   assert.match(home, /验证一次密钥封装/);
 });
 

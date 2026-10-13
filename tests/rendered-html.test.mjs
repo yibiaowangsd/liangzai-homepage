@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
 
-test("renders the homepage with the integrated practice destination", async () => {
+test("renders the news homepage with the integrated practice destination", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -43,12 +43,12 @@ test("renders the homepage with the integrated practice destination", async () =
   }
   assert.match(html, /进入密码实验室/);
   assert.match(html, /打开显示设置/);
-  assert.match(html, /把后量子密码/);
+  assert.match(html, /看见技术的新进展/);
   assert.match(html, /播放序幕/);
   assert.match(html, /cinema-entrance/);
   assert.match(html, /href="\/models"/);
   assert.doesNotMatch(html, /href="\/observatory"/);
-  assert.match(html, /今日信号/);
+  assert.match(html, /最新简报/);
   assert.doesNotMatch(html, /guardian-static|guardian-image-burst|随指针转动的蓝色数学纽结/);
   assert.doesNotMatch(
     html,

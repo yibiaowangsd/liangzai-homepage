@@ -14,9 +14,9 @@ import PageArrival from "./experience/PageArrival";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
 
 export const metadata: Metadata = {
-  title: "量仔 · 密码工程与实验",
+  title: "量仔 · 前沿新闻与技术实践",
   description:
-    "Yibiao 的密码工程与实验。探索密码工程、每日新闻、模型鉴赏与真实算法实验。",
+    "量仔的前沿新闻与技术实践。跟进密码、协议、标准、网络安全与 AI 的新进展，探索真实算法实验与角色故事。",
   other: { "codex-preview": "development" },
   icons: {
     icon: "/assets/liangzai-mark.svg",

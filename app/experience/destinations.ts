@@ -3,8 +3,14 @@ export const destinations = [
   {
     href: "/",
     name: "探索首页",
-    description: "量仔的数字宇宙，从这里出发。",
-    keywords: "home 首页 量仔 liangzai",
+    description: "从前沿新闻出发，跟进技术变化与实践。",
+    keywords: "home 首页 量仔 liangzai 新闻 前沿 简报",
+  },
+  {
+    href: "/news",
+    name: "前沿新闻",
+    description: "跟进密码、安全与人工智能的新进展。",
+    keywords: "news 新闻 ai 前沿 技术 标准 资讯",
   },
   {
     href: "/models",
@@ -35,12 +41,6 @@ export const destinations = [
     name: "密码实验室",
     description: "运行真实算法，亲手封装、签名与验证。",
     keywords: "wasm 实验 lab 密钥 签名 哈希 验证 sm2 测试",
-  },
-  {
-    href: "/news",
-    name: "前沿新闻",
-    description: "跟进密码、安全与人工智能的新进展。",
-    keywords: "news 新闻 ai 前沿 技术 标准 资讯",
   },
   {
     href: "/about",

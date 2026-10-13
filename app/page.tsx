@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import QuantumHome from "./QuantumHome";
 
-const title = "Yibiao · 后量子密码工程与实验";
-const description = "Yibiao 的个人技术实践：TLS / TLCP、SSH 与 IKE 抗量子协议、ML-KEM 混合密钥协商、密码敏捷，以及可在浏览器运行的算法实验与前沿技术简报。";
-const image = { url: "https://wangyibiao.com/assets/cinematic/vault-entrance-v2.webp", width: 1672, height: 941, alt: "蓝色光线照亮的密码之门 · Yibiao 后量子密码工程与实验" };
+const title = "量仔 · 前沿新闻与技术简报";
+const description = "每日追踪后量子密码、抗量子迁移与协议、标准动态、网络安全、AI 前沿和 NGCC 公钥征集。阅读新闻摘要与解读，查阅原始来源，也可进入密码实验室验证真实算法。";
+const image = { url: "https://wangyibiao.com/assets/cinematic/vault-entrance-v2.webp", width: 1672, height: 941, alt: "蓝色光线照亮的密码之门 · 量仔前沿新闻与技术简报" };
 export const metadata: Metadata = {
   title,
   description,
