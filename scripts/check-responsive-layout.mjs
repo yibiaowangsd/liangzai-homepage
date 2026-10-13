@@ -239,9 +239,9 @@ try {
       await page.locator('.cinema-entrance[open]').waitFor({ state: 'hidden' });
       assert.equal(await page.evaluate(() => document.activeElement?.textContent), '播放序幕', 'replay restores keyboard focus');
       assert.notEqual(await page.evaluate(() => document.body.style.overflow), 'hidden', 'intro leaves the page locked');
-      await page.locator('.portal-actions a[href="#selected"]').click();
-      await page.waitForFunction(() => location.hash === '#selected');
-      assert.ok(await page.locator('#selected').isVisible());
+      await page.getByRole('link', { name: '浏览本期精选', exact: true }).click();
+      await page.waitForFunction(() => location.hash === '#signal');
+      assert.ok(await page.locator('#signal').isVisible());
       await page.goto(base + '/pqc-arsenal', { waitUntil: 'networkidle' });
       await page.getByRole('searchbox').fill('ML-KEM');
       assert.equal(await page.locator('.algorithm-directory-grid article').count(), 1);

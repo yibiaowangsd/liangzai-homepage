@@ -86,7 +86,7 @@ export function SiteHeader() {
             />
           </span>
           <strong>
-            量仔<span>密码工程与实验</span>
+            量仔<span>前沿新闻与技术实践</span>
           </strong>
         </Link>
         <nav className="desktop-nav" aria-label="主导航">
@@ -116,17 +116,17 @@ export function SiteFooter() {
   return (
     <footer className="studio-footer">
       <div className="studio-footer-top">
-        <p>Yibiao · 后量子密码工程</p>
+        <p>量仔 · 前沿新闻与技术实践</p>
         <a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer" className="studio-footer-cta">GitHub</a>
       </div>
       <nav className="footer-groups" aria-label="页脚导航">
         <div><span>作品</span><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">本站源码</a><Link href="/models">角色模型</Link></div>
-        <div><span>阅读</span><Link href="/pqc-arsenal">算法原理</Link><Link href="/archive">量仔小传</Link></div>
+        <div><span>阅读</span><Link href="/news">前沿新闻</Link><Link href="/pqc-arsenal">算法原理</Link><Link href="/archive">量仔小传</Link></div>
         <div><span>关于</span><Link href="/about#journey">个人经历</Link><Link href="/about#contact">联系与交流</Link></div>
       </nav>
       <div className="studio-footer-bottom">
         <span>© 2026 量仔 · Yibiao</span>
-        <span>算法 · 协议 · 工程实践</span>
+        <span>新闻 · 解读 · 技术实践</span>
         <a href="#main-content">回到顶部 ↑</a>
       </div>
     </footer>

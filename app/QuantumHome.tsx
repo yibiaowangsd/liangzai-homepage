@@ -13,22 +13,30 @@ export default function QuantumHome() {
           <img className="portal-backdrop" src="/assets/cinematic/vault-entrance-v2.webp" width="1672" height="941" alt="蓝色光线照亮的密码之门" fetchPriority="high" />
           <div className="portal-shade" />
           <div className="portal-hero-copy">
-            <p className="portal-eyebrow">Yibiao · 后量子密码工程</p>
-            <h1 id="home-title">把后量子密码<br /><span>装进真实协议</span></h1>
-            <p className="portal-hero-description">围绕 TLS / TLCP、SSH 与 IKE，探索混合密钥协商、<br className="portal-wide-break" />密码敏捷与互通验证，让算法走向可用的连接。</p>
+            <p className="portal-eyebrow">量仔 · 每日技术前沿</p>
+            <h1 id="home-title">前沿新闻<br /><span>看见技术的新进展</span></h1>
+            <p className="portal-hero-description">追踪后量子密码、抗量子协议与迁移，<br className="portal-wide-break" />关注标准、网络安全、AI 与 NGCC 公钥征集的新进展。</p>
             <div className="portal-actions">
-              <a className="portal-button" href="/pqc-practice">动手验证算法</a>
-              <a className="portal-text-link" href="#selected">了解协议工程方向</a>
+              <Link className="portal-button" href="/news">阅读最新简报</Link>
+              <a className="portal-text-link" href="#signal">浏览本期精选</a>
             </div>
             <div className="portal-identity">
-              <p>我是 Yibiao，在中电信量子集团从事抗量子密码与安全协议工作。</p>
-              <div><Link href="/about">经历与技术方向</Link><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">查看本站源码</a></div>
+              <p>从论文、标准与开源实现出发，整理技术要点，保留原文链接。</p>
+              <div><Link href="/news/subscribe">订阅每日简报</Link><Link href="/about">认识 Yibiao</Link></div>
             </div>
           </div>
-          <div className="portal-hero-foot"><span>TLS / TLCP · SSH · IKE</span><CinemaEntrance /></div>
+          <div className="portal-hero-foot"><span>后量子密码 · 协议 · 标准 · 网络安全 · AI</span><CinemaEntrance /></div>
+        </section>
+        <section className="portal-news portal-chapter" id="signal" aria-labelledby="signal-title">
+          <div className="portal-section-heading" data-reveal><p className="portal-eyebrow">01</p><h2 id="signal-title">最新简报</h2><p>跟踪各个方向的新进展。<br />阅读要点与解读，查阅原始来源。</p></div>
+          <Suspense fallback={<div className="portal-dispatch-empty" role="status"><p>正在读取最新简报…</p><Link href="/news">阅读前沿新闻</Link></div>}><HomeDispatch /></Suspense>
+          <div className="portal-news-actions">
+            <Link href="/news" className="portal-text-link">阅读完整技术简报</Link>
+            <div><p>按板块订阅，每天在邮箱或群聊读前沿。<span>申请审核通过后接收。</span></p><Link href="/news/subscribe" className="portal-subscribe-button">订阅日报 <span aria-hidden="true">→</span></Link></div>
+          </div>
         </section>
         <section className="portal-tools portal-chapter" id="selected" aria-labelledby="tools-title">
-          <div className="portal-section-heading" data-reveal><p className="portal-eyebrow">01</p><h2 id="tools-title">从算法，到协议</h2><p>关注一次握手如何建立密钥、完成认证，<br />也关注它如何兼容现有系统。</p></div>
+          <div className="portal-section-heading" data-reveal><p className="portal-eyebrow">02</p><h2 id="tools-title">从算法，到协议</h2><p>关注一次握手如何建立密钥、完成认证，<br />也关注它如何兼容现有系统。</p></div>
           <dl className="portal-engineering" data-reveal>
             <div><dt>混合密钥协商</dt><dd>经典算法与 ML-KEM 如何组合，如何将共享秘密接入协议密钥派生。</dd></div>
             <div><dt>密码敏捷</dt><dd>让算法选择、参数配置与协议协商衔接，支持逐步迁移。</dd></div>
@@ -42,14 +50,6 @@ export default function QuantumHome() {
               <div className="portal-actions"><a className="portal-button" href="/pqc-practice">进入密码实验室</a><Link className="portal-text-link" href="/pqc-arsenal">阅读算法原理</Link></div>
               <div className="portal-lab-meta"><span>ML-KEM</span><span>ML-DSA</span><span>SLH-DSA</span><span>SM2</span></div>
             </div>
-          </div>
-        </section>
-        <section className="portal-news portal-chapter" id="signal" aria-labelledby="signal-title">
-          <div className="portal-section-heading" data-reveal><p className="portal-eyebrow">02</p><h2 id="signal-title">今日信号</h2><p>跟踪密码、协议与标准的新进展。<br />摘要与原始来源，帮助形成自己的判断。</p></div>
-          <Suspense fallback={<div className="portal-dispatch-empty" role="status"><p>正在读取最新简报…</p><Link href="/news">阅读前沿新闻</Link></div>}><HomeDispatch /></Suspense>
-          <div className="portal-news-actions">
-            <Link href="/news" className="portal-text-link">阅读完整技术简报</Link>
-            <div><p>按板块订阅，每天在邮箱读前沿。<span>审核通过并确认邮箱后接收。</span></p><Link href="/news/subscribe" className="portal-subscribe-button">订阅日报 <span aria-hidden="true">→</span></Link></div>
           </div>
         </section>
         <section className="portal-world portal-chapter" id="world" aria-labelledby="world-title">
