@@ -2,6 +2,7 @@ import { handleRobotSubscriptions } from "./robot-subscriptions.js";
 import { handleSubscriptions, sendDailyDigest, readBody, RequestError } from "./subscriptions.js";
 import { robotConfigured, robotStatus, sendRobotDigest, sendRobotConnectionTest, sendManualRobotDigest } from "./robot.js";
 import { CORE_CATEGORIES, validateEdition, beijingDate } from "./edition.js";
+import { previewResendCampaign, startResendCampaign, stepResendCampaign, getResendCampaignStatus } from "./resend-campaign.js";
 import { getNewsSearch, parseNewsSearch } from "./news-search.js";
 
 const ALLOWED_ORIGINS = new Set([
@@ -17,7 +18,7 @@ const ALLOWED_CATEGORIES = new Set([
 ]);
 
 const ALLOWED_STATUSES = new Set(["draft", "published"]);
-const MAX_BATCH_ITEMS = 35;
+const MAX_BATCH_ITEMS = CORE_CATEGORIES.length * 5;
 
 function corsHeaders(request) {
   const origin = request.headers.get("Origin");
@@ -261,9 +262,9 @@ async function publishItems(env, rawItems, edition = null) {
       AND date(published_at, '+8 hours') = ? AND slug NOT IN (${items.map(() => '?').join(',')})`)
       .bind(edition.date, ...items.map(item => item.slug)));
     if (manifest) statements.push(env.DB.prepare(`INSERT INTO news_editions (date, schema_version, coverage, slugs)
-      VALUES (?, 2, ?, ?) ON CONFLICT(date) DO UPDATE SET schema_version = 2, coverage = excluded.coverage,
+      VALUES (?, ?, ?, ?) ON CONFLICT(date) DO UPDATE SET schema_version = excluded.schema_version, coverage = excluded.coverage,
       slugs = excluded.slugs, updated_at = datetime('now')`)
-      .bind(edition.date, JSON.stringify(manifest.coverage), JSON.stringify(manifest.slugs)));
+      .bind(edition.date, manifest.schema_version, JSON.stringify(manifest.coverage), JSON.stringify(manifest.slugs)));
     else statements.push(env.DB.prepare('DELETE FROM news_editions WHERE date = ?').bind(edition.date));
   }
   const results = statements.length ? await env.DB.batch(statements) : [];
@@ -457,6 +458,32 @@ export default {
           }
         }
         return json(request, { error: "Method not allowed" }, 405);
+      }
+
+      if (url.pathname.startsWith('/api/admin/news/resend/')) {
+        if (!env.ADMIN_TOKEN) return json(request, { error: 'Administrator is not configured' }, 503);
+        if (!isAdmin(request, env)) return json(request, { error: 'Unauthorized' }, 401);
+        const origin = request.headers.get('Origin');
+        if (origin && !ALLOWED_ORIGINS.has(origin)) return json(request, { error: '不允许的请求来源。' }, 403);
+        try {
+          if (request.method === 'GET' && url.pathname.endsWith('/preview')) {
+            return json(request, await previewResendCampaign(env, { date: url.searchParams.get('date') }));
+          }
+          if (request.method === 'GET' && url.pathname.endsWith('/status')) {
+            return json(request, await getResendCampaignStatus(env, { campaign_id: url.searchParams.get('campaign_id') }));
+          }
+          if (request.method === 'POST' && url.pathname.endsWith('/start')) {
+            return json(request, await startResendCampaign(env, await readBody(request)));
+          }
+          if (request.method === 'POST' && url.pathname.endsWith('/step')) {
+            return json(request, await stepResendCampaign(env, await readBody(request)));
+          }
+          return json(request, { error: 'Method not allowed' }, 405);
+        } catch (error) {
+          if (error instanceof RequestError) return json(request, { error: error.message }, error.status);
+          console.error('news_resend_failed');
+          return json(request, { error: '补发服务暂时无法处理，已有批次和发送记录会保留。' }, 500);
+        }
       }
 
       const robotSubscriptionResponse = await handleRobotSubscriptions(request, env, json);

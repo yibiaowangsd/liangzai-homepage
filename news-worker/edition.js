@@ -3,6 +3,7 @@ import policy from '../news/edition-policy.json' with { type: 'json' };
 export const CORE_CATEGORIES = Object.keys(policy.categories);
 export const CATEGORY_LABELS = Object.fromEntries(Object.entries(policy.categories).map(([key, value]) => [key, value.label]));
 export const LEGACY_CATEGORIES = policy.legacy_categories;
+export const V2_CATEGORIES = policy.v2_categories;
 export const EDITION_V2_FROM = policy.effective_date;
 export const beijingDate = value => new Date(new Date(value).getTime() + 8 * 3600000).toISOString().slice(0, 10);
 
@@ -15,9 +16,9 @@ export function validateEdition(body, items) {
     throw new Error('date must be a valid edition date');
   }
   const version = body.schema_version ?? 1;
-  if (version !== 1 && version !== 2) throw new Error('unsupported edition schema_version');
-  if (version === 1 && date >= EDITION_V2_FROM) throw new Error('edition must be schema_version 2');
-  const categories = version === 2 ? CORE_CATEGORIES : LEGACY_CATEGORIES;
+  if (![1, 2, 3].includes(version)) throw new Error('unsupported edition schema_version');
+  if (version === 1 && date >= EDITION_V2_FROM) throw new Error('edition must be schema_version 2 or 3');
+  const categories = version === 3 ? CORE_CATEGORIES : version === 2 ? V2_CATEGORIES : LEGACY_CATEGORIES;
   const counts = Object.fromEntries(categories.map(key => [key, 0]));
   const slugs = new Set();
   if (!items.length || items.length > categories.length * policy.max_per_category) throw new Error('items must contain a non-empty, complete edition');
@@ -36,7 +37,7 @@ export function validateEdition(body, items) {
   const coverage = body.coverage;
   if (!coverage || typeof coverage !== 'object' || Array.isArray(coverage) ||
       Object.keys(coverage).length !== categories.length || categories.some(key => !Object.hasOwn(coverage, key))) {
-    throw new Error('coverage must describe all seven categories');
+    throw new Error(`coverage must describe all ${categories.length} edition categories`);
   }
   const normalized = {};
   for (const key of categories) {
@@ -48,20 +49,20 @@ export function validateEdition(body, items) {
     }
     normalized[key] = { count: entry.count, note: entry.note.trim() };
   }
-  return { coverage: normalized, slugs: [...slugs].sort() };
+  return { schema_version: version, coverage: normalized, slugs: [...slugs].sort() };
 }
 
 // Compare the published snapshot, not a guessed minimum count. Missing or
 // damaged manifests never trigger a partial digest.
 export async function publishedCoverage(env, date, items, selected = null) {
-  const manifest = await env.DB.prepare('SELECT coverage, slugs FROM news_editions WHERE date = ?').bind(date).first();
+  const manifest = await env.DB.prepare('SELECT schema_version, coverage, slugs FROM news_editions WHERE date = ?').bind(date).first();
   if (manifest) {
     try {
       const coverage = JSON.parse(manifest.coverage);
       const slugs = JSON.parse(manifest.slugs);
       if (selected) {
         // A deliberate manual send still checks only its approved desks.
-        // Automatic delivery below requires the full seven-desk snapshot.
+        // Automatic delivery below requires the complete versioned snapshot.
         const available = items.filter(item => selected.includes(item.category));
         return selected.every(key => Number.isInteger(coverage[key]?.count) && coverage[key].count >= 0 &&
           coverage[key].count <= policy.max_per_category && typeof coverage[key].note === 'string' &&
@@ -69,7 +70,7 @@ export async function publishedCoverage(env, date, items, selected = null) {
           available.filter(item => item.category === key).length === coverage[key].count) &&
           available.every(item => slugs.includes(item.slug)) ? coverage : null;
       }
-      const verified = validateEdition({ date, schema_version: 2, coverage }, items);
+      const verified = validateEdition({ date, schema_version: manifest.schema_version, coverage }, items);
       return JSON.stringify(verified.slugs) === JSON.stringify(slugs) ? verified.coverage : null;
     } catch { return null; }
   }

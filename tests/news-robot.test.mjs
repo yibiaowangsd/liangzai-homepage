@@ -14,7 +14,7 @@ function fixture(t) {
   const originalTimeout = globalThis.setTimeout;
   t.mock.method(globalThis, 'setTimeout', (callback, delay, ...args) => originalTimeout(callback, delay === 3100 ? 0 : delay, ...args));
   const db = new DatabaseSync(':memory:');
-  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql', '0006_robot_send_mode.sql', '0007_robot_mention_all.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql', '0006_robot_send_mode.sql', '0007_robot_mention_all.sql', '0008_flash_editions.sql', '0009_resend_campaigns.sql', '0010_flash_robot_parts.sql']) db.exec(readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8'));
   db.exec('CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)');
   const insert = db.prepare('INSERT INTO news VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'); let id = 0;
   for (const category of ['pqc', 'protocol', 'standards', 'security', 'ai']) for (let i = 0; i < 5; i++) insert.run(++id, `${date.replaceAll("-", "")}-${category}-${i}`, `${category} story ${i}`, '中文摘要', category, '一手来源', `https://example.com/${category}/${i}`, `${date}T08:00:00Z`, 'published');
@@ -626,6 +626,23 @@ test('send-mode migration preserves existing subscriptions and delivery history'
   db.prepare('UPDATE robot_subscription_deliveries SET next_part = 7').run();
   assert.throws(() => db.prepare("UPDATE robot_subscribers SET send_mode = 'unknown'").run());
   assert.throws(() => db.prepare('UPDATE robot_subscription_deliveries SET next_part = 8').run());
+});
+
+test('v3 automatic delivery records the eighth flash segment and sends it only once', async t => {
+  const f = fixture(t), categories = ['pqc', 'migration', 'protocol', 'standards', 'security', 'ai', 'ngcc', 'flash'];
+  f.db.prepare('INSERT INTO news VALUES (99, ?, ?, ?, ?, ?, ?, ?, ?)').run(`${date.replaceAll('-', '')}-flash-new`,
+    '已核实的简短公告', '短消息摘要', 'flash', 'Original source', 'https://example.com/flash-new', `${date}T08:00:00Z`, 'published');
+  const manifest = f.db.prepare('SELECT coverage FROM news_editions WHERE date = ?').get(date);
+  const coverage = JSON.parse(manifest.coverage); coverage.flash = { count: 1, note: '本期只有一条核实后的重要简短公告，其余没有达到选稿标准。' };
+  const slugs = f.db.prepare('SELECT slug FROM news ORDER BY slug').all().map(row => row.slug);
+  f.db.prepare('UPDATE news_editions SET schema_version = 3, coverage = ?, slugs = ? WHERE date = ?').run(JSON.stringify(coverage), JSON.stringify(slugs), date);
+  await f.apply({ categories }); await f.approve(undefined, { mention_mode: 'all' });
+  assert.equal((await f.send()).sent, 8);
+  assert.equal(f.record().next_part, 8); assert.equal(f.record().status, 'sent');
+  assert.match(f.requests.at(-1).payload.textMsg.content, /八、快讯（8\/8）/);
+  assert.match(f.requests.at(-1).payload.textMsg.content, /已核实的简短公告/);
+  assert.equal(f.requests.filter(request => request.payload.textMsg.isMentioned).length, 1);
+  assert.equal((await f.send()).sent, 0); assert.equal(f.requests.length, 8);
 });
 
 for (const sendMode of ['single', 'multiple']) test(`administrator-approved @all is applied once in automatic and manual ${sendMode} delivery`, async t => {

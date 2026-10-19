@@ -18,13 +18,13 @@ def validate(path):
         raise ValueError("date must match filename")
     items = data.get("items")
     version = data.get("schema_version", 1)
-    if type(version) is not int or version not in (1, 2):
+    if type(version) is not int or version not in (1, 2, 3):
         raise ValueError("unsupported schema_version")
     if version == 1 and data["date"] >= POLICY["effective_date"]:
-        raise ValueError("new editions require schema_version 2")
-    categories = set(POLICY["categories"] if version == 2 else POLICY["legacy_categories"])
+        raise ValueError("new editions require schema_version 2 or 3")
+    categories = set(POLICY["categories"] if version == 3 else POLICY["v2_categories"] if version == 2 else POLICY["legacy_categories"])
     if not isinstance(items, list) or not 1 <= len(items) <= len(categories) * POLICY["max_per_category"]:
-        raise ValueError("edition must contain 1–35 stories (legacy: exactly 25)")
+        raise ValueError(f"edition must contain 1–{len(categories) * POLICY['max_per_category']} stories (legacy: exactly 25)")
     counts = collections.Counter()
     slugs = set()
     sources = set()
@@ -44,25 +44,29 @@ def validate(path):
             if not isinstance(item.get(field), str) or not item[field].strip():
                 raise ValueError(f"{slug}: missing {field}")
         content = item["content"].strip()
+        is_flash = item["category"] == "flash"
         paragraphs = [block for block in re.split(r"\n\s*\n", content)
                       if block.strip() and not block.lstrip().startswith(("#", "- "))]
-        if len(content) < 600 or len(paragraphs) < 5:
+        if not is_flash and (len(content) < 600 or len(paragraphs) < 5):
             raise ValueError(f"{slug}: needs a substantial article, >=600 characters and >=5 paragraphs")
-        if "\n## 量仔观察\n" not in content:
+        if not is_flash and "\n## 量仔观察\n" not in content:
             raise ValueError(f"{slug}: missing separate editorial analysis")
         if not re.search(r"20\d{2}年\d{1,2}月|20\d{2}-\d{2}-\d{2}", content):
             raise ValueError(f"{slug}: missing original source date")
-        if version == 2:
-            if not 100 <= len(item["summary"].strip()) <= 180:
-                raise ValueError(f"{slug}: summary must contain 100–180 characters")
-            if len([p for p in paragraphs if len(p.strip()) >= 50]) < 5:
+        if version >= 2:
+            minimum_summary = 40 if is_flash else 100
+            if not minimum_summary <= len(item["summary"].strip()) <= 180:
+                raise ValueError(f"{slug}: summary must contain {minimum_summary}–180 characters")
+            if is_flash and not 80 <= len(content) < 600:
+                raise ValueError(f"{slug}: flash content must contain 80–599 characters")
+            if not is_flash and len([p for p in paragraphs if len(p.strip()) >= 50]) < 5:
                 raise ValueError(f"{slug}: needs at least five substantive paragraphs")
             if len(set(p.strip() for p in paragraphs)) != len(paragraphs):
                 raise ValueError(f"{slug}: repeated paragraphs are not allowed")
             original_date = re.search(r"20\d{2}-\d{2}-\d{2}", content.split("\n\n", 1)[0])
             if not original_date or date.fromisoformat(original_date.group()) > edition_date:
                 raise ValueError(f"{slug}: opening must give a non-future ISO original source date")
-            if len(content.split("\n## 量仔观察\n", 1)[1].strip()) < 80:
+            if not is_flash and len(content.split("\n## 量仔观察\n", 1)[1].strip()) < 80:
                 raise ValueError(f"{slug}: editorial analysis is too short")
             if not isinstance(item.get("tags"), list) or not item["tags"] or any(not isinstance(tag, str) or not tag.strip() for tag in item["tags"]):
                 raise ValueError(f"{slug}: needs non-empty string tags")
@@ -77,10 +81,10 @@ def validate(path):
             raise ValueError(f"{slug}: publication must belong to the Beijing edition date")
     if version == 1 and any(counts[category] != 5 for category in categories):
         raise ValueError("each of the five categories must contain exactly five stories")
-    if version == 2:
+    if version >= 2:
         coverage = data.get("coverage")
         if not isinstance(coverage, dict) or set(coverage) != categories:
-            raise ValueError("coverage must describe all seven categories")
+            raise ValueError(f"coverage must describe all {len(categories)} edition categories")
         for category in categories:
             entry = coverage[category]
             if not isinstance(entry, dict) or type(entry.get("count")) is not int or entry["count"] != counts[category] or entry["count"] > POLICY["max_per_category"]:
@@ -99,4 +103,4 @@ if __name__ == "__main__":
         except (ValueError, KeyError, TypeError) as exc:
             raise SystemExit(f"{path}: {exc}") from exc
         counts = dict(collections.Counter(item["category"] for item in json.loads(path.read_text(encoding="utf-8"))["items"]))
-        print(f"Validated {path}: {sum(counts.values())} long articles; {counts}")
+        print(f"Validated {path}: {sum(counts.values())} stories ({counts.get('flash', 0)} flashes); {counts}")

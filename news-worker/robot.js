@@ -5,7 +5,7 @@ export { robotConfigured } from './robot-config.js';
 
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
 const pauseBetweenMessages = () => new Promise(resolve => setTimeout(resolve, 3100));
-const SECTION_NUMBERS = ['一', '二', '三', '四', '五', '六', '七'];
+const SECTION_NUMBERS = ['一', '二', '三', '四', '五', '六', '七', '八'];
 function cleanText(value, limit) {
   // Prevent news text from adding fake sections, control characters or mass mentions.
   const text = String(value ?? '').replace(/[\x00-\x1f\x7f]/g, ' ').replace(/@/g, '＠').replace(/\s+/g, ' ').trim();
@@ -199,7 +199,9 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date) throw new Error('Invalid edition date');
   const { results: subscribers = [] } = await env.DB.prepare(`SELECT s.* FROM robot_subscribers s
     WHERE s.status = 'approved' AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries m WHERE m.subscriber_id = s.id AND m.edition_date = ?) AND (? IS NULL OR s.id = ?) AND NOT EXISTS (SELECT 1 FROM robot_subscription_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
-    ORDER BY s.created_at, s.id LIMIT 5`).bind(date, subscriberId, subscriberId, date).all();
+    AND NOT EXISTS (SELECT 1 FROM news_resend_jobs r WHERE r.channel = 'robot'
+      AND r.subscriber_id = s.id AND r.edition_date = ? AND r.subscription_version = s.version AND r.status != 'cancelled')
+    ORDER BY s.created_at, s.id LIMIT 5`).bind(date, subscriberId, subscriberId, date, date).all();
   if (subscribers.length) {
     const edition = await editionItems(env, date);
     if (!edition) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
@@ -214,19 +216,31 @@ export async function sendRobotDigest(env, date = today(), { pause = pauseBetwee
       const inheritedStatus = !legacy ? 'pending' : legacy.status === 'sent' ? 'sent' : ['sending','uncertain'].includes(legacy.status) ? 'uncertain' : 'cancelled';
       await env.DB.prepare(`INSERT INTO robot_subscription_deliveries (id, subscriber_id, edition_date, version, payload, created_at, status, error, sent_at)
         SELECT ?, id, ?, version, ?, ?, ?, ?, ? FROM robot_subscribers WHERE id = ? AND status = 'approved' AND version = ?
+        AND NOT EXISTS (SELECT 1 FROM news_resend_jobs r WHERE r.channel = 'robot'
+          AND r.subscriber_id = robot_subscribers.id AND r.edition_date = ?
+          AND r.subscription_version = robot_subscribers.version AND r.status != 'cancelled')
         ON CONFLICT(subscriber_id, edition_date) DO NOTHING`)
-        .bind(crypto.randomUUID(), date, legacy ? "[]" : JSON.stringify(payload), Date.now(), inheritedStatus, legacy ? "legacy_delivery" : null, legacy?.sent_at || null, subscriber.id, subscriber.version).run();
+        .bind(crypto.randomUUID(), date, legacy ? "[]" : JSON.stringify(payload), Date.now(), inheritedStatus, legacy ? "legacy_delivery" : null, legacy?.sent_at || null, subscriber.id, subscriber.version, date).run();
     }
   }
   // Without provider idempotency, expired in-flight leases may already have sent.
   await env.DB.prepare("UPDATE robot_subscription_deliveries SET status = 'uncertain', error = 'lease_expired', lease_until = 0 WHERE status = 'sending' AND lease_until < ? AND (? IS NULL OR subscriber_id = ?)").bind(Date.now(), subscriberId, subscriberId).run();
   const { results: jobs = [] } = await env.DB.prepare(`SELECT id FROM robot_subscription_deliveries WHERE edition_date = ?
-    AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries m WHERE m.subscriber_id = robot_subscription_deliveries.subscriber_id AND m.edition_date = robot_subscription_deliveries.edition_date) AND (? IS NULL OR subscriber_id = ?) ORDER BY created_at, id LIMIT 5`).bind(date, Date.now(), subscriberId, subscriberId).all();
+    AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5
+    AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries m WHERE m.subscriber_id = robot_subscription_deliveries.subscriber_id AND m.edition_date = robot_subscription_deliveries.edition_date)
+    AND NOT EXISTS (SELECT 1 FROM news_resend_jobs r WHERE r.channel = 'robot'
+      AND r.subscriber_id = robot_subscription_deliveries.subscriber_id AND r.edition_date = robot_subscription_deliveries.edition_date
+      AND r.subscription_version = robot_subscription_deliveries.version AND r.status != 'cancelled')
+    AND (? IS NULL OR subscriber_id = ?) ORDER BY created_at, id LIMIT 5`).bind(date, Date.now(), subscriberId, subscriberId).all();
   let sent = 0, failed = 0, completed = 0;
   for (const record of jobs) {
     const lease = crypto.randomUUID();
     const job = await env.DB.prepare(`UPDATE robot_subscription_deliveries SET status = 'sending', lease_token = ?, lease_until = ?, attempts = attempts + 1
-      WHERE id = ? AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5 AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries m WHERE m.subscriber_id = robot_subscription_deliveries.subscriber_id AND m.edition_date = robot_subscription_deliveries.edition_date) RETURNING *`)
+      WHERE id = ? AND status = 'pending' AND next_attempt_at <= ? AND attempts < 5
+      AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries m WHERE m.subscriber_id = robot_subscription_deliveries.subscriber_id AND m.edition_date = robot_subscription_deliveries.edition_date)
+      AND NOT EXISTS (SELECT 1 FROM news_resend_jobs r WHERE r.channel = 'robot'
+        AND r.subscriber_id = robot_subscription_deliveries.subscriber_id AND r.edition_date = robot_subscription_deliveries.edition_date
+        AND r.subscription_version = robot_subscription_deliveries.version AND r.status != 'cancelled') RETURNING *`)
       .bind(lease, Date.now() + 300000, record.id, Date.now()).first();
     if (!job) continue;
     try {

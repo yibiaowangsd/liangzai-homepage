@@ -504,6 +504,18 @@
   font: 700 12px/1.5 var(--font-mono-en);
 }
 
+.flash-desk .desk-head { padding-block: 18px; }
+.flash-desk .desk-head p { margin: 8px 0 0; color: var(--soft); font-size: 13px; }
+.flash-list { margin: 0; padding: 0; list-style: none; }
+.flash-list > li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 18px; padding: 24px 0; border-bottom: 1px solid var(--rule); }
+.flash-number { padding-top: 4px; color: var(--accent-dark); font: 650 14px/1.5 var(--font-mono-en); }
+.flash-list h4 { margin: 0; font-size: clamp(19px, 1.7vw, 25px); font-weight: 650; line-height: 1.5; }
+.flash-list article > p { max-width: 74em; margin: 12px 0; color: var(--soft); font-size: 16px; line-height: 1.85; }
+.flash-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 24px; color: var(--soft); font-size: 13px; }
+.flash-meta a { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent-dark); text-underline-offset: 4px; }
+.flash-list article { min-width: 0; overflow-wrap: anywhere; }
+.flash-empty { padding-block: 32px; color: var(--soft); line-height: 1.8; }
+
 .news-pagination {
   min-height: 112px;
   padding-block: 24px;
@@ -678,6 +690,10 @@
   font-size: 13px;
   line-height: 1.7;
 }
+
+.article-flash .article-header { max-width: 920px; margin-inline: auto; }
+.article-flash .article-reading-start { grid-template-columns: minmax(0, 1fr); }
+.article-flash .article-source { margin-top: 28px; }
 
 .article-layout {
   max-width: 74ch;

@@ -22,5 +22,10 @@ test('real source images remain, old placeholders and invalid URLs fall back',()
 test('every keyword and category fallback references a bundled asset',async()=>{
   const samples=['FPGA','TLS','ML-KEM','Falcon','SM3','ML-DSA','AI','漏洞','NIST','Cloudflare','未知'];
   for(const title of samples)await access(new URL('../public'+keywordCover(story(title)).image,import.meta.url));
-  for(const category of ['pqc','protocol','standards','security','ai','industry','unknown'])await access(new URL('../public'+keywordCover(story('',{category})).image,import.meta.url));
+  for(const category of ['pqc','migration','protocol','standards','security','ai','ngcc','flash','industry','unknown'])await access(new URL('../public'+keywordCover(story('',{category})).image,import.meta.url));
+});
+test('flash briefs retain subject art and use their own fallback for general updates',()=>{
+  assert.equal(coverFor(story('项目发布重要更新',{category:'flash'})),'/news-covers/flash.svg');
+  assert.match(coverFor(story('TLS 参数登记更新',{category:'flash',cover_image:'/news-covers/flash.svg'})),/connection-v2/);
+  assert.equal(sourceCover(story('公告',{category:'flash',cover_image:'https://wangyibiao.com/news-covers/flash.svg'})),null);
 });

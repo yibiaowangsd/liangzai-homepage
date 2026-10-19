@@ -30,6 +30,7 @@ const defaults: Record<string, {
     pqc: { image: kem, keyword: "PQC / 后量子算法" }, migration: { image: network, keyword: "MIGRATION / 抗量子迁移" }, ngcc: { image: signature, keyword: "NGCC / 公钥征集" }, protocol: { image: network, keyword: "PROTOCOL / 安全连接" },
     standards: { image: signature, keyword: "STANDARDS / 标准进展" }, security: { image: network, keyword: "SECURITY / 网络安全" },
     ai: { image: chip, keyword: "AI / 人工智能" }, industry: { image: chip, keyword: "TECH / 产业进展" },
+    flash: { image: "/news-covers/flash.svg", keyword: "快讯" },
 };
 export function keywordCover(item: CoverStory) {
     const text = `${item.title || ""} ${item.tags || ""}`;
@@ -37,7 +38,7 @@ export function keywordCover(item: CoverStory) {
 }
 export function sourceCover(item: CoverStory): string | null {
     const src = item.cover_image?.trim();
-    if (!src || /^(?:https:\/\/wangyibiao\.com)?\/news-covers\/(?:pqc|protocol|standards|security|ai)\.svg(?:\?.*)?$/.test(src))
+    if (!src || /^(?:https:\/\/wangyibiao\.com)?\/news-covers\/(?:pqc|protocol|standards|security|ai|flash)\.svg(?:\?.*)?$/.test(src))
         return null;
     // Publisher logos identify a source, not an article. Keep source credit in text
     // while using the existing topic artwork for these generic social/logo assets.

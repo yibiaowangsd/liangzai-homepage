@@ -94,7 +94,7 @@ async function resolveToken(env, token, action) {
   } catch { throw new RequestError('链接无效或已过期，请联系管理员重新发送确认邮件。', 403); }
 }
 export function mailConfigured(env) { return Boolean(env.RESEND_API_KEY && env.NEWSLETTER_FROM && (env.NEWSLETTER_TOKEN_SECRET || env.ADMIN_TOKEN)); }
-async function sendMail(env, payload, key) {
+export async function sendMail(env, payload, key) {
   if (!mailConfigured(env)) throw new RequestError('邮件服务尚未配置，申请将保持待审核。', 503);
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST', signal: AbortSignal.timeout(20000),
@@ -167,23 +167,40 @@ export async function sendDailyDigest(env, date = new Intl.DateTimeFormat('en-CA
   const { results: subscribers = [] } = await env.DB.prepare(`SELECT s.* FROM newsletter_subscribers s
     WHERE s.status = 'approved' AND s.email_verified_at IS NOT NULL AND NOT EXISTS
     (SELECT 1 FROM newsletter_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
-    ORDER BY s.created_at LIMIT 20`).bind(date).all();
+    AND NOT EXISTS (SELECT 1 FROM news_resend_jobs r WHERE r.channel = 'email'
+      AND r.subscriber_id = s.id AND r.edition_date = ?
+      AND r.subscription_version = s.token_version AND r.categories = s.categories AND r.status != 'cancelled')
+    ORDER BY s.created_at LIMIT 20`).bind(date, date).all();
   for (const subscriber of subscribers) {
     const payload = await buildDigest(env, subscriber, date, items);
     await env.DB.prepare(`INSERT INTO newsletter_deliveries (id, subscriber_id, edition_date, categories, token_version, payload, created_at)
       SELECT ?, id, ?, categories, token_version, ?, ? FROM newsletter_subscribers
       WHERE id = ? AND status = 'approved' AND email_verified_at IS NOT NULL AND categories = ? AND token_version = ?
-      ON CONFLICT(subscriber_id, edition_date) DO NOTHING`).bind(crypto.randomUUID(), date, JSON.stringify(payload), Date.now(), subscriber.id, subscriber.categories, subscriber.token_version).run();
+      AND NOT EXISTS (SELECT 1 FROM news_resend_jobs r WHERE r.channel = 'email'
+        AND r.subscriber_id = newsletter_subscribers.id AND r.edition_date = ?
+        AND r.subscription_version = newsletter_subscribers.token_version AND r.categories = newsletter_subscribers.categories
+        AND r.status != 'cancelled')
+      ON CONFLICT(subscriber_id, edition_date) DO NOTHING`).bind(crypto.randomUUID(), date, JSON.stringify(payload), Date.now(), subscriber.id, subscriber.categories, subscriber.token_version, date).run();
   }
   const now = Date.now();
   // Freeze retry payloads and stop before the provider's 24-hour deduplication window expires.
   await env.DB.prepare("UPDATE newsletter_deliveries SET status = 'failed', error = 'retry_window_expired' WHERE status IN ('pending','sending') AND created_at < ?").bind(now - 23 * 3600000).run();
-  const { results: jobs = [] } = await env.DB.prepare("SELECT id FROM newsletter_deliveries WHERE edition_date = ? AND status IN ('pending','sending') AND lease_until < ? AND attempts < 5 ORDER BY created_at LIMIT 20").bind(date, now).all();
+  const { results: jobs = [] } = await env.DB.prepare(`SELECT id FROM newsletter_deliveries
+    WHERE edition_date = ? AND status IN ('pending','sending') AND lease_until < ? AND attempts < 5
+    AND NOT EXISTS (SELECT 1 FROM news_resend_jobs r WHERE r.channel = 'email'
+      AND r.subscriber_id = newsletter_deliveries.subscriber_id AND r.edition_date = newsletter_deliveries.edition_date
+      AND r.subscription_version = newsletter_deliveries.token_version AND r.categories = newsletter_deliveries.categories
+      AND r.status != 'cancelled')
+    ORDER BY created_at LIMIT 20`).bind(date, now).all();
   let sent = 0, failed = 0;
   for (const job of jobs) {
     const lease = crypto.randomUUID();
     const claimed = await env.DB.prepare(`UPDATE newsletter_deliveries SET status = 'sending', lease_until = ?, lease_token = ?, attempts = attempts + 1
-      WHERE id = ? AND status IN ('pending','sending') AND lease_until < ? AND attempts < 5 RETURNING *`).bind(Date.now() + 300000, lease, job.id, Date.now()).first();
+      WHERE id = ? AND status IN ('pending','sending') AND lease_until < ? AND attempts < 5
+      AND NOT EXISTS (SELECT 1 FROM news_resend_jobs r WHERE r.channel = 'email'
+        AND r.subscriber_id = newsletter_deliveries.subscriber_id AND r.edition_date = newsletter_deliveries.edition_date
+        AND r.subscription_version = newsletter_deliveries.token_version AND r.categories = newsletter_deliveries.categories
+        AND r.status != 'cancelled') RETURNING *`).bind(Date.now() + 300000, lease, job.id, Date.now()).first();
     if (!claimed) continue;
     if (sent > 0) await new Promise(resolve => setTimeout(resolve, 550));
     const current = await env.DB.prepare(`SELECT s.status, s.email_verified_at, s.categories, s.token_version FROM newsletter_subscribers s

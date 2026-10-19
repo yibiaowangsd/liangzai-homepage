@@ -16,7 +16,7 @@ import {
 export const metadata: Metadata = {
   title: "每日前沿 · 量仔",
   description:
-    "七个方向，每方向优先 3—5 条：后量子算法、抗量子迁移、抗量子协议、标准动态、网络安全、AI 前沿与 NGCC 公钥征集。",
+    "每日关注后量子算法、抗量子迁移、抗量子协议、标准动态、网络安全、AI 前沿与 NGCC 公钥征集；快讯简明呈现已核实的重要新消息。",
 };
 
 function selectHighlights(topics: Record<string, NewsItem[]>, categories: readonly string[]) {
@@ -41,6 +41,33 @@ function TopicDesk({
   listingHref: string;
 }) {
   if (!items.length) return null;
+
+  if (category === "flash") {
+    return (
+      <section className="desk flash-desk" id={category}>
+        <header className="desk-head">
+          <div><h3>{categoryLabels[category]}</h3><p>简明事实 · 原始来源</p></div>
+          <strong>{items.length.toString().padStart(2, "0")}</strong>
+        </header>
+        <ol className="flash-list">
+          {items.map((item, index) => (
+            <li key={item.slug}>
+              <span className="flash-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              <article>
+                <h4><Link href={newsStoryHref(item.slug, listingHref)}>{item.title}</Link></h4>
+                {item.summary && <p>{item.summary}</p>}
+                <div className="flash-meta">
+                  <span>{item.source_name || "原始来源"}</span>
+                  <Link href={newsStoryHref(item.slug, listingHref)} aria-label={"阅读快讯：" + item.title}>阅读快讯</Link>
+                </div>
+              </article>
+            </li>
+          ))}
+        </ol>
+      </section>
+    );
+  }
+
   const lead = items[0];
   const rest = items.slice(1);
 
@@ -207,7 +234,7 @@ export default async function NewsPage({
         </section>
       ) : (
         <>
-          {heroLead && <section className="front-page">
+          {heroLead && category !== "flash" && <section className="front-page">
             <div className="edition-label">
               <NewsDatePicker key={newest.date} date={newest.date} dates={availableDates} category={category} variant="stamp" />
               <strong>{formatEditionDate(newest.date)}</strong>
@@ -292,6 +319,7 @@ export default async function NewsPage({
                     items={edition.topics[key] || []}
                   />
                 ))}
+                {category === "flash" && !edition.topics.flash?.length && <p className="flash-empty">本期暂无快讯，可切换其他栏目或日期继续阅读。</p>}
               </section>
             ))}
           </div>
@@ -333,8 +361,8 @@ export default async function NewsPage({
       <footer className="news-method-note">
         <span>选编说明</span>
         <p>
-          七个方向各优先选编 3—5 条，兼顾研究、实现、测试与部署。逐条阅读一手来源，
-          标明原始日期；信息不足时说明覆盖缺口，不用重复旧闻凑数。
+          专题栏目优先选编有实质新增的研究、标准、产业与部署消息，快讯简明呈现已核实的重要更新。
+          逐条核验原始来源并标明日期，不用重复旧闻凑数。
         </p>
       </footer>
     </main>

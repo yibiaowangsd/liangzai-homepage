@@ -1,9 +1,11 @@
 {
-  "version": 2,
+  "version": 3,
   "effective_date": "2026-10-11",
+  "v3_effective_date": "2026-10-19",
   "min_per_category": 3,
   "max_per_category": 5,
   "legacy_categories": ["pqc", "protocol", "standards", "security", "ai"],
+  "v2_categories": ["pqc", "migration", "protocol", "standards", "security", "ai", "ngcc"],
   "categories": {
     "pqc": { "label": "后量子算法", "english": "POST-QUANTUM ALGORITHMS", "description": "算法、实现与安全评估", "cover": "/news-covers/pqc.svg" },
     "migration": { "label": "抗量子迁移", "english": "PQC MIGRATION", "description": "密码盘点、迁移与部署", "cover": "/news-covers/connection-v2.webp" },
@@ -11,6 +13,7 @@
     "standards": { "label": "标准动态", "english": "STANDARDS", "description": "标准与规范状态变化", "cover": "/news-covers/standards.svg" },
     "security": { "label": "网络安全", "english": "SECURITY", "description": "漏洞、攻防与修复", "cover": "/news-covers/security.svg" },
     "ai": { "label": "AI 前沿", "english": "ARTIFICIAL INTELLIGENCE", "description": "模型、工具与基础设施", "cover": "/news-covers/ai.svg" },
-    "ngcc": { "label": "NGCC 公钥征集", "english": "NGCC PUBLIC KEY", "description": "候选评估、漏洞与修复", "cover": "/assets/pqc/ml-dsa-studio-v2.webp" }
+    "ngcc": { "label": "NGCC 公钥征集", "english": "NGCC PUBLIC KEY", "description": "候选评估、漏洞与修复", "cover": "/assets/pqc/ml-dsa-studio-v2.webp" },
+    "flash": { "label": "快讯", "english": "NEWS FLASH", "description": "值得及时关注的简明动态", "cover": "/news-covers/flash.svg" }
   }
 }

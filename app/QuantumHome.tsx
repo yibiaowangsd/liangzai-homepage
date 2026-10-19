@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { MotionSurface } from "./experience/Motion";
 import CinemaEntrance from "./studio/CinemaEntrance";
 import HomeDispatch from "./studio/HomeDispatch";
+import { categoryLabels, coreCategories } from "./news/news-api";
 import "./studio/home.css";
 
 export default function QuantumHome() {
@@ -21,7 +22,7 @@ export default function QuantumHome() {
               <a className="portal-text-link" href="#signal">浏览本期精选</a>
             </div>
             <div className="portal-identity">
-              <p>从论文、标准与开源实现出发，整理技术要点，保留原文链接。</p>
+              <p>从研究、标准、产业与部署追踪新进展，提供专题解读与快讯，保留原文链接。</p>
               <div><Link href="/news/subscribe">订阅每日简报</Link><Link href="/about">认识 Yibiao</Link></div>
             </div>
           </div>
@@ -29,6 +30,7 @@ export default function QuantumHome() {
         </section>
         <section className="portal-news portal-chapter" id="signal" aria-labelledby="signal-title">
           <div className="portal-section-heading" data-reveal><p className="portal-eyebrow">01</p><h2 id="signal-title">最新简报</h2><p>跟踪各个方向的新进展。<br />阅读要点与解读，查阅原始来源。</p></div>
+          <nav className="portal-topic-nav" aria-label="新闻栏目">{coreCategories.map(category => <Link key={category} href={`/news?category=${category}`}>{categoryLabels[category]}</Link>)}</nav>
           <Suspense fallback={<div className="portal-dispatch-empty" role="status"><p>正在读取最新简报…</p><Link href="/news">阅读前沿新闻</Link></div>}><HomeDispatch /></Suspense>
           <div className="portal-news-actions">
             <Link href="/news" className="portal-text-link">阅读完整技术简报</Link>

@@ -94,10 +94,11 @@ export default async function NewsDetailPage({
   const nextStory = nextEditionStory(edition?.data.find(value => value.date === editionDate), item.slug, readingCategory);
 
   const tags = parseTags(item.tags);
+  const isFlash = item.category === "flash";
   const readingMinutes = Math.max(1, Math.ceil(item.content.replace(/\s/g, "").length / 350));
 
   return (
-    <main id="main-content" className="article-page">
+    <main id="main-content" className={isFlash ? "article-page article-flash" : "article-page"}>
       <article className="article-shell">
         <header className="article-header">
           <Link className="article-back" href={listingHref}>返回新闻</Link>
@@ -112,14 +113,14 @@ export default async function NewsDetailPage({
             {tags.map((tag) => <i key={tag}>{tag}</i>)}
           </div>
           <div className="article-reading-start">
-            <figure className="article-hero-image">
+            {!isFlash && <figure className="article-hero-image">
               <StoryImage item={item} eager />
               <figcaption>{item.source_name || "原始来源"}</figcaption>
-            </figure>
+            </figure>}
             <div className="article-takeaway">
               <span className="article-takeaway-label">本篇要点</span>
               {item.summary && <p className="article-deck">{item.summary}</p>}
-              <p className="article-date-note">原始发布日期见正文；上方日期为本站日报日期。原文编译与「量仔观察」分别呈现。</p>
+              <p className="article-date-note">{isFlash ? "原始发布日期见正文；上方日期为本站日报日期。" : "原始发布日期见正文；上方日期为本站日报日期。原文编译与「量仔观察」分别呈现。"}</p>
             </div>
           </div>
         </header>
@@ -127,7 +128,7 @@ export default async function NewsDetailPage({
         <div className="article-layout">
           <NewsBody content={item.content} />
           <footer className="article-source">
-            <h2>原文与编译说明</h2>
+            <h2>{isFlash ? "原始来源" : "原文与编译说明"}</h2>
             <p>{item.source_name || "原始来源"}</p>
             {item.source_url && (
               <a href={item.source_url} target="_blank" rel="noreferrer">
@@ -135,7 +136,7 @@ export default async function NewsDetailPage({
               </a>
             )}
             <p>
-              正文为原始资料的中文编译，长原文保留主要事实与论证；“量仔观察”是本站的独立总结与分析。原始发布日期见正文，页首日期为本站日报日期。
+              {isFlash ? "本条快讯根据已核验的原始资料整理，保留关键事实和必要背景。原始发布日期见正文，页首日期为本站日报日期。" : "正文为原始资料的中文编译，长原文保留主要事实与论证；“量仔观察”是本站的独立总结与分析。原始发布日期见正文，页首日期为本站日报日期。"}
             </p>
           </footer>
           <nav className="article-reading-nav" aria-label="本期连续阅读">

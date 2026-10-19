@@ -26,7 +26,7 @@ test('workerd can send an approved digest again and rejects redirects without fo
   });
   t.after(() => mf.dispose());
   const db = await mf.getD1Database('DB');
-  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql', '0006_robot_send_mode.sql', '0007_robot_mention_all.sql']) {
+  for (const file of ['0001_subscriptions.sql', '0002_robot_digest.sql', '0003_robot_subscriptions.sql', '0004_robot_manual_deliveries.sql', '0005_news_editions.sql', '0006_robot_send_mode.sql', '0007_robot_mention_all.sql', '0008_flash_editions.sql', '0009_resend_campaigns.sql', '0010_flash_robot_parts.sql']) {
     const sql = readFileSync(new URL(`../news-worker/migrations/${file}`, import.meta.url), 'utf8').replace(/--[^\n]*/g, '');
     for (const statement of sql.split(';').map(s => s.trim()).filter(Boolean)) await db.prepare(statement).run();
   }

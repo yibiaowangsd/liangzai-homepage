@@ -41,6 +41,9 @@ html .portal-home .portal-section-heading>p { color: var(--theme-muted); font-si
 .portal-lab-meta { display: flex; flex-wrap: wrap; gap: 16px 24px; padding-top: 32px; color: #b6cdff; font: 13px/1.6 var(--font-mono-en); }
 .portal-news { display: block; border-block: 1px solid var(--theme-border); background: var(--theme-surface); }
 .portal-dispatch-date { display: flex; flex-wrap: wrap; gap: 12px 24px; padding-bottom: 20px; color: var(--theme-muted); font-size: 14px; }
+.portal-topic-nav { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.portal-topic-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 10px 15px; border: 1px solid var(--theme-border); border-radius: 6px; color: var(--theme-ink); font-size: 14px; line-height: 1.5; }
+.portal-topic-nav a:hover { border-color: var(--theme-accent); color: var(--theme-accent); background: var(--theme-soft); }
 .portal-signal-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: clamp(20px,3vw,64px); }
 .portal-signal-card { min-width: 0; }
 .portal-signal-card>a { display: block; height: 100%; color: var(--theme-ink); }

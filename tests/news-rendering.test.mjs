@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFile } from "node:fs/promises";
 
+const policy = JSON.parse(await readFile(new URL("../news/edition-policy.json", import.meta.url), "utf8"));
+
 // Representative API records captured on 2026-09-30. These are rendering fixtures,
 // not live-news assertions; tests must never depend on the upstream API/network.
 const publishedItems = [
@@ -186,18 +188,18 @@ test("news pages preserve published content and accessible rendering", async (t)
       assert.deepEqual(sparseHighlights, ["pqc-0", "ai-0", "pqc-1", "ai-1", "pqc-2"].map((slug) => `/news/highlights-${slug}`));
     });
 
-    await t.test("seven directions appear in highlights while coverage notes stay out of public pages", async () => {
-      const categories = ["pqc", "migration", "protocol", "standards", "security", "ai", "ngcc"];
+    await t.test("all configured directions appear in highlights while coverage notes stay out of public pages", async () => {
+      const categories = Object.keys(policy.categories);
       const items = categories.flatMap(category => Array.from({ length: 3 }, (_, index) => ({ ...publishedItems[0],
-        slug: `seven-${category}-${index}`, title: `${category} 七方向新闻 ${index}`, category,
+        slug: `configured-${category}-${index}`, title: `${category} 栏目新闻 ${index}`, category,
       })));
       const complete = editions(items);
       complete.data[0].coverage = { protocol: { count: 3, note: "本期保留可实际阅读并核实的厂商部署与国内密码库发布。" } };
       upstream = () => Response.json(complete);
       const main = await render("/news");
       const front = main.slice(main.indexOf('<section class="front-page">'), main.indexOf('<div class="edition-stack">'));
-      for (const category of categories) assert.ok(front.includes(`/news/seven-${category}-0`));
-      assert.match(main, /抗量子迁移/); assert.match(main, /NGCC 公钥征集/);
+      for (const category of categories) assert.ok(front.includes(`/news/configured-${category}-0`));
+      assert.match(main, /抗量子迁移/); assert.match(main, /NGCC 公钥征集/); assert.match(main, /快讯/);
       assert.ok(!main.includes(complete.data[0].coverage.protocol.note));
       assert.doesNotMatch(main, /desk-coverage-note/);
       const sparse = editions(items.filter(item => item.category !== "ngcc"));
@@ -209,6 +211,45 @@ test("news pages preserve published content and accessible rendering", async (t)
       const filtered = await render("/news?category=ngcc");
       assert.ok(!filtered.includes(sparse.data[0].coverage.ngcc.note));
       assert.doesNotMatch(filtered, /下一版简报正在路上/);
+    });
+
+    await t.test("flash category uses compact briefs and preserves date and reading context", async () => {
+      const items = [0, 1].map(index => ({ ...publishedItems[0], category: "flash", slug: `flash-${index}`,
+        title: `已核实的重要公告 ${index}`, summary: "公告列出具体变动及适用范围，完整信息可在原始资料中查看。",
+        content: "原始发布日期：2026-10-19。\n\n发布方公告更新了公开材料，并明确说明变动的适用范围和生效条件。此次更新属于已核实的阶段进展，具体实施安排以公告正文为准。\n\n读者可通过原文链接查阅完整文件和相关附件。",
+        published_at: "2026-10-19T02:00:00Z", cover_image: null, tags: null,
+      }));
+      upstream = url => {
+        if (url.pathname === "/api/news/editions") {
+          assert.equal(url.searchParams.get("category"), "flash");
+          assert.equal(url.searchParams.get("date"), "2026-10-19");
+          return Response.json({ ...editions(items), data: [{ date: "2026-10-19", total: 2, topics: { flash: items } }] });
+        }
+        return Response.json(items.find(item => url.pathname.endsWith(item.slug)));
+      };
+      const main = await render("/news?date=2026-10-19&category=flash");
+      assert.match(main, /class="desk flash-desk"/);
+      assert.match(main, /class="flash-list"/);
+      assert.doesNotMatch(main, /class="front-page"|class="desk-lead"/);
+      assert.ok(main.includes('href="/news/subscribe?category=flash"'));
+      assert.ok(main.includes('href="/news/flash-0?date=2026-10-19&amp;category=flash"'));
+      for (const item of items) assert.ok(main.includes(escapeHtml(item.title)));
+      const detail = await render("/news/flash-0?date=2026-10-19&category=flash");
+      assert.match(detail, /class="article-page article-flash"/);
+      assert.doesNotMatch(detail, /量仔观察|article-hero-image/);
+      assert.ok(detail.includes(escapeHtml(items[0].content.split("\n\n")[1])));
+      assert.ok(detail.includes('href="/news?date=2026-10-19&amp;category=flash"'));
+      assert.ok(detail.includes('href="/news/flash-1?date=2026-10-19&amp;category=flash"'));
+    });
+
+    await t.test("flash appears beside topic subscriptions and category links select only that topic", async () => {
+      const main = await render("/news/subscribe?category=flash");
+      const choices = [...main.matchAll(/<input\b[^>]*name="categories"[^>]*>/g)].map(match => match[0]);
+      assert.equal(choices.length, Object.keys(policy.categories).length);
+      const checked = choices.filter(input => /\bchecked(?:="[^"]*")?/.test(input));
+      assert.equal(checked.length, 1);
+      assert.equal(attribute(checked[0], "value"), "flash");
+      assert.match(main, /也可单独订阅快讯/);
     });
 
     await t.test("source images retain their URL and use uncropped treatment", async () => {

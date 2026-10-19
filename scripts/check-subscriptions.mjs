@@ -5,6 +5,8 @@ import { extname, resolve, sep } from 'node:path';
 import { chromium } from 'playwright';
 
 // Exercise the actual production CSS/chunks, without a live news or deployment dependency.
+const policy = JSON.parse(await readFile(new URL('../news/edition-policy.json', import.meta.url), 'utf8'));
+const categoryCount = Object.keys(policy.categories).length;
 const edition = JSON.parse(await readFile(new URL('../news/inbox/2026-10-03.json', import.meta.url), 'utf8'));
 const items = edition.items.map((item, index) => ({
   ...item, id: index + 1, tags: typeof item.tags === 'string' ? item.tags : JSON.stringify(item.tags),
@@ -151,7 +153,7 @@ try {
     assert.equal(response.status(), 200);
     await page.getByRole('button', { name: '提交订阅申请' }).waitFor();
     assert.equal(await page.locator('.subscription-categories input:checked').count(), 1);
-    assert.equal(await page.locator('.subscription-categories input').count(), 7);
+    assert.equal(await page.locator('.subscription-categories input').count(), categoryCount);
     assert.equal(await page.locator('input[name=categories][value=migration]').count(), 1);
     assert.equal(await page.locator('input[name=categories][value=ngcc]').count(), 1);
     assert.equal(await page.locator('input[name=categories][value=ai]').isChecked(), true);
@@ -246,13 +248,13 @@ try {
   assert.equal(reviewRequests.length, 0, 'Rejection without a reason sends no request');
   await application.getByRole('button', { name: '取消', exact: true }).click();
   await application.getByRole('button', { name: '配置并审核', exact: true }).click();
-  assert.equal(await application.getByRole('checkbox').count(), 7);
+  assert.equal(await application.getByRole('checkbox').count(), categoryCount);
   assert.equal(await page.getByRole('button', { name: '发送当日日报', exact: true }).isEnabled(), false, 'Save or cancel before sending an email digest');
   assert.equal(reviewRequests.length, 0, 'Opening configuration does not approve or send');
   for (const checkbox of await application.getByRole('checkbox').all()) await checkbox.uncheck();
   assert.equal(await application.getByRole('button', { name: '通过并发送确认邮件', exact: true }).isEnabled(), false);
   await application.getByRole('button', { name: '全选板块', exact: true }).click();
-  assert.equal(await application.locator('input:checked').count(), 7);
+  assert.equal(await application.locator('input:checked').count(), categoryCount);
   await application.getByRole('button', { name: '恢复当前选择', exact: true }).click();
   assert.equal(await application.locator('input:checked').count(), 3);
   await application.getByRole('checkbox', { name: /抗量子迁移/ }).check();
@@ -452,7 +454,7 @@ try {
   await page.getByRole('status').filter({ hasText: '停止后续推送' }).waitFor();
   await page.getByRole('button', { name: '退出', exact: true }).click();
   assert.equal(await page.getByLabel('管理员审核口令').inputValue(), '');
-  console.log('Subscription browser checks passed: news/home entries, desktop/mobile form, signed recipient, approval, seven-section email/robot configuration, validation, cancel/retry, administrator member/group mentions, manual sending and revocation.');
+  console.log(`Subscription browser checks passed: news/home entries, desktop/mobile form, signed recipient, approval, ${categoryCount}-section email/robot configuration, validation, cancel/retry, administrator member/group mentions, manual sending and revocation.`);
 } finally {
   if (browser) await browser.close();
   await new Promise(resolve => server.close(resolve));
