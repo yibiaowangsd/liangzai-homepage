@@ -1,12 +1,12 @@
 # News publishing pipeline
 
-每日新闻采用“日报 / edition”结构，一天一页。选题与写作详见 [选编规则](editorial-policy.md)，栏目与版本边界统一定义在 [edition-policy.json](edition-policy.json)。
+每日新闻采用“日报 / edition”结构，一天一页。选题与写作详见 [选编规则](editorial-policy.md)，实际检索入口和覆盖方法见 [来源指南](source-guide.md)，[日报任务提示词](daily-automation-prompt.md) 与当前定时任务同步。栏目与版本边界统一定义在 [edition-policy.json](edition-policy.json)。来源指南是运行时检索指导，不代表另建了RSS采集服务。
 
 ## 栏目与数量
 
 从 **2026-10-11** 起采用七方向 v2：`pqc` 后量子算法、`migration` 抗量子迁移、`protocol` 抗量子协议、`standards` 标准动态、`security` 网络安全、`ai` AI 前沿、`ngcc` NGCC 公钥征集。
 
-各方向优先 3—5 条，通常 21—35 条；证据不足可为 0—2 条，必须在 `coverage` 写明实际数量及具体原因，不能拿旧闻凑数。`coverage` 必须含全部七方向，不足三条的 `note` 至少 12 字，最多 600 字；正常方向可用空字符串，也可说明范围或资料限制。选编与缺稿说明仅作为内部核验元数据，不显示在网页，也不写入邮件或机器人消息。全期至少一篇；完全无可核实进展则不提交空文件、不删除已有日报。
+各方向优先 3—5 条，通常 21—35 条；证据不足可为 0—2 条，必须在 `coverage` 写明实际数量及具体原因，不能拿旧闻凑数。`coverage` 必须含全部七方向，不足三条的 `note` 至少 12 字，最多 600 字；各方向均应简记实际检查的代表性机构/入口、来源角色、时间窗、主要排除原因和不可读/待跟进项，即使达到三条也记录；结构校验仍允许正常方向为空，但编辑执行需完整留痕。选编与缺稿说明仅作为内部核验元数据，不显示在网页，也不写入邮件或机器人消息。全期至少一篇；完全无可核实进展则不提交空文件、不删除已有日报。
 
 2026-10-10 及之前无 `schema_version` 的历史文件继续按五方向各五条验证，可幂等重发。已有历史文章和订阅选择不自动改写。v2 可用于主动升级历史版，但须完整核验全期；未来日期不可回退 v1。
 
@@ -33,11 +33,11 @@
 
 每篇含 `slug`、`title`、`summary`、`content`、`category`、`tags`、`source_name`、`source_url`、`cover_image`、`published_at`、`status`。slug 为当日 `YYYYMMDD-` 开头的小写字母/数字/单连字符，唯一且稳定。`summary` 为 100—180 字；`content` 通常 600—1600 字，至少 600 字符、5 个至少 50 字符的实质段落，开头有 ISO 来源日期，独立 `## 量仔观察` 后至少 80 字针对性分析。禁止重复段落或相同一手 URL 拆条，详见选编规则。
 
-`source_url` 使用实际阅读的一手 HTTPS 原文，不能为示例链接。`tags` 为非空字符串数组，可注明“实现发布”“互通测试”“部署实践”等实际事件类型。`cover_image` 可为 null，流水线抓取原文社交配图，失败使用相应栏目已有图片。`published_at` 用本站实际发布时间 ISO8601，全期均属同一北京时间日期；来源日期写正文，`status` 必须为 `published`。
+`source_url` 使用实际阅读、直接支持核心事实的具体 HTTPS 原始发布、原创调查或原始评测页面，不能为示例链接、首页或聚合入口；技术规格/安全证明/标准状态仍须回到原始技术材料。正文给出其他关键证据的Markdown链接，不改变现有Schema。`tags` 为非空字符串数组，可注明“实现发布”“互通测试”“部署实践”等实际事件类型。`cover_image` 可为 null，流水线抓取原文社交配图，失败使用相应栏目已有图片。`published_at` 用本站实际发布时间 ISO8601，全期均属同一北京时间日期；来源日期写正文，`status` 必须为 `published`。
 
 ## 发布与完整性
 
-1. 读取 main 最新规则、发布流程和近 7 期数据，必要时查 30 天及 API，核对选题去重。API 分页始终一天一页，`pageSize=3` 不会返回三期，须逐页读取。
+1. 读取 main 最新规则、来源指南、发布流程和近 7 期数据，必要时查 30 天及 API，先做七栏多来源检索，再核对选题价值、集中性与事件去重。API 分页始终一天一页，`pageSize=3` 不会返回三期，须逐页读取。
 2. 生成完整 `news/inbox/YYYY-MM-DD.json`，当天文件已有时先读最新版本再整体替换，保留未改事件的 slug。仅提交新闻数据文件。
 3. 运行 `python3 news/validate-edition.py news/inbox/YYYY-MM-DD.json`。v2 检查七方向、数量与缺稿说明，历史版检查 5×5；同时检查长文结构、日期和原文链接。
 4. `.github/workflows/publish-news.yml` 验证并提取配图，调用 `POST https://api.wangyibiao.com/api/admin/news/batch`。
