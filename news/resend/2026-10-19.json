@@ -1,0 +1,8 @@
+{
+  "date": "2026-10-19",
+  "campaign_id": "resend-2026-10-19",
+  "scope": "all-effective-subscribers-once",
+  "edition_file": "news/inbox/2026-10-19.json",
+  "edition_sha256": "3b6db39e02d30798092c2451e40021f29da1eb162ba8dfec8ed20e7264827568",
+  "reason": "用户明确要求按最新新闻规范生成今日报告，并向所有有效订阅用户补发一次；遵循已确认邮箱、审批状态、板块选择和机器人发送偏好。"
+}
