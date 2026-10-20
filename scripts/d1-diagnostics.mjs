@@ -76,7 +76,7 @@ else {
   }
   await attempt('daily D1 analytics', async () => {
     const data = await api('/graphql', { query: `query($account: string!, $start: Date!, $end: Date!) { viewer { accounts(filter: { accountTag: $account }) { d1AnalyticsAdaptiveGroups(limit: 100, filter: {date_geq: $start, date_leq: $end}, orderBy: [date_DESC]) { dimensions { date databaseId } sum { rowsRead rowsWritten readQueries writeQueries } } } } }`,
-      variables: { account, start: '2026-10-18', end: new Date().toISOString().slice(0, 10) } });
+      variables: { account, start: new Date(Date.now() - 2 * 86400000).toISOString().slice(0, 10), end: new Date().toISOString().slice(0, 10) } });
     report.daily_d1 = data.data?.viewer?.accounts;
   });
   await attempt('Worker request volume', async () => {

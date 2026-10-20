@@ -71,6 +71,11 @@ test('cached data expires within 60 seconds after publishing and date links rema
   assert.equal((await fresh.json()).data[0].date, '2026-10-21');
   const linked = await (await f.request('/api/news/editions?date=2026-10-19&page=1')).json();
   assert.equal(linked.data[0].date, '2026-10-19'); assert.equal(linked.meta.page, 3);
+  for (const page of [1, 2, 999]) {
+    const absent = await (await f.request(`/api/news/editions?date=2026-12-31&page=${page}`)).json();
+    assert.deepEqual(absent.data, []);
+    assert.equal(absent.meta.page, Math.min(page, absent.meta.totalPages), 'Missing dates must retain their requested page metadata');
+  }
 });
 
 test('cold request limits and shared search protection reject before D1, while warm pages stay available', async t => {

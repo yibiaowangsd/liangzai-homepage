@@ -511,7 +511,7 @@ export default {
         }
 
         return publicNewsRead(request, env, ctx, json, {
-          route: 'editions', key: { category: category || '', ...(date ? { date } : { page }) },
+          route: 'editions', key: { category: category || '', page, ...(date ? { date } : {}) },
         }, observed => getEditions(observed, page, pageSize, category, date));
       }
 
