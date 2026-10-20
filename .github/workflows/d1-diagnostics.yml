@@ -1,0 +1,39 @@
+name: Diagnose D1 news reads
+on:
+  push:
+    branches: [ops/d1-read-diagnostics]
+    paths: ['scripts/d1-diagnostics.mjs', '.github/workflows/d1-diagnostics.yml']
+  workflow_dispatch:
+  workflow_run:
+    workflows: ['Deploy news API Worker']
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: d1-read-diagnostics
+  cancel-in-progress: false
+jobs:
+  diagnose:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Capture read-only metrics and public endpoint probes
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          EXPECTED_NEWS_SHA: ${{ github.event.workflow_run.head_sha || '' }}
+        run: node scripts/d1-diagnostics.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: d1-read-evidence
+          path: outputs/d1/report.json
+          retention-days: 30

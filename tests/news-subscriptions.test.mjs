@@ -19,6 +19,7 @@ function fixture(t, mail = true) {
   db.exec(readFileSync(new URL('../news-worker/migrations/0009_resend_campaigns.sql', import.meta.url), 'utf8'));
   db.exec(readFileSync(new URL('../news-worker/migrations/0010_flash_robot_parts.sql', import.meta.url), 'utf8'));
   db.exec(`CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT, title TEXT, summary TEXT, category TEXT, source_name TEXT, source_url TEXT, published_at TEXT, status TEXT)`);
+  db.exec(readFileSync(new URL('../news-worker/migrations/0011_news_read_indexes.sql', import.meta.url), 'utf8'));
   const insert = db.prepare('INSERT INTO news VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
   let id = 0;
   for (const category of ['pqc', 'protocol', 'standards', 'security', 'ai']) {

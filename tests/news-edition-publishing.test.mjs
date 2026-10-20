@@ -29,6 +29,7 @@ function fixture(t) {
     category TEXT, tags TEXT, source_name TEXT, source_url TEXT, cover_image TEXT, published_at TEXT, status TEXT, updated_at TEXT)`);
   db.exec(readFileSync(new URL('../news-worker/migrations/0005_news_editions.sql', import.meta.url), 'utf8'));
   db.exec(readFileSync(new URL('../news-worker/migrations/0008_flash_editions.sql', import.meta.url), 'utf8'));
+  db.exec(readFileSync(new URL('../news-worker/migrations/0011_news_read_indexes.sql', import.meta.url), 'utf8'));
   const env = { ADMIN_TOKEN: 'test', DB: { prepare(sql) {
     const statement = db.prepare(sql); let args = [];
     return { bind(...values) { args = values; return this; },

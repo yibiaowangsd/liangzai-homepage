@@ -17,9 +17,9 @@ function fixture(t) {
   t.mock.method(globalThis, 'setTimeout', (callback, delay, ...args) => originalTimeout(callback, [3100, 550].includes(delay) ? 0 : delay, ...args));
   const db = new DatabaseSync(':memory:');
   const migrations = new URL('../news-worker/migrations/', import.meta.url);
-  for (const file of readdirSync(migrations).filter(file => /^\d{4}.*\.sql$/.test(file)).sort()) db.exec(readFileSync(new URL(file, migrations), 'utf8'));
   db.exec(`CREATE TABLE news (id INTEGER PRIMARY KEY, slug TEXT UNIQUE, title TEXT, summary TEXT, content TEXT,
     category TEXT, tags TEXT, source_name TEXT, source_url TEXT, cover_image TEXT, published_at TEXT, status TEXT, updated_at TEXT)`);
+  for (const file of readdirSync(migrations).filter(file => /^\d{4}.*\.sql$/.test(file)).sort()) db.exec(readFileSync(new URL(file, migrations), 'utf8'));
   const items = Object.keys(policy.categories).map((category, index) => ({
     slug: `${date.replaceAll('-', '')}-${category}-verified-update`, title: `${category} verified update`,
     summary: `${category} 已核实的新消息与必要背景。`, content: `原始发布日期：${date}。\n\n经过核实的具体内容，测试使用独立虚构资料，不发出真实消息。`,
