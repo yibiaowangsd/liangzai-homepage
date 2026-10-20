@@ -4,6 +4,8 @@ import { robotConfigured, robotStatus, sendRobotDigest, sendRobotConnectionTest,
 import { CORE_CATEGORIES, validateEdition, beijingDate } from "./edition.js";
 import { previewResendCampaign, startResendCampaign, stepResendCampaign, getResendCampaignStatus } from "./resend-campaign.js";
 import { getNewsSearch, parseNewsSearch } from "./news-search.js";
+import { editionDatesSql } from "./news-queries.js";
+import { publicNewsRead } from "./news-read-controls.js";
 
 const ALLOWED_ORIGINS = new Set([
   "https://wangyibiao.com",
@@ -282,13 +284,10 @@ async function publishItems(env, rawItems, edition = null) {
 }
 
 async function getEditions(env, page, pageSize, category, requestedDate) {
-  const where = category ? "WHERE status = 'published' AND category = ?" : "WHERE status = 'published'";
   const args = category ? [category] : [];
   const includeManifest = !category || CORE_CATEGORIES.includes(category);
   // Preserve explicitly empty desks in v2 archive metadata for edition validation.
-  const datesQuery = `SELECT date(published_at, '+8 hours') AS edition_date FROM news ${where}
-    ${includeManifest ? 'UNION SELECT date AS edition_date FROM news_editions' : ''}`;
-  const datesResult = await env.DB.prepare(`SELECT DISTINCT edition_date FROM (${datesQuery}) ORDER BY edition_date DESC`).bind(...args).all();
+  const datesResult = await env.DB.prepare(editionDatesSql(category, includeManifest)).bind(...args).all();
   const availableDates = (datesResult.results || []).map((row) => row.edition_date).filter(Boolean);
   const totalDays = availableDates.length;
   const totalPages = Math.max(1, Math.ceil(totalDays / pageSize));
@@ -406,7 +405,7 @@ async function getFeatured(env, limit) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
     if (request.method === "OPTIONS") {
@@ -428,6 +427,8 @@ export default {
           service: "liangzai-news-api",
           database: database?.ok === 1,
           robot_ready: robotConfigured(env),
+          news_release: env.NEWS_RELEASE_SHA || null,
+          news_read_controls: { cache: typeof caches !== 'undefined', rate_limit: Boolean(env.NEWS_READ_LIMITER && env.NEWS_SEARCH_LIMITER && env.NEWS_SEARCH_MISS_LIMITER) },
         });
       }
 
@@ -509,67 +510,75 @@ export default {
           return json(request, { error: "date must be a valid edition date (YYYY-MM-DD)" }, 400);
         }
 
-        return json(request, await getEditions(env, page, pageSize, category, date));
+        return publicNewsRead(request, env, ctx, json, {
+          route: 'editions', key: { category: category || '', page, ...(date ? { date } : {}) },
+        }, observed => getEditions(observed, page, pageSize, category, date));
       }
 
       if (request.method === "GET" && url.pathname === "/api/news/featured") {
         const parsedLimit = Number.parseInt(url.searchParams.get("limit") || "6", 10);
         const limit = Math.min(Math.max(parsedLimit || 6, 1), 10);
-        return json(request, await getFeatured(env, limit));
+        return publicNewsRead(request, env, ctx, json, { route: 'featured', key: { limit } }, observed => getFeatured(observed, limit));
       }
 
       if (request.method === "GET" && url.pathname === "/api/news/search") {
         const options = parseNewsSearch(url.searchParams);
         if (!options) return json(request, { error: "Invalid search query or limit" }, 400);
-        return json(request, await getNewsSearch(env, options));
+        return publicNewsRead(request, env, ctx, json, {
+          route: 'search', key: { query: options.query, limit: options.limit },
+        }, observed => getNewsSearch(observed, options));
       }
 
       if (request.method === "GET" && url.pathname === "/api/news") {
         const parsedLimit = Number.parseInt(url.searchParams.get("limit") || "20", 10);
         const limit = Number.isFinite(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 100) : 20;
         const category = url.searchParams.get("category");
+        if (category && !ALLOWED_CATEGORIES.has(category)) return json(request, { error: "Unsupported category" }, 400);
 
-        let statement;
-        if (category) {
-          statement = env.DB.prepare(`
-            SELECT id, slug, title, summary, category, tags,
-                   source_name, source_url, cover_image, published_at
-            FROM news
-            WHERE status = 'published' AND category = ?
-            ORDER BY published_at DESC, id DESC
-            LIMIT ?
-          `).bind(category, limit);
-        } else {
-          statement = env.DB.prepare(`
-            SELECT id, slug, title, summary, category, tags,
-                   source_name, source_url, cover_image, published_at
-            FROM news
-            WHERE status = 'published'
-            ORDER BY published_at DESC, id DESC
-            LIMIT ?
-          `).bind(limit);
-        }
+        return publicNewsRead(request, env, ctx, json, { route: 'list', key: { category: category || '', limit } }, async observed => {
+          let statement;
+          if (category) {
+            statement = observed.DB.prepare(`
+              SELECT id, slug, title, summary, category, tags,
+                     source_name, source_url, cover_image, published_at
+              FROM news
+              WHERE status = 'published' AND category = ?
+              ORDER BY published_at DESC, id DESC
+              LIMIT ?
+            `).bind(category, limit);
+          } else {
+            statement = observed.DB.prepare(`
+              SELECT id, slug, title, summary, category, tags,
+                     source_name, source_url, cover_image, published_at
+              FROM news
+              WHERE status = 'published'
+              ORDER BY published_at DESC, id DESC
+              LIMIT ?
+            `).bind(limit);
+          }
 
-        const result = await statement.all();
-        return json(request, {
-          data: result.results || [],
-          meta: { count: result.results?.length || 0, limit },
+          const result = await statement.all();
+          return {
+            data: result.results || [],
+            meta: { count: result.results?.length || 0, limit },
+          };
         });
       }
 
       if (request.method === "GET" && url.pathname.startsWith("/api/news/")) {
         const slug = decodeURIComponent(url.pathname.slice("/api/news/".length)).trim().toLowerCase();
-        if (!slug) return json(request, { error: "News not found" }, 404);
+        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 160) return json(request, { error: "News not found" }, 404);
 
-        const item = await env.DB.prepare(`
-          SELECT *
-          FROM news
-          WHERE slug = ? AND status = 'published'
-          LIMIT 1
-        `).bind(slug).first();
+        return publicNewsRead(request, env, ctx, json, { route: 'article', key: { slug } }, async observed => {
+          const item = await observed.DB.prepare(`
+            SELECT *
+            FROM news
+            WHERE slug = ? AND status = 'published'
+            LIMIT 1
+          `).bind(slug).first();
 
-        if (!item) return json(request, { error: "News not found" }, 404);
-        return json(request, item);
+          return item || json(request, { error: "News not found" }, 404);
+        });
       }
 
       if (request.method === "POST" && url.pathname === "/api/admin/news") {

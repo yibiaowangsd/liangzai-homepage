@@ -48,14 +48,18 @@ export function parseNewsSearch(params) {
   return { query, terms, limit: Math.min(limit, 20) };
 }
 
-// Column names are internal constants. All user text and expanded patterns
-// travel in one bound JSON value, never in SQL syntax or wildcard input.
-function matchesTerms(rawColumn, compactColumn, fuzzy = false) {
-  return `NOT EXISTS (SELECT 1 FROM search_terms AS term WHERE NOT (
-    EXISTS (SELECT 1 FROM json_each(term.value, '$.literal') AS token WHERE instr(${rawColumn}, token.value) > 0)
-    OR EXISTS (SELECT 1 FROM json_each(term.value, '$.compact') AS token WHERE instr(${compactColumn}, token.value) > 0)
-    ${fuzzy ? `OR EXISTS (SELECT 1 FROM json_each(term.value, '$.fuzzy') AS token WHERE ${compactColumn} LIKE token.value)` : ''}
-  ))`;
+// Expand only the SQL shape in JS; all user values remain in one bound JSON
+// parameter. Scalar extraction avoids correlated json_each virtual-table scans
+// per article/pattern, while retaining the same literal and typo semantics.
+function matchesTerms(expansions, rawColumn, compactColumn, fuzzy = false) {
+  return expansions.map((term, i) => {
+    const tokens = (field, column, like = false) => term[field].map((_, j) => {
+      const value = `json_extract(?1, '$[${i}].${field}[${j}]')`;
+      return like ? `${column} LIKE ${value}` : `instr(${column}, ${value}) > 0`;
+    });
+    return '(' + [...tokens('literal', rawColumn), ...tokens('compact', compactColumn),
+      ...(fuzzy ? tokens('fuzzy', compactColumn, true) : [])].join(' OR ') + ')';
+  }).join(' AND ');
 }
 
 function compactSql(column) {
@@ -64,10 +68,10 @@ function compactSql(column) {
 
 export async function getNewsSearch(env, { query, terms, limit }) {
   if (!terms.length) return { data: [], meta: { query, count: 0, total: 0, limit } };
+  const expansions = terms.map(expandTerm);
   const text = "lower(coalesce(title, '') || ' ' || coalesce(summary, '') || ' ' || coalesce(content, '') || ' ' || coalesce(tags, '') || ' ' || coalesce(source_name, '') || ' ' || coalesce(slug, '') || ' ' || coalesce(source_url, ''))";
   const result = await env.DB.prepare(`
-    WITH search_terms AS MATERIALIZED (SELECT value FROM json_each(?)),
-    documents AS MATERIALIZED (
+    WITH documents AS MATERIALIZED (
       SELECT id, slug, title, substr(summary, 1, 260) AS summary, category, source_name, published_at,
         lower(coalesce(title, '')) AS title_text,
         ${compactSql("lower(coalesce(title, ''))")} AS title_compact,
@@ -77,16 +81,16 @@ export async function getNewsSearch(env, { query, terms, limit }) {
       FROM news WHERE status = 'published'
     ), matches AS (
       SELECT *, CASE
-        WHEN title_text = ? THEN 0
-        WHEN ${matchesTerms('title_text', 'title_compact')} THEN 1
-        WHEN ${matchesTerms('summary_text', 'summary_compact')} THEN 2
-        WHEN ${matchesTerms('full_text', 'full_compact')} THEN 3
+        WHEN title_text = ?2 THEN 0
+        WHEN ${matchesTerms(expansions, 'title_text', 'title_compact')} THEN 1
+        WHEN ${matchesTerms(expansions, 'summary_text', 'summary_compact')} THEN 2
+        WHEN ${matchesTerms(expansions, 'full_text', 'full_compact')} THEN 3
         ELSE 4 END AS relevance
-      FROM documents WHERE ${matchesTerms('full_text', 'full_compact', true)}
+      FROM documents WHERE ${matchesTerms(expansions, 'full_text', 'full_compact', true)}
     )
     SELECT slug, title, summary, category, source_name, published_at, COUNT(*) OVER () AS total_matches
-    FROM matches ORDER BY relevance, published_at DESC, id DESC LIMIT ?
-  `).bind(JSON.stringify(terms.map(expandTerm)), query.toLowerCase(), limit).all();
+    FROM matches ORDER BY relevance, published_at DESC, id DESC LIMIT ?3
+  `).bind(JSON.stringify(expansions), query.toLowerCase(), limit).all();
   const rows = result.results || [];
   const data = rows.map(row => ({ slug: row.slug, title: row.title, summary: row.summary, category: row.category, source_name: row.source_name, published_at: row.published_at }));
   return { data, meta: { query, count: data.length, total: Number(rows[0]?.total_matches || 0), limit } };

@@ -28,6 +28,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
       - name: Check Cloudflare credentials
         shell: bash
         run: |
@@ -62,7 +66,13 @@ jobs:
             "keep_vars": true,
             "workers_dev": true,
             "triggers": { "crons": ["*/30 * * * *"] },
-            "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": false }, "traces": { "enabled": false } },
+            "observability": { "enabled": true, "logs": { "enabled": true, "invocation_logs": true }, "traces": { "enabled": true, "head_sampling_rate": 0.1 } },
+            "vars": { "NEWS_RELEASE_SHA": "${GITHUB_SHA}" },
+            "ratelimits": [
+              { "name": "NEWS_READ_LIMITER", "namespace_id": "1101", "simple": { "limit": 120, "period": 60 } },
+              { "name": "NEWS_SEARCH_LIMITER", "namespace_id": "1102", "simple": { "limit": 12, "period": 60 } },
+              { "name": "NEWS_SEARCH_MISS_LIMITER", "namespace_id": "1103", "simple": { "limit": 30, "period": 60 } }
+            ],
             "routes": [
               {
                 "pattern": "api.wangyibiao.com",
@@ -79,6 +89,9 @@ jobs:
             ]
           }
           EOF
+
+      - name: Verify read controls before deployment
+        run: node --experimental-strip-types --test tests/news-search.test.mjs tests/news-editions-api.test.mjs tests/news-edition-publishing.test.mjs tests/news-read-controls.test.mjs
 
       - name: Apply news and subscription schema
         shell: bash
@@ -122,6 +135,8 @@ jobs:
           if "/api/health" in sys.argv[1]:
               assert payload["robot_ready"] is True, "Robot subscription encryption must be configured"
               print("Robot subscriptions configured:", payload["robot_ready"])
+              assert payload["news_read_controls"]["rate_limit"] is True
+              assert payload["news_read_controls"]["cache"] is True
           if "/api/robot-subscriptions" in sys.argv[1]:
               assert payload["review_required"] is True and payload["mentions_admin_only"] is True
           if "/api/subscriptions" in sys.argv[1]:
