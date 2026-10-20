@@ -95,8 +95,9 @@ else {
   await attempt('Worker read telemetry', async () => {
     // Aggregate public-news logs only; never export raw requests or headers.
     const timeframe = { from: Date.now() - 3600000, to: Date.now() };
-    const keys = await api(`/accounts/${account}/workers/observability/telemetry/keys`, { timeframe, datasets: ['liangzai-news-api'], limit: 200 });
+    const keys = await api(`/accounts/${account}/workers/observability/telemetry/keys`, { from: timeframe.from, to: timeframe.to, limit: 1000 });
     const keyRows = Array.isArray(keys) ? keys : keys.keys || [];
+    report.telemetry_keys = keyRows.map(({ key, type }) => ({ key, type }));
     const field = name => {
       const entry = keyRows.find(row => row.key === name || row.key.endsWith('.' + name));
       if (!entry) throw new Error(`No indexed telemetry field for ${name} yet`);
@@ -105,7 +106,7 @@ else {
     const data = await api(`/accounts/${account}/workers/observability/telemetry/query`, {
       queryId: crypto.randomUUID(), view: 'calculations',
       timeframe, chartType: 'aggregate', dry: true,
-      parameters: { datasets: ['liangzai-news-api'],
+      parameters: {
         filters: [{ key: field('event'), operation: 'eq', type: 'string', value: 'news_read' }],
         groupBys: [{ type: 'string', value: field('route') }, { type: 'string', value: field('cache') }],
         calculations: [{ operator: 'count' }, { operator: 'sum', key: field('rows_read'), keyType: 'number' }, { operator: 'avg', key: field('elapsed_ms'), keyType: 'number' }], limit: 100 },
