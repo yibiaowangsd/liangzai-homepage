@@ -26,6 +26,7 @@ function fixtureDatabase() {
     }
   }
   insert.run(++id, "unpublished", "Draft", "Summary", "pqc", "2026-10-04T07:00:00Z", "draft");
+  db.exec(readFileSync(new URL('../news-worker/migrations/0011_news_read_indexes.sql', import.meta.url), 'utf8'));
   // Adapt actual SQLite queries to the D1 interface used by the Worker.
   return {
     close: () => db.close(),

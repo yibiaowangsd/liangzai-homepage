@@ -3,6 +3,7 @@ import { createServer } from 'node:http';
 import { mkdir, readFile, stat } from 'node:fs/promises';
 import { extname, resolve, sep } from 'node:path';
 import { chromium } from 'playwright';
+import { expect } from 'playwright/test';
 
 // Exercise the actual production CSS/chunks, without a live news or deployment dependency.
 const policy = JSON.parse(await readFile(new URL('../news/edition-policy.json', import.meta.url), 'utf8'));
@@ -164,12 +165,13 @@ try {
   await page.getByRole('button', { name: '打开显示设置' }).click();
   await page.getByLabel('页面主题').selectOption('midnight');
   await page.keyboard.press('Escape');
-  assert.equal(await page.locator('html').getAttribute('data-theme'), 'midnight');
-  const colors = await page.locator('.subscription-primary').evaluate(element => ({ foreground: getComputedStyle(element).color, background: getComputedStyle(element).backgroundColor }));
-  assert.equal(colors.foreground, 'rgb(16, 24, 32)', 'Night theme keeps dark text on the light accent button');
-  assert.equal(colors.background, 'rgb(159, 180, 255)');
-  assert.equal(await page.locator('.subscription-categories strong').first().evaluate(element => getComputedStyle(element).color), 'rgb(242, 245, 247)', 'Night theme keeps section labels readable');
-  assert.equal(await page.locator('.subscription-field-label').evaluate(element => getComputedStyle(element).color), 'rgb(242, 245, 247)', 'Night theme keeps the name label readable');
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'midnight');
+  // The selected theme can be observable before its CSS has settled in CI.
+  // Keep exact contrast checks, and wait for their actual rendered values.
+  await expect(page.locator('.subscription-primary')).toHaveCSS('color', 'rgb(16, 24, 32)');
+  await expect(page.locator('.subscription-primary')).toHaveCSS('background-color', 'rgb(159, 180, 255)');
+  await expect(page.locator('.subscription-categories strong').first()).toHaveCSS('color', 'rgb(242, 245, 247)');
+  await expect(page.locator('.subscription-field-label')).toHaveCSS('color', 'rgb(242, 245, 247)');
   await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); window.scrollTo(0, 0); });
   await page.screenshot({ path: resolve(output, 'subscribe-midnight.png'), fullPage: true });
   await page.getByRole('button', { name: '打开显示设置' }).click();
