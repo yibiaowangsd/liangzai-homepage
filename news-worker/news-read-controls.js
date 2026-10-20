@@ -40,8 +40,8 @@ export async function publicNewsRead(request, env, ctx, json, options, load) {
   const stats = { queries: 0, rows_read: 0, rows_written: 0, sql_ms: 0 };
   let state = 'BYPASS';
   const done = response => {
-    if (ctx) console.log(JSON.stringify({ event: 'news_read', route: options.route, cache: state,
-      status: response.status, ...stats, elapsed_ms: Math.round(performance.now() - started) }));
+    if (ctx) console.log({ event: 'news_read', route: options.route, cache: state,
+      status: response.status, ...stats, elapsed_ms: Math.round(performance.now() - started) });
     return annotate(response, state, stats);
   };
   const canCache = request.method === 'GET' && !request.headers.has('Authorization') && !request.headers.has('Cookie');
@@ -92,7 +92,7 @@ export async function publicNewsRead(request, env, ctx, json, options, load) {
   } catch (error) {
     state = 'ERROR';
     const unavailable = /D1_|D1_ERROR|database|quota|rows?.*limit|limit.*rows?/i.test(error.message || '');
-    console.error(JSON.stringify({ event: 'news_read_failed', route: options.route, unavailable }));
+    console.error({ event: 'news_read_failed', route: options.route, unavailable });
     const response = json(request, { error: unavailable ? 'Service Unavailable' : 'Internal Server Error',
       message: '新闻服务暂时无法读取，请稍后重试。' }, unavailable ? 503 : 500);
     if (unavailable) response.headers.set('Retry-After', '60');

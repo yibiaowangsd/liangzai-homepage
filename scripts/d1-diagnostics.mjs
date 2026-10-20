@@ -95,8 +95,24 @@ else {
   await attempt('Worker read telemetry', async () => {
     // Aggregate public-news logs only; never export raw requests or headers.
     const timeframe = { from: Date.now() - 3600000, to: Date.now() };
-    const keys = await api(`/accounts/${account}/workers/observability/telemetry/keys`, { timeframe, datasets: ['liangzai-news-api'], limit: 200 });
+    const keys = await api(`/accounts/${account}/workers/observability/telemetry/keys`, { from: timeframe.from, to: timeframe.to, limit: 1000 });
     const keyRows = Array.isArray(keys) ? keys : keys.keys || [];
+    report.telemetry_keys = keyRows.filter(row => /(^|\.)(event|route|cache|rows_read|elapsed_ms)$/.test(row.key)).map(({ key, type }) => ({ key, type }));
+    await attempt('Worker invocation sources', async () => {
+      // Only aggregate paths, user agents and statuses. Do not export IPs,
+      // full URLs, request headers, subscription tokens or individual events.
+      const known = new Set(keyRows.map(row => row.key));
+      const dimensions = ['$workers.event.path', '$workers.event.request.headers.user-agent', '$workers.event.response.status'];
+      if (!dimensions.every(key => known.has(key)) || !known.has('$workers.scriptName')) throw new Error('Invocation source fields are not indexed yet');
+      const data = await api(`/accounts/${account}/workers/observability/telemetry/query`, {
+        queryId: crypto.randomUUID(), view: 'calculations', timeframe, chartType: 'aggregate', dry: true,
+        parameters: { filters: [
+          { key: '$workers.scriptName', operation: 'eq', type: 'string', value: 'liangzai-news-api' },
+          { key: '$metadata.type', operation: 'eq', type: 'string', value: 'cf-worker-event' },
+        ], groupBys: dimensions.map(value => ({ value, type: value.endsWith('.status') ? 'number' : 'string' })), calculations: [{ operator: 'count' }], limit: 40 },
+      });
+      report.invocation_sources = data.calculations;
+    });
     const field = name => {
       const entry = keyRows.find(row => row.key === name || row.key.endsWith('.' + name));
       if (!entry) throw new Error(`No indexed telemetry field for ${name} yet`);
@@ -105,7 +121,7 @@ else {
     const data = await api(`/accounts/${account}/workers/observability/telemetry/query`, {
       queryId: crypto.randomUUID(), view: 'calculations',
       timeframe, chartType: 'aggregate', dry: true,
-      parameters: { datasets: ['liangzai-news-api'],
+      parameters: {
         filters: [{ key: field('event'), operation: 'eq', type: 'string', value: 'news_read' }],
         groupBys: [{ type: 'string', value: field('route') }, { type: 'string', value: field('cache') }],
         calculations: [{ operator: 'count' }, { operator: 'sum', key: field('rows_read'), keyType: 'number' }, { operator: 'avg', key: field('elapsed_ms'), keyType: 'number' }], limit: 100 },
