@@ -111,7 +111,7 @@ else {
           { key: '$metadata.type', operation: 'eq', type: 'string', value: 'cf-worker-event' },
         ], groupBys: dimensions.map(value => ({ value, type: value.endsWith('.status') ? 'number' : 'string' })), calculations: [{ operator: 'count' }], limit: 40 },
       });
-      report.invocation_sources = data.calculations;
+      report.invocation_sources = data.calculations?.map(({ calculation, aggregates }) => ({ calculation, aggregates }));
     });
     const field = name => {
       const entry = keyRows.find(row => row.key === name || row.key.endsWith('.' + name));
@@ -126,7 +126,7 @@ else {
         groupBys: [{ type: 'string', value: field('route') }, { type: 'string', value: field('cache') }],
         calculations: [{ operator: 'count' }, { operator: 'sum', key: field('rows_read'), keyType: 'number' }, { operator: 'avg', key: field('elapsed_ms'), keyType: 'number' }], limit: 100 },
     });
-    report.read_telemetry = { calculations: data.calculations, statistics: data.statistics };
+    report.read_telemetry = { calculations: data.calculations?.map(({ calculation, aggregates }) => ({ calculation, aggregates })) };
   });
 }
 const expected = process.env.EXPECTED_NEWS_SHA;

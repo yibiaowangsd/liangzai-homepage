@@ -67,3 +67,18 @@
 
 实现和后续只读检查方式参见 [D1-READS.md](../news-worker/D1-READS.md)。
 
+## 最终版本与运行日志复核
+
+日志字段修订已部署为 `24f65f17203c00336907b2f70afb5b72f75d8c5d`，并通过 7 项读取控制/workerd 回归。[再次部署](https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/39405139249)与[最终线上核验](https://github.com/yibiaowangsd/liangzai-homepage/actions/runs/39405210898)均成功。2026-10-20 10:03:49 UTC（北京时间 18:03:49）起的接口探测全部 200，发布 SHA 相符，缓存命中时 D1 读取仍为 0；日期列表/按日文章/AWS/Tongsuo 分别仍读 77/14/848/818 行。
+
+Cloudflare 已将 `event`、`route`、`cache`、`rows_read`、`elapsed_ms` 正确建立索引，日志聚合查询已可用。日志观察样本包含本次发布和诊断流量；共 49 条公开新闻读取记录，其中 11 次缓存命中，命中的 D1 读取总数为 0。
+
+| 日志路由 | 未命中记录 | 命中记录 | 未命中的 D1 总读取行 | 命中的 D1 总读取行 |
+| --- | ---: | ---: | ---: | ---: |
+| editions | 18 | 2 | 1,665 | 0 |
+| article | 6 | 0 | 6 | 0 |
+| featured | 7 | 3 | 105 | 0 |
+| search | 7 | 6 | 5,876 | 0 |
+
+新增 Worker 调用日志已经能够按路径、User-Agent 和状态码聚合。当前有限样本主要是本次部署/诊断的 `curl/8.5.0`，另有 `node` 请求；存在平台采样，不能用这段短窗口判断历史高频来源或推断自然流量的长期命中率。Zone Analytics 的历史来源查询仍缺上述权限。
+
