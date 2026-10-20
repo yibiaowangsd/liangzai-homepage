@@ -108,7 +108,7 @@ else {
       parameters: { datasets: ['liangzai-news-api'],
         filters: [{ key: field('event'), operation: 'eq', type: 'string', value: 'news_read' }],
         groupBys: [{ type: 'string', value: field('route') }, { type: 'string', value: field('cache') }],
-        calculations: [{ operator: 'count' }, { operator: 'sum', key: field('rows_read') }, { operator: 'avg', key: field('elapsed_ms') }], limit: 100 },
+        calculations: [{ operator: 'count' }, { operator: 'sum', key: field('rows_read'), keyType: 'number' }, { operator: 'avg', key: field('elapsed_ms'), keyType: 'number' }], limit: 100 },
     });
     report.read_telemetry = { calculations: data.calculations, statistics: data.statistics };
   });
