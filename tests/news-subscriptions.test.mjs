@@ -322,9 +322,11 @@ test('concurrent scheduler runs claim a single delivery and old uncertain retrie
   assert.equal(f.db.prepare('SELECT status FROM newsletter_deliveries').get().status, 'failed');
 });
 
-test('scheduled handler registers the daily task with waitUntil', async t => {
+test('scheduled handler waits until 08:10 Beijing and registers eligible work with waitUntil', async t => {
   const f = fixture(t, false); let task;
-  worker.scheduled({}, f.env, { waitUntil(promise) { task = promise; } });
+  worker.scheduled({ scheduledTime: Date.parse('2026-10-21T08:09:59+08:00') }, f.env, { waitUntil(promise) { task = promise; } });
+  assert.equal(task, undefined, 'Before the publication time no automatic delivery starts');
+  worker.scheduled({ scheduledTime: Date.parse('2026-10-21T08:10:00+08:00') }, f.env, { waitUntil(promise) { task = promise; } });
   assert.ok(task instanceof Promise); await task; assert.equal(f.mails.length, 0);
 });
 
