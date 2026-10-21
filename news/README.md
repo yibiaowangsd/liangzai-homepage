@@ -61,3 +61,13 @@ node --experimental-strip-types --test tests/news-edition-publishing.test.mjs te
 ```
 
 结构校验不能替代一手阅读、事实核验、选题多样性和版权检查。
+
+## 更新时刻、事件优先级与周报
+
+北京时间（Asia/Shanghai）每日08:10启动日报更新；每周五08:10另启动周报。生成、核验与发布完成后推送，08:10是任务启动时刻，不承诺抓取与核验瞬时完成。Worker每小时10、40分检查最新完整清单，08:10前不启动当日定时投递。
+
+自2026-10-22起日报每条必须有`priority`（P1重大/P2重要/P3关注）和8—300字`priority_reason`。依据证据、影响范围、紧迫性分级，各栏按优先级排序，不按配额分级。发布时同步生成既有tags中的`P1·重大`等标签，供网页、邮件、机器人及补发快照一致读取；原始分级理由保留在日报JSON。历史稿不追溯打分。
+
+周报使用独立的`news/weekly/YYYY-MM-DD.json`和D1周报表，不写入或覆盖同日日报。窗口为上周五08:10（含）至本周五08:10（不含），八栏目及事实/来源/去重规则与日报一致，将同一事件的一周变化合并解释。每条有优先级、分级理由及`front_page`布尔值，P1/P2才可入头版，头条可以多个，不与其余新闻重复。没有合格头条不凑数。
+
+`news/weekly-automation-prompt.md`为周报任务同步副本；完整结构和运行规则见[周报说明](weekly/README.md)。用`node news/validate-weekly.mjs news/weekly/YYYY-MM-DD.json`校验；`publish-weekly.yml`发布并回读核验。网页入口为`/news/weekly?date=YYYY-MM-DD`，API为`/api/news/weekly?date=YYYY-MM-DD`。已有获批且有效的邮箱和群机器人按原板块接收，退订/撤销继续立即生效；日报和周报分别去重。

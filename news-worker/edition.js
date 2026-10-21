@@ -1,4 +1,5 @@
 import policy from '../news/edition-policy.json' with { type: 'json' };
+import { PRIORITIES } from './priority.js';
 
 export const CORE_CATEGORIES = Object.keys(policy.categories);
 export const CATEGORY_LABELS = Object.fromEntries(Object.entries(policy.categories).map(([key, value]) => [key, value.label]));
@@ -9,7 +10,7 @@ export const beijingDate = value => new Date(new Date(value).getTime() + 8 * 360
 
 // This check protects the replacement boundary. Article quality is also
 // validated by news/validate-edition.py before the publishing workflow runs.
-export function validateEdition(body, items) {
+export function validateEdition(body, items, { publishing = false } = {}) {
   const date = body.date;
   if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(date) ||
       Number.isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date) {
@@ -23,6 +24,10 @@ export function validateEdition(body, items) {
   const slugs = new Set();
   if (!items.length || items.length > categories.length * policy.max_per_category) throw new Error('items must contain a non-empty, complete edition');
   for (const item of items) {
+    if (publishing && date >= policy.priority_effective_date &&
+        (!Object.hasOwn(PRIORITIES, item.priority) || typeof item.priority_reason !== 'string' || item.priority_reason.trim().length < 8 || item.priority_reason.length > 300)) {
+      throw new Error('items must include priority P1/P2/P3 and an 8–300 character priority_reason');
+    }
     if (!Object.hasOwn(counts, item.category) || item.status !== 'published' ||
         beijingDate(item.published_at) !== date || !item.slug.startsWith(date.replaceAll('-', '') + '-') || slugs.has(item.slug)) {
       throw new Error('items must have unique dated slugs, published status and valid edition categories');

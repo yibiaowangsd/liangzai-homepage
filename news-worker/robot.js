@@ -1,6 +1,8 @@
 import { publishedCoverage, CORE_CATEGORIES } from './edition.js';
 import { SUBSCRIPTION_CATEGORIES, normalizeCategories, digest, RequestError } from './subscriptions.js';
 import { robotConfigured, decryptWebhook, normalizeSendMode } from './robot-config.js';
+import { byPriority, priorityLabel } from './priority.js';
+import { weeklySections } from './weekly-layout.js';
 export { robotConfigured } from './robot-config.js';
 
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai' }).format(new Date());
@@ -25,11 +27,11 @@ export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTIO
   const sendMode = normalizeSendMode(options.send_mode);
   const sections = categories.map((category, sectionIndex) => {
     const label = `${SECTION_NUMBERS[sectionIndex]}、${SUBSCRIPTION_CATEGORIES[category]}`;
-    const stories = items.filter(item => item.category === category).slice(0, 5);
+    const stories = items.filter(item => item.category === category).toSorted(byPriority).slice(0, 5);
     const lines = [];
     for (const [index, item] of stories.entries()) {
       const original = sourceUrl(item.source_url);
-      lines.push(`${index + 1}. ${cleanText(item.title, 60)}${original ? ` ${original}` : ''}`);
+      lines.push(`${index + 1}. ${priorityLabel(item) ? `[${priorityLabel(item)}] ` : ''}${cleanText(item.title, 60)}${original ? ` ${original}` : ''}`);
     }
     return { label, lines };
   });
@@ -38,6 +40,27 @@ export function buildRobotDigest(date, items, selected = Object.keys(SUBSCRIPTIO
     return { type: 'text', textMsg: { content, isMentioned,
       ...(isMentioned ? mentions.mode === 'all' ? { mentionType: 1 } : { mentionType: 2, mentionedMobileList: mentions.mobiles } : {}) } };
   };
+  if (options.report) {
+    const report = options.report;
+    const heading = `量仔每周前沿 · ${report.date}\n${report.period_start.slice(0, 10)} 08:10—${report.date} 08:10（北京时间）`;
+    const pages = [];
+    for (const section of weeklySections(report, categories)) {
+      const label = `【${section.label}】`;
+      const lines = section.items.map((item, index) => `${index + 1}. [${priorityLabel(item)}] ${cleanText(item.title, 60)} ${sourceUrl(item.source_url) || ''}`);
+      if (!lines.length) lines.push('本周所选板块暂无头版头条。');
+      // Split at event boundaries and repeat the page name. Original links are
+      // kept intact; headlines can span several messages without mixing pages.
+      let page = `${heading}\n${label}`;
+      for (const line of lines) {
+        if (new TextEncoder().encode(page + '\n' + line).length > 3500 && page !== `${heading}\n${label}`) {
+          pages.push(page); page = `${heading}\n${label}（续）`;
+        }
+        page += '\n' + line;
+      }
+      pages.push(page);
+    }
+    return pages.map((page, index) => message(`${page}\n（${index + 1}/${pages.length}）`, index === 0));
+  }
   if (sendMode === 'single') {
     return [message([`量仔每日前沿 · ${date}`, ...sections.map(section => [section.label, ...section.lines].join('\n'))].join('\n\n'), true)];
   }
@@ -117,7 +140,7 @@ export async function sendRobotConnectionTest(env, subscriberId, testId) {
 }
 
 async function editionItems(env, date, selected = null) {
-  const { results: items = [] } = await env.DB.prepare("SELECT slug, title, summary, category, source_name, source_url, published_at, status FROM news WHERE status = 'published' AND date(published_at, '+8 hours') = ? ORDER BY published_at DESC, id DESC").bind(date).all();
+  const { results: items = [] } = await env.DB.prepare("SELECT * FROM news WHERE status = 'published' AND date(published_at, '+8 hours') = ? ORDER BY published_at DESC, id DESC").bind(date).all();
   const coverage = await publishedCoverage(env, date, items, selected);
   return coverage ? { items, coverage } : null;
 }
@@ -194,19 +217,24 @@ export async function sendManualRobotDigest(env, subscriberId, { send_id: sendId
   return result;
 }
 
-export async function sendRobotDigest(env, date = today(), { pause = pauseBetweenMessages, subscriberId = null, maxMessages = Infinity } = {}) {
+export async function sendRobotDigest(env, date = today(), { pause = pauseBetweenMessages, subscriberId = null, maxMessages = Infinity, report = null } = {}) {
   if (!robotConfigured(env)) return { ok: true, enabled: false, sent: 0 };
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number.isNaN(Date.parse(date)) || new Date(date).toISOString().slice(0, 10) !== date) throw new Error('Invalid edition date');
+  const reportDate = date;
+  if (report) date = `weekly:${date}`;
+  const reportCategories = report ? JSON.stringify([...new Set(report.items.map(item => item.category))]) : null;
   const { results: subscribers = [] } = await env.DB.prepare(`SELECT s.* FROM robot_subscribers s
     WHERE s.status = 'approved' AND NOT EXISTS (SELECT 1 FROM robot_manual_deliveries m WHERE m.subscriber_id = s.id AND m.edition_date = ?) AND (? IS NULL OR s.id = ?) AND NOT EXISTS (SELECT 1 FROM robot_subscription_deliveries d WHERE d.subscriber_id = s.id AND d.edition_date = ?)
     AND NOT EXISTS (SELECT 1 FROM news_resend_jobs r WHERE r.channel = 'robot'
       AND r.subscriber_id = s.id AND r.edition_date = ? AND r.subscription_version = s.version AND r.status != 'cancelled')
-    ORDER BY s.created_at, s.id LIMIT 5`).bind(date, subscriberId, subscriberId, date, date).all();
+    AND (? IS NULL OR EXISTS (SELECT 1 FROM json_each(s.categories) c JOIN json_each(?) r ON c.value = r.value))
+    ORDER BY s.created_at, s.id LIMIT 5`).bind(date, subscriberId, subscriberId, date, date, reportCategories, reportCategories).all();
   if (subscribers.length) {
-    const edition = await editionItems(env, date);
+    const edition = report || await editionItems(env, date);
     if (!edition) return { ok: true, enabled: true, sent: 0, message: '当日日报尚未完整发布，等待下一次推送。' };
     for (const subscriber of subscribers) {
-      const payload = buildRobotDigest(date, edition.items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) }, { send_mode: subscriber.send_mode });
+      if (report && !edition.items.some(item => JSON.parse(subscriber.categories).includes(item.category))) continue;
+      const payload = buildRobotDigest(reportDate, edition.items, JSON.parse(subscriber.categories), { mode: subscriber.mention_mode, mobiles: JSON.parse(subscriber.mention_mobiles) }, { send_mode: subscriber.send_mode, report });
       // Respect today's legacy singleton history when the same group applies
       // after migration. Approval must not replay an already attempted edition.
       let fingerprint;

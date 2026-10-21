@@ -1,0 +1,11 @@
+.weekly-report { padding: 0 var(--news-gutter) 80px; }
+.weekly-report > .desk { max-width: 1200px; margin: 40px auto; }
+.weekly-report > .news-subscription-banner { max-width: 1200px; margin-inline: auto; }
+.weekly-report .news-toolbar { margin-inline: calc(-1 * var(--news-gutter)); }
+.weekly-report .weekly-event { display: grid; grid-template-columns: 44px 1fr; gap: 24px; padding: 28px 0; border-bottom: 1px solid var(--rule); }
+.weekly-report .weekly-event h3 { margin: 8px 0; font-size: clamp(20px, 2vw, 30px); line-height: 1.45; }
+.weekly-report .weekly-event p { line-height: 1.9; white-space: pre-line; }
+.weekly-report .weekly-event small { color: var(--soft); }
+.weekly-report details { margin-top: 18px; }
+.weekly-report summary { cursor: pointer; color: var(--accent-dark); }
+.weekly-report .article-body { padding: 8px 0; }

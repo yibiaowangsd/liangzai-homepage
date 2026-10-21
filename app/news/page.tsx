@@ -41,6 +41,7 @@ function TopicDesk({
   listingHref: string;
 }) {
   if (!items.length) return null;
+  const priority = (item: NewsItem) => parseTags(item.tags).find(tag => /^P[123]·/.test(tag));
 
   if (category === "flash") {
     return (
@@ -57,7 +58,7 @@ function TopicDesk({
                 <h4><Link href={newsStoryHref(item.slug, listingHref)}>{item.title}</Link></h4>
                 {item.summary && <p>{item.summary}</p>}
                 <div className="flash-meta">
-                  <span>{item.source_name || "原始来源"}</span>
+                  <span>{priority(item)} {item.source_name || "原始来源"}</span>
                   <Link href={newsStoryHref(item.slug, listingHref)} aria-label={"阅读快讯：" + item.title}>阅读快讯</Link>
                 </div>
               </article>
@@ -92,7 +93,7 @@ function TopicDesk({
           </Link>
           <div className="desk-lead-copy">
             <p className="desk-kicker">
-              {categoryLabels[lead.category] || lead.category}
+              {priority(lead)} {categoryLabels[lead.category] || lead.category}
             </p>
             <h4>
               <Link href={newsStoryHref(lead.slug, listingHref)}>{lead.title}</Link>
@@ -116,7 +117,7 @@ function TopicDesk({
                   <Link href={newsStoryHref(item.slug, listingHref)}>{item.title}</Link>
                 </h4>
                 <p>{item.summary}</p>
-                <small>{item.source_name || "原始来源"}</small>
+                <small>{priority(item)} {item.source_name || "原始来源"}</small>
               </div>
               <Link
                 className="brief-thumb"
@@ -218,7 +219,7 @@ export default async function NewsPage({
 
       <section className="news-subscription-banner" aria-labelledby="news-subscription-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 6 9 7 9-7" /></svg>
-        <div><h2 id="news-subscription-title">让每天的前沿，直接抵达邮箱</h2><p>自选板块 · 每日一封 · 审核通过并确认邮箱后接收</p></div>
+        <div><h2 id="news-subscription-title">让每天的前沿，直接抵达邮箱</h2><p>日报每日 08:10 更新 · 周五另有周报 · 北京时间 · <Link href="/news/weekly">阅读周报</Link></p></div>
         <Link className="news-subscribe-link" href={category ? `/news/subscribe?category=${encodeURIComponent(category)}` : "/news/subscribe"}>订阅日报 <span aria-hidden="true">→</span></Link>
       </section>
 

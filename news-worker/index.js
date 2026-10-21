@@ -6,6 +6,8 @@ import { previewResendCampaign, startResendCampaign, stepResendCampaign, getRese
 import { getNewsSearch, parseNewsSearch } from "./news-search.js";
 import { editionDatesSql } from "./news-queries.js";
 import { publicNewsRead } from "./news-read-controls.js";
+import { priorityTags, byPriority } from "./priority.js";
+import { publishWeeklyReport, readWeeklyReport, sendWeeklyReport } from "./weekly.js";
 
 const ALLOWED_ORIGINS = new Set([
   "https://wangyibiao.com",
@@ -140,7 +142,9 @@ function normalizeItem(raw) {
     summary,
     content,
     category,
-    tags: normalizeTags(raw.tags),
+    tags: normalizeTags(priorityTags(raw.tags, raw.priority)),
+    priority: raw.priority,
+    priority_reason: raw.priority_reason,
     source_name: optionalString(raw.source_name, 300),
     source_url: normalizeUrl(raw.source_url, "source_url"),
     cover_image: normalizeUrl(raw.cover_image, "cover_image"),
@@ -194,7 +198,7 @@ async function publishItems(env, rawItems, edition = null) {
     items.push(item);
   }
 
-  const manifest = edition ? validateEdition(edition, items) : null;
+  const manifest = edition ? validateEdition(edition, items, { publishing: true }) : null;
   const changes = [];
   let skipped = duplicateSlugs.length;
 
@@ -348,6 +352,9 @@ async function getEditions(env, page, pageSize, category, requestedDate) {
   }
 
   const manifests = await env.DB.prepare(`SELECT date, schema_version, coverage FROM news_editions WHERE date IN (${placeholders})`).bind(...dates).all();
+  for (const edition of byDate.values()) {
+    for (const items of Object.values(edition.topics)) items.sort(byPriority);
+  }
   for (const manifest of manifests.results || []) {
     const edition = byDate.get(manifest.date);
     if (edition) Object.assign(edition, { schema_version: manifest.schema_version, coverage: JSON.parse(manifest.coverage) });
@@ -565,6 +572,12 @@ export default {
         });
       }
 
+      if (request.method === "GET" && url.pathname === "/api/news/weekly") {
+        const date = url.searchParams.get('date');
+        if (date && !/^\d{4}-\d{2}-\d{2}$/.test(date)) return json(request, { error: 'Invalid date' }, 400);
+        return publicNewsRead(request, env, ctx, json, { route: 'weekly', key: { date: date || 'latest' } }, async readEnv => ({ data: await readWeeklyReport(readEnv, date) }));
+      }
+
       if (request.method === "GET" && url.pathname.startsWith("/api/news/")) {
         const slug = decodeURIComponent(url.pathname.slice("/api/news/".length)).trim().toLowerCase();
         if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || slug.length > 160) return json(request, { error: "News not found" }, 404);
@@ -579,6 +592,12 @@ export default {
 
           return item || json(request, { error: "News not found" }, 404);
         });
+      }
+
+      if (request.method === "POST" && url.pathname === "/api/admin/news/weekly") {
+        if (!env.ADMIN_TOKEN) return json(request, { error: "ADMIN_TOKEN is not configured" }, 503);
+        if (!isAdmin(request, env)) return json(request, { error: "Unauthorized" }, 401);
+        return json(request, await publishWeeklyReport(env, await request.json()));
       }
 
       if (request.method === "POST" && url.pathname === "/api/admin/news") {
@@ -632,12 +651,17 @@ export default {
       );
     }
   },
-  scheduled(_controller, env, ctx) {
+  scheduled(controller, env, ctx) {
+    const now = new Date(controller.scheduledTime || Date.now());
+    const local = new Date(now.getTime() + 8 * 3600000);
+    if (local.getUTCHours() * 60 + local.getUTCMinutes() < 490) return;
     ctx.waitUntil(Promise.all([
       sendDailyDigest(env).then(result => console.log("newsletter_cron", JSON.stringify(result)))
         .catch(() => console.error("newsletter_cron_failed")),
       sendRobotDigest(env).then(result => console.log("robot_cron", JSON.stringify(result)))
-        .catch(() => console.error("robot_cron_failed")),
+        .catch(() => console.error("robot_cron_failed"))
+        .then(() => sendWeeklyReport(env, now)).then(result => console.log("weekly_cron", JSON.stringify(result)))
+        .catch(() => console.error("weekly_cron_failed")),
     ]));
   },
 };

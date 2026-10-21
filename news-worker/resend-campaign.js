@@ -2,6 +2,7 @@ import { publishedCoverage } from './edition.js';
 import { buildDigest, digest, mailConfigured, normalizeCategories, RequestError, sendMail } from './subscriptions.js';
 import { buildRobotDigest, sendManualRobotDigest } from './robot.js';
 import { normalizeSendMode, robotConfigured } from './robot-config.js';
+import { priorityTags } from './priority.js';
 
 const RETRY_WINDOW_MS = 23 * 3600000;
 const LEASE_MS = 120000;
@@ -32,7 +33,7 @@ function canonicalTags(value) {
 function canonicalItems(items) {
   return items.map(item => ({
     slug: String(item.slug).trim().toLowerCase(), title: text(item.title), summary: text(item.summary),
-    content: text(item.content), category: text(item.category) || 'daily', tags: canonicalTags(item.tags),
+    content: text(item.content), category: text(item.category) || 'daily', tags: canonicalTags(priorityTags(item.tags, item.priority)),
     source_name: text(item.source_name), source_url: text(item.source_url),
     published_at: new Date(item.published_at).toISOString(), status: text(item.status) || 'published',
   })).sort((a, b) => a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0);

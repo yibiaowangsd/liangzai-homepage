@@ -1,0 +1,42 @@
+name: Publish weekly news report
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'news/weekly/*.json'
+      - 'news/validate-weekly.mjs'
+      - 'scripts/publish-weekly.mjs'
+      - '.github/workflows/publish-weekly.yml'
+  workflow_dispatch:
+    inputs:
+      file:
+        description: 'Optional news/weekly/YYYY-MM-DD.json path'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-weekly-news
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Validate, publish and read back weekly reports
+        env:
+          NEWS_ADMIN_TOKEN: ${{ secrets.NEWS_ADMIN_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_FILE: ${{ inputs.file || '' }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+        run: node scripts/publish-weekly.mjs

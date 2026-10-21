@@ -31,6 +31,12 @@ def validate(path):
     for item in items:
         if not isinstance(item, dict):
             raise ValueError("each story must be an object")
+        if data["date"] >= POLICY["priority_effective_date"]:
+            if item.get("priority") not in POLICY["priorities"]:
+                raise ValueError("each story needs priority P1/P2/P3")
+            reason = item.get("priority_reason")
+            if not isinstance(reason, str) or not 8 <= len(reason.strip()) <= 300:
+                raise ValueError("each story needs an 8–300 character priority_reason")
         slug = item.get("slug", "")
         if not re.fullmatch(edition_date.strftime("%Y%m%d") + r"-[a-z0-9]+(?:-[a-z0-9]+)*", slug):
             raise ValueError(f"invalid edition slug: {slug}")

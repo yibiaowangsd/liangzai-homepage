@@ -92,13 +92,13 @@ export default function SubscriptionForm({ action, token, initialCategory }: { a
     {action === "confirm" && loaded && <>
       <div className="subscription-recipient"><span>{done || verified ? "日报收件邮箱" : "即将接收日报的邮箱"}</span><strong>{email}</strong><small>已通过管理员审核 · {done || verified ? "邮箱已确认" : "等待你确认邮箱"}</small></div>
       <p className="subscription-selection-label">你订阅的板块</p><ul className="subscription-topic-summary">{selected.map(key => <li key={key}>{subscriptionCategories[key as keyof typeof subscriptionCategories]}</li>)}</ul>
-      {!done && !verified && <p className="subscription-footnote">确认后，完整日报发布时会向此邮箱发送所选板块，每日最多一封。如果这不是你的邮箱或申请，请关闭此页面。</p>}
+      {!done && !verified && <p className="subscription-footnote">确认后，完整日报发布时会向此邮箱发送所选板块，日报每日最多一封，周五另加一封周报。如果这不是你的邮箱或申请，请关闭此页面。</p>}
       {verified && !done && <p role="status" className="subscription-message">此邮箱已确认，无需重复操作。下一份完整日报发布后将发送所选板块。</p>}
     </>}
     {needsDetails && token && !loaded && !error && <p role="status" className="subscription-loading">正在读取{action === "confirm" ? "收件邮箱和" : ""}订阅板块…</p>}
     {isAction && !token && <p role="alert" className="subscription-error">链接不完整，请从邮件中重新打开。</p>}
     {done && !isAction && <><div className="subscription-recipient"><span>{channel === "robot" ? "等待审核的群机器人" : "审核通过后，确认邮件将发送至"}</span><strong>{channel === "robot" ? groupName : email}</strong>{channel === "robot" && <small>申请发送方式：{robotSendModes[sendMode]}</small>}</div><p>{channel === "robot" ? "审核期间不会向群里发送消息。管理员通过申请后启用定时推送，可调整发送方式，并决定需要 @ 的成员。" : "请留意此邮箱的收件箱与垃圾邮件。完成审核和邮箱确认后，才会开始接收日报。"}</p></>}
-    {action === "unsubscribe" && <p>确认退订后，将停止接收所有板块的日报。之后可重新申请。</p>}
+    {action === "unsubscribe" && <p>确认退订后，将停止接收所有板块的日报和周报。之后可重新申请。</p>}
     {action === "manage" && <p>修改板块将重新提交审核，审核期间暂停发送日报。</p>}
     {!done && !(action === "confirm" && verified) && <form onSubmit={submit}>
       {!isAction && <fieldset className="subscription-channels" disabled={busy}><legend>接收方式</legend><div>
@@ -113,13 +113,13 @@ export default function SubscriptionForm({ action, token, initialCategory }: { a
       {!isAction && channel === "robot" && <RobotSendModeChoices value={sendMode} onChange={setSendMode} disabled={busy} />}
       {!isAction && <><label className="subscription-field">申请理由<textarea name="reason" maxLength={500} required rows={2} placeholder="简述你的研究、工作或学习方向，供管理员审核（最多 500 字）。" disabled={busy} /></label>
         <div className="subscription-trap" aria-hidden="true"><label>网站<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
-        <label className="subscription-consent"><input name="consent" type="checkbox" required disabled={busy} /><span>{channel === "robot" ? "我有权配置此群机器人，并同意为审核与日报发送使用所填信息。通过审核后定时推送，@ 成员由管理员配置；调整或停止推送请联系管理员。" : "我同意为订阅审核与日报发送使用所填信息。审核通过并确认邮箱后开始接收，可随时退订。"}</span></label>
+        <label className="subscription-consent"><input name="consent" type="checkbox" required disabled={busy} /><span>{channel === "robot" ? "我有权配置此群机器人，并同意为审核与日报、周报发送使用所填信息。通过审核后定时推送，@ 成员由管理员配置；调整或停止推送请联系管理员。" : "我同意为订阅审核与日报、周报发送使用所填信息。审核通过并确认邮箱后开始接收，可随时退订。"}</span></label>
       </>}
       <button className="subscription-primary" type="submit" disabled={busy || (needsDetails && !loaded) || (isAction && !token)}>{busy ? "正在提交…" : action === "confirm" ? "确认邮箱并启用订阅" : action === "unsubscribe" ? "确认退订" : action === "manage" ? "提交板块调整审核" : "提交订阅申请"}</button>
     </form>}
     <p className="subscription-message" role="status">{message}</p>
     {error && <p className="subscription-error" role="alert">{error}</p>}
     {needsDetails && token && !loaded && error && <button type="button" onClick={() => { setError(""); setAttempt(value => value + 1); }}>重新读取订阅信息</button>}
-    {!isAction && !done && <p className="subscription-footnote">{channel === "robot" ? "审核期间不发送群消息。完整日报发布后，按审核通过的板块和发送方式推送；管理员可调整发送方式。" : "审核期间不发送邮件。请使用本人邮箱；已订阅用户可通过日报中的「管理订阅板块」修改选择。"}</p>}
+    {!isAction && !done && <p className="subscription-footnote">{channel === "robot" ? "审核期间不发送群消息。日报每日08:10启动更新，周五另发周报；周报将头版头条与其余新闻分开发送，管理员可调整订阅板块。" : "审核期间不发送邮件。请使用本人邮箱；已订阅用户可通过日报中的「管理订阅板块」修改选择。"}</p>}
   </section>;
 }
