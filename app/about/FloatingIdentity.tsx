@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, type PointerEvent } from "react";
+import { useEffect, useId, useRef, useState, type PointerEvent } from "react";
 import Link from "next/link";
 import { useExperience } from "../experience/Motion";
 import { createMetalRenderer } from "./metal-card-renderer";
@@ -13,6 +13,8 @@ const RADIANS = Math.PI / 180;
 
 export default function FloatingIdentity() {
   const goldId = useId();
+  const [attempt, setAttempt] = useState(0);
+  const failureReason = useRef<HTMLParagraphElement>(null);
   const stage = useRef<HTMLElement>(null);
   const card = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -32,6 +34,7 @@ export default function FloatingIdentity() {
     const face = card.current;
     const surface = canvas.current;
     if (!element || !face || !surface) return;
+    element.dataset.renderer = "starting";
     element.style.setProperty("--card-scale", String(Math.min(1, element.clientWidth / 460)));
     let renderer: ReturnType<typeof createMetalRenderer>;
     let frame: number | null = null;
@@ -43,7 +46,7 @@ export default function FloatingIdentity() {
     let x = 0, y = 0, vx = 0, vy = 0, light = 0;
     let stopObserving = () => surface.removeEventListener("webglcontextlost", unavailable);
 
-    function unavailable() {
+    function unavailable(error: unknown) {
       failed = true;
       if (frame !== null) cancelAnimationFrame(frame);
       frame = null;
@@ -52,6 +55,10 @@ export default function FloatingIdentity() {
       renderer?.dispose();
       face!.style.removeProperty("transform");
       element!.dataset.renderer = "failed";
+      if (failureReason.current) {
+        failureReason.current.textContent = error instanceof Error ? error.message
+          : "浏览器的图形上下文已中断。可以重试启动金属反射。";
+      }
     }
     function render(now: number) {
       frame = null;
@@ -80,7 +87,7 @@ export default function FloatingIdentity() {
         if (element!.dataset.renderer !== "webgl2") element!.dataset.renderer = "webgl2";
       } catch (error) {
         console.error("Metal card rendering stopped:", error);
-        unavailable();
+        unavailable(error);
         return;
       }
       if (motion.current) frame = requestAnimationFrame(render);
@@ -106,7 +113,7 @@ export default function FloatingIdentity() {
       renderer = createMetalRenderer(surface);
     } catch (error) {
       console.error("Metal card initialization stopped:", error);
-      unavailable();
+      unavailable(error);
       return () => {
         destroyed = true;
         stopObserving();
@@ -142,7 +149,7 @@ export default function FloatingIdentity() {
       stopObserving();
       renderer.dispose();
     };
-  }, []);
+  }, [attempt]);
 
   function move(event: PointerEvent<HTMLDivElement>) {
     if (!motion.current || event.pointerType !== "mouse") return;
@@ -160,7 +167,7 @@ export default function FloatingIdentity() {
       <div className={styles.shadow} aria-hidden="true" />
       <div className={styles.scale} onPointerMove={move} onPointerLeave={reset} onPointerCancel={reset}>
         <div className={styles.card} ref={card} data-identity-card>
-          <canvas ref={canvas} className={styles.canvas} aria-hidden="true" />
+          <canvas key={attempt} ref={canvas} className={styles.canvas} aria-hidden="true" />
           <div className={styles.content}>
             <svg className={styles.engraving} viewBox="0 0 140 400" fill="none" aria-hidden="true">
               <defs><linearGradient id={goldId} x1="0" y1="0" x2="140" y2="400" gradientUnits="userSpaceOnUse"><stop stopColor="#77603a" /><stop offset=".22" stopColor="#d1b67d" /><stop offset=".48" stopColor="#917243" /><stop offset=".72" stopColor="#f1deb0" /><stop offset="1" stopColor="#806338" /></linearGradient></defs>
@@ -185,6 +192,11 @@ export default function FloatingIdentity() {
           </div>
           <div className={styles.rim} aria-hidden="true" />
         </div>
+      </div>
+      <div className={styles.failure} role="status">
+        <span>金属反射未能启动</span>
+        <button type="button" onClick={() => setAttempt(value => value + 1)}>重试</button>
+        <details><summary>查看原因</summary><p ref={failureReason} /></details>
       </div>
     </aside>
   );

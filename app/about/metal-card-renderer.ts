@@ -40,8 +40,19 @@ function drawEnvironment(context: CanvasRenderingContext2D, time: number, light:
 }
 
 export function createMetalRenderer(canvas: HTMLCanvasElement) {
-  const gl = canvas.getContext("webgl2", { alpha: true, antialias: false, premultipliedAlpha: true, depth: false });
-  if (!gl) throw new Error("WebGL2 is unavailable");
+  let creationError = "";
+  const contextError = (event: Event) => { creationError = (event as WebGLContextEvent).statusMessage; };
+  canvas.addEventListener("webglcontextcreationerror", contextError);
+  let gl: WebGL2RenderingContext | null;
+  try {
+    gl = canvas.getContext("webgl2", {
+      alpha: true, antialias: false, premultipliedAlpha: true,
+      depth: false, stencil: false, failIfMajorPerformanceCaveat: false,
+    });
+  } finally {
+    canvas.removeEventListener("webglcontextcreationerror", contextError);
+  }
+  if (!gl) throw new Error(creationError || "浏览器无法创建 WebGL2 上下文。请检查浏览器图形加速和显卡驱动后重试。");
   const shaders: WebGLShader[] = [];
   const programs: WebGLProgram[] = [];
   const textures: WebGLTexture[] = [];

@@ -118,7 +118,7 @@ try {
                   ...[...footer.querySelectorAll('.footer-groups > div')].flatMap(group => [...group.children].map(child => center(child) - center(group))),
                   ...[...footer.querySelector('.studio-footer-bottom').children].map(child => center(child) - center(footer)),
                 ] : [],
-                identity: identity ? { ...rect(identity), canonicalWidth: identity.offsetWidth, canonicalHeight: identity.offsetHeight, content: [...identity.querySelectorAll('h2,p,dt,dd,a')].map(rect) } : null,
+                identity: identity ? { ...rect(identity), canonicalWidth: identity.offsetWidth, canonicalHeight: identity.offsetHeight, visible: getComputedStyle(identity).visibility === "visible", content: [...identity.querySelectorAll('h2,p,dt,dd,a')].map(rect) } : null,
                 editionNote: document.querySelector('.news-edition-note') ? rect(document.querySelector('.news-edition-note')) : null,
                 content: [...document.querySelectorAll(selector)].map(el => {
                   const r = el.getBoundingClientRect();
@@ -162,6 +162,7 @@ try {
               if (layout.editionNote) assert.ok(layout.editionNote.top >= layout.home.hero.bottom - 1, 'news prompt floats over the cinematic hero');
             }
             if (layout.identity) {
+              assert.equal(layout.identity.visible, true, 'identity card is hidden when its renderer is unavailable');
               assert.equal(layout.identity.canonicalWidth, 460, 'identity card changes its canonical width');
               assert.equal(layout.identity.canonicalHeight, 292, 'identity card changes its canonical height');
               if (viewport.width >= 600) assert.ok(Math.abs(layout.identity.width - 460) < 1, 'desktop identity card grows or shrinks');

@@ -7,9 +7,7 @@
   display: grid;
   place-items: center;
   isolation: isolate;
-  visibility: hidden;
 }
-.stage[data-renderer="webgl2"] { visibility: visible; }
 .shadow {
   position: absolute;
   width: min(78%, 400px);
@@ -64,3 +62,11 @@
 .rim { position: absolute; z-index: 2; inset: 0; border: 1px solid #f7faffb0; border-radius: inherit; box-shadow: inset 0 0 0 1px #1b263144, inset 0 2px 1px #fff8, inset 0 -2px 2px #26313c44; pointer-events: none; }
 @media (max-width: 520px) { .stage { min-height: 270px; } .shadow { bottom: 16px; } }
 @media (prefers-reduced-motion: reduce) { .card { will-change: auto; } }
+
+.failure { display: none; position: absolute; top: calc(50% + 146px * var(--card-scale) + 15px); width: min(100%, 460px); font-size: 11px; line-height: 1.6; color: var(--studio-muted); }
+.stage[data-renderer="failed"] .failure { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+.failure button, .failure summary { cursor: pointer; color: var(--studio-ink); font: inherit; }
+.failure button { padding: 0; border: 0; background: none; text-decoration: underline; text-underline-offset: 3px; }
+.failure details { position: relative; }
+.failure details p { position: absolute; z-index: 3; top: 14px; right: 0; width: min(380px, 75vw); padding: 12px; border: 1px solid var(--studio-rule); background: var(--studio-paper); color: var(--studio-ink); border-radius: 6px; overflow-wrap: anywhere; }
+.failure button:focus-visible, .failure summary:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
