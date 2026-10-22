@@ -55,7 +55,7 @@ void main() {
   float brushed = hash(vec2(0.0, grainCell.y)) - 0.5;
   vec3 localNormal = normalize(vec3(edgeDirection * bevel * 0.7 + vec2(grain * 0.006, brushed * 0.012), 1.0));
   mat3 rotation = orientation(u_angles);
-  vec3 surface = rotation * vec3(p / 500.0, 0.0);
+  vec3 surface = rotation * vec3(p / max(u_size.x, u_size.y), 0.0);
   vec3 N = normalize(rotation * localNormal);
   vec3 incident = normalize(surface - vec3(0, 0, 3.0)); // camera -> surface
   vec3 R = reflect(incident, N); // GLSL argument order is incident, normal
@@ -65,7 +65,7 @@ void main() {
   vec3 reflected = texture(u_image, clamp(UV, vec2(0.001), vec2(0.999))).rgb;
   float luminance = dot(reflected, vec3(0.2126, 0.7152, 0.0722));
   // Neutral silver: desaturate the actual planar environment sample.
-  vec3 metal = vec3(0.28 + luminance * 0.66);
+  vec3 metal = vec3(0.38 + luminance * 0.58);
   metal += vec3(grain * 0.012 + brushed * 0.006);
   float fresnel = pow(1.0 - max(dot(-incident, N), 0.0), 3.0);
   metal += vec3(fresnel * 0.16);

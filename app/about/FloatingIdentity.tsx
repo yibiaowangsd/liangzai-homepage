@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, type PointerEvent } from "react";
+import { useEffect, useId, useRef, type PointerEvent } from "react";
 import Link from "next/link";
 import { useExperience } from "../experience/Motion";
 import { createMetalRenderer } from "./metal-card-renderer";
@@ -12,6 +12,7 @@ const LIGHT_DAMPING = 12;
 const RADIANS = Math.PI / 180;
 
 export default function FloatingIdentity() {
+  const goldId = useId();
   const stage = useRef<HTMLElement>(null);
   const card = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -31,7 +32,7 @@ export default function FloatingIdentity() {
     const face = card.current;
     const surface = canvas.current;
     if (!element || !face || !surface) return;
-    element.style.setProperty("--card-scale", String(Math.min(1, element.clientWidth / 360)));
+    element.style.setProperty("--card-scale", String(Math.min(1, element.clientWidth / 460)));
     let renderer: ReturnType<typeof createMetalRenderer>;
     let frame: number | null = null;
     let destroyed = false;
@@ -50,7 +51,7 @@ export default function FloatingIdentity() {
       wake.current = null;
       renderer?.dispose();
       face!.style.removeProperty("transform");
-      element!.dataset.renderer = "unavailable";
+      element!.dataset.renderer = "failed";
     }
     function render(now: number) {
       frame = null;
@@ -76,6 +77,7 @@ export default function FloatingIdentity() {
       face!.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
       try {
         renderer.render(elapsed, x * RADIANS, y * RADIANS, light);
+        if (element!.dataset.renderer !== "webgl2") element!.dataset.renderer = "webgl2";
       } catch (error) {
         console.error("Metal card rendering stopped:", error);
         unavailable();
@@ -88,7 +90,7 @@ export default function FloatingIdentity() {
       frame = requestAnimationFrame(render);
     }
     function fit() {
-      element!.style.setProperty("--card-scale", String(Math.min(1, element!.clientWidth / 360)));
+      element!.style.setProperty("--card-scale", String(Math.min(1, element!.clientWidth / 460)));
       requestFrame();
     }
     function visibility() {
@@ -102,7 +104,6 @@ export default function FloatingIdentity() {
     surface.addEventListener("webglcontextlost", unavailable);
     try {
       renderer = createMetalRenderer(surface);
-      element.dataset.renderer = "webgl2";
     } catch (error) {
       console.error("Metal card initialization stopped:", error);
       unavailable();
@@ -155,29 +156,36 @@ export default function FloatingIdentity() {
 
   return (
     <aside data-theme-surface="silver" className={styles.stage} ref={stage} data-intro
-      aria-label="Wang Yibiao 的金属个人名片">
+      aria-label="Wang Yibiao 的金属个人名片" data-card-format="landscape">
       <div className={styles.shadow} aria-hidden="true" />
       <div className={styles.scale} onPointerMove={move} onPointerLeave={reset} onPointerCancel={reset}>
         <div className={styles.card} ref={card} data-identity-card>
           <canvas ref={canvas} className={styles.canvas} aria-hidden="true" />
           <div className={styles.content}>
-            <div className={styles.topline}><span className={styles.brand}><i aria-hidden="true" />私人档案 / 001</span><span className={styles.mark} aria-hidden="true">WY</span></div>
-            <div className={styles.pass}><p>反射通行证</p><span>REFLECTION PASS</span></div>
-            <div className={styles.identity}><h2>Wang<br />Yibiao<span aria-hidden="true">®</span></h2><p>抗量子密码与安全协议</p></div>
-            <dl className={styles.details}>
-              <div><dt>工作</dt><dd>中电信量子集团<span>PQC 与 QKD 融合应用</span></dd></div>
-              <div><dt>教育</dt><dd>山东大学<span>网络空间安全 本科与硕士</span></dd></div>
-            </dl>
-            <div className={styles.serial}><span>持有人编号 / CARD NO.</span><p>0001 2345 6789</p></div>
+            <svg className={styles.engraving} viewBox="0 0 140 400" fill="none" aria-hidden="true">
+              <defs><linearGradient id={goldId} x1="0" y1="0" x2="140" y2="400" gradientUnits="userSpaceOnUse"><stop stopColor="#77603a" /><stop offset=".22" stopColor="#d1b67d" /><stop offset=".48" stopColor="#917243" /><stop offset=".72" stopColor="#f1deb0" /><stop offset="1" stopColor="#806338" /></linearGradient></defs>
+              <g stroke={`url(#${goldId})`} strokeWidth=".7">
+                {Array.from({ length: 16 }, (_, i) => <path key={i} d={`M ${36 + i * 4} -20 C ${-64 + i * 7} 82, ${199 - i * 5} 132, ${81 + i * 3} 207 S ${-48 + i * 8} 334, ${84 + i * 4} 420`} />)}
+                <path d="M118 0V158M118 242V400" strokeWidth="1" /><path d="M118 179l9 21-9 21-9-21Z" strokeWidth="1" /><path d="M118 190l4 10-4 10-4-10Z" />
+              </g>
+            </svg>
+            <div className={styles.info}>
+              <div className={styles.topline}><span className={styles.brand}><i aria-hidden="true" />密码学与工程实践</span></div>
+              <div className={styles.identity}><h2>Wang Yibiao</h2><p>抗量子密码与安全协议</p></div>
+              <dl className={styles.details}>
+                <div><dt>工作</dt><dd>中电信量子集团<span>PQC 与 QKD 融合应用</span></dd></div>
+                <div><dt>教育</dt><dd>山东大学<span>网络空间安全 本科与硕士</span></dd></div>
+              </dl>
+            </div>
             <div className={styles.bottomline}>
               <Link href="/" aria-label="返回 Wang Yibiao 的主页">wangyibiao.com</Link>
+              <span className={styles.serial}>0001 2345 6789</span>
               <a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer" aria-label="访问 Wang Yibiao 的 GitHub">GitHub <span aria-hidden="true">↗</span></a>
             </div>
           </div>
           <div className={styles.rim} aria-hidden="true" />
         </div>
       </div>
-      <span className={styles.caption} aria-hidden="true">移动指针 · 让光掠过</span>
     </aside>
   );
 }

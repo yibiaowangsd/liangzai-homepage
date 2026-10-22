@@ -1,40 +1,34 @@
-# 关于我 · 金属反射名片
+# 关于我 · 横版金属名片
 
-现有 `/about` 页面直接使用 `FloatingIdentity`，无需新增依赖。卡片为 320×500 CSS px、24 px 圆角；窄容器整体等比缩小，字体与内容不重排。
+`/about` 的个人名片保持 **460×292 CSS px 横版**，圆角 24 px；窄容器整体等比缩小。保留 Wang Yibiao 单行姓名、工作、教育、金色线刻及个人链接，在底栏加入 `0001 2345 6789`。
 
-## 文件
+只采用 WebGL2 金属反射。没有纯色名片、CSS 渐变反光、替代图片或其它渲染器作为降级。WebGL2 初始化或绘制失败时，立即停止绘制并清理资源，隐藏整个名片。
 
-- `app/about/FloatingIdentity.tsx`：React 组件、120/16 弹簧、交互与生命周期。
-- `app/about/FloatingIdentity.module.css`：完整样式与 HTML 文字、高光边框。
-- `app/about/metal-card-renderer.ts`：Canvas2D 环境、WebGL2 资源与三次绘制。
-- `app/about/metal-card-shaders.ts`：完整 GLSL ES 3.00 顶点、双向模糊与反射片元代码。
+## 源码
+
+- `app/about/FloatingIdentity.tsx`：React 组件，120/16 弹簧、阻尼 12 的环境灯光跟随、移出回正、视口暂停和清理。
+- `app/about/FloatingIdentity.module.css`：横版名片布局、HTML 文字与高光边框。原有金色线刻使用 SVG，其渐变只用于线刻着色。
+- `app/about/metal-card-renderer.ts`：768×512 Canvas2D 环境与 WebGL2 渲染资源。
+- `app/about/metal-card-shaders.ts`：完整 GLSL ES 3.00 顶点、模糊与金属片元代码。
 
 ## 运行
 
 ```bash
 npm ci
-npm run dev -- --host 0.0.0.0
+npm run dev
 # 打开 http://localhost:5173/about
 npm run typecheck
 npm run build
 ```
 
-## 材质与交互
+环境每帧绘制蓝色板、暖色球和白色灯条，使用 `texSubImage2D` 上传已分配的纹理。横向、纵向 Gaussian 模糊后，按倒角及拉丝噪声法线反射，再去色为银色。使用平面 UV 贴图，不使用全景、外部图片或摄像头。
 
-512×800 的 Canvas2D 每帧绘制蓝色板、带光照的暖色球与白色灯条；通过 `texSubImage2D` 更新已分配的纹理。经过横向、纵向两次 Gaussian 模糊后，用平面 UV 采样，在材质阶段按亮度去色。暖色球的径向颜色用于球体自身光照，不替代环境纹理。无全景、外部图片、人物或摄像头。
+相机到表面的入射方向通过 GLSL 标准顺序 `reflect(incident, normal)` 反射；使用 `q = R.z / max(R.z, 0.2)` 限制掠射角，偏移量为 `0.12 * q * R.xy / max(R.z, 0.2)`。CSS 与 GLSL 使用同一帧角度；`Rx(-x) * Ry(y)` 中的负号对应 CSS 向下的 Y 轴。
 
-片元法线由 24 px 圆角距离场的倒角与细微拉丝噪声组成。CSS 的 `rotateX(x) rotateY(y)` 与 GLSL 的 `Rx(-x) * Ry(y)` 使用同一帧弹簧角度；负号来自 CSS 与着色器 Y 轴方向不同。相机到表面的入射方向用 GLSL 的 `reflect(incident, normal)` 反射（GLSL 标准参数顺序）。按 `q = R.z / max(R.z, 0.2)` 限制掠射角，并以 `0.12 * q * R.xy / max(R.z, 0.2)` 偏移平面 UV。
+每帧检查实际 CSS 尺寸与 DPR，只在发生变化时重设 drawing buffer；模糊纹理固定分配。页面隐藏、卡片离开视口时暂停，卸载和失败时清理 RAF、observer、事件、shader、program、texture、framebuffer 与 VAO。
 
-弹簧刚度 120、速度阻尼 16，积分步长不超过 1/120 秒；环境灯光跟随的指数阻尼为 12。鼠标移出、取消时目标归零，弹簧回正。尊重网站暂停动效与系统减少动态效果设置；标签页隐藏或卡片滚出视口时暂停绘制。
+## 验证
 
-每次绘制检查未变形的 `clientWidth/clientHeight` 和实时 DPR，只有变化时更新 drawing buffer。模糊纹理尺寸固定，不在每帧重新分配；DPR 仅受 GPU 最大 renderbuffer 尺寸限制。
+横版修订通过 TypeScript、ESLint、生产构建及 Mesa OpenGL ES 3.2 原始 GLSL 离屏绘制检查。离屏测试覆盖圆角透明、去色、倾斜导致反射像素变化及 GL 错误；不代替完整浏览器交互测试。
 
-初始化失败、上下文丢失与卸载均取消动画并释放 shader、program、texture、framebuffer 和 VAO。初始化失败只保留可访问的 HTML 信息和纯色底，不创建另一个渲染器或渐变反射替代品。
-
-## 验证记录（2026-10-22）
-
-- TypeScript、组件 ESLint、生产构建与部署通过。
-- 现有完整测试：725 项，其中 700 通过、25 按现有规则跳过、0 失败。
-- Mesa OpenGL ES 3.2 离屏运行原始 GLSL，用彩色几何环境纹理夹具执行横向模糊、纵向模糊与金属材质绘制：编译链接成功，GL 错误为 0；圆角透明、去色均通过；两种倾角之间平均像素差 11.78/255。该检查不替代浏览器端 WebGL2 集成验证。
-- 当前远程截图浏览器无法创建 WebGL2 上下文。线上页面已核实尺寸为 320×500，HTML 内容未溢出，静态分支正常。动态反射、DPR 切换和弹簧交互仍需支持 WebGL2 的浏览器确认。
-- `metal-card-before.jpg` 为修改前页面；`metal-card-static-preview.jpg` 为新版本静态降级截图，**不作为动态反射效果截图**。
+当前远程预览浏览器没有 WebGL2，因此无法在该环境查看名片，不使用静态替代截图。竖版静态替代截图已从当前源码移除。`metal-card-before.jpg` 为此次材质改造前的原横版页面。

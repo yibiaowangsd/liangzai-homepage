@@ -1,42 +1,42 @@
 import { blurShader, metalShader, vertexShader } from "./metal-card-shaders";
 
-const ENV_WIDTH = 512;
-const ENV_HEIGHT = 800;
+const ENV_WIDTH = 768;
+const ENV_HEIGHT = 512;
 
 /** A planar, live Canvas2D studio. No downloaded images, camera or panorama. */
 function drawEnvironment(context: CanvasRenderingContext2D, time: number, light: number) {
-  context.fillStyle = "#363b43";
+  context.fillStyle = "#575d64";
   context.fillRect(0, 0, ENV_WIDTH, ENV_HEIGHT);
   context.save();
-  context.translate(100 + light * 12, 180);
+  context.translate(120 + light * 12, 150);
   context.rotate(-0.21);
-  context.fillStyle = "#547eb1";
-  context.fillRect(-150, -230, 325, 540);
-  context.fillStyle = "#89a9cb";
-  context.fillRect(-150, -230, 12, 540);
+  context.fillStyle = "#6087b4";
+  context.fillRect(-200, -260, 410, 650);
+  context.fillStyle = "#9ab6d5";
+  context.fillRect(-200, -260, 12, 650);
   context.restore();
 
-  const x = 370 + Math.sin(time * 0.3) * 18 + light * 18;
-  const y = 580 + Math.cos(time * 0.23) * 12;
-  const sphere = context.createRadialGradient(x - 42, y - 45, 5, x, y, 150);
+  const x = 620 + Math.sin(time * 0.3) * 18 + light * 18;
+  const y = 350 + Math.cos(time * 0.23) * 12;
+  const sphere = context.createRadialGradient(x - 42, y - 45, 5, x, y, 145);
   sphere.addColorStop(0, "#ffe4bd");
   sphere.addColorStop(0.42, "#c98e59");
   sphere.addColorStop(1, "#4d3029");
   context.fillStyle = sphere;
   context.beginPath();
-  context.arc(x, y, 150, 0, Math.PI * 2);
+  context.arc(x, y, 145, 0, Math.PI * 2);
   context.fill();
 
   context.save();
-  context.translate(240 + light * 38, 0);
-  context.rotate(-0.32);
+  context.translate(390 + light * 38, 0);
+  context.rotate(-0.47);
   context.fillStyle = "#f8f9fb";
-  context.fillRect(-45, -180, 70, 680);
+  context.fillRect(-35, -180, 66, 780);
   context.fillStyle = "#aab4c2";
-  context.fillRect(42, -180, 8, 680);
+  context.fillRect(49, -180, 8, 780);
   context.restore();
   context.fillStyle = "#e7e9eb";
-  context.fillRect(0, 735, ENV_WIDTH, 26);
+  context.fillRect(0, 478, ENV_WIDTH, 18);
 }
 
 export function createMetalRenderer(canvas: HTMLCanvasElement) {
