@@ -30,3 +30,11 @@ npm run build
 每次绘制检查未变形的 `clientWidth/clientHeight` 和实时 DPR，只有变化时更新 drawing buffer。模糊纹理尺寸固定，不在每帧重新分配；DPR 仅受 GPU 最大 renderbuffer 尺寸限制。
 
 初始化失败、上下文丢失与卸载均取消动画并释放 shader、program、texture、framebuffer 和 VAO。初始化失败只保留可访问的 HTML 信息和纯色底，不创建另一个渲染器或渐变反射替代品。
+
+## 验证记录（2026-10-22）
+
+- TypeScript、组件 ESLint、生产构建与部署通过。
+- 现有完整测试：725 项，其中 700 通过、25 按现有规则跳过、0 失败。
+- Mesa OpenGL ES 3.2 离屏运行原始 GLSL，用彩色几何环境纹理夹具执行横向模糊、纵向模糊与金属材质绘制：编译链接成功，GL 错误为 0；圆角透明、去色均通过；两种倾角之间平均像素差 11.78/255。该检查不替代浏览器端 WebGL2 集成验证。
+- 当前远程截图浏览器无法创建 WebGL2 上下文。线上页面已核实尺寸为 320×500，HTML 内容未溢出，静态分支正常。动态反射、DPR 切换和弹簧交互仍需支持 WebGL2 的浏览器确认。
+- `metal-card-before.jpg` 为修改前页面；`metal-card-static-preview.jpg` 为新版本静态降级截图，**不作为动态反射效果截图**。

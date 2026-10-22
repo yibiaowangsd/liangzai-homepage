@@ -40,11 +40,14 @@ export default function FloatingIdentity() {
     let previous = 0;
     let elapsed = 0;
     let x = 0, y = 0, vx = 0, vy = 0, light = 0;
+    let stopObserving = () => surface.removeEventListener("webglcontextlost", unavailable);
 
     function unavailable() {
       failed = true;
       if (frame !== null) cancelAnimationFrame(frame);
       frame = null;
+      stopObserving();
+      wake.current = null;
       renderer?.dispose();
       face!.style.removeProperty("transform");
       element!.dataset.renderer = "unavailable";
@@ -105,7 +108,7 @@ export default function FloatingIdentity() {
       unavailable();
       return () => {
         destroyed = true;
-        surface.removeEventListener("webglcontextlost", unavailable);
+        stopObserving();
       };
     }
     const resize = new ResizeObserver(fit);
@@ -122,17 +125,20 @@ export default function FloatingIdentity() {
     intersection.observe(element);
     window.addEventListener("resize", fit);
     document.addEventListener("visibilitychange", visibility);
+    stopObserving = () => {
+      resize.disconnect();
+      intersection.disconnect();
+      window.removeEventListener("resize", fit);
+      document.removeEventListener("visibilitychange", visibility);
+      surface.removeEventListener("webglcontextlost", unavailable);
+    };
     wake.current = requestFrame;
     fit();
     return () => {
       destroyed = true;
       wake.current = null;
       if (frame !== null) cancelAnimationFrame(frame);
-      resize.disconnect();
-      intersection.disconnect();
-      window.removeEventListener("resize", fit);
-      document.removeEventListener("visibilitychange", visibility);
-      surface.removeEventListener("webglcontextlost", unavailable);
+      stopObserving();
       renderer.dispose();
     };
   }, []);
