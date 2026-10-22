@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type PointerEvent } from "react";
+import { useEffect, useId, useRef, type PointerEvent } from "react";
 import Link from "next/link";
 import { useExperience } from "../experience/Motion";
-import { createMetalRenderer } from "./metal-card-renderer";
+import { createMetalSession } from "./metal-card-session";
 import styles from "./FloatingIdentity.module.css";
 
 const STIFFNESS = 120;
@@ -13,7 +13,9 @@ const RADIANS = Math.PI / 180;
 
 export default function FloatingIdentity() {
   const goldId = useId();
-  const [attempt, setAttempt] = useState(0);
+  const retry = useRef<(() => void) | null>(null);
+  const retryButton = useRef<HTMLButtonElement>(null);
+  const failureLabel = useRef<HTMLSpanElement>(null);
   const failureReason = useRef<HTMLParagraphElement>(null);
   const stage = useRef<HTMLElement>(null);
   const card = useRef<HTMLDivElement>(null);
@@ -36,38 +38,24 @@ export default function FloatingIdentity() {
     if (!element || !face || !surface) return;
     element.dataset.renderer = "starting";
     element.style.setProperty("--card-scale", String(Math.min(1, element.clientWidth / 460)));
-    let renderer: ReturnType<typeof createMetalRenderer>;
     let frame: number | null = null;
     let destroyed = false;
-    let failed = false;
     let visible = true;
-    let previous = 0;
-    let elapsed = 0;
+    let previous = 0, nextDraw = 0, elapsed = 0;
     let x = 0, y = 0, vx = 0, vy = 0, light = 0;
-    let stopObserving = () => surface.removeEventListener("webglcontextlost", unavailable);
 
-    function unavailable(error: unknown) {
-      failed = true;
-      if (frame !== null) cancelAnimationFrame(frame);
-      frame = null;
-      stopObserving();
-      wake.current = null;
-      renderer?.dispose();
-      face!.style.removeProperty("transform");
-      element!.dataset.renderer = "failed";
-      if (failureReason.current) {
-        failureReason.current.textContent = error instanceof Error ? error.message
-          : "浏览器的图形上下文已中断。可以重试启动金属反射。";
-      }
-    }
     function render(now: number) {
       frame = null;
-      if (destroyed || failed || !visible || document.hidden) return;
+      if (destroyed || session?.state !== "ready" || !visible || document.hidden) return;
+      // Keep the same material on high-refresh displays without submitting
+      // hundreds of texture uploads and blur passes every second.
+      const interval = 1000 / 60;
+      if (nextDraw && now < nextDraw) { requestFrame(); return; }
+      nextDraw = now + interval - (nextDraw ? (now - nextDraw) % interval : 0);
       const dt = previous ? Math.min((now - previous) / 1000, 0.05) : 1 / 60;
       previous = now;
       if (motion.current) {
         elapsed += dt;
-        // Substeps keep the 120/16 spring stable at low frame rates.
         const count = Math.ceil(dt / (1 / 120));
         const step = dt / count;
         for (let i = 0; i < count; i++) {
@@ -80,76 +68,69 @@ export default function FloatingIdentity() {
       } else {
         x = 0; y = 0; vx = 0; vy = 0; light = 0;
       }
-      // There is no CSS transition or independent tilt: both consume this angle.
+      if (!session.draw(elapsed, x * RADIANS, y * RADIANS, light)) return;
       face!.style.transform = `rotateX(${x}deg) rotateY(${y}deg)`;
-      try {
-        renderer.render(elapsed, x * RADIANS, y * RADIANS, light);
-        if (element!.dataset.renderer !== "webgl2") element!.dataset.renderer = "webgl2";
-      } catch (error) {
-        console.error("Metal card rendering stopped:", error);
-        unavailable(error);
-        return;
-      }
-      if (motion.current) frame = requestAnimationFrame(render);
+      if (element!.dataset.renderer !== "webgl2") element!.dataset.renderer = "webgl2";
+      if (motion.current) requestFrame();
     }
     function requestFrame() {
-      if (destroyed || failed || !visible || document.hidden || frame !== null) return;
+      if (destroyed || session?.state !== "ready" || !visible || document.hidden || frame !== null) return;
       frame = requestAnimationFrame(render);
+    }
+    function cancelFrame() {
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = null;
+      previous = 0;
+      nextDraw = 0;
     }
     function fit() {
       element!.style.setProperty("--card-scale", String(Math.min(1, element!.clientWidth / 460)));
       requestFrame();
     }
     function visibility() {
-      previous = 0;
-      if (document.hidden && frame !== null) {
-        cancelAnimationFrame(frame);
-        frame = null;
-      }
+      cancelFrame();
       requestFrame();
     }
-    surface.addEventListener("webglcontextlost", unavailable);
-    try {
-      renderer = createMetalRenderer(surface);
-    } catch (error) {
-      console.error("Metal card initialization stopped:", error);
-      unavailable(error);
-      return () => {
-        destroyed = true;
-        stopObserving();
-      };
-    }
+    const session: ReturnType<typeof createMetalSession> = createMetalSession(surface, (state, error) => {
+      element.dataset.renderer = state;
+      if (state !== "ready") cancelFrame();
+      if (retryButton.current) retryButton.current.disabled = state === "blocked" || state === "restoring";
+      if (state === "ready") { queueMicrotask(requestFrame); return; }
+      if (state === "starting") return;
+      face.style.removeProperty("transform");
+      if (failureLabel.current) failureLabel.current.textContent = state === "blocked"
+        ? "浏览器暂时阻止金属反射" : state === "restoring" ? "正在等待浏览器恢复图形渲染" : "金属反射未能启动";
+      if (failureReason.current) failureReason.current.textContent = state === "blocked"
+        ? `浏览器已阻止此页面继续创建图形上下文。页面内重试无法解除拦截；请完全退出浏览器后重新打开本站。原始错误：${error?.message}`
+        : state === "restoring" ? "图形上下文已丢失，绘制已停止。等待浏览器恢复后重建资源，不再创建新的 Canvas。若长期未恢复，请重新打开浏览器。"
+        : error?.message ?? "图形渲染未能启动。";
+      if (error) console.error("Metal card:", error);
+    });
+    retry.current = () => { session?.retry(); requestFrame(); };
     const resize = new ResizeObserver(fit);
     resize.observe(element);
     const intersection = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
-      previous = 0;
-      if (!visible && frame !== null) {
-        cancelAnimationFrame(frame);
-        frame = null;
-      }
+      cancelFrame();
       requestFrame();
     });
     intersection.observe(element);
     window.addEventListener("resize", fit);
     document.addEventListener("visibilitychange", visibility);
-    stopObserving = () => {
-      resize.disconnect();
-      intersection.disconnect();
-      window.removeEventListener("resize", fit);
-      document.removeEventListener("visibilitychange", visibility);
-      surface.removeEventListener("webglcontextlost", unavailable);
-    };
     wake.current = requestFrame;
     fit();
     return () => {
       destroyed = true;
       wake.current = null;
-      if (frame !== null) cancelAnimationFrame(frame);
-      stopObserving();
-      renderer.dispose();
+      retry.current = null;
+      cancelFrame();
+      resize.disconnect();
+      intersection.disconnect();
+      window.removeEventListener("resize", fit);
+      document.removeEventListener("visibilitychange", visibility);
+      session?.dispose();
     };
-  }, [attempt]);
+  }, []);
 
   function move(event: PointerEvent<HTMLDivElement>) {
     if (!motion.current || event.pointerType !== "mouse") return;
@@ -167,7 +148,7 @@ export default function FloatingIdentity() {
       <div className={styles.shadow} aria-hidden="true" />
       <div className={styles.scale} onPointerMove={move} onPointerLeave={reset} onPointerCancel={reset}>
         <div className={styles.card} ref={card} data-identity-card>
-          <canvas key={attempt} ref={canvas} className={styles.canvas} aria-hidden="true" />
+          <canvas ref={canvas} className={styles.canvas} aria-hidden="true" />
           <div className={styles.content}>
             <svg className={styles.engraving} viewBox="0 0 140 400" fill="none" aria-hidden="true">
               <defs><linearGradient id={goldId} x1="0" y1="0" x2="140" y2="400" gradientUnits="userSpaceOnUse"><stop stopColor="#77603a" /><stop offset=".22" stopColor="#d1b67d" /><stop offset=".48" stopColor="#917243" /><stop offset=".72" stopColor="#f1deb0" /><stop offset="1" stopColor="#806338" /></linearGradient></defs>
@@ -194,8 +175,8 @@ export default function FloatingIdentity() {
         </div>
       </div>
       <div className={styles.failure} role="status">
-        <span>金属反射未能启动</span>
-        <button type="button" onClick={() => setAttempt(value => value + 1)}>重试</button>
+        <span ref={failureLabel}>金属反射未能启动</span>
+        <button ref={retryButton} type="button" onClick={() => retry.current?.()}>重试</button>
         <details><summary>查看原因</summary><p ref={failureReason} /></details>
       </div>
     </aside>

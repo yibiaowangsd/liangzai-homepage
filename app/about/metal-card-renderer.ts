@@ -2,6 +2,12 @@ import { blurShader, metalShader, vertexShader } from "./metal-card-shaders";
 
 const ENV_WIDTH = 768;
 const ENV_HEIGHT = 512;
+const MAX_DRAWING_PIXELS = 1024 * 1024;
+
+export function getDrawingBufferSize(width: number, height: number, dpr: number, limit: number) {
+  const scale = Math.min(dpr, limit / width, limit / height, Math.sqrt(MAX_DRAWING_PIXELS / (width * height)));
+  return [Math.max(1, Math.floor(width * scale)), Math.max(1, Math.floor(height * scale))] as const;
+}
 
 /** A planar, live Canvas2D studio. No downloaded images, camera or panorama. */
 function drawEnvironment(context: CanvasRenderingContext2D, time: number, light: number) {
@@ -62,6 +68,8 @@ export function createMetalRenderer(canvas: HTMLCanvasElement) {
   const dispose = () => {
     if (disposed) return;
     disposed = true;
+    // Lost-context objects are already invalidated by WebGL.
+    if (gl.isContextLost()) return;
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.useProgram(null);
     gl.bindVertexArray(null);
@@ -137,7 +145,7 @@ export function createMetalRenderer(canvas: HTMLCanvasElement) {
 
     return {
       render(time: number, angleX: number, angleY: number, light: number) {
-        if (disposed || gl.isContextLost()) return;
+        if (disposed || gl.isContextLost()) return false;
         // clientWidth/Height are untransformed CSS sizes. Check DPR every frame,
         // including monitor changes without a resize event; reallocate only on change.
         const nextDpr = window.devicePixelRatio || 1;
@@ -146,9 +154,9 @@ export function createMetalRenderer(canvas: HTMLCanvasElement) {
         if (nextWidth !== width || nextHeight !== height || nextDpr !== dpr) {
           width = nextWidth; height = nextHeight; dpr = nextDpr;
           const limit = gl.getParameter(gl.MAX_RENDERBUFFER_SIZE) as number;
-          const renderScale = Math.min(dpr, limit / width, limit / height);
-          canvas.width = Math.round(width * renderScale);
-          canvas.height = Math.round(height * renderScale);
+          const [pixelWidth, pixelHeight] = getDrawingBufferSize(width, height, dpr, limit);
+          if (canvas.width !== pixelWidth) canvas.width = pixelWidth;
+          if (canvas.height !== pixelHeight) canvas.height = pixelHeight;
         }
         drawEnvironment(context, time, light);
         gl.bindTexture(gl.TEXTURE_2D, source);
@@ -174,6 +182,7 @@ export function createMetalRenderer(canvas: HTMLCanvasElement) {
         gl.clearColor(0, 0, 0, 0);
         gl.clear(gl.COLOR_BUFFER_BIT);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
+        return !gl.isContextLost();
       },
       dispose,
     };
