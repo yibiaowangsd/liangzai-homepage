@@ -46,7 +46,7 @@
       "source_name": "JPCERT/CC",
       "source_url": "https://www.jpcert.or.jp/at/2026/at260034.html",
       "cover_image": null,
-      "published_at": "2026-10-27T00:25:00Z",
+      "published_at": "2026-10-27T00:20:34Z",
       "status": "published",
       "priority": "P1",
       "priority_reason": "缺陷位于被多种运行时和产品嵌入的通用解码器，攻击输入可经网络到达且上游确认可能导致代码执行；三条维护线已有修复而无通用缓解，资产盘点与升级具有明确紧迫性。"
@@ -61,7 +61,7 @@
       "source_name": "OpenAI",
       "source_url": "https://openai.com/index/introducing-gpt-6-1-terra/",
       "cover_image": null,
-      "published_at": "2026-10-27T00:25:00Z",
+      "published_at": "2026-10-27T00:20:34Z",
       "status": "published",
       "priority": "P2",
       "priority_reason": "模型已在产品与API正式可用，价格和模型标识直接影响高吞吐Agent选型；但主要能力与安全数字仍是厂商自评，尚不足以按独立技术突破列为P1。"
@@ -76,7 +76,7 @@
       "source_name": "ngcc.dev",
       "source_url": "https://ngcc.dev/reports/kem-38.html#kem-38-8",
       "cover_image": null,
-      "published_at": "2026-10-27T00:25:00Z",
+      "published_at": "2026-10-27T00:20:34Z",
       "status": "published",
       "priority": "P1",
       "priority_reason": "报告从公开密钥在完整128参数上恢复等价解封装能力，并以多组密钥、18个新密文和负控验证；这直接推翻核心不可区分假设且攻击成本低，属于需要及时关注的设计级结果。"
