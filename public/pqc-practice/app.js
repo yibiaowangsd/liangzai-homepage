@@ -361,6 +361,8 @@ function configureCatalogParameters() {
   $('#variant').replaceChildren(...candidate.parameters.map((item, index) => new Option(item.label, String(index))));
 }
 function showReports(candidate) {
+  const topic = ['kem-01', 'sign-01'].includes(candidate.id) ? 'aigis-plus' : candidate.id === 'kem-38' ? 'uvw-kem' : '';
+  showTopicLink(topic, true);
   const list = $('#report-list');
   const reports = reportIndex?.findings?.filter(item => item.candidateId === candidate.id) || [];
   $('#report-title').textContent = `${candidate.name} · 中文安全报告摘要`;
@@ -400,6 +402,7 @@ function showReports(candidate) {
   list.replaceChildren(ul);
 }
 function showNistReports() {
+  showTopicLink({ mlkem: 'ml-kem', mldsa: 'ml-dsa', slhdsa: 'slh-dsa' }[$('#family').value], false);
   const [label, url] = FIPS[$('#family').value];
   $('#report-panel').classList.remove('hidden');
   $('#report-title').textContent = '标准与实现评估';
@@ -455,7 +458,7 @@ async function switchLibrary() {
   sizes = null; resetFields(); stopCandidateWork();
   const directory = isNgcc();
   $('#catalog-detail').classList.toggle('hidden', !directory);
-  $('#report-panel').classList.toggle('hidden', !directory);
+  $('#report-panel').classList.add('hidden');
   $('#candidate-workbench').classList.add('hidden');
   $('#hash-field').classList.toggle('hidden', directory);
   $('#clear-all').classList.toggle('hidden', directory);
@@ -668,3 +671,21 @@ if (missing.length) {
 } else startWorker();
 renderSidebar();
 showNistReports();
+if (/^(kem|sign|kex|hash)-\d\d$/.test(requestedAlgorithm || '')) {
+  void (async () => {
+    $('#library').value = 'ngcc';
+    await switchLibrary();
+    if (!isNgcc() || !catalog?.some(candidate => candidate.id === requestedAlgorithm)) return;
+    $('#family').value = requestedAlgorithm;
+    $('#family').dispatchEvent(new Event('change'));
+  })();
+}
+
+function showTopicLink(topic, snapshot) {
+  const root = $('#report-topic');
+  if (!root) return;
+  const link = document.createElement('a');
+  link.href = topic ? `/topics/${topic}` : '/topics';
+  link.textContent = snapshot ? '查看技术档案，继续核对快照之后的进展' : '查看相关报道、原始来源与后续进展';
+  root.replaceChildren(link);
+}

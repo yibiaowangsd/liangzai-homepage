@@ -185,6 +185,7 @@ export default async function NewsPage({
       <section className="news-toolbar" aria-label="前沿新闻导航">
         <div className="news-toolbar-title">
           <h1>前沿新闻</h1>
+          <Link href="/topics" className="news-dossiers-link">按专题追踪进展</Link>
         </div>
         {!failed && selectedDate && (
           <nav className="news-day-controls" aria-label="本期日期与日刊切换">

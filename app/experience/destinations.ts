@@ -43,6 +43,24 @@ export const destinations = [
     keywords: "wasm 实验 lab 密钥 签名 哈希 验证 sm2 测试",
   },
   {
+    href: "/topics",
+    name: "技术档案",
+    description: "按算法、协议与项目持续追踪进展，回查原始证据。",
+    keywords: "topic 追踪 关注 档案 进展 ml-kem ml-dsa aigis tls uvw",
+  },
+  {
+    href: "/pqc-practice/interop.html",
+    name: "互通复验",
+    description: "导入原生测试包，批量核对验签与解封装结果。",
+    keywords: "interop 互通 批量 测试包 验签 解封装 原生 导出 复验",
+  },
+  {
+    href: "/wo",
+    name: "我 · 网页回顾",
+    description: "在本机读取生活记录，回看时间轴、多日变化与已有记忆。",
+    keywords: "wo 我 app myapp 生活 时间轴 记录 记忆 回顾",
+  },
+  {
     href: "/about",
     name: "关于我",
     description: "从山东大学，到量子安全工程。",

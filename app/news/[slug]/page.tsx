@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 import StoryImage from "../StoryImage";
+import { topicsForStory } from "../../../news/topics.js";
 import { newsListingHref, newsStoryHref, parseNewsContext, type NewsSearchParams } from "../navigation";
 import { nextEditionStory } from "../reading";
 import { newsEditionDate } from "../../../public/assets/news-search.js";
@@ -139,6 +140,7 @@ export default async function NewsDetailPage({
               {isFlash ? "本条快讯根据已核验的原始资料整理，保留关键事实和必要背景。原始发布日期见正文，页首日期为本站日报日期。" : "正文为原始资料的中文编译，长原文保留主要事实与论证；“量仔观察”是本站的独立总结与分析。原始发布日期见正文，页首日期为本站日报日期。"}
             </p>
           </footer>
+          {topicsForStory(item).length > 0 && <nav className="article-topic-links" aria-label="相关技术档案"><strong>继续追踪这个方向</strong>{topicsForStory(item).map(topic => <Link key={topic.slug} href={`/topics/${topic.slug}`}>{topic.name}</Link>)}</nav>}
           <nav className="article-reading-nav" aria-label="本期连续阅读">
             <Link className="article-edition-return" href={editionHref}>
               <span>返回本期</span>
