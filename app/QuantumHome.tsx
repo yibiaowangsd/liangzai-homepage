@@ -33,6 +33,7 @@ export default function QuantumHome() {
           <nav className="portal-topic-nav" aria-label="新闻栏目">{coreCategories.map(category => <Link key={category} href={`/news?category=${category}`}>{categoryLabels[category]}</Link>)}</nav>
           <Suspense fallback={<div className="portal-dispatch-empty" role="status"><p>正在读取最新简报…</p><Link href="/news">阅读前沿新闻</Link></div>}><HomeDispatch /></Suspense>
           <div className="portal-news-actions">
+            <Link href="/topics" className="portal-text-link">按算法与协议追踪后续进展</Link>
             <Link href="/news" className="portal-text-link">阅读完整技术简报</Link>
             <div><p>按板块订阅，每天在邮箱或群聊读前沿。<span>申请审核通过后接收。</span></p><Link href="/news/subscribe" className="portal-subscribe-button">订阅日报 <span aria-hidden="true">→</span></Link></div>
           </div>
@@ -49,7 +50,7 @@ export default function QuantumHome() {
             <div className="portal-lab-copy">
               <h3>在浏览器里，<br />验证一次密钥封装</h3>
               <p>生成 ML-KEM 密钥，完成封装与解封，比较双方共享秘密。也可以导入测试向量，检查签名与验签结果。</p>
-              <div className="portal-actions"><a className="portal-button" href="/pqc-practice">进入密码实验室</a><Link className="portal-text-link" href="/pqc-arsenal">阅读算法原理</Link></div>
+              <div className="portal-actions"><a className="portal-button" href="/pqc-practice">进入密码实验室</a><a className="portal-text-link" href="/pqc-practice/interop.html">导入测试包复验</a><Link className="portal-text-link" href="/pqc-arsenal">阅读算法原理</Link></div>
               <div className="portal-lab-meta"><span>ML-KEM</span><span>ML-DSA</span><span>SLH-DSA</span><span>SM2</span></div>
             </div>
           </div>

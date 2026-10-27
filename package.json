@@ -15,7 +15,11 @@
     "typecheck": "tsc --noEmit",
     "test:layout": "node scripts/check-responsive-layout.mjs",
     "lint": "bash scripts/sites-env.sh -- eslint . --ignore-pattern dist --ignore-pattern .next",
-    "models:prepare": "node scripts/prepare-character-models.mjs"
+    "models:prepare": "node scripts/prepare-character-models.mjs",
+    "predev": "node scripts/generate-topics.mjs && node scripts/generate-interop-provenance.mjs",
+    "prebuild": "node scripts/generate-topics.mjs && node scripts/generate-interop-provenance.mjs",
+    "topics:generate": "node scripts/generate-topics.mjs",
+    "pretypecheck": "node scripts/generate-topics.mjs && node scripts/generate-interop-provenance.mjs"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
