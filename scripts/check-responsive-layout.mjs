@@ -76,9 +76,102 @@ const contentSelectors = {
 };
 const output = resolve('outputs/responsive');
 await mkdir(output, { recursive: true });
+async function checkRestoredAbout(browser, name) {
+  // Run with motion enabled: reduced-motion-only checks miss capture interception.
+  const animatedContext = await browser.newContext({ reducedMotion: 'no-preference' });
+  try {
+    await animatedContext.route('https://api.wangyibiao.com/api/news/**', async route => {
+      const response = newsResponse(route.request().url());
+      await route.fulfill({ status: response.status, contentType: 'application/json', body: await response.text() });
+    });
+    const animatedPage = await animatedContext.newPage();
+    await animatedPage.setViewportSize({ width: 1440, height: 900 });
+    await animatedPage.goto(base, { waitUntil: 'networkidle' });
+    const gpu = await animatedPage.evaluate(() => {
+      const gl = document.createElement('canvas').getContext('webgl2');
+      if (!gl) return false;
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      return true;
+    });
+    // Chromium is the required real-model regression. Other engines still
+    // verify the direct-navigation path if their runner has no WebGL.
+    if (name === 'chromium') assert.equal(gpu, true, '3D restoration requires a WebGL-enabled Chromium runner');
+    console.log(`${name}: real-model WebGL available=${gpu}`);
+    // A slow cold model request used to silently replace the character.
+    await animatedContext.route('**/assets/models/observatory/liangzai-*.bin', async route => {
+      await new Promise(resolve => setTimeout(resolve, 2400));
+      await route.continue();
+    });
+    for (const entry of ['home', 'settings', 'search', 'laboratory', 'mobile-home']) {
+      await animatedPage.setViewportSize(entry === 'mobile-home' ? { width: 390, height: 844 } : { width: 1440, height: 900 });
+      await animatedPage.goto(base + (entry === 'laboratory' ? '/pqc-practice/index.html' : entry.endsWith('home') ? '/' : '/news'), { waitUntil: 'networkidle' });
+      await animatedPage.waitForFunction(() => document.querySelector('.experience')?.dataset.motion === 'active' || !document.querySelector('.experience'));
+      if (entry === 'search' || entry === 'mobile-home') {
+        await animatedPage.getByRole('button', { name: '搜索全站，快捷键 Ctrl 或 Command 加 K', exact: true }).click();
+        await animatedPage.locator('.jump-results a[href="/about"]').click();
+      } else if (entry === 'home') {
+        await animatedPage.locator('.desktop-nav a[href="/about"]').click();
+      } else {
+        await animatedPage.getByRole('button', { name: '打开显示设置', exact: true }).click();
+        await animatedPage.locator('.desktop-nav a[href="/about"]').click();
+      }
+      await animatedPage.locator('.site-settings-panel').waitFor({ state: 'hidden', timeout: 1500 });
+      await animatedPage.waitForFunction(() => !document.querySelector('dialog[open]'), undefined, { timeout: 1500 });
+      if (gpu) {
+        await animatedPage.waitForFunction(() => {
+          const actor = document.querySelector('.about-push__actor');
+          const canvas = actor?.querySelector('canvas');
+          const bounds = actor?.getBoundingClientRect();
+          return actor && getComputedStyle(actor).visibility === 'visible' && canvas?.width > 0 && bounds.left >= 0 && bounds.right < innerWidth;
+        }, undefined, { timeout: 10000 });
+        assert.equal(await animatedPage.locator('.about-push__actor img').count(), 0, 'original model must not turn into a flat image');
+        await animatedPage.screenshot({ path: `${output}/${name}-${entry}-about-original-model.png` });
+      }
+      await animatedPage.waitForURL('**/about', { timeout: 10000 });
+      await animatedPage.locator('.about-push').waitFor({ state: 'hidden', timeout: 10000 });
+      await animatedPage.locator('#main-content h1').waitFor();
+      assert.notEqual(await animatedPage.evaluate(() => document.body.style.overflow), 'hidden', `${name} ${entry}: transition restores directory scroll lock`);
+      assert.equal(await animatedPage.evaluate(() => !!document.querySelector('.experience')?.inert), false, `${name} ${entry}: destination stays inert`);
+      assert.equal(await animatedPage.locator('[data-identity-card] canvas').count(), 0, 'restored identity must not require a GPU');
+      const cardStage = animatedPage.getByRole('complementary', { name: 'Wang Yibiao 的悬浮个人名片', exact: true });
+      await cardStage.scrollIntoViewIfNeeded();
+      if (entry === 'mobile-home') {
+        await animatedPage.screenshot({ path: `${output}/${name}-restored-card-mobile.png` });
+      } else {
+        const card = animatedPage.locator('[data-identity-card]');
+        // The original levitation intentionally never becomes stationary.
+        // Move the real pointer to its current bounds instead of asking
+        // locator.hover() to wait for an animation-free element.
+        const bounds = await card.boundingBox();
+        assert.ok(bounds, 'restored card has visible bounds');
+        await animatedPage.mouse.move(bounds.x + bounds.width * .85, bounds.y + bounds.height * .2);
+        await animatedPage.waitForFunction(() => document.querySelector('[data-identity-card]')?.style.getPropertyValue('--rotate-y'));
+        await animatedPage.mouse.move(5, 5);
+        await animatedPage.waitForFunction(() => !document.querySelector('[data-identity-card]')?.hasAttribute('style'));
+      }
+      await animatedPage.getByRole('button', { name: '打开显示设置', exact: true }).click();
+      await animatedPage.locator('.site-settings-panel').waitFor();
+      await animatedPage.keyboard.press('Escape');
+      await animatedPage.locator('.site-settings-panel').waitFor({ state: 'hidden' });
+      const homeLink = animatedPage.getByRole('link', { name: '返回 Wang Yibiao 的主页', exact: true });
+      await homeLink.focus();
+      await homeLink.press('Enter');
+      await animatedPage.waitForURL(base + '/');
+      await animatedPage.locator('#home-title').waitFor();
+    }
+  } finally {
+    await animatedContext.close();
+  }
+}
+
 const failures = [];
 let checked = 0;
 try {
+  // Fail early on the changed journeys before the full responsive matrix.
+  for (const [name, engine] of Object.entries({ chromium, firefox, webkit })) {
+    const browser = await engine.launch();
+    try { await checkRestoredAbout(browser, name); } finally { await browser.close(); }
+  }
   for (const [name, engine] of Object.entries({ chromium, firefox, webkit })) {
     const browser = await engine.launch();
     try {
@@ -255,83 +348,6 @@ try {
       await page.goto(base + '/observatory?form=wave', { waitUntil: 'networkidle' });
       assert.equal(new URL(page.url()).pathname, '/');
       await context.close();
-      // Run with motion enabled: reduced-motion-only checks miss capture interception.
-      const animatedContext = await browser.newContext({ reducedMotion: 'no-preference' });
-      try {
-        await animatedContext.route('https://api.wangyibiao.com/api/news/**', async route => {
-          const response = newsResponse(route.request().url());
-          await route.fulfill({ status: response.status, contentType: 'application/json', body: await response.text() });
-        });
-        const animatedPage = await animatedContext.newPage();
-        await animatedPage.setViewportSize({ width: 1440, height: 900 });
-        await animatedPage.goto(base, { waitUntil: 'networkidle' });
-        const gpu = await animatedPage.evaluate(() => {
-          const gl = document.createElement('canvas').getContext('webgl2');
-          if (!gl) return false;
-          gl.getExtension('WEBGL_lose_context')?.loseContext();
-          return true;
-        });
-        // Chromium is the required real-model regression. Other engines still
-        // verify the direct-navigation path if their runner has no WebGL.
-        if (name === 'chromium') assert.equal(gpu, true, '3D restoration requires a WebGL-enabled Chromium runner');
-        console.log(`${name}: real-model WebGL available=${gpu}`);
-        // A slow cold model request used to silently replace the character.
-        await animatedContext.route('**/assets/models/observatory/liangzai-*.bin', async route => {
-          await new Promise(resolve => setTimeout(resolve, 2400));
-          await route.continue();
-        });
-        for (const entry of ['home', 'settings', 'search', 'laboratory', 'mobile-home']) {
-          await animatedPage.setViewportSize(entry === 'mobile-home' ? { width: 390, height: 844 } : { width: 1440, height: 900 });
-          await animatedPage.goto(base + (entry === 'laboratory' ? '/pqc-practice/index.html' : entry.endsWith('home') ? '/' : '/news'), { waitUntil: 'networkidle' });
-          await animatedPage.waitForFunction(() => document.querySelector('.experience')?.dataset.motion === 'active' || !document.querySelector('.experience'));
-          if (entry === 'search' || entry === 'mobile-home') {
-            await animatedPage.getByRole('button', { name: '搜索全站，快捷键 Ctrl 或 Command 加 K', exact: true }).click();
-            await animatedPage.locator('.jump-results a[href="/about"]').click();
-          } else if (entry === 'home') {
-            await animatedPage.locator('.desktop-nav a[href="/about"]').click();
-          } else {
-            await animatedPage.getByRole('button', { name: '打开显示设置', exact: true }).click();
-            await animatedPage.locator('.desktop-nav a[href="/about"]').click();
-          }
-          await animatedPage.locator('.site-settings-panel').waitFor({ state: 'hidden', timeout: 1500 });
-          await animatedPage.waitForFunction(() => !document.querySelector('dialog[open]'), undefined, { timeout: 1500 });
-          if (gpu) {
-            await animatedPage.waitForFunction(() => {
-              const actor = document.querySelector('.about-push__actor');
-              const canvas = actor?.querySelector('canvas');
-              const bounds = actor?.getBoundingClientRect();
-              return actor && getComputedStyle(actor).visibility === 'visible' && canvas?.width > 0 && bounds.left >= 0 && bounds.right < innerWidth;
-            }, undefined, { timeout: 10000 });
-            assert.equal(await animatedPage.locator('.about-push__actor img').count(), 0, 'original model must not turn into a flat image');
-            await animatedPage.screenshot({ path: `${output}/${name}-${entry}-about-original-model.png` });
-          }
-          await animatedPage.waitForURL('**/about', { timeout: 10000 });
-          await animatedPage.locator('.about-push').waitFor({ state: 'hidden', timeout: 10000 });
-          await animatedPage.locator('#main-content h1').waitFor();
-          assert.notEqual(await animatedPage.evaluate(() => document.body.style.overflow), 'hidden', `${name} ${entry}: transition restores directory scroll lock`);
-          assert.equal(await animatedPage.evaluate(() => !!document.querySelector('.experience')?.inert), false, `${name} ${entry}: destination stays inert`);
-          assert.equal(await animatedPage.locator('[data-identity-card] canvas').count(), 0, 'restored identity must not require a GPU');
-          if (entry === 'mobile-home') {
-            await animatedPage.locator('[data-identity-card]').scrollIntoViewIfNeeded();
-            await animatedPage.screenshot({ path: `${output}/${name}-restored-card-mobile.png` });
-          } else {
-            const card = animatedPage.locator('[data-identity-card]');
-            await card.hover({ position: { x: 410, y: 40 } });
-            await animatedPage.waitForFunction(() => document.querySelector('[data-identity-card]')?.style.getPropertyValue('--rotate-y'));
-            await animatedPage.mouse.move(5, 5);
-            await animatedPage.waitForFunction(() => !document.querySelector('[data-identity-card]')?.hasAttribute('style'));
-          }
-          await animatedPage.getByRole('button', { name: '打开显示设置', exact: true }).click();
-          await animatedPage.locator('.site-settings-panel').waitFor();
-          await animatedPage.keyboard.press('Escape');
-          await animatedPage.locator('.site-settings-panel').waitFor({ state: 'hidden' });
-          await animatedPage.getByRole('link', { name: '返回 Wang Yibiao 的主页', exact: true }).click();
-          await animatedPage.waitForURL(base + '/');
-          await animatedPage.locator('#home-title').waitFor();
-        }
-      } finally {
-        await animatedContext.close();
-      }
       console.log(`${name}: responsive routes, centered footer, settings dropdown, search, themes, intro, chapter anchors, catalog, story and model controls checked`);
     } finally {
       await browser.close();
