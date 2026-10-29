@@ -50,7 +50,7 @@ export default function QuantumHome() {
             <div className="portal-lab-copy">
               <h3>在浏览器里，<br />验证一次密钥封装</h3>
               <p>生成 ML-KEM 密钥，完成封装与解封，比较双方共享秘密。也可以导入测试向量，检查签名与验签结果。</p>
-              <div className="portal-actions"><a className="portal-button" href="/pqc-practice">进入密码实验室</a><a className="portal-text-link" href="/pqc-practice/interop.html">导入测试包复验</a><Link className="portal-text-link" href="/pqc-arsenal">阅读算法原理</Link></div>
+              <div className="portal-actions"><a className="portal-button" href="/pqc-practice">进入密码实验室</a><Link className="portal-text-link" href="/pqc-arsenal">阅读算法原理</Link></div>
               <div className="portal-lab-meta"><span>ML-KEM</span><span>ML-DSA</span><span>SLH-DSA</span><span>SM2</span></div>
             </div>
           </div>

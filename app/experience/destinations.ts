@@ -49,12 +49,6 @@ export const destinations = [
     keywords: "topic 追踪 关注 档案 进展 ml-kem ml-dsa aigis tls uvw",
   },
   {
-    href: "/pqc-practice/interop.html",
-    name: "互通复验",
-    description: "导入原生测试包，批量核对验签与解封装结果。",
-    keywords: "interop 互通 批量 测试包 验签 解封装 原生 导出 复验",
-  },
-  {
     href: "/wo",
     name: "我 · 网页回顾",
     description: "在本机读取生活记录，回看时间轴、多日变化与已有记忆。",

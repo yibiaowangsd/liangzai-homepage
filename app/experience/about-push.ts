@@ -1,5 +1,4 @@
 import { gsap } from "gsap";
-import { createAboutPushImage } from "./about-push-image";
 import "./about-push.css";
 type PushScene = Awaited<ReturnType<typeof import("./three/about-push-scene").createAboutPushScene>>;
 import { freezePage } from "./page-snapshot";
@@ -108,16 +107,11 @@ export function runAboutPush(source: HTMLElement, options: {
   };
   void (async () => {
     try {
-      let loaded: PushScene;
-      try {
-        const { createAboutPushScene } = await import("./three/about-push-scene");
-        if (done) return;
-        loaded = await createAboutPushScene(canvas, AbortSignal.any([controller.signal, AbortSignal.timeout(2200)]));
-      } catch {
-        if (done) return;
-        canvas.hidden = true;
-        loaded = await createAboutPushImage(actor, controller.signal);
-      }
+      const { createAboutPushScene } = await import("./three/about-push-scene");
+      if (done) return;
+      // Keep the original articulated model throughout the loading budget.
+      // A cold/mobile load must not silently become a different, flat character.
+      const loaded = await createAboutPushScene(canvas, controller.signal);
       if (done) { loaded.dispose(); return; }
       scene = loaded;
       const frozen = freezePage(source);
