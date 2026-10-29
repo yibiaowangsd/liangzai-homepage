@@ -9,10 +9,7 @@ on:
       - 'app/wo/**'
       - 'news/topics.js'
       - 'scripts/generate-topics.mjs'
-      - 'scripts/generate-interop-provenance.mjs'
       - 'tests/technical-dossiers.test.mjs'
-      - 'tests/pqc-interop.test.mjs'
-      - 'tests/pqc-native.test.mjs'
       - 'tests/wo-archive.test.mjs'
       - 'tests/knowledge-workspaces-rendering.test.mjs'
       - 'news-worker/**'
@@ -44,9 +41,11 @@ on:
       - 'app/experience/AboutPushTransition.tsx'
       - 'app/experience/PageArrival.tsx'
       - 'app/experience/about-push*'
+      - 'app/experience/three/about-push-scene.ts'
+      - 'tests/about-restoration.test.mjs'
+      - 'next.config.ts'
       - 'app/experience/page-arrival.ts'
       - 'tests/page-arrival.test.mjs'
-      - 'tests/about-push-image.test.mjs'
       - 'tests/news-*.test.mjs'
       - 'scripts/check-subscriptions.mjs'
       - 'scripts/check-news-calendar.mjs'
@@ -63,7 +62,6 @@ on:
       - 'scripts/check-responsive-layout.mjs'
       - 'tests/mobile-sidebar.test.mjs'
       - 'tests/reading-workspaces.test.mjs'
-      - 'tests/metal-card-session.test.mjs'
       - 'public/news-covers/**'
       - '.github/workflows/news-frontend-check.yml'
   pull_request:
@@ -73,10 +71,7 @@ on:
       - 'app/wo/**'
       - 'news/topics.js'
       - 'scripts/generate-topics.mjs'
-      - 'scripts/generate-interop-provenance.mjs'
       - 'tests/technical-dossiers.test.mjs'
-      - 'tests/pqc-interop.test.mjs'
-      - 'tests/pqc-native.test.mjs'
       - 'tests/wo-archive.test.mjs'
       - 'tests/knowledge-workspaces-rendering.test.mjs'
       - 'news-worker/**'
@@ -108,9 +103,11 @@ on:
       - 'app/experience/AboutPushTransition.tsx'
       - 'app/experience/PageArrival.tsx'
       - 'app/experience/about-push*'
+      - 'app/experience/three/about-push-scene.ts'
+      - 'tests/about-restoration.test.mjs'
+      - 'next.config.ts'
       - 'app/experience/page-arrival.ts'
       - 'tests/page-arrival.test.mjs'
-      - 'tests/about-push-image.test.mjs'
       - 'tests/news-*.test.mjs'
       - 'scripts/check-subscriptions.mjs'
       - 'scripts/check-news-calendar.mjs'
@@ -127,7 +124,6 @@ on:
       - 'scripts/check-responsive-layout.mjs'
       - 'tests/mobile-sidebar.test.mjs'
       - 'tests/reading-workspaces.test.mjs'
-      - 'tests/metal-card-session.test.mjs'
       - 'public/news-covers/**'
       - '.github/workflows/news-frontend-check.yml'
   workflow_dispatch:
@@ -150,7 +146,7 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/page-arrival.test.mjs tests/about-push-image.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs tests/site-theme.test.mjs tests/site-typography.test.mjs tests/layout-redesign.test.mjs tests/mobile-sidebar.test.mjs tests/reading-workspaces.test.mjs tests/metal-card-session.test.mjs tests/technical-dossiers.test.mjs tests/pqc-interop.test.mjs tests/pqc-native.test.mjs tests/wo-archive.test.mjs tests/knowledge-workspaces-rendering.test.mjs
+      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/about-restoration.test.mjs tests/page-arrival.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs tests/site-theme.test.mjs tests/site-typography.test.mjs tests/layout-redesign.test.mjs tests/mobile-sidebar.test.mjs tests/reading-workspaces.test.mjs tests/technical-dossiers.test.mjs tests/wo-archive.test.mjs tests/knowledge-workspaces-rendering.test.mjs
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: node scripts/check-subscriptions.mjs
       - run: node scripts/check-news-journey.mjs

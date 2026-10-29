@@ -47,6 +47,5 @@ next-env.d.ts
 
 /public/pqc-practice/about-push/
 
-# Rebuilt from published sources and the released WASM before dev/check/build.
+# Rebuilt from published sources before dev/check/build.
 /app/topics/topic-index.json
-/public/pqc-practice/interop-provenance.json

@@ -120,7 +120,7 @@ export function SiteFooter() {
         <a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer" className="studio-footer-cta">GitHub</a>
       </div>
       <nav className="footer-groups" aria-label="页脚导航">
-        <div><span>作品</span><a href="/pqc-practice/interop.html">互通复验</a><Link href="/wo">我 · 网页回顾</Link><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">本站源码</a><Link href="/models">角色模型</Link></div>
+        <div><span>作品</span><Link href="/wo">我 · 网页回顾</Link><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">本站源码</a><Link href="/models">角色模型</Link></div>
         <div><span>阅读</span><Link href="/news">前沿新闻</Link><Link href="/topics">技术进展档案</Link><Link href="/pqc-arsenal">算法原理</Link><Link href="/archive">量仔小传</Link></div>
         <div><span>关于</span><Link href="/about#journey">个人经历</Link><Link href="/about#contact">联系与交流</Link></div>
       </nav>
