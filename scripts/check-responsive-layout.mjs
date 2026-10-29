@@ -145,9 +145,24 @@ async function checkRestoredAbout(browser, name) {
         const bounds = await card.boundingBox();
         assert.ok(bounds, 'restored card has visible bounds');
         await animatedPage.mouse.move(bounds.x + bounds.width * .85, bounds.y + bounds.height * .2);
-        await animatedPage.waitForFunction(() => document.querySelector('[data-identity-card]')?.style.getPropertyValue('--rotate-y'));
+        await animatedPage.waitForFunction(() => {
+          const card = document.querySelector('[data-identity-card]');
+          const matrix = new DOMMatrixReadOnly(getComputedStyle(card).transform);
+          return Math.abs(matrix.m13) + Math.abs(matrix.m23) > .002;
+        }, undefined, { timeout: 2500 });
         await animatedPage.mouse.move(5, 5);
-        await animatedPage.waitForFunction(() => !document.querySelector('[data-identity-card]')?.hasAttribute('style'));
+        await animatedPage.waitForFunction(() => {
+          const card = document.querySelector('[data-identity-card]');
+          const matrix = new DOMMatrixReadOnly(getComputedStyle(card).transform);
+          return Math.abs(matrix.m13) + Math.abs(matrix.m23) < .001;
+        }, undefined, { timeout: 2500 }).catch(async error => {
+          console.error(`${name} ${entry}: identity reset`, await card.evaluate(element => ({
+            style: element.getAttribute('style'), transform: getComputedStyle(element).transform,
+            hover: element.parentElement.parentElement.parentElement.matches(':hover'),
+          })));
+          await animatedPage.screenshot({ path: `${output}/${name}-${entry}-identity-reset-failed.png` });
+          throw error;
+        });
       }
       await animatedPage.getByRole('button', { name: '打开显示设置', exact: true }).click();
       await animatedPage.locator('.site-settings-panel').waitFor();
