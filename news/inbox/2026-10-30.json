@@ -1,0 +1,207 @@
+{
+  "schema_version": 3,
+  "date": "2026-10-30",
+  "coverage": {
+    "pqc": {
+      "count": 1,
+      "note": "检索近7日IACR ePrint、arXiv全文、NIST算法资料、国内高校与企业研发及主要实现发布；收录一项带Lean证明和可复现实验的NTT旋转因子故障秩上界研究。其余线索多为仅有摘要、旧成果改题或缺乏标准参数验证，未为凑数采用。"
+    },
+    "migration": {
+      "count": 0,
+      "note": "检查微软、Google Cloud、AWS、NCSC、ETSI、国内密码厂商、运营商和金融行业的方案与采用入口，并回看近7期；最新可读材料为既有路线图、会议宣传或昨日已报IBM套件，未发现本期可独立核实的迁移增量。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "检查IETF TLS、EMU、SSH、IKE/IPsec、QUIC、PKI及国内TLCP相关入口；EAP-AKA' -04为10月28日工作组草案修订且昨日coverage已记录，同期EAP-TLS已成稿，未发现新的实现、互通、部署或故障证据。"
+    },
+    "standards": {
+      "count": 1,
+      "note": "检查IETF Datatracker/RFC Editor、NIST、ETSI、ISO/IEC、ITU-T及国内标准公告；收录Wathiqa证据记录个人草案-02的编码与验证规则变化，并明确其无IETF流、无WG采纳和未独立密码审查。其他新增为昨日已报或仅流程元数据。"
+    },
+    "security": {
+      "count": 2,
+      "note": "检查JVN/JPCERT、CISA、CERT-EU、Siemens ProductCERT、CNCERT及国内漏洞入口和研究者披露；收录Struts REST动态字段授权绕过与Mendix SAML断言重放。排除仅有CVE索引、无受影响范围或无利用证据的普通缺陷。"
+    },
+    "ai": {
+      "count": 2,
+      "note": "检查模型/模型卡、权重和许可证、研究预览、API与推理生态、HELM/METR/MLCommons及国内产品入口；收录Mistral Large 4开权重生态和Genie 4研究预览。厂商榜单均按自报或指定评测口径表述，未写成独立验证。"
+    },
+    "ngcc": {
+      "count": 0,
+      "note": "实际检查ICCS征集公告与算法评议入口、ngcc.dev首页、报告索引、分类、Performance和Side-Channel页面；10月29日后未见签名、KEM或密钥交换候选的新finding、规格更新、作者回应、修复或复测，哈希候选更新未纳入。"
+    },
+    "flash": {
+      "count": 2,
+      "note": "从八栏候选中复核事实完备但不需长篇的更新；收录Granite Switch 4.1.1模块化补丁和Claude用量成本分析API测试版。排除普通提交、营销预告与尚未正式可用的低信息量线索。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261030-ntt-twiddle-fault-rank-ceiling",
+      "title": "形式化研究给出ML-KEM与ML-DSA旋转因子故障的泄漏秩上界",
+      "summary": "一项10月27日修订的研究把NTT旋转因子固定替换建模为线性映射，给出ML-KEM与ML-DSA各层单故障泄漏秩，并证明每层选一个故障时仅留下两个或一个不可确定系数。作者用Lean 4、标准模数消元和受控软件实验核对结论，但没有复现实物注入，也未建立ML-DSA公钥差分到私钥恢复的完整链路。",
+      "content": "原始日期：2026-10-27。arXiv论文《Rank Ceiling for Twiddle-Perturbation Faults on the Forward NTT》研究的是ML-KEM与ML-DSA秘密多项式前向NTT中的固定旋转因子被替换后，正确输出与故障输出之差能泄漏多少线性信息。模型覆盖把一个表项置零、换成另一非零域元素以及满足条件的位翻转；同一表项在一次调用里的每次使用都取固定错误值，并假定故障位置和替换值已知。\n\n作者把差分写成从秘密多项式到变换差的线性映射。单个旋转因子的秩等于共享它的蝶形数量：在256维ML-KEM网络中从首层128逐层减半到末层2，在完整ML-DSA网络中末层降到1。论文进一步证明，每层各替换一个旋转因子时，ML-KEM差分映射的秩为254，核空间只剩常数项和一次项；ML-DSA的秩为255，只剩常数项。这是泄漏维度结论，不等于这些系数已经从真实设备被完整恢复。\n\n对ML-KEM，论文讨论了可观测的公钥对：若只有一个秘密多项式的NTT受影响，其余矩阵、噪声和计算不变，正确与故障公钥之差等于公开矩阵某列乘以变换差。只要该列有可逆项，就能重建变换差，再把候选限制在差分映射的仿射空间和ML-KEM小系数范围内。作者没有把这一候选集合称为完整解封装私钥，也没有用额外公钥约束证明公开信息下的唯一性。\n\nML-DSA的边界更弱。公钥只发布Power2Round后的高位，观察者不能直接得到舍入前差分；论文给出高位差分完全消失的概率上界，但依赖公开矩阵条目独立均匀等假设。作者明确说，没有建立从两份压缩公钥重建变换差的方法，也没有确定秘密候选数量。因此这项工作不能被解读成对FIPS 204的一次实用密钥恢复。\n\n证据由三层组成：Lean 4在特征不为2的域上证明256系数网络形状的秩结论；精确高斯消元在ML-KEM的q=3329和ML-DSA的q=8380417下复核；受控Cortex-M4/QEMU实验用调试器强制置零并观察到ML-KEM差分可重建。实验没有实施电磁、激光或电压故障，ML-DSA只观察到公钥字节变化，故障送达概率、故障公钥释放概率以及优化实现中的防护效果也都不在结论内。\n\n论文还把秩结果与插值、加权校验等NTT故障检测联系起来。末层少量错误落在既有单错或双错保证内，早期层产生的多错误则超出这些保证；但超出保证并不自动意味着能绕过检测。文中常见的约1/q漏检估计还要求错误值具有随机性或独立性，而固定表项替换并不自然满足这些假设。\n\n## 量仔观察\n\n这项工作的价值在于把“一个旋转因子故障泄漏多少”从案例攻击推进到可审计的秩边界，并把ML-KEM和ML-DSA的可观测性差异说清。工程团队不应据此宣称标准算法已破，而应把它当作实现评估的结构化测试：逐层核对旋转因子存储、故障检测覆盖和故障公钥是否可能外发，同时优先补足真实注入、优化代码与公开信息唯一恢复之间仍缺失的证据。",
+      "category": "pqc",
+      "tags": [
+        "ML-KEM",
+        "ML-DSA",
+        "NTT",
+        "故障分析",
+        "形式化验证"
+      ],
+      "source_name": "arXiv全文",
+      "source_url": "https://arxiv.org/html/2610.30383v3",
+      "cover_image": null,
+      "published_at": "2026-10-30T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "给出标准参数下可复核的泄漏维度上界，并有Lean证明和实验材料；但攻击链尚不完整、未做物理注入，暂不足以定为需立即处置的P1。"
+    },
+    {
+      "slug": "20261030-wathiqa-pqc-ers-02",
+      "title": "Wathiqa后量子证据记录草案升至-02：收紧CBOR解码、密钥钉扎与时间锚验证",
+      "summary": "个人Internet-Draft draft-alhemeiri-wathiqa-pqc-ers-02更新长期签名证据链格式，新增精确字节编码与往返校验规则，拒绝重复键、未知字段和未定义标签，并要求每一链路先按依赖方钉扎的签名密钥验证。草案还细化随机信标见证与DER兼容边界，但没有IETF工作组采纳、正式流或独立密码审查。",
+      "content": "原始日期：2026-10-29；版本更新：draft-alhemeiri-wathiqa-pqc-ers-02。该个人Internet-Draft尝试在RFC 4998 Evidence Record Syntax基础上定义可跨算法续签的长期证据记录：每个链路用新的签名算法重新见证文档，并提交前一链路，使数据能在旧算法退役前续接到后量子算法。Datatracker把它标为Active Internet-Draft（individual）、无RFC流，拟定状态为Experimental；它不是IETF工作组共识或标准。\n\n-02的核心增量是把“同一逻辑结构只有一种可接受字节表示”写成规范规则。CBOR字段按结构族规定的顺序或RFC 8949字节序排列，数字和长度必须最短编码，禁止未定义标签、无限长度、重复键、尾随字节与未知字段；解码后必须按同一规则重新编码并逐字节比较。草案点名tag 55799等歧义路径，目的是避免不同实现把同一字节串读成不同记录，进而破坏链哈希的一致性。\n\n链路版本也被严格约束：wire version 1不写wire_v字段，显式写成1要拒绝；版本2和3必须带chain_index、certificate_id与not_before，其中not_before可为空但字段不可省略。没有日志回执时inclusion字段必须完全缺席，不能用null占位。-02还定义4096字节分块、零填充与RFC 6962树形成内容地址，并补齐树头、回执和签名字节布局。\n\n验证过程先要求依赖方提供钉扎的签名者密钥集合，每个链路都要在验签前确认公钥属于该集合。草案强调，记录自带的公钥只能证明“有人用这把钥匙签过”，不能证明签名者身份；任何人都能替换文档、记录和自有密钥。版本3信标见证还要求按来源钉扎证书，核对脉冲签名、哈希链、证书标识、索引和相邻脉冲关系，并把INVALID、SOURCE_UNPINNED、LEGACY_UNAUTHENTICATED等结果分开报告。\n\n算法标识目前列出SLH-DSA-SHAKE-256s、ML-DSA-87和预标准Falcon-1024。前两者使用NIST CSOR OID，Falcon使用不能互操作的实验OID，等待FIPS 206后替换。草案也承认随机信标的脉冲签名仍是RSA：长期后量子时间声明要依赖SHA-512哈希链与独立保存的公开链副本，单靠未来可被伪造的经典签名不足以维持几十年证据力。\n\n参考实现状态并不等于规范成熟度。Python实现是线格式权威，TypeScript可解三种线版本；JavaScript SDK和Rust端口只读版本1和2并拒绝版本3。草案自述有共享测试向量和机器检查模型，但明确说明安全论证没有经过独立密码学审查，DER形式也还不能承载版本3的信标见证，两个媒体类型登记尚未提交。\n\n## 量仔观察\n\n这次更新真正有价值的不是又增加几种后量子算法名称，而是把长期证据系统最容易被忽略的实现一致性、身份钉扎和时间来源分层写实。它仍是单作者实验草案，部署者不应把PEN、OID或IETF托管误当认可；更合适的做法是用-02的负面测试和失败状态作为互操作实验材料，并等待独立评审、工作组讨论及媒体类型和算法标识稳定。",
+      "category": "standards",
+      "tags": [
+        "IETF草案",
+        "长期签名",
+        "证据记录",
+        "CBOR",
+        "算法敏捷"
+      ],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/html/draft-alhemeiri-wathiqa-pqc-ers-02",
+      "cover_image": null,
+      "published_at": "2026-10-30T00:10:00.000Z",
+      "status": "published",
+      "priority": "P3",
+      "priority_reason": "编码和验证规则有明确技术增量，适合互操作跟踪；但它仍是无工作组采纳的个人实验草案，且安全论证未独立审查，影响范围有限。"
+    },
+    {
+      "slug": "20261030-struts-rest-json-anysetter",
+      "title": "Struts 2 REST插件动态字段绕过参数授权：7.4.0新增显式允许开关",
+      "summary": "JVN披露Apache Struts 2 REST插件在Jackson @JsonAnySetter动态属性上未执行@StrutsParameter授权检查，影响7.2.1至7.3.0。问题仅在启用注解强制且应用把带any-setter的Action或Model绑定到REST请求体时成立，可能造成数据篡改；7.4.0增加单独开关并要求显式允许动态键。",
+      "content": "原始日期：2026-10-29。JVN#82782759披露Apache Struts 2 REST插件的ParameterAuthorizingModule没有覆盖Jackson的@JsonAnySetter成员，受影响版本为7.2.1至7.3.0。该模块原本在把JSON或XML请求体反序列化到Action或Model时执行@StrutsParameter限制，防止未经授权的参数被赋值，但动态命名属性走了另一条路径。\n\n触发条件很具体：应用必须设置struts.parameters.requireAnnotations=true，并且在接收REST请求体的Action或Model类中自行声明@JsonAnySetter字段或方法。攻击者提交的动态键值会进入该成员，却不经过@StrutsParameter的授权判定。JVN给出的直接影响是数据篡改，并未声称存在通用远程代码执行或已确认在野利用。\n\n问题的危险之处在于它破坏了开发者对“启用注解强制即默认拒绝”的边界认知。普通声明字段仍受授权模块控制，而any-setter专门收集未预先声明的键，恰好把输入面扩展到运行时。只有使用这一组合的应用受影响，因此资产排查应同时检查Struts版本、REST插件配置和业务模型注解，不能只按组件版本笼统判断可利用性。\n\nApache在7.4.0及以后版本提供修复路径：升级后设置struts.rest.anySetter.requireAnnotations=true，并在确实需要接收动态键的any-setter上添加@StrutsParameter(allowDynamicKeys=true)。没有该注解的any-setter将不再接收值。这个设计把动态属性从隐式放行改成逐点允许，便于代码审查确认每个入口的业务必要性。\n\n无法立即升级时，JVN建议避免在接收REST参数的Action或Model中使用@JsonAnySetter；若业务不能移除，则必须在存储前验证键和值。这里的“验证”需要由应用实现，不能等同于框架授权已经补上。对外暴露的REST端点还应结合日志回看异常动态键，评估问题是否已被试探，但公开通告没有提供攻击指纹或利用样本。\n\n该通告由JPCERT/CC与开发者协调发布，JVN记录了报告者与修复信息。公开页面没有列出CVE编号，也没有给出CVSS分数；这些缺失不影响版本和缓解事实，但意味着不能用编号或评分替代场景判断。当前证据支持“条件性授权绕过和数据篡改风险”，不支持把所有Struts 7.2.1至7.3.0实例描述成可直接攻破。\n\n## 量仔观察\n\n这类漏洞提醒团队，安全注解的保护范围必须沿实际反序列化路径验证，而不能只看全局开关名称。优先动作是用代码搜索定位@JsonAnySetter与REST绑定类的交集，再升级并启用新开关；若没有这一组合，可记录为不适用而非盲目停机。修复后的回归测试应同时覆盖正常动态键、未注解动态键和嵌套对象，避免业务兼容压力把新开关再次关闭。",
+      "category": "security",
+      "tags": [
+        "Apache Struts",
+        "REST",
+        "Jackson",
+        "授权绕过",
+        "数据篡改"
+      ],
+      "source_name": "JVN / JPCERT/CC",
+      "source_url": "https://jvn.jp/en/jp/JVN82782759/index.html",
+      "cover_image": null,
+      "published_at": "2026-10-30T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "影响公开REST应用的输入授权边界，版本、条件和修复均有协调通告支撑；但需特定配置与业务注解，且暂无在野利用证据。"
+    },
+    {
+      "slug": "20261030-mendix-saml-replay",
+      "title": "Mendix SAML模块修复断言重放：IdP发起登录可被有效响应再次使用",
+      "summary": "Siemens ProductCERT披露CVE-2026-89209：Mendix SAML模块在IdP发起的认证流程中未正确阻止有效SAML响应重放，远程未认证攻击者在取得可重放断言并满足用户交互条件后可能进入应用。Mendix 9兼容版需升至3.6.29，10和11兼容版需升至4.2.4；临时措施是禁用IdP发起SSO。",
+      "content": "原始日期：2026-10-26。Siemens ProductCERT在SSA-137528中披露Mendix SAML模块的CVE-2026-89209：受影响版本没有在IdP发起的认证流程中正确防止SAML断言重放，远程未认证攻击者可能把一份有效SAML响应再次提交，获得对应用的未授权访问。通告版本为V1.0，10月26日发布，10月29日被更多应急入口转引，但原始事件日期不能按转载日计算。\n\n受影响范围按Mendix平台代际区分。Mendix 9兼容的SAML模块3.6.29之前版本受影响，应升级到3.6.29或更高；Mendix 10与11兼容的模块4.2.4之前版本受影响，应升级到4.2.4或更高。这里的对象是可复用的SAML模块，而不是所有Mendix应用或所有SAML身份提供方，资产清单需要先确认应用实际打包的模块版本。\n\n攻击前提也需要保留。ProductCERT给出的CVSS 3.1向量包含网络可达、攻击复杂度高、无需既有权限但需要用户交互；CVSS 4.0则把用户条件写为被动参与。攻击者仍需取得一份有效SAML响应并在IdP发起流程中重放，通告没有说明该响应可由漏洞本身窃取，也没有确认在野利用。成功后可能造成较高的机密性和完整性影响，但不直接影响可用性。\n\n机制上，SAML断言必须结合唯一标识、时间窗口、受众和会话上下文进行一次性消费或可靠去重。IdP发起流程没有由服务提供方预先创建并绑定的认证请求，若实现只验证签名与时效而未记录已消费响应，合法签名就可能被攻击者重复使用。ProductCERT把问题归为CWE-294“Capture-replay认证绕过”，而不是签名算法被破坏。\n\n首选处置是升级对应代际的模块版本。无法立即升级时，Siemens给出的具体缓解是禁用IdP发起SSO，转用由应用发起、能绑定请求状态的流程；同时仍应按产品指南保护网络访问。单独缩短会话时长或提高SAML签名算法强度并不能解决断言已经被接受后再次消费的问题，验证升级应包含同一响应第二次提交必须失败的回归用例。\n\n公开通告没有给出利用代码、检测规则或已发生事故的证据，因此本期把它定为重要修复而非在野紧急事件。对使用集中身份平台的组织，风险取决于断言暴露面、IdP发起登录是否开启、应用中该模块覆盖的用户范围，以及是否已有响应标识缓存。升级前后应结合身份提供方和应用日志核对重复响应ID、异常来源和短时间跨地点登录。\n\n## 量仔观察\n\n这次修复的工程意义在于说明“签名有效”并不等于“本次登录新鲜”。SAML治理清单应把响应唯一性和一次性消费列为独立控制，特别是IdP发起流程。排查时不要把CVSS分数直接写成已被利用，也不要只更新身份提供方；真正需要升级的是应用侧Mendix SAML模块，并用同一断言重放测试确认修复生效。",
+      "category": "security",
+      "tags": [
+        "CVE-2026-89209",
+        "Mendix",
+        "SAML",
+        "身份认证",
+        "重放攻击"
+      ],
+      "source_name": "Siemens ProductCERT",
+      "source_url": "https://cert-portal.siemens.com/productcert/html/ssa-137528.html",
+      "cover_image": null,
+      "published_at": "2026-10-30T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "身份模块重放可导致未授权访问，受影响版本和修复清晰；但需要有效断言与特定登录流程，通告未确认在野利用，紧迫度低于P1。"
+    },
+    {
+      "slug": "20261030-mistral-large-4-open-weights",
+      "title": "Mistral Large 4开放FP8与NVFP4权重：稀疏注意力、MoE与多模态进入主流推理栈",
+      "summary": "Mistral Large 4以约1万亿总参数、约49B激活参数和100万上下文发布FP8、NVFP4两套官方权重，并接入Transformers、vLLM与llama.cpp。模型用128专家中每词元选择4个并常驻共享专家，叠加稀疏注意力和Pixtral视觉编码器；许可允许开放权重使用，但模型即服务场景受单独限制，官方评测仍需外部复核。",
+      "content": "原始日期：2026-10-29。Mistral Large 4（Le Chonk）在Hugging Face发布FP8与NVFP4两套官方权重，并提供GGUF转换。Hugging Face技术文章给出的规模约为1万亿总参数、49B激活参数，若连同嵌入和输出层则约52B激活，支持文本与图像输入、文本输出和100万词元上下文。权重采用Mistral Ecosystem Open-Weight License，它是MIT衍生许可，但对模型即服务另设限制，因此不能简单称为无条件完整开源。\n\n架构把两类稀疏机制叠加。72层文本解码器除首层外均为MoE，每个词元由路由器从128个专家中选4个，再加一个始终运行的共享专家；注意力则用MLA压缩KV表示，并由稀疏索引器为每个查询选择最多2048个历史位置。视觉部分是1.6B参数的Pixtral编码器，使用14×14图块和合并投影。稀疏专家减少每词元实际计算，但完整权重的存储和部署仍然庞大。\n\n工具链提供了首日可运行路径。Transformers示例以8进程加载FP8模型；vLLM支持面向Blackwell GPU的NVFP4检查点，并可用张量并行、专家并行、上下文并行和DSpark草稿头；llama.cpp已提供从IQ2_XXS到BF16的多种量化。Hugging Face称2位量化可在512GB统一内存的Apple Silicon Ultra上运行，其余高精度配置通常需要多卡或分布式推理。\n\n性能数字必须按配置理解。文章报告Q2_K在单台M3 Ultra上预填充约90词元/秒、生成约15词元/秒；在4张RTX 6000 Pro上，NVFP4的32K上下文生成约10词元/秒，IQ2_XXS短上下文生成约30词元/秒，长上下文降到约3词元/秒。另一个8张H200的托管配方把最大上下文设为131K而非完整100万，说明模型能力上限与可部署服务配置不是同一件事。\n\n能力评测也要区分来源。Hugging Face列出Artificial Analysis、DeepSWE、Terminal-Bench等成绩，并称模型在漏洞复现与修复任务上达到82%；其中部分描述来自Mistral内部测试或文章选取的榜单，不能当成本站独立复现。模型权重可本地检查，有助于研究拒答和安全行为，但同时也意味着部署者要自行承担内容政策、访问控制、补丁和监控责任。\n\n文章还给出TRL微调示例，FP8训练配置使用8张B300，说明“开权重”并不意味着低成本定制。对于企业团队，更现实的第一步是验证目标精度量化、上下文长度和并发组合，确认许可证是否允许对外托管，再在自有任务上与更小模型比较总吞吐和成本，而不是用总参数或厂商榜单直接替代采购测试。\n\n## 量仔观察\n\nMistral Large 4的重要增量是把超大稀疏多模态模型同时交给主流推理栈，而不是仅开放一个下载入口。它为安全研究和受控本地部署增加了选择，但49B级激活计算、完整权重存储和服务许可仍是硬约束。读者应把权重可得、框架兼容、量化可跑和生产可承载拆成四个验收阶段，并保留对厂商及平台评测的独立复核。",
+      "category": "ai",
+      "tags": [
+        "Mistral Large 4",
+        "开权重",
+        "MoE",
+        "多模态",
+        "推理基础设施"
+      ],
+      "source_name": "Hugging Face技术文章",
+      "source_url": "https://huggingface.co/blog/mistral-large4",
+      "cover_image": null,
+      "published_at": "2026-10-30T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "超大稀疏多模态权重与主流推理栈同步可用，对本地部署和研究有明确价值；但性能和安全能力主要来自发布方与指定榜单，仍需独立验证。"
+    },
+    {
+      "slug": "20261030-google-deepmind-genie-4",
+      "title": "DeepMind发布Genie 4研究预览：实时世界模拟加入原生音频与Gemini闭环规划",
+      "summary": "Google DeepMind把Genie 4作为受信测试者研究预览发布，系统从提示生成可实时操控的视觉世界，并首次加入环境音和随事件变化的对话。Gemini 3.8 Flash可持续观察画面、拆解目标与校验步骤，Gemini 4 Argon用于机器人场景实验；但当前只维持短时一致性，物理、文本、空间和长期对象恒存仍会漂移。",
+      "content": "原始日期：2026-10-27。Google DeepMind发布Genie 4研究预览，把它定位为可实时生成并操控视觉世界的世界模型。用户可以用文字改变场景、角色和事件，系统同时生成画面与环境反应；本次新增原生音频，包括与场景匹配的环境声和能随用户输入或事件即时变化的角色对话。它不是公开权重模型，也不是已经普遍可用的生产API。\n\nGenie 4的主要叙事是从短视频生成走向持续交互。发布方展示了碰撞、空气动力学、人物动作和复杂场景，但这些示例是筛选后的厂商演示，不能等同于系统性物理评测。可信测试者覆盖创意、新闻、教育、游戏和工程，使用场景包括预演镜头、从历史照片构造可探索场景、快速制作交互原型和零到一的仿真草稿。\n\n系统还把Gemini置于生成循环中。官方称Gemini 3.8 Flash持续观察Genie 4输出的画面，把目标拆成多步，检查每一步是否完成，并在世界变化或用户介入时调整计划。这个组合试图用语言模型的结构化规划约束像素级模拟。另一个研究示例让Gemini 4 Argon把机器人任务拆成文字步骤，再交错输入Genie 4渲染，展示人形机器人下棋等场景。\n\n这些演示尚未证明模拟可替代真实机器人验证。发布文章没有提供独立基准、失败率、实时帧率、分辨率、延迟或训练数据说明，也没有说明外部开发者何时能稳定调用Argon组合。当前证据支持“研究系统展示了闭环规划与生成联动”，不支持把其结果当作精确数字孪生、可认证仿真或已验证的安全测试环境。\n\nDeepMind公开列出限制：场景只在短时会话里较为连贯，运行更久、连续复杂改写或大范围导航后，视觉细节和对象恒存会漂移；复杂物理、实时音频准确度、可读文字、空间精度和长期一致性仍在研究。所有生成视频和音频都会嵌入SynthID，安全评测目前由公司内部完成，尚无独立测试材料。\n\n可用性同样需要准确表述。Genie 4目前只向受信测试者提供研究预览，计划随后进入Google AI Ultra的Project Genie，并向Gemini API和Google AI Studio的早期访问伙伴开放。官方页面提供候补名单，但“即将提供”不是正式可用。团队若据此规划产品，应把访问资格、接口稳定性、生成时长和可重现性视为待确认项。\n\n## 量仔观察\n\nGenie 4最值得关注的是把声音、实时操控和代理规划放进同一模拟循环，这比单次生成视频更接近可实验的世界模型。然而发布材料的证据仍以演示和内部评估为主，且对象恒存与物理准确性正是工程仿真最关键的门槛。短期适合做创意预演和交互原型探索，不宜把生成结果直接用于机器人安全证明、事故复盘或需要可重复数值的决策。",
+      "category": "ai",
+      "tags": [
+        "Google DeepMind",
+        "Genie 4",
+        "世界模型",
+        "多模态",
+        "研究预览"
+      ],
+      "source_name": "Google DeepMind",
+      "source_url": "https://deepmind.google/blog/genie-4-a-new-generation-of-world-simulation/",
+      "cover_image": null,
+      "published_at": "2026-10-30T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "原生音频、实时操控与Gemini闭环规划形成明确研究增量；但仅限受信测试者，缺少独立基准且长期一致性有限，仍属早期预览。"
+    },
+    {
+      "slug": "20261030-granite-switch-411",
+      "title": "Granite Switch 4.1.1以适配器补丁更新语音与决策能力",
+      "summary": "IBM Granite团队发布向后兼容的Switch 4.1.1补丁，基础模型不重算，只替换十语种语音识别和Decision适配器。",
+      "content": "原始日期：2026-10-29。Granite Switch 4.1.1被发布方定义为与4.1完全向后兼容的补丁：基础模型保持不变，更新十种语言、带标点和大小写的Granite Speech语音识别模型，以及granitelib-core中的Decision适配器。官方称Decision在Jev Decision Index测试集上整体提升，但未给出本页可独立复核的分项数字。\n\n这次更新的工程重点是模块化交付：训练并替换适配器后即可组合部署，无需重新训练基础模型或迁移接口。IBM还预告教程和Adapter SDK，第三方自建适配器尚属后续计划。本期因此把它作为产品快讯，而不把厂商自评写成独立性能结论。",
+      "category": "flash",
+      "tags": [
+        "IBM Granite",
+        "模型适配器",
+        "语音识别",
+        "产品更新"
+      ],
+      "source_name": "IBM Granite / Hugging Face",
+      "source_url": "https://huggingface.co/blog/ibm-granite/granite-switch-4-1-1",
+      "cover_image": null,
+      "published_at": "2026-10-30T00:10:00.000Z",
+      "status": "published",
+      "priority": "P3",
+      "priority_reason": "模块化补丁展示了不重算基础模型的更新路径，事实和版本清楚；但改动范围有限，详细性能只由发布方概述。"
+    },
+    {
+      "slug": "20261030-claude-analytics-api-beta",
+      "title": "Claude推出用量与成本分析API测试版，旧报表接口转入legacy",
+      "summary": "Anthropic上线组织级Usage and Cost Analytics API测试版，可按模型、工作区、API密钥及用户或服务账号聚合用量和成本。",
+      "content": "原始日期：2026-10-29。Anthropic在Claude Platform发布Usage and Cost Analytics API测试版，需携带analytics-usage-cost-2026-08-24测试标头。新接口提供/v1/organizations/analytics/usage和/cost两个端点，面向Claude Console与Claude Enterprise组织，可按模型、工作区、API密钥以及请求背后的用户或服务账号筛选和分组。\n\n原Usage and Cost API以及Enterprise Analytics中的四个旧报表端点被标为legacy，但仍继续支持，并提供迁移指南。该更新改善组织级成本归因与治理，不过测试版意味着字段和兼容承诺仍需按文档跟踪，生产报表不宜在未做双写核对前立即切换。",
+      "category": "flash",
+      "tags": [
+        "Claude API",
+        "成本治理",
+        "分析API",
+        "Beta"
+      ],
+      "source_name": "Anthropic Claude Platform",
+      "source_url": "https://platform.claude.com/docs/en/release-notes/overview?entry=september-30-2026",
+      "cover_image": null,
+      "published_at": "2026-10-30T00:10:00.000Z",
+      "status": "published",
+      "priority": "P3",
+      "priority_reason": "为企业提供更细的模型与身份维度成本归因，适用对象明确；但仍是测试版，旧接口继续支持，不构成立即迁移事件。"
+    }
+  ]
+}
+
