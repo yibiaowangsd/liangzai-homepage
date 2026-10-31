@@ -1,0 +1,153 @@
+{
+  "schema_version": 3,
+  "date": "2026-10-31",
+  "coverage": {
+    "pqc": {
+      "count": 0,
+      "note": "检索近72小时IACR ePrint、arXiv、NIST算法资料、国内高校与企业研发及主要实现发布。10月29日Syndrome Trellis新构造仅能读取摘要，全文入口在本环境不可读，且“高出2^200”等作者主张缺少独立分析，未据摘要成稿；其余为既报成果或普通维护。"
+    },
+    "migration": {
+      "count": 0,
+      "note": "检查NIST、IBM、英国NCSC、新加坡CSA、德国央行、国内主管部门、密码厂商、银行与运营商的供给方方案和采用方实践。近72小时未见可读且未报道的迁移增量；IBM套件及NIST IR 8547已在近7期处理，较早行业路线只作背景。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "检查IETF TLS、EMU、SSH、IKE/IPsec、QUIC、PKI及国内TLCP相关入口。EAP-TLS草案10月30日升至-04，但与近日报已处理的同一WG Last Call事件相比未形成可单独核实的工程部署、互通或故障新增；COSE机制按主要贡献归standards。"
+    },
+    "standards": {
+      "count": 1,
+      "note": "检查IETF Datatracker、RFC Editor、NIST、ETSI、ISO/IEC、ITU-T及国内国标和团标公告。收录10月29日成为COSE工作组文档的draft-ietf-cose-pqc-kem-00，并阅读全文核对状态、ML-KEM参数、KDF和适用边界；未把WG文档写成已批准RFC。"
+    },
+    "security": {
+      "count": 1,
+      "note": "检查CISA KEV与ICS、JVN/JPCERT、CERT-EU、CNCERT/CNVD、加拿大网络安全中心及厂商PSIRT。收录CISA 10月29日新增的GitLab RCE与Cisco防火墙DoS两个在野利用条目，合并为一个同批KEV事件；三菱JVN 10月30日仅补参考链接，未当新漏洞重报。"
+    },
+    "ai": {
+      "count": 1,
+      "note": "检查OpenAI、Anthropic、Google DeepMind、国内模型发布、模型卡/API、权重与许可证，以及HELM、METR、MLCommons等独立评测入口。收录GPT-6 Rosalind Research及系统卡；厂商能力阈值均按自评表述，未发现同期独立复测，另一个简短政策变化归flash。"
+    },
+    "ngcc": {
+      "count": 1,
+      "note": "实际检查ICCS征集公告与算法评议入口、ngcc.dev首页、报告索引、分类规则、Performance、Side-Channel/constant-time及Lore原始规格和报告。收录10月30日kem-19-3；明确High与Probable分离、完整密钥恢复未独立复现、其他参数集多为源码检查，且不是ICCS官方结论。"
+    },
+    "flash": {
+      "count": 1,
+      "note": "从八栏候选中复核事实完备但无需长篇的公告，收录OpenAI 10月30日承诺未来支持通用robots.txt训练偏好信号，并明确尚未完成实现、现有爬虫控制继续生效。排除普通提交、营销预告和未核实传言。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261031-cose-pqc-kem-wg-document",
+      "title": "COSE后量子KEM草案成为IETF工作组文档：明确ML-KEM封装、KMAC派生与多接收方路径",
+      "summary": "IETF COSE工作组在10月29日发布draft-ietf-cose-pqc-kem-00，把ML-KEM用于COSE内容加密的约定纳入工作组文档。草案区分直接密钥协商与密钥包装，规定密文头部、KMAC派生和三组ML-KEM参数映射；但混合KEM、发送方认证及最终IANA登记仍未解决，当前只是工作草案而非RFC。",
+      "content": "2026-10-29，IETF发布draft-ietf-cose-pqc-kem-00，Datatracker将其列为COSE工作组的“WG Document”。这一状态意味着工作组已把问题纳入正式工作项目，但文档仍是有效期有限的Internet-Draft：没有文档负责人、没有进入IESG审议，更不是已经批准或发布的RFC。此次新闻点是从个人提案进入工作组轨道，而不是标准完成。\n\n草案面向CBOR Object Signing and Encryption（COSE）的内容加密，给出后量子KEM在两类既有模式中的放置方式。直接密钥协商模式把KEM派生结果直接作为内容加密密钥；带密钥包装的模式则把派生结果作为密钥加密密钥，再分别包装同一个内容密钥，因而更适合一次加密、多个接收方分别解包的场景。\n\n在报文表达上，发送方用接收方的ML-KEM公钥执行封装，并把KEM密文放入COSE头参数`ek`；接收方公钥则作为AKP密钥的公开部分表示。草案特别提醒，这里的`ek`表示封装密文，与FIPS 203及相关文档中用同一缩写表示封装公钥的习惯不同，实施者如果只按字段名映射，可能把密文和公钥语义混淆。\n\n当前算法表覆盖ML-KEM-512、ML-KEM-768和ML-KEM-1024。初始共享秘密再通过NIST SP 800-108r1中的KMAC派生：密钥包装组合分别导出128、192和256位结果，对应AES Key Wrap的三档密钥长度。上下文结构沿用COSE，但省略PartyUInfo和PartyVInfo；草案解释，KEM本身不提供发送方认证，接收方身份由所用公钥绑定，私有上下文只能经双方带外约定放入补充信息。\n\n边界同样重要。文档把传统算法与后量子算法组合的混合KEM留在范围之外，也没有把KEM当成签名或身份认证机制。它提出重用公钥时必须遵守查询上界，并依赖KEM自身达到IND-CCA2安全，但工作组仍需继续审查算法登记、错误处理、密钥表示和与既有COSE实现的互操作细节。现阶段不能据此宣称通用库已经兼容。\n\n## 量仔观察\n\n这次状态变化的价值在于，PQC不再只停留在TLS或SSH连接层，而开始进入面向设备、令牌和离线对象的COSE数据模型。真正的落地难点会集中在字段语义、密钥生命周期和多接收方包装，而不只是“把ECDH换成ML-KEM”。产品团队现在可以据草案做实验性互通，但生产格式仍应保留版本标记和回退能力，避免把-00草案的编码选择固化成长期兼容负担。",
+      "category": "standards",
+      "tags": [
+        "COSE",
+        "IETF",
+        "ML-KEM",
+        "P2·重要",
+        "工作组文档",
+        "标准草案"
+      ],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/draft-ietf-cose-pqc-kem/00/",
+      "cover_image": null,
+      "published_at": "2026-10-31T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "草案从个人提案进入COSE工作组项目，给实现者提供可操作的ML-KEM封装与派生结构；但仍处于-00工作草案，尚无RFC批准或广泛互通证据。"
+    },
+    {
+      "slug": "20261031-cisa-gitlab-cisco-kev",
+      "title": "CISA确认GitLab远程代码执行与Cisco防火墙拒绝服务遭在野利用",
+      "summary": "CISA在10月29日把CVE-2026-97229与CVE-2026-76418加入KEV，分别涉及GitLab CI/CD正则表达式触发的未认证远程代码执行，以及Cisco ASA/FTD远程访问SSL VPN在二次认证配置下可被远程触发重载。KEV只确认已有在野利用，不等同于已知勒索活动；联邦修复期限为11月1日。",
+      "content": "2026-10-29，CISA在已知被利用漏洞目录（KEV）新增CVE-2026-97229和CVE-2026-76418。两项记录的加入依据是已有在野利用证据，而不是单纯的CVSS高分或公开PoC。美国联邦民用机构的整改期限均为2026-11-01；CISA把勒索软件活动字段列为“Unknown”，因此不能据此推断已出现特定勒索团伙或同一攻击链。\n\nCVE-2026-97229影响GitLab CE/EE 19.2至19.2.8之前版本、19.3至19.3.5之前版本，以及19.4至19.4.2之前版本。GitLab的说明称，攻击者可在特定条件下把特制正则表达式放入CI/CD配置，因验证不足和整数溢出或回绕触发未认证远程代码执行。CISA同时把该条目标记为需要按BOD 26-04执行取证分诊，运维人员不应只确认升级成功，还要检查补丁前是否已经遭入侵。\n\nCVE-2026-76418影响Cisco Secure Firewall ASA和FTD的远程访问SSL VPN服务。Cisco将根因描述为在隧道组启用二次认证时的逻辑错误：未认证远程攻击者发送特制连接请求，可使设备意外重载并造成拒绝服务。Cisco公告给出的CVSS 3.1基础分为8.6，攻击向量为网络、无需权限与用户交互；该分数描述严重度，真正的“已利用”证据来自KEV收录。\n\nCisco表示没有可用绕过措施，需升级到各维护分支的修复版本；其公告列出的最低修复线包括ASA 9.16.4.104、9.18.4.96、9.20.4.50、9.22.3.200、9.23.1.4、9.24.1.27与9.24.10.1，以及FTD 7.0.11、7.2.13、7.4.9、7.6.7、7.7.14、10.0.3与10.1.1。实际升级前仍应按设备型号、当前分支和厂商发布矩阵核对，不能把不同列的版本号混用。\n\n这两个漏洞的处置优先级不同：GitLab问题可能交出服务器执行权限，并被CISA要求取证分诊；Cisco问题公开影响是远程触发设备重载，主要冲击可用性。共同点是攻击面都可能位于外网入口。资产团队应先定位自托管GitLab与启用远程访问SSL VPN且配置二次认证的设备，再分开安排补丁、日志保全和可用性验证。\n\n## 量仔观察\n\nKEV批次不宜被压成“两个高危CVE”的清单。GitLab需要把补丁与流水线配置、Runner权限和历史审计结合，Cisco则要把升级窗口与冗余切换、VPN容量和重启风险结合。最关键的增量是CISA确认在野利用并给出极短期限；没有受影响版本或暴露条件的资产不应被同等对待，但任何面向互联网的匹配实例都应立即进入人工核验，而不是等待更多攻击归因。",
+      "category": "security",
+      "tags": [
+        "CISA KEV",
+        "CVE-2026-97229",
+        "CVE-2026-76418",
+        "GitLab",
+        "Cisco Secure Firewall",
+        "P1·重大",
+        "在野利用"
+      ],
+      "source_name": "CISA KEV Catalog",
+      "source_url": "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
+      "cover_image": null,
+      "published_at": "2026-10-31T00:10:00.000Z",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "CISA确认两项漏洞已被实际利用，GitLab缺陷可导致未认证远程代码执行，且联邦修复期限仅到11月1日；相关互联网暴露资产需要立即核验和处置。"
+    },
+    {
+      "slug": "20261031-gpt-6-rosalind-research",
+      "title": "GPT-6 Rosalind Research限量上线：沿用Astra权重，以可信访问开放更深生命科学能力",
+      "summary": "OpenAI在10月30日发布GPT-6 Rosalind Research，模型沿用GPT-6 Astra权重，没有新增训练数据或后训练，但为高级生命科学研究调整可用边界并叠加可信访问。系统卡称其在四项高能力生物评测中三项越过指示阈值、四项关键能力评测均未越线；结果来自厂商评测，访问仅面向获批组织和授权用户。",
+      "content": "2026-10-30，OpenAI发布GPT-6 Rosalind Research，并在API中提供`gpt-6-rosalind`。它不是一个重新训练的新基础模型：系统卡明确写明使用与GPT-6 Astra相同的权重，没有新增训练数据或额外后训练。产品变化主要发生在生命科学使用边界、访问审批和部署防护上，目标用户是获批的科研机构、企业与政府合作方。\n\n可用性受到明显限制。Rosalind Research只向通过审批的组织和授权用户滚动开放，可在Work、Codex和API中使用，不进入普通Chat界面；Discovery审批不自动获得Research权限。企业工作区先进入两周Admin Preview，默认关闭，由管理员在预览后决定是否为获批研究人员启用。这些条件意味着“发布”不等于任何开发者都能立即调用。\n\n系统卡把模型评估分为四项High能力测试和四项Critical能力测试。前者覆盖公开实验方案排错、非公开专家流程中的隐性知识、生物风险知识以及多选病毒学排错；后者考察蛋白设计、病毒—宿主相互作用和共同演化等新设计代理任务。OpenAI称，在对拒答进行调整后，模型在四项High评测中三项超过指示阈值，因此继续按生物与化学High能力管理。\n\n同时，四项Critical能力评测均未达到其指示阈值。系统卡提醒，这些阈值是基于专家判断的初步估计，评测只覆盖特定能力，不能完整测量造成生物危害的能力；部分数据集来自未公开实验流程，也不便由外部立即复现。与Rosalind 5.5的比较结果有升有降，且旧版某项拒答调整计算不同，因此不应把厂商表格简化成统一的代际胜率。\n\n部署防护包括申请方身份和用途审查、组织治理与安全控制验证、最小权限、内部人员风险控制、监测执法以及合同约束。获批客户还必须在实验、论文或重大决策采用模型输出前进行合格人工复核。模型保留Astra的实时网络安全阻断，并对恶意网络活动设置更保守的拒答边界；这些是访问与运行控制，不等同于模型本身无法产生风险能力。\n\n## 量仔观察\n\nRosalind 6的重要性不只是“更强的生物模型”，而是同一组基础权重通过访问层和使用边界形成了不同风险产品。研发团队评估它时，应把能力、可获得性和治理成本分开：系统卡提供的是厂商自测与部署承诺，尚缺同期独立复测；而受限API、管理员预览和强制人工复核会直接决定它能否进入真实实验流程。对生命科学AI而言，部署机制已经成为产品能力的一部分。",
+      "category": "ai",
+      "tags": [
+        "GPT-6 Rosalind",
+        "生命科学",
+        "系统卡",
+        "可信访问",
+        "P2·重要",
+        "受限发布"
+      ],
+      "source_name": "OpenAI Deployment Safety Hub",
+      "source_url": "https://deploymentsafety.openai.com/gpt-rosalind-6",
+      "cover_image": null,
+      "published_at": "2026-10-31T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "受限模型把前沿推理能力扩展到高风险生命科学工作流，并公开能力阈值与访问控制；但评测主要由厂商完成、外部复现有限，故列为重要而非重大。"
+    },
+    {
+      "slug": "20261031-ngcc-lore-bch-timing",
+      "title": "NGCC Lore曝BCH解码计时通道：报告声称约两千余次查询恢复L2密钥，独立复现尚缺",
+      "summary": "ngcc.dev在10月30日登记kem-19-3：Lore的BCH解码存在秘密相关分支与提前退出，原报告称在STM32F4上以约2200—2940次解封装计时查询恢复Lore-L2的1024个秘密系数。独立站将其列为High/Probable，已核对冻结源码路径但未复现实测差异或端到端密钥恢复，其他参数集多为源码层面外推。",
+      "content": "2026-10-30，独立分析站ngcc.dev为NGCC公钥候选Lore登记稳定finding ID `kem-19-3`，标题为“BCH decoding timing leaks Lore secret coefficients”。对象是ICCS第一轮冻结提交中的KEM候选kem-19，家族为module-LWR。站点把严重度列为High、证据状态列为Probable、层面列为side-channel；这些标签不是ICCS官方评审结论，也不表示本站已完成复现。\n\n报告定位了三类可变时间路径。在Lore-L2的SM3参考实现中，综合征计算会按接收字的每一位条件执行更新；Berlekamp–Massey过程会在定位多项式次数超过纠错上限时提前返回；根搜索在找到足够根后停止。解码函数还会在综合征为零时直接退出，而输入字来自依赖秘密的解密结果，并在KEM解封装内部调用，因此远程计时查询有机会观察到秘密相关差异。\n\n原始论坛报告声称，在STM32F4上改变接收字位及错误数量时，完整解封装出现约正负13208个周期的差异；在纠错边界上，成功与失败相差305780个周期；零综合征与位置507的单错误相差31704个周期。后一个比较同时包含零综合征提前退出，不能单独归因于根搜索。报告还称三种攻击平均需要2936.5、2212.5和2218次查询即可恢复Lore-L2的1024个秘密系数，并在十个x86主机密钥上用第二种信号完成恢复。\n\n证据边界决定了报道措辞。ngcc.dev检查了冻结源码中的分支与不同执行路径，但没有复现论坛给出的整次解封装周期差异，也没有复现端到端密钥恢复；原论坛材料没有公开复现程序或原始轨迹。因此状态是Probable而非Confirmed。发现者Credit归Jinnuo Li（含AI辅助），不能把完整发现归给网站维护者。\n\n受影响范围也不能一概而论。原报告实测的是Lore-L2 SM3参考实现；L2、L3、L4的SHAKE/SM3参考与AVX代码经源码检查共享相关解码路径，但并未逐个完成密钥恢复。NEON仍保留失败、零综合征和根搜索提前退出，却使用不同的综合征例程，可能形成另一通道；Lore-L1明确排除。建议的恒定时间综合征、定位和纠错实现尚无可测替代版本，Lore团队公开回应也未出现在该报告中。\n\n## 量仔观察\n\n这项发现比单纯“源码有分支”更接近可执行攻击，因为原报告给出了平台、周期差和查询量；但缺少轨迹与复现器，使完整密钥恢复仍停留在单方证据。评审方下一步应优先复现实测而不是只看严重度标签，并分别验证参考、AVX和NEON路径。即使恒定时间修复随后出现，也必须重新测量性能和泄漏，不能把“提出修复”写成“修复已验证”。",
+      "category": "ngcc",
+      "tags": [
+        "NGCC",
+        "Lore",
+        "kem-19-3",
+        "BCH",
+        "P2·重要",
+        "计时侧信道",
+        "Probable"
+      ],
+      "source_name": "ngcc.dev独立分析",
+      "source_url": "https://ngcc.dev/reports/kem-19.html",
+      "cover_image": null,
+      "published_at": "2026-10-31T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "报告给出具体平台、周期差和约两千余次查询的完整密钥恢复主张，若复现将直接影响候选实现；但当前缺少独立复现与原始轨迹，证据仍为Probable。"
+    },
+    {
+      "slug": "20261031-openai-training-preference-signal",
+      "title": "OpenAI承诺支持通用robots.txt训练偏好信号，实施仍待后续",
+      "summary": "OpenAI宣布将支持IETF AI Preferences工作组讨论的通用robots.txt信号，让网站一次表达基础生成式AI训练偏好。",
+      "content": "2026-10-30，OpenAI宣布未来将遵守一个通用robots.txt信号，用于让网站经营者向多家参与的AI提供商表达内容是否用于基础生成式AI训练。公司称该机制可减少逐个识别爬虫和分别维护规则的负担，并建立在IETF AI Preferences工作组的持续讨论上。\n\n这是一项实施承诺而非已经上线的控制。OpenAI表示将在未来数月实现并另行公布细节；现有针对其爬虫的robots.txt控制不会被替代，仍继续生效。网站运营者目前不应删除既有规则，也不能把该公告理解为所有AI提供商已共同采用或形成正式IETF标准。",
+      "category": "flash",
+      "tags": [
+        "AI训练",
+        "robots.txt",
+        "IETF",
+        "网站治理",
+        "P3·关注",
+        "实施承诺"
+      ],
+      "source_name": "OpenAI",
+      "source_url": "https://openai.com/index/helping-websites-express-ai-training-preferences/",
+      "cover_image": null,
+      "published_at": "2026-10-31T00:10:00.000Z",
+      "status": "published",
+      "priority": "P3",
+      "priority_reason": "通用训练偏好信号可降低网站跨提供商管理成本，但OpenAI尚未完成实现，IETF讨论也未等同正式标准，当前以持续跟进为主。"
+    }
+  ]
+}
+
