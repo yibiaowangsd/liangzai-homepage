@@ -1,0 +1,100 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-01",
+  "coverage": {
+    "pqc": {
+      "count": 0,
+      "note": "检索近72小时IACR ePrint、arXiv、NIST算法资料、国内高校与企业研发、政府评估及主要实现发布，并补查欧洲、北美和亚太线索。未发现同时满足可阅读全文、时效与独立新闻价值的新构造或密码分析；10月29日Syndrome Trellis仍只有摘要可读，未据摘要和作者自报强度成稿。"
+    },
+    "migration": {
+      "count": 0,
+      "note": "检查NIST、英国NCSC、新加坡CSA、IBM与云安全厂商的供给方案，也扫描国内主管部门、银行、运营商和行业组织的采用实践。近72小时未发现有具体架构、交付阶段或实测数据且未报道的新增；腾讯云社区相关文章缺少可追溯的一手实施证据，未采用。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "检查IETF TLS、EMU、SSH、IKE/IPsec、QUIC、WebPKI及国内TLCP相关入口，并区分文档状态与真实互通。EAP-AKA′两份草案有实质机制更新，但尚无实现、部署或故障证据，按本期主要增量归standards；其余命中为旧稿重复或普通修订。"
+    },
+    "standards": {
+      "count": 1,
+      "note": "检查IETF Datatracker、RFC Editor、NIST、ETSI、ISO/IEC、ITU-T及国内国标、行标和团标公告。收录10月30日更新的纯后量子与混合EAP-AKA′两份EMU工作组草案，阅读全文核对碎片机制、能力协商及状态；明确它们仍是活跃Internet-Draft，并非RFC或IESG批准。"
+    },
+    "security": {
+      "count": 1,
+      "note": "检查CISA KEV/CSAF、加拿大网络安全中心、CERT-EU、JPCERT、CNCERT/CNVD及厂商PSIRT和研究者披露。收录10月30日Ivanti Connect Secure两项新增KEV，使用加拿大官方更新与Ivanti公告交叉核对受影响分支和处置建议；未把CVSS或公开传闻冒充在野利用证据。"
+    },
+    "ai": {
+      "count": 1,
+      "note": "检查OpenAI、Anthropic、Google、Microsoft及国内模型/API/权重发布，同时核对模型卡、许可证、HELM、METR和MLCommons等评测入口及产业应用。收录微软Mage-VL-Cowork项目页和模型卡；性能仅按团队自报表述，未找到同期独立复测，也未把普通框架提交或融资宣传入选。"
+    },
+    "ngcc": {
+      "count": 1,
+      "note": "实际检查ICCS征集公告与算法评议入口、ngcc.dev首页、报告索引、分类规则、Performance和Side-Channel/constant-time入口。收录10月31日CheetahKEM kem-09-5，核对冻结包哈希、四组失败率、查询成本、Credit与复现脚本；明确Probable、模拟失败样本及非ICCS官方结论。"
+    },
+    "flash": {
+      "count": 0,
+      "note": "复核专题检索中发现的API、许可、截止节点和事故更新。Kimi旧接口退役与OpenAI Evals只读线索未取得足以支撑日期、范围和迁移影响的可读一手全文；其他为低价值维护或已在长文处理，未为凑数转入快讯。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261101-eap-aka-pqc-wg-drafts",
+      "title": "IETF EMU同步推进纯后量子与混合EAP-AKA′草案，碎片与能力协商成核心约束",
+      "summary": "IETF EMU工作组10月30日同步更新纯后量子EAP-AKA′草案至-05、混合方案至-02。两文档分别以ML-KEM或RFC 9794定义的PQ/T组合替换传统前向保密交换，并细化大公钥与密文的碎片、重组、能力协商和降级兼容；当前仍处“等待工作组主席放行”，不是已批准标准。",
+      "content": "2026-10-30，IETF EMU工作组将draft-ietf-emu-pqc-eapaka更新至-05，同时把配套的[draft-ietf-emu-hybrid-pqc-eapaka](https://datatracker.ietf.org/doc/draft-ietf-emu-hybrid-pqc-eapaka/)更新至-02。Datatracker把两者都标为活跃的工作组Internet-Draft，工作组状态为“Waiting for WG Chair Go-Ahead”，IESG状态仅为“I-D Exists”；正文虽写明拟走Standards Track，但这不等于已进入Last Call、获IESG批准或成为RFC。\n\n纯后量子草案针对RFC 9678定义的EAP-AKA′前向保密扩展，用PQ KEM替代ECDHE，并给出AT_PUB_KEM、AT_KEM_CT和AT_KDF_FS等属性。它把ML-KEM列为首个具体算法，同时保留能力协商：传统实现仍可先提供ECDHE，理解新扩展的对端再请求后量子KEM，目的是让升级可以与既有EAP-AKA′部署共存。\n\n最显著的工程内容是AT_FRAGMENT。草案把较大的KEM公钥或密文拆成锁步请求/响应片段，用开始位、继续位和16位总属性长度管理重组；接收方必须按序处理，一次只允许一个碎片交换，状态错误就终止。最终片段上的AT_MAC覆盖按序拼接的全部片段，USIM相关处理也必须等重组完成后才开始，避免只认证末段或提前消费不完整消息。\n\n该机制的长度上限为65535字节，因此文档明确排除了公钥超过这一边界的Classic McEliece类参数集。混合草案则沿RFC 9794的PQ/T组合思路，把传统与后量子共享秘密共同纳入派生，并提出AT_PUB_HYBRID等属性。两条路线分别服务于“完全换轨”和“保留传统安全兜底”，但都会带来报文放大、更多往返、重组状态和中间设备兼容性测试。\n\n目前没有公开实现、互通报告或真实蜂窝部署数据可用来证明这些流程在EAP服务器、终端和USIM链路上已经跑通。草案还可能继续变更，注册值、错误处理和算法选择都不宜提前固化。运营商与设备商现在更适合用它们设计实验矩阵，测量MTU、重传、内存和降级行为，而不是把文档状态写成生产可用。\n\n## 量仔观察\n\n这次更新的价值不只是“给EAP-AKA′换一个KEM”，而是把量子安全迁移真正会卡住的报文尺寸、状态同步和旧端兼容摆到协议主体中。值得重点审阅的是碎片MAC覆盖、异常重组和降级协商是否形成可测试的一致行为；只有这些边界在多厂商实现中被验证，算法安全性才可能转化为可部署的接入网安全。",
+      "category": "standards",
+      "tags": ["EAP-AKA′", "IETF", "ML-KEM", "标准草案", "碎片重组"],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/draft-ietf-emu-pqc-eapaka/",
+      "cover_image": null,
+      "published_at": "2026-11-01T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "两份工作组草案把EAP-AKA′的后量子密钥建立推进到可审阅的碎片、协商与派生机制，直接影响移动认证实现；但尚未进入正式标准或公开互通阶段，列为重要而非重大。"
+    },
+    {
+      "slug": "20261101-ivanti-connect-secure-double-kev",
+      "title": "Ivanti Connect Secure再有两项漏洞进入KEV，旧补丁基线不足以覆盖最新在野风险",
+      "summary": "加拿大网络安全中心10月30日更新Ivanti公告，确认CISA把CVE-2026-111357与CVE-2026-118527加入已知被利用漏洞目录。受影响的Connect Secure分支需至少升级到25.1.1.3、25.1.3.1或22.8R2.6；仅处理10月13日披露的旧条目已不足够，网关还应执行完整性检查和日志复核。",
+      "content": "2026-10-30，加拿大网络安全中心将Ivanti安全公告AV26-1035更新至第2版，记录CISA当天把CVE-2026-111357与CVE-2026-118527加入Known Exploited Vulnerabilities目录。该状态意味着已有可靠的现实利用证据，不能用CVSS高分、PoC公开或概率评分来替代；对暴露在互联网边界的Connect Secure设备，应按在野利用事件而不是一般补丁周期处置。\n\n更新后的受影响范围写得很具体：Ivanti Connect Secure 25.1.1.3之前版本、25.1.3.1之前版本以及22.8R2.6之前版本均在风险范围内。这个基线高于10月中旬首次公告时的部分固定版本，说明组织如果只在CVE-2026-104935披露后完成一次升级，仍需重新核对当前实际构建号，不能把“本月已打补丁”当成完成条件。\n\n公告的时间线也揭示了连续风险：CISA在10月13日先将CVE-2026-104935列入KEV，随后开放来源报告指向CVE-2026-111357的在野利用，10月30日又把后者与CVE-2026-118527一并加入目录。这里能够确认的是目录状态和版本边界；不同漏洞是否在每一次入侵中被固定组合使用，仍应以具体事件取证为准，不能把三项编号自动等同于同一条完整攻击链。\n\nIvanti自己的10月安全更新要求受影响客户立即升级到固定版本，并持续运行Integrity Checker Tool。厂商同时强调补丁之外还要审查访问控制、网络监控、日志以及设备完整性。对于曾运行受影响版本的边界网关，合理顺序是先保存必要证据与配置快照，再升级和运行完整性检查；发现异常时还应按事件响应流程评估会话、凭据和下游系统。\n\n本次新增不是对旧新闻的换标题复述，而是两个CVE在10月30日获得KEV状态、修复基线上调的实质变化。管理团队应把资产清单按25.1.1、25.1.3和22.8R2分支拆开，核实每台设备的当前版本和最近一次完整性检查结果，并优先处理公网可达或承担远程接入的实例。\n\n## 量仔观察\n\n安全团队最容易在连续披露中犯的错，是把“曾经修过”误写成“已经安全”。这次版本门槛变化说明补丁验证应以当前公告的固定版本、设备完整性和入侵迹象三项同时闭环。KEV给出了行动优先级，却不能替代取证：升级成功不证明过去未被攻陷，未看到告警也不等于攻击者没有清理痕迹。",
+      "category": "security",
+      "tags": ["Ivanti", "Connect Secure", "CISA KEV", "在野利用", "漏洞修复"],
+      "source_name": "Canadian Centre for Cyber Security",
+      "source_url": "https://www.cyber.gc.ca/en/alerts-advisories/ivanti-security-advisory-av26-1035",
+      "cover_image": null,
+      "published_at": "2026-11-01T00:10:00.000Z",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "两项漏洞已由政府应急机构确认进入KEV，且边界VPN设备的安全版本门槛再次上调；对仍运行旧分支的组织具有即时升级和取证需求，证据与行动紧迫性均达到重大级。"
+    },
+    {
+      "slug": "20261101-mage-vl-cowork-hybrid-agent",
+      "title": "微软发布4B混合电脑操作模型Mage-VL-Cowork，在同一策略内切换GUI与代码",
+      "summary": "微软Mage团队10月30日公开Mage-VL-Cowork项目与权重：一个4B参数模型在单一策略中选择GUI点击或终端代码，并以五阶段训练和在线强化学习提升混合任务表现。团队自报OSWorld-Verified得分66.0%，权重采用Apache-2.0；结果尚无同期独立复测，模型还需自定义代码加载。",
+      "content": "2026-10-30，微软Mage团队公开Mage-VL-Cowork项目页、技术报告和模型权重。该模型规模为4B，目标不是给GUI代理外挂一个独立编码模型，而是在同一策略内决定何时读取屏幕并执行鼠标键盘动作、何时转到持久化bash或Python环境处理结构化文件，随后还能在两个通道之间继续切换。\n\n项目页披露的训练路线包含面向GUI的中期训练、GUI代理监督微调、代码与终端监督微调、混合电脑操作监督微调以及在线强化学习。配套的Mage-CUA-Forge用可复用工作流生成293806个任务、覆盖6915种技能，并保留318837条混合轨迹；团队称这种工作流式构造把重复任务生成成本从每项0.906美元降到0.158美元。\n\n能力接口包括归一化到0—999坐标的GUI动作、键盘输入与终端工具调用。模型卡显示它以Mage-ViT和Qwen3-4B-Instruct-2507为基础，活动上下文为32768，并通过最近三张截图、最近四个完整响应和折叠后的动作历史维持工作记忆。权重约9.48GB、分成两个bf16 safetensors文件，许可证为Apache-2.0。\n\n微软自报Mage-VL-Cowork在OSWorld-Verified、50步预算下取得66.0%，从混合SFT到在线RL提高10.16个百分点，同时平均模型调用减少13.0%、输出token减少25.4%。这些数字来自发布团队自己的技术报告，项目页还说明比较采用特定任务集合与运行设置；目前没有同期独立机构复测，因此不能把66.0%写成跨框架、跨版本都成立的第三方结论。\n\n部署也不是“下载即插即用”。模型使用自定义llava_onevision2架构并要求trust_remote_code=True，意味着使用方必须审查远程代码、固定版本并在隔离环境验证；项目没有给出托管API、统一硬件最低配置或生产级安全边界。电脑操作代理会接触文件、凭据和终端权限，评估时还需加入权限最小化、确认点、可回滚性和恶意页面注入测试。\n\n## 量仔观察\n\n这项工作的真正看点是让小模型学习“选择工具通道”，而不是单纯扩大视觉模型。若同一策略能可靠地在GUI和代码之间路由，企业自动化可以减少外部编排层的复杂度；但自报基准与开放权重只是起点。生产价值仍取决于在真实桌面、不同分辨率和权限边界下的失败恢复，以及第三方对安全性、成本和泛化能力的复测。",
+      "category": "ai",
+      "tags": ["Microsoft", "Mage-VL-Cowork", "电脑操作代理", "开权重", "强化学习"],
+      "source_name": "Microsoft Mage Team",
+      "source_url": "https://microsoft.github.io/Mage/cowork/",
+      "cover_image": null,
+      "published_at": "2026-11-01T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "4B模型把GUI与终端路由收进同一策略，并公开权重、训练路线和成本数据，对小型电脑操作代理研发具有明确参考价值；关键基准仍为厂商自测，故列重要。"
+    },
+    {
+      "slug": "20261101-ngcc-cheetah-natural-failure-recovery",
+      "title": "CheetahKEM自然解密失败被推演为密钥恢复路线，kem-09-5仍停留在模拟失败验证",
+      "summary": "ngcc.dev 10月31日新增CheetahKEM报告kem-09-5，指出纳入公钥舍入噪声后，Cheetah128与256的自然解密失败可能泄露足够线性信息以恢复秘密。报告把结论标为Critical/Probable：256级估算需2^63.1次查询，但恢复实验使用模拟失败样本，未完成真实稀有失败的端到端采集。",
+      "content": "2026-10-31，独立分析站ngcc.dev为NGCC公钥候选CheetahKEM（kem-09）新增finding kem-09-5。报告基于冻结的Round 1提交包，记录的压缩包SHA-256为fc321e46bac9c387535e2053bed560eac3d3cd88ba9bebc154f5bf68dd47dcd1；Credit归Markku-Juhani O. Saarinen并注明AI协助。该条目的Severity为Critical、Scope为design、Status为Probable，这些是分析站标签，不是ICCS官方评审结论。\n\n分析从此前发现的公钥舍入项e_pk·r出发，重新计算四组参数每个系数的对数失败率为-77.84、-51.54、-115.06和-198.95，而规格表给出的相应数字是-129、-176、-189和-243。针对Cheetah256，模型得到的噪声标准差245.5与参考实现诚实封装实测的244.1接近，但这只校验了标准差，并没有直接测到极小概率尾部。\n\n攻击思路利用诚实封装者知道自身K及随机量这一事实：当解封装输出不同于K时，攻击者获得一次失败，并能把已知的r、e1、e2和密文舍入误差代入关于秘密的线性条件。报告用期望最大化猜测失败位置和符号，再以公钥一致性筛选秘密。对Cheetah256，估算约需3000个失败，即不做预选时约2^63.1次诚实查询。\n\nCheetah128路线则从大范数r与e1的密文中预选，约需1500个失败；报告给出的查询成本为2^77.3，Gaussian近似下为2^79.8，但为了筛出这些密文，估算需要约2^95次诚实封装。对Cheetah384和512，同类预选分别膨胀到约2^748和2^5351次封装，远超在2^80查询上限内击穿目标的范围，因此受影响结论只指向128与256参数集。\n\n证据边界非常重要：没有执行2^63级真实查询，也没有从真实密文流中捕获足量稀有失败。复现脚本从精确的失败条件噪声分布抽样，在约40秒内用3000个模拟失败恢复一个新Cheetah256秘密；长模式还能从1500个增强失败恢复Cheetah128秘密。脚本验证了统计恢复机制，却没有完成现实端到端攻击，所以报告保留Probable而不是Confirmed。\n\n## 量仔观察\n\n这条finding把“失败率估错”推进到可运行的统计密钥恢复，但离现实攻击仍隔着稀有事件采集成本。评审时应把三件事分开：解析模型、模拟条件失败下的恢复、真实实现中的端到端查询。Critical描述的是按给定模型低于安全目标的后果，Probable描述证据成熟度；二者并不矛盾，也都不能被简化成“CheetahKEM已被现场攻破”。",
+      "category": "ngcc",
+      "tags": ["NGCC", "CheetahKEM", "kem-09-5", "解密失败", "密钥恢复"],
+      "source_name": "ngcc.dev",
+      "source_url": "https://ngcc.dev/reports/kem-09.html#kem-09-5",
+      "cover_image": null,
+      "published_at": "2026-11-01T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "报告把失败率偏差连接到可执行的统计密钥恢复，并给出两组低于声称安全级别的复杂度；但稀有失败来自模拟抽样，未做真实2^63级端到端采集，因此列重要而非重大。"
+    }
+  ]
+}
