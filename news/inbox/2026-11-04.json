@@ -1,0 +1,145 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-04",
+  "coverage": {
+    "pqc": {
+      "count": 0,
+      "note": "检索2026-10-29至2026-11-04的IACR ePrint、arXiv、NIST及中英文算法研究和实现入口，补查ML-KEM、ML-DSA、SLH-DSA、HQC、格/码/同源路线；未发现同时满足新颖性、可读原文和独立新闻价值的新增算法或密码分析，旧基准与量子计算消息未纳入。"
+    },
+    "migration": {
+      "count": 0,
+      "note": "扫描NCSC、NIST、金融与电信采用方、云与密码产品供应方及国内产业入口，时间窗优先24小时并扩至7天；香港金管局工具包和NISTIR 8547已在近7期报道，11月3日厂商量子就绪文章未给出新的部署、验收或可复现实测，故不重复成稿。"
+    },
+    "protocol": {
+      "count": 1,
+      "note": "检查IETF TLS、IPSECME、SSH、QUIC及相关PKI草案和实现入口，覆盖个人提案与工作组文档。选入11月2日IKEv2双证书混合认证机制；同日TLS签名建议、PQST系列仍为早期个人草案，缺少足以另成稿的部署或验证增量。"
+    },
+    "standards": {
+      "count": 0,
+      "note": "核对IETF Datatracker、NIST、ISO/IEC、ETSI/ITU-T及国内标准动态。近期NISTIR 8547、COSE PQ KEM等已在近7期覆盖；11月2日至3日未发现新的WG采纳、Last Call、IESG决定、正式RFC或国内标准状态变化，个人草案机制归协议栏而不写成标准通过。"
+    },
+    "security": {
+      "count": 0,
+      "note": "检查CISA KEV与厂商PSIRT、CERT-EU/JPCERT、加拿大网络安全中心、CNCERT/CNVD线索及研究者披露。11月3日多为既有公告转发或版本提醒；python-jose问题有新CVE元数据与讨论，但原始问题始于3月且影响取决于空/弱HMAC密钥，按状态更新放入快讯，不夸大为在野利用。"
+    },
+    "ai": {
+      "count": 3,
+      "note": "覆盖OpenAI、Google、Anthropic、腾讯等模型/产品与企业研发，补查MLCommons、METR、HELM等独立评测及国内模型发布。选入物理工程工作流、Gemini分流实验和HyFF开权重模型；均核对原始全文、实验条件与限制。Anthropic线程功能事实简明，转入快讯；聚合稿和未公开方法的排名未采用。"
+    },
+    "ngcc": {
+      "count": 1,
+      "note": "实际检查ICCS官网征集公告、算法提案/评议入口，以及ngcc.dev安全、Performance、Side-Channel和分类规则。站点11月3日更新时间未带来当日新的公钥 finding；选入11月1日尚未报道的TriQ-KEM稳定编号kem-37-3，并核对候选归档、参数、攻击前提、估算器、Credit与未做全尺寸恢复的局限。"
+    },
+    "flash": {
+      "count": 2,
+      "note": "复用AI和安全检索结果并核对原始文档：选入Anthropic Message Threads Beta与python-jose空HMAC密钥CVE/公开讨论。其余短公告多为营销、日常维护、重复事件或核心事实不足，未以快讯凑数。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261104-ikev2-hybrid-auth-separate-certificates",
+      "title": "IKEv2混合认证提出双证书方案：后量子与传统签名分别承载",
+      "summary": "IETF IPSECME相关作者在2026年11月2日提交个人草案，为IKEv2定义后量子与传统签名的双证书混合认证：双方分别携带PQC和传统证书，通过SUPPORTED_AUTH_METHODS协商组合，并把两种签名绑定到同一认证数据。该方案尚非工作组标准，但为不便部署复合证书的现有PKI提供了可讨论的迁移路径。",
+      "content": "原始发布日期：2026-11-02。Nokia、NTT DOCOMO、华为和Cisco的作者向IETF提交`draft-hu-ipsecme-pqt-hybrid-auth-with-sep-cert-00`，为IKEv2提出使用两张独立证书的后量子/传统混合PKI认证。草案意图进入标准轨道，但当前仍是可被替换或撤回的个人Internet-Draft，并不代表IPSECME工作组已经采纳，更不是正式RFC。\n\n方案把混合认证分成两种部署形态：工作组文档讨论一张证书内承载复合公钥的路径，新草案则处理每个对端持有两张证书的路径——第一张放后量子公钥，第二张放RSA或ECDSA等传统公钥。作者给出的安全目标是，只要两个组成签名中至少一个仍然安全，认证就不因另一算法失守而整体失效；ML-DSA与RSA-PSS或ECDSA P-256只是示例组合。\n\n协商沿用RFC 9593的多字节`SUPPORTED_AUTH_METHODS`通知。响应方在`IKE_SA_INIT`中公布可接受的PQC算法、传统算法和预哈希组合；发起方在`IKE_AUTH`中选择组合，依次发送PQC与传统`CERT`载荷，并在`AUTH`载荷里带上对应的算法标识和组合签名。草案新增的核心协议元素是一个待IANA分配的认证方法值，而不是另造一套通知格式。\n\n证书请求也必须保持顺序和关联：一个对端可连续发送两个`CERTREQ`，第一个指向签发PQC证书的CA，紧随其后的第二个指向传统证书CA；`Cert Link`字段用连续索引把协商组合和两条信任链联系起来。这个设计兼容两套不同的CA体系，但也把证书链大小、路径验证、策略同步和故障诊断带入同一次IKE认证。\n\n草案明确只解决身份认证，不改变IKEv2密钥交换。部署若要抵抗“先收集后解密”，还要另用RFC 8784的后量子预共享密钥，或通过IKEv2多密钥交换引入ML-KEM等后量子组件。换言之，双证书签名不能替代量子安全密钥建立；只迁移认证而保留纯传统DH，仍会留下会话机密性的量子风险。\n\n## 量仔观察\n\n双证书路径的现实价值在于允许组织复用现有传统PKI，同时单独引入PQC证书生命周期，不必等待所有CA、HSM和证书解析器支持复合密钥。代价是报文变大、双链验证和回退逻辑更复杂，中间盒与设备固件也需要互通测试。现阶段最应关注的是工作组是否采纳、IANA值与复合签名标识是否稳定，以及在MTU受限VPN链路上的分片、证书缓存和失败回退行为；不能把一份-00个人草案写成已经可互操作的标准。",
+      "category": "protocol",
+      "tags": ["IKEv2", "IPsec", "混合认证", "ML-DSA", "Internet-Draft"],
+      "source_name": "IETF Internet-Drafts",
+      "source_url": "https://www.ietf.org/ietf-ftp/internet-drafts/draft-hu-ipsecme-pqt-hybrid-auth-with-sep-cert-00.html",
+      "cover_image": null,
+      "published_at": "2026-11-04T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "草案给出了可落地讨论的IKEv2双证书混合认证报文与信任链关联机制，影响VPN和PKI迁移设计；但仍是-00个人提案，尚无工作组采纳和互通验证。"
+    },
+    {
+      "slug": "20261104-openai-physical-engineering-workflows",
+      "title": "OpenAI披露物理工程工作流：Astra完成设备原型，制造约束仍需人工复核",
+      "summary": "OpenAI在2026年11月3日公布机械、电气与系统工程实验：两名成员借助GPT-6 Astra在一周内完成可对话设备设计，代工厂一个月内做出小批原型；内部BenchCAD 2.0上更新模型得分高于Astra。披露同时承认公差、装配和制造能力约束仍会被遗漏，现阶段必须由工程师审查。",
+      "content": "原始发布日期：2026-11-03。OpenAI公布一组面向机械、电气和端到端系统设计的研究与早期行业实践，重点不只是生成文本，而是让模型读取和修改CAD、准备制造图、设置仿真并协调跨专业变更。文章描述的是研究进展、内部使用和合作测试，没有宣布一个可独立采购的新工程产品，也未给出统一API、价格或正式可用性承诺。\n\n最完整的演示是名为Astra的设备项目。GPT-6先定义功能要求，Astra继续设计外壳、内部结构、PCB元件与连线、界面、固件以及连接Codex的软件集成。两名团队成员把它作为业余项目，在不到一周内完成设计；代工厂随后在不到一个月内制造出一小批原型。这个结果说明多模态与计算机操作可跨越CAD、ECAD和代码，但它仍是团队主导的单个案例。\n\n文章也公开了失败边界：进入制造准备阶段后，团队仍进行了多轮审查和迭代，因为Astra没有稳定考虑代工厂的生产能力、公差和装配细节。这些遗漏不是排版瑕疵，而可能决定零件能否加工、PCB能否装配以及整机是否可靠。因此“没有直接人工编辑”只描述初始设计流程，不能解读为无人审核的自动量产。\n\nOpenAI用内部BenchCAD 2.0衡量模型重建三维零件与装配体、识别电路板连接的能力。一个未命名的新内部模型平均得分0.875，GPT-6 Astra在最高推理设置下为0.594。由于基准、任务分布、评分细则和新模型均未完整公开，这组数字适合说明内部进步方向，不应作为与外部CAD代理横向排名的独立证据。\n\n生产侧证据还包括OpenAI硬件与基础设施团队自2月以来模型用量按token增长23倍，以及与Chip Ganassi Racing、Mazda的合作。前者测试把三维扫描转成可编辑CAD和二维制造图，后者把Astra用于车身空气动力和结构行为仿真探索；合作方工程师负责准确性和可制造性复核，OpenAI也表示后续才会公布更多结果。\n\n## 量仔观察\n\n这次披露的真正信号是工程代理开始连接“要求—几何—电气—软件—制造”链条，而不是单点写代码。对企业研发团队，近期可行做法是先选可自动验收的子任务，例如图纸一致性检查、参数化零件重建和仿真设置，并保留版本控制与人工签核。案例数量少、基准未开放、制造错误仍明显，决定了它更像受控协作工具而非自主工程师；若未来要进入安全关键设计，验证记录、责任边界和供应商工具集成会比演示速度更重要。",
+      "category": "ai",
+      "tags": ["GPT-6 Astra", "CAD", "工程智能体", "制造", "内部评测"],
+      "source_name": "OpenAI",
+      "source_url": "https://openai.com/index/accelerating-engineering-for-the-physical-world/",
+      "cover_image": null,
+      "published_at": "2026-11-04T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "披露了跨CAD、PCB、软件和制造的端到端案例、内部基准与明确失败边界，对工程研发采用有直接参考；证据仍以厂商案例和未开放内部评测为主。"
+    },
+    {
+      "slug": "20261104-google-gemini-cost-per-task-routing",
+      "title": "Google实测Gemini任务分流：先降推理级别，再判断是否需要分类器",
+      "summary": "Google Cloud AI团队在2026年11月3日公布50题编码代理实验：关键词和长度启发式在34道留出题上降至70.6%一致率，轻量分类器达到34/34；但把输出上限调低并未节省推理成本，反而使7个难题失败。作者建议先测试低推理级别，再只为短、独立任务加入路由，并按成功任务成本评估。",
+      "content": "原始发布日期：2026-11-03。Google Developers Blog公布一项50题、自动评分的编码代理实验，研究在Gemini调用前加入低成本分类器，能否把简单任务发往更轻模型、把复杂任务升级到较强配置。实验使用TypeSafe的Jev作为示例；Google明确表示双方没有合作或背书关系，同样结构也可以换成其他分类器。\n\n研究先冻结了一个依赖关键词和提示长度的本地启发式规则。它在用于编写规则的16道开发题上达到15/16，但在七类34道未见题上下降23.2个百分点，只剩70.6%与人工难度标签一致。长但简单的Kubernetes YAML、diff路径提取被误升级，短但需要多步状态推演的题又被误判为简单；Jev在34道留出题上为34/34，全套与人工标签一致48/50。\n\n一个关键负结果是，`maxOutputTokens`只是输出上限，不是推理预算旋钮。把Gemini 3.8 Flash的上限从4096降到300、同时保留默认思考配置，并没有降低简单题成本；在25个难题中却造成7个失败，其中6个在推理尚未完成时用尽输出空间，另一个给出错误答案。即便分类器分流完全正确，这个“便宜配置”也比全量正常Flash更慢且略贵。\n\n第二轮把轻路径换成默认不思考的Gemini 3.5 Flash-Lite，升级路径用Gemini 3.8 Flash低推理。单独使用低推理Flash已完成50/50，路由方案同样50/50；Flash-Lite单独漏掉的6个难题都被Jev标记为复杂并升级。作者称路由相对全量低推理减少成本和响应时间，但短提示下单题成本差异很小，主要收益是等待时间。\n\n限制同样具体：每种设置只跑一次，样本只有50个，难度标签由人工指定，评分规则简单；默认Flash或Pro的速度来自不同轮次，比较只能近似。作者尚未发布基准代码，计划待开源审查后公开。长上下文代理还会遇到缓存冲突，因为缓存通常绑定模型，频繁切换Flash-Lite与Flash可能丢掉75%至90%的上下文重用折扣。\n\n## 量仔观察\n\n这项实验最有用的结论不是“加路由必然省钱”，而是必须先建立成功任务成本基线：如果低推理模型本已完成全部任务，复杂路由只能在延迟或特定失败分布上增加价值。生产系统应按真实轨迹分层，记录重试、工具调用、思考token、缓存命中和验收结果；短小独立任务适合分流，长代理回合更可能受益于单模型缓存。50题单次厂商实验不足以推广到所有代码库，部署前仍需在自己的失败代价与安全策略上复测。",
+      "category": "ai",
+      "tags": ["Gemini", "模型路由", "Agent", "推理成本", "基准测试"],
+      "source_name": "Google Developers Blog",
+      "source_url": "https://developers.googleblog.com/en/cost-per-task-using-cheap-classifiers-to-route-across-gemini-models-and-thinking-levels/",
+      "cover_image": null,
+      "published_at": "2026-11-04T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "实验同时给出有效分流与失败对照，直接修正“限制输出即可省推理费”的常见误区；但样本小、仅单次运行且代码尚未公开，结论需本地复测。"
+    },
+    {
+      "slug": "20261104-tencent-hyff-open-weights",
+      "title": "腾讯HyFF开放五档分子力场权重：2.3M到1.2B参数覆盖83种元素",
+      "summary": "腾讯混元Hyra项目在2026年11月2日开放HyFF五档机器学习力场、Python包和技术报告，参数量从230万到12亿，覆盖氢至铋83种元素并输入总电荷和自旋多重度。项目给出OMol25验证集精度和单张NVIDIA H20分子动力学速度，但其他GPU尚未测试，比较结果仍属发布方自测。",
+      "content": "原始发布日期：2026-11-02。腾讯混元Hyra项目公开HyFF机器学习原子间势能模型，包含presto、vivace、moderato、andante和largo五档权重、`hyff` Python包与技术报告。模型从230万参数扩展到12亿参数，覆盖氢到铋的83种元素，并把体系总电荷和自旋多重度作为输入；代码与仓库采用Apache-2.0许可，权重通过仓库release按需下载并校验SHA-256。\n\n五个模型都以平滑、守恒的消息传递势能为基础，原子特征包含标量、向量和二阶笛卡尔张量，力由能量的精确负梯度得到。较小三档通过增加宽度、深度和4.5至8埃截断范围扩展；andante和largo加入边框架混合模块，largo还加入总电荷/自旋的注意力嵌入和潜在电荷静电项。模型均在OMol25上训练。\n\n发布方在OMol25完整验证集2,762,021个结构上报告精度：presto到largo的力MAE依次为47.7、33.5、16.5、7.65和5.79 meV/Å，能量MAE依次为5.78、4.36、1.36、0.620和0.364 meV/atom。andante的力误差接近UMA-S-1.2的7.55 meV/Å，largo的能量误差低于对照DPA4-Pro的0.380 meV/atom；这些都是同一发布方组织的比较，尚不能视作独立验证。\n\n速度测试使用单张NVIDIA H20，在2,586原子的水合体系上运行1 fs、带键约束的NVE分子动力学，并计入邻居表重建。presto为0.71毫秒/步、121纳秒/天，andante为29.5毫秒/步、2.9纳秒/天，largo为125毫秒/步、0.69纳秒/天。项目称andante相对UMA-S-1.2快29倍，largo相对DPA4-Pro快9.7倍，但硬件、软件和系统条件必须一起保留，不能跨平台直接外推。\n\n软件环境记录为Python 3.12、PyTorch 2.7.1、CUDA 12.x和Triton 3.3.1，其他GPU未测试。包支持单结构推理、批量预测，以及GPU上的NVE、NVT和NPT分子动力学；CPU可做单结构推理。文档也提示首次运行会编译内核，largo可能耗时数分钟，当前不支持应力输出，权重下载体积从9.3 MB到4.81 GB不等。\n\n## 量仔观察\n\nHyFF的工程价值在于把同一训练分布下的速度—精度阶梯、权重和可运行MD工具一起交付，使研究者能按体系规模与误差容忍度选择档位，而不是只能接受一个超大模型。实际采用仍需在目标化学空间复核能量守恒、长时间轨迹稳定性、外推结构和不同GPU表现，并与经典势能或DFT基线做任务级验证。开权重与Apache代码降低了审计门槛，但训练数据许可、模型失效区域和厂商自测偏差仍应单独评估。",
+      "category": "ai",
+      "tags": ["HyFF", "AI4Science", "分子动力学", "开权重", "NVIDIA H20"],
+      "source_name": "Tencent Hunyuan Hyra",
+      "source_url": "https://github.com/Tencent-Hunyuan/Hyra-results/blob/main/AI4Science/hyff/README.md",
+      "cover_image": null,
+      "published_at": "2026-11-04T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "同时发布五档权重、代码、技术报告和完整硬件/数据集基准，便于AI4Science研究者复现与选型；性能结论仍来自发布方单一硬件自测。"
+    },
+    {
+      "slug": "20261104-ngcc-triq-kem-multi-instance-decoding",
+      "title": "TriQ-KEM多实例解码估算跌破四档目标：前提是同一公钥下海量诚实密文",
+      "summary": "ngcc.dev在2026年11月1日登记kem-37-3：Yongge Wang提出同一TriQ-KEM封装公钥被长期复用时，可把独立诚实密文及其循环移位作为多目标综合解码实例。固定估算器给出的四档工作量均略低于声称安全位数，但差距不到1比特，且未运行全尺寸解码或端到端密钥恢复。",
+      "content": "原始日期：2026-11-01。独立分析站ngcc.dev为NGCC候选TriQ-KEM登记稳定编号`kem-37-3`，Credit标为Yongge Wang（含AI辅助），并将其列为设计层面的Critical / Confirmed。这里的“Confirmed”表示站点认为攻击模型、估算器交叉点和公开奖励方程可复核，并不等于本站或ICCS完成了全尺寸攻击；ngcc.dev也明确不是商用密码标准研究院官方评审。\n\n分析针对TriQ-KEM-128、-256、-384和-512在同一封装公钥长期复用的场景。每个诚实密文的第一分量为`u=r1+h*r2`，两个固定重量向量可构成一个`[2n,n]`综合解码实例；环结构又允许把每个密文的`n`个循环移位计作相关目标。攻击需要其他参与方在同一公钥下独立生成、且攻击者事先不知道临时误差的密文，攻击者自己封装的密文不提供这种未知解码目标。\n\n使用May与Sá Diogo的固定启发式DS-DOOM估算器，报告在约`2^73`、`2^77`、`2^77`和`2^78`个诚实密文下，得到约`2^127.522`、`2^255.557`、`2^383.352`和`2^511.537`比特操作，分别略低于128、256、384和512比特目标。对应内存指数约为`2^100.993`到`2^112.533`比特，说明这不是现实可立即执行的攻击。\n\n若解码器真的恢复`(r1,r2)`，公开方程允许从第二密文分量消去`s*r2`，剩下公开可解码的码字与设计重量误差，进而恢复消息；公开的封装密钥与salt随后确定共享密钥。报告没有利用规范里的bounded-density限制，因而把真实误差空间按更大、更保守的集合估算；也没有运行全尺寸解码器或完成端到端共享密钥恢复。\n\n证据边界尤其重要：四个低于目标的差距全部不到1比特，TriQ-KEM-128仅低约0.478比特，另一种操作计价约定就可能改变是否“越线”的判断。估算器把循环移位视为相关目标，且公开API没有规定单密钥会话上限；如果实际系统严格轮换封装公钥或限制每个公钥的密文数量，报告中的多实例前提可能无法达到。\n\n## 量仔观察\n\n这项结果更像参数与生命周期约束的警报，而不是“TriQ-KEM已被实用攻破”。它提示评议不能只看单密文解码成本，还要把同一公钥承载的会话总量写进安全目标和部署规范。后续需要作者团队公开回应、对估算器成本模型进行独立复核，并测试公钥轮换能否以可接受代价消除多目标积累；在这些工作完成前，应同时保留`Critical`标签的评议语境、极小安全裕量和不可执行规模三方面事实。",
+      "category": "ngcc",
+      "tags": ["NGCC", "TriQ-KEM", "kem-37-3", "码基密码", "多目标解码"],
+      "source_name": "ngcc.dev",
+      "source_url": "https://ngcc.dev/reports/kem-37.html",
+      "cover_image": null,
+      "published_at": "2026-11-04T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "稳定finding覆盖TriQ-KEM全部四档并揭示同钥多会话的参数裕量问题，适合立即进入评议；但仅为启发式复杂度估算，差距不足1比特且没有全尺寸恢复。"
+    },
+    {
+      "slug": "20261104-python-jose-empty-hmac-cve",
+      "title": "python-jose空HMAC密钥获CVE编号，问题仍无已知修复版本",
+      "summary": "CVE-2026-120459于2026年11月2日关联python-jose 3.5.0及更早版本：当应用把HS256/384/512验证密钥解析为空值时，攻击者可用同一空密钥伪造JWT。公开问题仍处于open状态，受影响和修复版本未明确；这不是无条件远程利用，也没有在野利用证据。",
+      "content": "原始披露日期：2026-03-08；CVE/GHSA状态更新：2026-11-02，公开讨论更新至2026-11-03。`python-jose`问题#398给出空字符串或空字节HMAC密钥可正常签名和验签的示例，CVE-2026-120459据此描述HS256/384/512在应用密钥解析为空时可被伪造。\n\n前提不能省略：攻击者必须遇到配置、JWK解析或密钥加载路径最终提供空/极弱对称密钥；并非安装python-jose就能远程绕过认证。GitHub Advisory目前标为未审核，受影响版本与修复版本均为Unknown，原问题仍开放，也没有KEV收录或在野利用证据。11月3日讨论还指出，更一般的风险是库没有约束HMAC密钥熵，而不是只需禁止空值；维护者应立即盘点实际密钥来源、显式限定算法，并在修复明确前在应用层拒绝空值和低熵密钥。",
+      "category": "flash",
+      "tags": ["security", "CVE-2026-120459", "python-jose", "JWT", "状态更新"],
+      "source_name": "python-jose GitHub Issue",
+      "source_url": "https://github.com/mpdavis/python-jose/issues/398",
+      "cover_image": null,
+      "published_at": "2026-11-04T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "身份验证库的空/弱密钥路径可导致JWT伪造，且当前无明确修复版本，值得使用方立即自查；影响依赖错误密钥配置，尚无在野利用证据。"
+    },
+    {
+      "slug": "20261104-anthropic-message-threads-beta",
+      "title": "Anthropic开放Message Threads Beta，长代理请求只需发送新增消息",
+      "summary": "Anthropic在2026年11月2日把Message Threads以Beta形式开放到Claude API及多家云平台。首次请求上传完整系统提示、工具和对话，后续只提交新增消息与上一响应ID；线程闲置5分钟失效，最迟一小时删除，不具备ZDR或HIPAA资格，应用仍须自行保存可重放的完整会话。",
+      "content": "原始发布日期：2026-11-02。Anthropic Message Threads进入Beta，使用`message-threads-2026-08-12`请求头，覆盖Claude API、Claude Platform on AWS、Google Cloud Anthropic托管和Microsoft Foundry。首轮创建线程并发送完整上下文，后续请求只带新增消息和上一响应ID，由服务端重建对话，目标是让长代理的首token时间更稳定。\n\n线程是短期、尽力而为的状态：最后一次请求5分钟后失效，最后使用后最迟一小时删除；继续失败会返回404，客户端必须用自存完整会话重新创建。该功能不符合零数据保留和HIPAA资格，因此不能把它当作持久记忆或合规存储。其实际收益还需结合提示缓存、重放频率和云平台数据政策测量。",
+      "category": "flash",
+      "tags": ["ai", "Claude API", "Agent", "上下文管理", "Beta"],
+      "source_name": "Anthropic Claude Platform Docs",
+      "source_url": "https://platform.claude.com/docs/en/build-with-claude/message-threads",
+      "cover_image": null,
+      "published_at": "2026-11-04T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "直接影响长代理请求体、首token延迟和重放架构，且已跨多云提供；仍为短时Beta状态，合规和持久性限制明确。"
+    }
+  ]
+}
