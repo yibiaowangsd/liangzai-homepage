@@ -1,0 +1,145 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-05",
+  "coverage": {
+    "pqc": {
+      "count": 0,
+      "note": "优先检索2026-11-04前后IACR ePrint、arXiv、NIST PQC项目、国内高校与企业研发及主要实现发布，补查ML-KEM、ML-DSA、SLH-DSA、HQC和格/码路线。命中多为既报成果、旧会议材料或缺少可读全文的摘要，未发现可独立核实的新构造、密码分析或显著实现发布。"
+    },
+    "migration": {
+      "count": 0,
+      "note": "检查NIST/NCCoE、英国NCSC、金融与电信采用方、云和密码产品供应方，并扫描国内银行、运营商及行业实践。前24小时未见新的部署、验收、回滚或可复现实测；NISTIR 8547、香港金管局工具包和IBM方案均已在近七期报道，未重复包装。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "检查IETF TLS、SSH、IKE/IPsec、QUIC、EMU、WebPKI及国内TLCP线索，覆盖草案、实现、互通和故障来源。11月4日前后未见新的实现发布、部署事故或互通实测；11月2日个人草案已在上期筛查，HPKE本次主要增量是IESG状态，归入standards。"
+    },
+    "standards": {
+      "count": 1,
+      "note": "核对IETF Datatracker、IESG决定、RFC Editor、NIST、ETSI/ISO/ITU-T及国内国标、行标公告。收录HPKE二版进入RFC编辑队列的关键状态变化，并阅读全文核对与RFC 9180差异；其他近期结果为个人草案、既报状态或无实质变化，未写成标准通过。"
+    },
+    "security": {
+      "count": 2,
+      "note": "检查CISA KEV/CSAF、CERT-EU、JPCERT、加拿大网络安全中心、CNCERT/CNVD、厂商PSIRT与研究者披露。收录OpenAI Linux内核自动化漏洞研究及Cisco UCS Central RCE修复；Chrome常规更新和仅有索引的CVE未入选，且明确两事件均无已确认在野利用结论。"
+    },
+    "ai": {
+      "count": 2,
+      "note": "覆盖OpenAI、Google、Anthropic、Moonshot及国内模型/API/权重入口，并补查HELM、METR、MLCommons等评测和产业应用。收录Images 2.6正式可用与Kimi K3.1 Pro权重公开，核对模型卡、文件、许可证和可用条件；厂商性能均按自报表述，未写成独立验证。"
+    },
+    "ngcc": {
+      "count": 0,
+      "note": "实际读取ICCS官网通知公告、算法提案与评议入口，以及ngcc.dev首页、安全报告索引、分类规则、Performance和Side-Channel入口。独立站仍显示更新至2026-11-03，未见11月4日后新的公钥finding、候选版本、作者回应、修复或复测；哈希候选不纳入。"
+    },
+    "flash": {
+      "count": 0,
+      "note": "复核八栏检索中的产品/API可用性、许可、征求意见、截止节点和处置更新。Daybreak Red与常规安全通告虽可核实，但信息价值被同日更完整的研究和修复事件覆盖；其余为普通维护、营销或核心事实不足，未转入快讯凑数。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261105-hpke-v2-rfc-editor-queue",
+      "title": "HPKE二版进入RFC编辑队列：拟取代RFC 9180并重写KDF与导出密钥规则",
+      "summary": "IETF Datatracker在2026年11月3日把draft-ietf-hpke-hpke标记为RFC Ed Queue，意味着IESG审批已完成但尚未成为正式RFC。新文本保持RFC 9180兼容目标，同时加入单阶段KDF框架、移除Auth/AuthPSK模式，并收紧导出密钥、重放和info长度要求；后量子算法实例仍由配套草案定义。",
+      "content": "2026-11-03，IETF Datatracker将《Hybrid Public Key Encryption》二版草案draft-ietf-hpke-hpke-06的IESG状态更新为“RFC Ed Queue”。[IESG决定页](https://datatracker.ietf.org/iesg/decisions/)记录2026-11-02批准该文档按Proposed Standard发布；截至本期，它仍处在RFC编辑流程，RFC Editor页面显示等待作者输入，因此不能写成已经发布的正式RFC。\n\n这份文本计划在最终发布后取代RFC 9180，但不是简单勘误。草案附录列出的主要变化包括：合并RFC 9180全部有效勘误、为单阶段KDF增加框架、移除Auth和AuthPSK模式，并扩展对重放与导出密钥的安全讨论。原有KEM、KDF和AEAD登记值原则上保持不变，目标是让共同功能保持向后兼容。\n\n对实现者影响最大的约束之一，是应用不能再从导出秘密直接派生AEAD密钥与nonce对，除非每次派生加入新的输入；旧版双向加密示例不满足这一新要求。info字段方面，文本从“所有应用输入推荐不超过64字节”改为实现至少支持64字节、并建议支持至少16384字节，沿用旧上限的实现可能需要调整。\n\n后量子意义需要分开看。该基础规范明确：只要选用后量子安全且满足CCA安全等要求的KEM，已有组合分析可以支持HPKE的后量子安全结论；PSK模式还可在经典KEM被量子攻破时提供混合抗性。但本草案没有直接为ML-KEM新增登记项，具体后量子与混合算法由配套的[draft-ietf-hpke-pq](https://datatracker.ietf.org/doc/draft-ietf-hpke-pq/)等文档定义。\n\n因此，当前最准确的状态是“IETF已批准、正在编辑、尚未分配最终RFC号”。实现团队可以提前检查单阶段KDF接口、导出秘密用途和超长info支持，却不应仅凭草案标题宣称已完成后量子迁移；配套算法登记、测试向量、应用协议约束和最终RFC文本仍需分别跟踪。\n\n## 量仔观察\n\n这次状态跃迁的价值不在于新增一个算法编号，而在于更新被多种上层协议依赖的加密封装底座。删除认证模式、强化导出密钥派生和放宽info长度，会影响API设计与互操作测试；与此同时，规范把“可承载后量子KEM”与“已经部署后量子算法”清楚分开。采购或合规清单若只勾选HPKE支持，仍不足以证明系统使用了ML-KEM或完成端到端量子安全改造。",
+      "category": "standards",
+      "tags": [
+        "HPKE",
+        "IETF",
+        "RFC Editor",
+        "Proposed Standard",
+        "密码标准"
+      ],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/draft-ietf-hpke-hpke/",
+      "cover_image": null,
+      "published_at": "2026-11-05T00:10:00.000Z",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "HPKE是多种协议可复用的加密封装基础；IESG批准并进入RFC编辑队列是关键标准节点，且新文本改变KDF、认证模式和导出密钥要求，对实现与迁移具有直接影响。"
+    },
+    {
+      "slug": "20261105-openai-linux-kernel-vulnerability-pipeline",
+      "title": "OpenAI披露Linux内核自动化攻防流水线：复现1724个问题并生成948个提权利用",
+      "summary": "OpenAI在2026年11月4日披露一套面向Linux内核的自动化漏洞发现、动态复现、利用验证与补丁生成流水线：2308个候选中复现1724个，并在特定桌面系统环境生成948个本地提权利用，API成本约121万美元。结果由人类研究员复核，许多补丁仍在报告流程，不能等同于948个已获上游确认的零日漏洞。",
+      "content": "2026-11-04，OpenAI发布Linux内核安全研究，称其原型流水线在一次2026年10月中旬运行中分析2308个候选问题，动态复现1724个漏洞，并为其中948个生成能够取得root权限的本地提权利用。发布方报告整次运行使用约1213430美元API额度，折合每个成功本地提权利用约1279美元。\n\n流水线分为目标发现、静态扫描、动态验证、可利用性评估、补丁生成和人类复核。系统先从约4000万行内核代码中选取约280万行高价值目标，再在带KASAN的隔离虚拟机里运行最小触发程序；只有出现可测量内存破坏并满足低权限可达等条件的候选，才继续进入信息泄露或本地提权验证。\n\n实验环境是发布方所称的常用桌面发行版股票配置，而不是刻意弱化的靶机；另在缩减攻击面的kernelCTF环境中得到25个信息泄露PoC和21个本地提权利用。不过这些数字仍是OpenAI单方实验结果：文章没有公开完整漏洞清单或利用细节，21个kernelCTF结果也以“如果被接受”描述，不能当作奖励项目已经确认。\n\n人类审查仍是关键控制。团队称已向维护者发送数百份报告和补丁；扫描与人工分析的十天内，61个本地提权问题已由上游修复，43个已有暂存补丁，另有299个在公开讨论。这个重叠也说明大规模扫描会遇到重复、过期和并行发现，复现结果并不自动等于一个新的独立漏洞。\n\n研究还披露了一次重要失败：早期200个“成功利用”中有20个实际上借用了与任务无关的另一个零日漏洞取得root。团队随后增加独立检查，确认最终利用确实经过被指派的缺陷路径。补丁生成同样经历迭代，初始补丁偶尔过度修改、引入性能代价或遗漏同类变体，因此最终合入仍需维护者审阅。\n\n## 量仔观察\n\n这项结果真正改变的是漏洞研究的吞吐量，而不是证明人类审核已经可以取消。候选、可复现缺陷、可用利用、上游确认和正式修复是五个不同阶段，948这个数字只能在其特定系统与威胁模型下解释。对防守方更直接的结论是：内核等高价值代码库需要持续重扫、快速去重和补丁回归；模型能力提升会同时压低发现成本与攻击成本，隔离、最小权限和及时更新的重要性随之上升。",
+      "category": "security",
+      "tags": [
+        "Linux内核",
+        "AI安全研究",
+        "本地提权",
+        "漏洞自动化",
+        "补丁生成"
+      ],
+      "source_name": "OpenAI",
+      "source_url": "https://openai.com/index/a-thousand-fewer-paths-to-root/",
+      "cover_image": null,
+      "published_at": "2026-11-05T00:10:00.000Z",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "实验在大型通用内核上展示了从发现到利用和补丁的规模化能力，影响漏洞研究与防守成本模型；但结果尚非逐项上游确认，报道同时保留复核与误判边界。"
+    },
+    {
+      "slug": "20261105-cisco-ucs-central-rce",
+      "title": "Cisco UCS Central修复认证后远程代码执行：2.1分支需升至2.1(2c)",
+      "summary": "Cisco在2026年11月4日披露CVE-2026-76506：UCS Central Web管理界面对HTTP输入校验不足，持有有效账户的远程攻击者可执行任意命令、写入文件并读取敏感信息。所有配置均受影响，2.1分支首个修复版为2.1(2c)，2.0及更早版本需迁移；没有可用变通措施，厂商尚未发现公开利用。",
+      "content": "2026-11-04 16:00 GMT，Cisco发布UCS Central Software安全公告，披露CVE-2026-76506。该漏洞位于Web管理界面，源于HTTP请求中的用户输入校验不足；攻击者需要先拥有受影响设备的有效用户凭据，才能从网络侧向特定端点发送构造请求。\n\n成功利用后，攻击者可在设备上执行任意命令、向文件系统写入任意文件并获取敏感信息。Cisco给出的CVSS 3.1基础分为7.6，向量同时表明攻击复杂度低、无需用户交互，但要求低权限账户。这里的“远程代码执行”不能省略认证前提，也没有证据支持无账户的互联网攻击者直接利用。\n\n厂商称UCS Central Software不论设备配置均受影响。版本处置表把2.1(2c)列为2.1分支的首个修复版本；2.0及更早版本没有原地修复基线，需迁移到受支持的已修复版本。[加拿大网络安全中心提醒](https://www.cyber.gc.ca/en/alerts-advisories/cisco-security-advisory-av26-1127)也列明低于2.1(2c)的版本需更新。\n\n公告明确不存在可解决该问题的变通措施，意味着仅依靠配置开关不能替代升级。Cisco建议客户核对设备的内存、硬件和现有配置是否仍被目标版本支持，并通过正式支持渠道取得更新；对于承担统一管理职责的UCS Central，升级前还应验证备份、回滚和受管域兼容性。\n\n截至公告版本1.0，Cisco PSIRT表示不知道该漏洞已有公开披露或恶意利用。漏洞由Gulf Business Machines的Anand Murugan报告。因此，当前证据等级是“厂商确认并已修复的高危认证后漏洞”，而不是在野利用或CISA KEV事件。\n\n## 量仔观察\n\n管理平面漏洞的影响常被“需要登录”低估：一旦普通账户通过钓鱼、口令复用或其他缺陷失守，命令执行与文件写入会把局部权限转化为控制面风险。资产团队应优先识别仍在2.0及更早分支的实例，因为它们面对的不是一次小补丁，而是版本迁移；同时保留厂商尚未观察到恶意利用这一事实，避免把修复优先级误写成已发生攻击。",
+      "category": "security",
+      "tags": [
+        "Cisco UCS Central",
+        "CVE-2026-76506",
+        "远程代码执行",
+        "厂商PSIRT",
+        "补丁"
+      ],
+      "source_name": "Cisco Security Advisory",
+      "source_url": "https://sec.cloudapps.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-cucs-rce-LzHSFRDQ",
+      "cover_image": null,
+      "published_at": "2026-11-05T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "漏洞影响统一基础设施管理平面且无变通措施，认证后可执行命令、写文件并读取敏感数据；已有明确修复版，但尚无公开或在野利用证据。"
+    },
+    {
+      "slug": "20261105-openai-images-26",
+      "title": "OpenAI发布Images 2.6：Flare与Sunburst进入API，新增标记编辑、SVG和GIF",
+      "summary": "OpenAI在2026年11月4日发布Images 2.6，并把GPT-Image-2.6 Flare与Sunburst开放给API开发者。Flare侧重速度，厂商称低质量档最快约6秒；Sunburst侧重中高质量和跨轮次一致性。API新增局部标记编辑、SVG导出与complexity参数，ChatGPT和Codex同步全球可用，但性能数字仍来自发布方测试。",
+      "content": "2026-11-04，OpenAI正式发布Images 2.6，并宣布其在ChatGPT、Codex和API中可用。面向开发者的API提供GPT-Image-2.6 Flare与Sunburst两个选择：Flare定位快速迭代，Sunburst定位更高细节和编辑一致性；ChatGPT与Codex端则覆盖桌面、移动和网页的各订阅层级。\n\n发布方称Images 2.6整体生成速度比上一代快50%，Flare在低质量档可最快约6秒完成一张图，Sunburst在中高质量档提供更高视觉质量和跨轮次角色、产品细节一致性。这些是厂商在发布材料中的性能主张，页面没有给出可供第三方复算的硬件、并发、提示集或分位数，因此不应把“最快”理解为所有请求的稳定延迟。\n\nAPI层面的变化不只换模型名。此前在ChatGPT中提供的image markup进入API，调用方可以标记需要修改的区域；SVG导出面向网站、应用和印刷流程；新的complexity参数控制模型为满足约束投入多少规划，而quality参数继续控制视觉细节。官方建议普通编辑优先低complexity，复杂多元素场景再提高。\n\nImages 2.6还把GIF生成纳入产品能力，面向品牌角色、反应图和动画分镜等用途。发布页面展示的是合作伙伴和早期用户案例，能说明可用场景，却不能代替稳定性、版权风险、文字准确率或跨行业生产评测；团队在接入前仍需用自己的素材、失败标准和人工审核流程测试。\n\n具体模型费率需按[API定价页](https://developers.openai.com/api/docs/pricing)另行核对，发布公告本身只确认两个模型已经可用。OpenAI同时指向一份系统卡说明安全评估与防护，但本次产品稿没有提供完整训练数据、第三方评测或不同地区策略差异，企业采购不能仅凭速度百分比决定替换现有工作流。\n\n## 量仔观察\n\n这次更新对研发团队最实际的价值，是把局部编辑、矢量导出、速度与规划深度拆成可编排参数，而不是只提升单张成图观感。产品团队应分别测量首图延迟、编辑轮次、角色一致性、SVG可用率和失败重试成本；Flare与Sunburst的选择也应按任务分流。厂商数字可作为建立基线的起点，但只有自有数据上的成功任务成本才能决定是否迁移。",
+      "category": "ai",
+      "tags": [
+        "OpenAI",
+        "GPT-Image-2.6",
+        "图像生成",
+        "API发布",
+        "多模态"
+      ],
+      "source_name": "OpenAI",
+      "source_url": "https://openai.com/index/introducing-images-2-6/",
+      "cover_image": null,
+      "published_at": "2026-11-05T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "模型已在消费端和API正式可用，并带来可直接影响生产工作流的局部标记编辑、SVG导出、GIF与规划深度控制；速度数据仍待独立复测。"
+    },
+    {
+      "slug": "20261105-kimi-k31-pro-open-weights",
+      "title": "Kimi K3.1 Pro完整权重公开：2.8万亿参数、百万上下文与定制许可证同时落地",
+      "summary": "Moonshot AI的Kimi K3.1 Pro完整权重在2026年11月5日北京时间进入官方Hugging Face仓库，模型卡列出2.8万亿总参数、1040亿激活参数、约100万token上下文和视觉编码器。权重以MXFP4量化、仓库约1.56TB；许可证允许使用与修改，但大型MaaS和超大规模商业产品另有协议或显著署名条件。",
+      "content": "2026-11-05（北京时间），Moonshot AI官方Hugging Face仓库公开Kimi K3.1 Pro完整权重与模型文件，兑现此前“最迟11月4日发布完整权重”的时间承诺。仓库已包含96个权重分片、配置、推理代码和许可证，总体积约1.56TB；这使模型从此前的应用与API可用，进入可由具备足够基础设施的团队自行部署阶段。\n\n模型卡把K3.1 Pro描述为原生多模态Agent模型：MoE总参数2.8万亿，每个token激活1040亿参数，共93层、896个专家并选择16个专家；上下文长度为1048576 token，视觉侧使用约4.01亿参数的MoonViT-V2。注意力由69层KDA与24层Gated DSA组成，后者用于降低长上下文成本。\n\n公开权重采用量化感知训练生成的MXFP4权重与MXFP8激活，官方推荐vLLM、SGLang和TokenSpeed作为推理引擎。模型卡给出了OpenAI兼容接口示例并要求trust_remote_code，这意味着部署者除了准备大规模存储与加速器，还应审计随仓库加载的定制代码、锁定修订版本，并先在隔离环境验证依赖和张量格式。\n\n[许可证原文](https://huggingface.co/moonshotai/Kimi-K3.1-Pro/blob/main/LICENSE)不是通用OSI开源许可证，而是Kimi K3.1 Pro定制条款。文本允许使用、复制、修改、分发、再许可和商业部署；但经营Model-as-a-Service且关联方连续12个月合计收入超过2000万美元时，商业使用前需与Moonshot另签协议。商业产品月活超过1亿或月收入超过2000万美元，还须在界面显著显示“Kimi K3.1-Pro”，内部使用和官方合作渠道另有例外。\n\n模型卡列出的编码、Agent、推理与多模态成绩均来自发布方指定配置，多数使用reasoning_effort=max、temperature=1.0和top-p=0.95；不同榜单的准确率、通过率和Elo不可直接横比。仓库未提供训练数据全量清单，也没有面向常见硬件的吞吐、显存或能耗矩阵，因此“权重可下载”不等于中小团队可以低成本复现API体验。\n\n## 量仔观察\n\n这次实质新增是权重真正可取用，而不是再一次模型宣发。对国内研发团队而言，百万上下文、稀疏注意力和视觉输入为代码、文档与Agent实验提供了可审计底座；但1.56TB体积、定制算子、远程代码加载和许可证门槛会把“能下载”与“能稳定运营”拉开。评估时应同时记录模型质量、硬件占用、量化误差、推理栈成熟度和商业条款，不能把开放权重简单等同于完整开源。",
+      "category": "ai",
+      "tags": [
+        "Moonshot AI",
+        "Kimi K3.1 Pro",
+        "开放权重",
+        "MoE",
+        "国产大模型"
+      ],
+      "source_name": "Moonshot AI / Hugging Face",
+      "source_url": "https://huggingface.co/moonshotai/Kimi-K3.1-Pro",
+      "cover_image": null,
+      "published_at": "2026-11-05T00:10:00.000Z",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "完整权重、推理文件和许可证均已公开，国内团队可开始自部署和审计；模型规模与定制商业条款同时构成重要采用约束，厂商基准尚待独立复测。"
+    }
+  ]
+}
