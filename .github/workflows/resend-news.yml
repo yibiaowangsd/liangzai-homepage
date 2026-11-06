@@ -1,14 +1,10 @@
 name: Resend a reviewed news edition
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'news/resend/*.json'
   workflow_dispatch:
     inputs:
       request_file:
-        description: 'Previously authorized request, e.g. news/resend/2026-10-19.json'
+        description: 'Existing reviewed request, e.g. news/resend/2026-10-19.json'
         required: true
         type: string
 
@@ -25,36 +21,21 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - name: Resolve the explicit resend request
+      - name: Select reviewed request
         env:
-          EVENT_NAME: ${{ github.event_name }}
-          INPUT_FILE: ${{ inputs.request_file || '' }}
-          BEFORE_SHA: ${{ github.event.before || '' }}
+          REQUEST_FILE: ${{ inputs.request_file }}
+        shell: bash
         run: |
-          python3 - <<'PY'
-          import os, pathlib, re, subprocess
-          if os.environ['EVENT_NAME'] == 'workflow_dispatch':
-              paths = [os.environ['INPUT_FILE']]
-          else:
-              before = os.environ['BEFORE_SHA']
-              if not re.fullmatch(r'[a-f0-9]{40}', before) or set(before) == {'0'}:
-                  raise SystemExit('A bounded existing-branch change is required.')
-              paths = subprocess.check_output(['git', 'diff', '--name-only', '--diff-filter=AM', before, 'HEAD', '--', 'news/resend/'], text=True).splitlines()
-          if len(paths) != 1 or not re.fullmatch(r'news/resend/\d{4}-\d{2}-\d{2}\.json', paths[0]):
-              raise SystemExit('Exactly one dated resend request is required.')
-          if not pathlib.Path(paths[0]).is_file():
-              raise SystemExit('The selected request file does not exist.')
-          with open(os.environ['GITHUB_ENV'], 'a') as handle:
-              handle.write('NEWS_RESEND_REQUEST=' + paths[0] + '\n')
-          PY
+          set -euo pipefail
+          [[ "$REQUEST_FILE" =~ ^news/resend/[0-9]{4}-[0-9]{2}-[0-9]{2}\.json$ ]] || { echo "Invalid request path" >&2; exit 1; }
+          [[ -f "$REQUEST_FILE" ]] || { echo "Request file does not exist" >&2; exit 1; }
+          echo "NEWS_RESEND_REQUEST=$REQUEST_FILE" >> "$GITHUB_ENV"
       - name: Check the reviewed edition
         run: node scripts/resend-news.mjs "$NEWS_RESEND_REQUEST" --check
-      - name: Send or resume the same frozen batch
+      - name: Send or resume the reviewed batch
         env:
           NEWS_ADMIN_TOKEN: ${{ secrets.NEWS_ADMIN_TOKEN }}
         run: node scripts/resend-news.mjs "$NEWS_RESEND_REQUEST"
