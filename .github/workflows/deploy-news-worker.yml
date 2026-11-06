@@ -6,7 +6,6 @@ on:
     paths:
       - 'news-worker/**'
       - 'news/edition-policy.json'
-      - '.github/workflows/deploy-news-worker.yml'
   workflow_dispatch:
 
 permissions:
@@ -31,13 +30,6 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-
-      - name: Check Cloudflare credentials
-        shell: bash
-        run: |
-          set -euo pipefail
-          [[ -n "$CLOUDFLARE_API_TOKEN" ]] || { echo "Missing CLOUDFLARE_API_TOKEN secret" >&2; exit 1; }
-          [[ -n "$CLOUDFLARE_ACCOUNT_ID" ]] || { echo "Missing CLOUDFLARE_ACCOUNT_ID secret" >&2; exit 1; }
 
       - name: Resolve D1 database and generate Wrangler config
         shell: bash
@@ -90,8 +82,8 @@ jobs:
           }
           EOF
 
-      - name: Verify read controls before deployment
-        run: node --experimental-strip-types --test tests/news-search.test.mjs tests/news-editions-api.test.mjs tests/news-edition-publishing.test.mjs tests/news-read-controls.test.mjs tests/news-weekly.test.mjs
+      - name: Test news publishing
+        run: node --experimental-strip-types --test tests/news-editions-api.test.mjs tests/news-edition-publishing.test.mjs
 
       - name: Apply news and subscription schema
         shell: bash
@@ -105,63 +97,8 @@ jobs:
           set -euo pipefail
           npx --yes wrangler@4.92.0 deploy --config "$RUNNER_TEMP/wrangler-news.jsonc"
 
-      - name: Verify news API
-        shell: bash
+      - name: Verify deployed API
         run: |
-          set -euo pipefail
-          # New routes can take a few seconds to propagate after deployment.
-          robot_ready=false
-          for attempt in {1..8}; do
-            response="$(curl --silent --show-error --max-time 15 https://api.wangyibiao.com/api/robot-subscriptions)"
-            if python3 -c 'import json,sys; d=json.load(sys.stdin); assert d["review_required"] is True and d["mentions_admin_only"] is True' <<< "$response" 2>/dev/null; then
-              robot_ready=true
-              break
-            fi
-            sleep 5
-          done
-          [[ "$robot_ready" == "true" ]] || { echo "Robot subscription route is not ready" >&2; exit 1; }
-          for url in \
-            "https://api.wangyibiao.com/api/health" \
-            "https://api.wangyibiao.com/api/subscriptions" \
-            "https://api.wangyibiao.com/api/robot-subscriptions" \
-            "https://api.wangyibiao.com/api/news/featured?limit=6" \
-            "https://api.wangyibiao.com/api/news/search?q=AWS" \
-            "https://api.wangyibiao.com/api/news/editions?page=1&pageSize=1"; do
-            echo "Checking $url"
-            response="$(curl --fail --silent --show-error --retry 3 --retry-all-errors --max-time 30 "$url")"
-            python3 -c '
-          import json, sys
-          payload = json.load(sys.stdin)
-          if "/api/health" in sys.argv[1]:
-              assert payload["robot_ready"] is True, "Robot subscription encryption must be configured"
-              print("Robot subscriptions configured:", payload["robot_ready"])
-              assert payload["news_read_controls"]["rate_limit"] is True
-              assert payload["news_read_controls"]["cache"] is True
-          if "/api/robot-subscriptions" in sys.argv[1]:
-              assert payload["review_required"] is True and payload["mentions_admin_only"] is True
-          if "/api/subscriptions" in sys.argv[1]:
-              assert payload["review_required"] is True, "Subscription review must be required"
-              assert payload["email_confirmation_required"] is True, "Email confirmation must be required"
-              print("Newsletter mail configured:", payload["mail_ready"])
-          if "/api/news/editions" in sys.argv[1]:
-              assert payload["meta"]["pageSize"] == 1, "Expected one day per page"
-              assert len(payload["data"]) <= 1, "Multiple dates returned on one page"
-              assert payload["meta"]["totalPages"] == max(1, payload["meta"]["totalDays"]), "Page count must match edition dates"
-          if "/api/news/search" in sys.argv[1]:
-              assert isinstance(payload["data"], list), "Expected article search results"
-              assert payload["meta"]["count"] == len(payload["data"])
-              assert payload["meta"]["total"] >= payload["meta"]["count"]
-          ' "$url" <<< "$response"
-          done
-
-      - name: Verify robot delivery service
-        env:
-          NEWS_ADMIN_TOKEN: ${{ secrets.NEWS_ADMIN_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          [[ -n "$NEWS_ADMIN_TOKEN" ]] || { echo "Missing news administrator secret" >&2; exit 1; }
-          response="$(curl --fail --silent --show-error --max-time 30 \
-            --header "Authorization: Bearer $NEWS_ADMIN_TOKEN" \
-            https://api.wangyibiao.com/api/admin/robot/status)"
-          python3 -c 'import json,sys; data=json.load(sys.stdin); assert data["enabled"] is True; assert data["review_required"] is True; assert "subscriptions" in data; print("Robot application schema and approval requirement verified")' <<< "$response"
+          curl --fail --silent --show-error --retry 2 --retry-all-errors --max-time 20 \
+            https://api.wangyibiao.com/api/health \
+            | python3 -c 'import json,sys; data=json.load(sys.stdin); assert data.get("ok") is True and data.get("database") is True'

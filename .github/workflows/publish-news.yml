@@ -5,9 +5,6 @@ on:
     branches: [main]
     paths:
       - 'news/inbox/*.json'
-      - '.github/workflows/publish-news.yml'
-      - 'news/validate-edition.py'
-      - 'news/edition-policy.json'
   workflow_dispatch:
     inputs:
       file:
@@ -40,7 +37,6 @@ jobs:
           fetch-depth: 0
 
       - name: Select news files
-        id: select
         shell: bash
         run: |
           set -euo pipefail
@@ -71,33 +67,19 @@ jobs:
           fi
 
           if (( ${#files[@]} == 0 )); then
-            echo "No news JSON files selected; nothing to publish."
-            echo "has_files=false" >> "$GITHUB_OUTPUT"
-            exit 0
+            echo "No news JSON files selected." >&2
+            exit 1
           fi
 
-          existing_files=()
           for file in "${files[@]}"; do
-            if [[ -f "$file" ]]; then
-              existing_files+=("$file")
-            else
-              echo "Skipping deleted or missing file: $file"
-            fi
+            [[ -f "$file" ]] || { echo "Missing news JSON file: $file" >&2; exit 1; }
           done
 
-          if (( ${#existing_files[@]} == 0 )); then
-            echo "No existing news JSON files selected; nothing to publish."
-            echo "has_files=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          printf '%s\n' "${existing_files[@]}" | sort -u > "$RUNNER_TEMP/news-files.txt"
+          printf '%s\n' "${files[@]}" | sort -u > "$RUNNER_TEMP/news-files.txt"
           echo "Selected files:"
           cat "$RUNNER_TEMP/news-files.txt"
-          echo "has_files=true" >> "$GITHUB_OUTPUT"
 
       - name: Validate news JSON
-        if: steps.select.outputs.has_files == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -107,7 +89,6 @@ jobs:
           done < "$RUNNER_TEMP/news-files.txt"
 
       - name: Enrich cover images from original sources
-        if: steps.select.outputs.has_files == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -188,7 +169,6 @@ jobs:
           done < "$RUNNER_TEMP/news-files.txt"
 
       - name: Publish to Worker
-        if: steps.select.outputs.has_files == 'true'
         shell: bash
         run: |
           set -euo pipefail

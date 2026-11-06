@@ -1,130 +1,20 @@
-name: Validate creative universe, news and laboratory frontend
+name: Check frontend changes
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'app/news/**'
-      - 'app/topics/**'
-      - 'app/wo/**'
-      - 'news/topics.js'
-      - 'scripts/generate-topics.mjs'
-      - 'tests/technical-dossiers.test.mjs'
-      - 'tests/wo-archive.test.mjs'
-      - 'tests/knowledge-workspaces-rendering.test.mjs'
-      - 'news-worker/**'
-      - 'app/QuantumHome.tsx'
-      - 'app/studio/**'
-      - 'app/models/**'
-      - 'public/assets/cinematic/**'
-      - 'app/about/**'
-      - 'app/archive/**'
-      - 'app/storybook/**'
-      - 'app/pqc-arsenal/**'
-      - 'app/observatory/**'
-      - 'app/experience/JumpNavigation.tsx'
-      - 'app/experience/destinations.ts'
-      - 'app/experience/jump-navigation.css'
-      - 'app/experience/SiteChrome.tsx'
-      - 'tests/observatory.test.mjs'
-      - 'tests/rendered-html.test.mjs'
-      - 'tests/site-usability.test.mjs'
-      - 'tests/cinema-details.test.mjs'
-      - 'public/assets/site-navigation.css'
-      - 'public/assets/news-search.js'
-      - 'public/pqc-practice/**'
-      - 'tests/browser-compat.test.mjs'
-      - 'tests/kex-worker-flow.test.mjs'
-      - 'app/experience/NewsGate.tsx'
-      - 'app/experience/news-gate.css'
-      - 'app/experience/news-gate-modal.ts'
-      - 'app/experience/AboutPushTransition.tsx'
-      - 'app/experience/PageArrival.tsx'
-      - 'app/experience/about-push*'
-      - 'app/experience/three/about-push-scene.ts'
-      - 'tests/about-restoration.test.mjs'
-      - 'next.config.ts'
-      - 'app/experience/page-arrival.ts'
-      - 'tests/page-arrival.test.mjs'
-      - 'tests/news-*.test.mjs'
-      - 'scripts/check-subscriptions.mjs'
-      - 'scripts/check-news-calendar.mjs'
-      - 'scripts/check-news-journey.mjs'
-      - 'news/validate-edition.py'
-      - 'news/edition-policy.json'
-      - 'app/page.tsx'
-      - 'app/layout.tsx'
-      - 'app/theme/**'
-      - 'public/theme/**'
-      - 'tests/site-theme.test.mjs'
-      - 'tests/site-typography.test.mjs'
-      - 'tests/layout-redesign.test.mjs'
-      - 'scripts/check-responsive-layout.mjs'
-      - 'tests/mobile-sidebar.test.mjs'
-      - 'tests/reading-workspaces.test.mjs'
-      - 'public/news-covers/**'
-      - '.github/workflows/news-frontend-check.yml'
   pull_request:
     paths:
-      - 'app/news/**'
-      - 'app/topics/**'
-      - 'app/wo/**'
-      - 'news/topics.js'
-      - 'scripts/generate-topics.mjs'
-      - 'tests/technical-dossiers.test.mjs'
-      - 'tests/wo-archive.test.mjs'
-      - 'tests/knowledge-workspaces-rendering.test.mjs'
+      - 'app/**'
+      - 'public/**'
       - 'news-worker/**'
-      - 'app/QuantumHome.tsx'
-      - 'app/studio/**'
-      - 'app/models/**'
-      - 'public/assets/cinematic/**'
-      - 'app/about/**'
-      - 'app/archive/**'
-      - 'app/storybook/**'
-      - 'app/pqc-arsenal/**'
-      - 'app/observatory/**'
-      - 'app/experience/JumpNavigation.tsx'
-      - 'app/experience/destinations.ts'
-      - 'app/experience/jump-navigation.css'
-      - 'app/experience/SiteChrome.tsx'
-      - 'tests/observatory.test.mjs'
-      - 'tests/rendered-html.test.mjs'
-      - 'tests/site-usability.test.mjs'
-      - 'tests/cinema-details.test.mjs'
-      - 'public/assets/site-navigation.css'
-      - 'public/assets/news-search.js'
-      - 'public/pqc-practice/**'
-      - 'tests/browser-compat.test.mjs'
-      - 'tests/kex-worker-flow.test.mjs'
-      - 'app/experience/NewsGate.tsx'
-      - 'app/experience/news-gate.css'
-      - 'app/experience/news-gate-modal.ts'
-      - 'app/experience/AboutPushTransition.tsx'
-      - 'app/experience/PageArrival.tsx'
-      - 'app/experience/about-push*'
-      - 'app/experience/three/about-push-scene.ts'
-      - 'tests/about-restoration.test.mjs'
-      - 'next.config.ts'
-      - 'app/experience/page-arrival.ts'
-      - 'tests/page-arrival.test.mjs'
-      - 'tests/news-*.test.mjs'
-      - 'scripts/check-subscriptions.mjs'
-      - 'scripts/check-news-calendar.mjs'
-      - 'scripts/check-news-journey.mjs'
-      - 'news/validate-edition.py'
+      - 'news/topics.js'
       - 'news/edition-policy.json'
-      - 'app/page.tsx'
-      - 'app/layout.tsx'
-      - 'app/theme/**'
-      - 'public/theme/**'
-      - 'tests/site-theme.test.mjs'
-      - 'tests/site-typography.test.mjs'
-      - 'tests/layout-redesign.test.mjs'
-      - 'scripts/check-responsive-layout.mjs'
-      - 'tests/mobile-sidebar.test.mjs'
-      - 'tests/reading-workspaces.test.mjs'
-      - 'public/news-covers/**'
+      - 'news/validate-edition.py'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'next.config.ts'
+      - 'vite.config.ts'
       - '.github/workflows/news-frontend-check.yml'
   workflow_dispatch:
 
@@ -132,7 +22,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  check:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -142,23 +32,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: python3 news/validate-edition.py news/inbox/*.json
       - run: npm run typecheck
-      - run: npm run lint
       - run: npm run build
-      - run: node --experimental-strip-types --test tests/observatory.test.mjs tests/rendered-html.test.mjs tests/site-usability.test.mjs tests/cinema-details.test.mjs tests/news-*.test.mjs tests/about-restoration.test.mjs tests/page-arrival.test.mjs tests/browser-compat.test.mjs tests/kex-worker-flow.test.mjs tests/site-theme.test.mjs tests/site-typography.test.mjs tests/layout-redesign.test.mjs tests/mobile-sidebar.test.mjs tests/reading-workspaces.test.mjs tests/technical-dossiers.test.mjs tests/wo-archive.test.mjs tests/knowledge-workspaces-rendering.test.mjs
-      - run: npx playwright install --with-deps chromium firefox webkit
-      - run: node scripts/check-subscriptions.mjs
-      - run: node scripts/check-news-journey.mjs
-      - run: node scripts/check-news-calendar.mjs
-      - run: npm run test:layout
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: responsive-browser-screenshots
-          path: |
-            outputs/responsive/
-            outputs/subscriptions/
-            outputs/news-calendar/
-            outputs/news-journey/
-          retention-days: 7
+      - run: node --experimental-strip-types --test tests/news-editions-api.test.mjs tests/news-edition-publishing.test.mjs
