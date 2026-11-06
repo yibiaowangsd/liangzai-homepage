@@ -1,6 +1,6 @@
 # 每日前沿信息源与检索指南
 
-修订日期：2026-10-19。与 [选编规则](editorial-policy.md) 和 [日报任务提示词](daily-automation-prompt.md) 配合使用。栏目、JSON和发布约束以 `edition-policy.json`、`validate-edition.py` 和 README 为准。
+修订日期：2026-11-06（在2026-10-19版基础上补充轮换来源）。与 [选编规则](editorial-policy.md) 和 [日报任务提示词](daily-automation-prompt.md) 配合使用。栏目、JSON和发布约束以 `edition-policy.json`、`validate-edition.py` 和 README 为准。
 
 本清单是开放的优先检索入口，不是白名单，也不是已经接入的RSS订阅或采集服务。任务运行时使用实际可用的搜索、公开网页、公开API和文档读取能力发现并核验；不要求每次遍历所有网站。列出的旧报告或会议用于建源和定位后续变化，不能因本次发现而当作新新闻。网站可访问性随时间和运行环境变化；打不开不能记成“无更新”。
 
@@ -96,3 +96,20 @@
 ## 8. 采编方法参考
 
 [AP Telling the Story](https://www.ap.org/about/news-values-and-principles/telling-the-story/) 和 [Reuters Standards & Values](https://reutersagency.com/about/standards-values/) 用于参考归因、交叉核实、新闻稿判断和更正方法；不是本站自动联系采访、复制整稿或增加审批流程的授权。实际执行遵守本仓库规则及用户已经授权的发布范围。
+
+
+## 9. 补充轮换来源（2026-11-06）
+
+本节依据新增来源建议整理，仅收录本次核对到可访问的公开入口，补充此前未明确列出的来源角色；与前文已有条目不重复收录。它们是可轮换的线索与核验入口，不是新增必查配额或已接入的订阅服务。具体成稿应追溯当次事件的全文、日期与证据；旧指南/旧报告仅作背景，不能因加入本清单就当作当日新闻。
+
+| 补充角色 | 公开入口 | 检索与证据边界 |
+| --- | --- | --- |
+| 算法企业研发 | [PQShield](https://pqshield.com/)、[SandboxAQ研究出版库](https://pub.sandboxaq.com/) | 查PQC构造、证明、形式化验证、软硬件实现与原创实验。企业自测须注明归因；产品宣传不能替代技术证据。 |
+| 国际算法评估与候选 | [日本CRYPTREC](https://www.cryptrec.go.jp/en/)、[韩国KpqC候选资料](https://www.kpqc.or.kr/competition.html) | 查算法目录、评估、参数、安全分析与项目状态，区分候选、建议、更新和正式政策；不同国家征集不可混为NGCC。 |
+| 迁移联盟与工程社区 | [PKI Consortium](https://pkic.org/)、[Linux Foundation PQCA](https://pqca.org/)、[Open Quantum Safe](https://openquantumsafe.org/) | 对照CBOM、PKI/HSM、密码敏捷、开源算法与协议接入方案；机构声明与采用方实测分开。 |
+| 其他地区迁移路线 | [加拿大CCCS迁移路线图](https://www.cyber.gc.ca/en/guidance/roadmap-migration-post-quantum-cryptography-government-canada-itsm40001)、[新加坡CSA迁移手册](https://www.csa.gov.sg/resources/publications/quantum-safe-handbook-and-quantum-readiness-index/)、[澳大利亚ASD供应商准备度指导](https://www.cyber.gov.au/news/new-guidance-helps-organisations-assess-vendor-readiness-for-post-quantum-cryptography) | 核对国别适用主体、发布时间、目标期限与实施条件；历史指南只用于发现新的更新。 |
+| 协议部署测量 | [Cloudflare Radar后量子加密面板](https://radar.cloudflare.com/post-quantum) | 查TLS混合密钥协商和源站支持度等数据，明确观测口径、样本、日期及是否仅代表Cloudflare覆盖范围；测量数据不直接等于全网部署率。 |
+| 安全应急与开源漏洞索引 | [韩国KrCERT/CC](https://www.krcert.or.kr/)、[GitHub Advisory Database](https://github.com/advisories)、[OSV](https://osv.dev/list)、[Google Project Zero](https://projectzero.google/) | 把索引用于发现CVE/受影响软件，再追厂商PSIRT、原始研究和修复记录；不将漏洞分数当已利用证据。 |
+| AI评测与算力观察 | [Arena排行榜（原LMArena）](https://arena.ai/leaderboard?tab=arena-elo)、[OpenCompass](https://github.com/open-compass/opencompass)、[Epoch AI](https://epoch.ai/)、[MLPerf Inference](https://docs.mlcommons.org/inference/benchmarks/) | 复核评测数据集、方法、模型版本、推理预算和提交日期；评价结论应有实验条件，不用单一总榜代替能力分析。 |
+
+轮换优先按最近7期coverage中的来源类型、机构/地区与未核验线索缺口；已有有效扫描记录可跨栏复用。对尚未确认可用的建议来源（如个别组织、会议或数据库）暂不附会入口，待找到官方公开页面再补充。
