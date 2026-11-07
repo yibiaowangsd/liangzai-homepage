@@ -1,0 +1,130 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-07",
+  "coverage": {
+    "pqc": {
+      "count": 0,
+      "note": "检查 IACR/ePrint 镜像、arXiv 新提交、NIST/企业研发与国内算法线索，时间窗覆盖前24小时并扩展至7天。Keyber（ePrint 2026/2766）仍只有摘要可稳定读取，原始全文受验证页阻断，无法完成攻击前提、样本量与成功率复核，继续待跟进；3D-Shield 仅有方案性验证且新增性不足，未成稿。"
+    },
+    "migration": {
+      "count": 0,
+      "note": "检查 NIST/NCCoE、欧洲 PQ-NEXT、银行与运营商实践及中文产业线索。江苏银行迁移实践目前仅见二次转载，缺少可读的一手项目材料与验收数据；越南合作公告未给出客户、系统范围或启动时间，均因证据或可行动性不足放弃。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "检查 IETF TLS/SSH/IPsec/EMU 动态、NCSC 指南及国内协议实现线索。draft-ietf-emu-pqc-eap-tls-04 已在前期coverage记录，本次未见新的实现、互通或故障证据；其余命中多为既有RFC、旧草案或产品宣传，未构成新增事件。"
+    },
+    "standards": {
+      "count": 1,
+      "note": "检查 IETF Datatracker/IANA、NIST、ETSI及国内标准公告。入选 PQUIP 受限设备PQC指南在2026-11-05进入“Revised I-D Needed”的IESG状态变化；明确它仍是Informational草案并存在DISCUSS，不写成批准或RFC。中国与欧洲入口未见同等强度的新节点。"
+    },
+    "security": {
+      "count": 4,
+      "note": "检查 CISA KEV、JPCERT/CERT-EU、微软威胁情报、厂商PSIRT及独立研究。入选WordPress在野利用、ARTEX云凭据攻击、西门子Industrial Edge修复增量和ChatGPT Lockdown Mode已修复绕过；按在野证据、受影响版本与修复状态区分。放弃OpenSSH 10.6p2旁支线索，因尚未完成厂商原始公告核验。"
+    },
+    "ai": {
+      "count": 1,
+      "note": "检查 OpenAI/Google/腾讯官方发布、模型卡、METR与MLCommons。入选Gemini Omni 1.2 Flash正式可用及可核成本变化；腾讯Hy4权重与系统卡在官方11月4日公告中仍称“未来几天”发布，未见本次已开放的一手证据，继续观察权重、许可证与系统卡入口。"
+    },
+    "ngcc": {
+      "count": 0,
+      "note": "实际检查ICCS通知与公钥征集入口、ngcc.dev首页、reports索引及classification。索引截至2026-11-05的唯一新finding为CHAMP哈希hash-04-7，不属本栏；签名、KEM与密钥交换未见新稳定finding、作者回应或复测，未用哈希事件凑数。"
+    },
+    "flash": {
+      "count": 0,
+      "note": "复用八栏检索并检查短公告、截止节点、API可用性与事故更新。可核实事件均需解释适用范围或已有长文价值，已归相应专题；其余短讯为营销、重复或材料不足，没有转入快讯凑数。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261107-ietf-pquip-constrained-revision-needed",
+      "title": "IETF要求修订受限设备PQC部署指南草案",
+      "summary": "IETF Datatracker显示，面向受限设备与硬件安全模块的PQC部署指南 draft-ietf-pquip-pqc-hsm-constrained-11 于2026-11-05转入“Revised I-D Needed”。该文档仍是拟定为Informational的活跃草案，存在DISCUSS，不能视为已批准或即将发布RFC。",
+      "content": "2026-11-05，IETF Datatracker记录 draft-ietf-pquip-pqc-hsm-constrained-11 的IESG状态变更为“IESG Evaluation::Revised I-D Needed”。页面同时写明它仍是PQUIP工作组的活跃Internet-Draft，预期类别为Informational，最新文本版本-11实际发布于2026-10-29；这次新增是流程状态，而不是文本发布或标准生效。\n\n草案讨论资源受限设备与硬件安全模块采用后量子密码时的工程约束，包括算法尺寸、内存、计算代价、密钥与证书处理，以及不同PQC路线在受限平台上的适配。它会引用ML-KEM、ML-DSA、SLH-DSA、FN-DSA和HQC等方案，但文档性质是部署指导，不是为这些算法重新授予标准地位，也不会自行创建协议标识。\n\nDatatracker目前还显示该草案“Has a DISCUSS”，并注明只有在DISCUSS问题解决后才具备通过所需的足够立场。IANA审查状态为“IANA OK - No Actions Needed”，这只说明当前文本不要求IANA采取动作，不能替代IESG批准。工作组状态仍为“Submitted to IESG for Publication”，因此下一步取决于作者修订和IESG对修订的确认。\n\n对设备厂商而言，现实意义在于草案给出的算法取舍与资源模型仍可能因评审意见调整。正在设计固件、HSM接口或长期设备生命周期策略的团队可以用-11版做差距分析，但不宜把其中的推荐固化为不可更改的验收条款，更不能对外宣称已遵循一份尚不存在的RFC。\n\n本次状态可在[IETF文档页](https://datatracker.ietf.org/doc/draft-ietf-pquip-pqc-hsm-constrained/)与[文档历史](https://datatracker.ietf.org/doc/draft-ietf-pquip-pqc-hsm-constrained/history/)交叉核对。前者给出当前IESG状态、DISCUSS和IANA审查，后者记录2026-11-05从“IESG Evaluation - Defer”切换到“Revised I-D Needed”，证据属于公开的一手流程记录。\n\n## 量仔观察\n\n这次变化对做受限芯片、IoT固件和HSM集成的人最直接：先把草案当作可变的工程输入，保留算法、参数和接口的可替换性。证据强度高在于Datatracker直接记录状态，但尚看不到修订文本解决了哪些具体评审问题。读者应追踪下一版草案、DISCUSS是否清除及IESG最终动作；在这些节点出现前，不把它写进采购合同为“已批准IETF标准”。",
+      "category": "standards",
+      "tags": ["IETF", "PQUIP", "受限设备", "标准状态"],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/draft-ietf-pquip-pqc-hsm-constrained/",
+      "cover_image": null,
+      "published_at": "2026-11-07T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "IESG一手记录确认状态变化，直接影响设备厂商引用该指南的合规表述与设计冻结时点；但它仍是需修订的Informational草案，不是正式标准。"
+    },
+    {
+      "slug": "20261107-wordpress-cve-2026-119977-kev",
+      "title": "CISA确认WordPress升级竞态漏洞已被利用",
+      "summary": "CISA于2026-11-03把CVE-2026-119977列入KEV，确认WordPress Core升级流程中的竞态漏洞存在在野利用证据。漏洞影响4.7至7.1.3等未修复分支，攻击窗口出现在完整核心升级期间；WordPress 7.1.4及相应旧分支安全回移已修复，站点应核实自动更新是否真正完成。",
+      "content": "2026-11-03，CISA基于在野利用证据将CVE-2026-119977加入已知被利用漏洞目录（KEV）。这是对利用状态的确认，不只是CVSS或研究者PoC。CISA给出的对象是WordPress Core的时间检查与使用之间竞态，风险发生在完整核心升级窗口，可能让未认证攻击者在服务器上执行代码。\n\nWordPress于2026-10-28发布7.1.4，官方安全说明把问题描述为升级流程中的弱点，并建议立即更新。官方同时说明修复已向仍有资格接收安全更新的旧分支回移，范围最早到4.7；但这些回移包会按准备情况陆续发布，因此仍停留在旧主线的站点不能只看“自动更新已开启”，还要核对实际安装的分支补丁版本。\n\nCISA目录把该漏洞的修复截止日列为2026-11-06，并要求按厂商说明缓解。KEV意味着已经有足够证据支持“被利用”这一判断，但目录没有说明已知勒索软件使用，字段仍为Unknown。稿件因此不把所有扫描或失败请求写成已入侵，也不从风险评分推导攻击规模。\n\n受影响面并非所有时刻持续开放。公开说明把前提限定在完整包升级产生的可预测、可从Web访问的暂存路径以及升级竞态窗口；攻击不要求账户或用户交互，但需要命中这个时段。这个边界既不降低补丁紧迫性，也意味着运维人员应结合核心更新日志、Web访问日志和文件完整性记录判断是否存在可疑活动。\n\n[WordPress 7.1.4公告](https://wordpress.org/news/2026/10/wordpress-7-1-4/)列出修复与回移策略；[加拿大网络安全中心通告](https://www.cyber.gc.ca/en/alerts-advisories/wordpress-security-advisory-av26-1117)指向CISA KEV条目并确认2026-11-03的收录状态。站点管理员应优先升级到7.1.4或其分支对应安全版本，并确认缓存、镜像或托管面板没有让旧核心继续运行。\n\n## 量仔观察\n\n这条消息对托管WordPress、代理大量客户站点和依赖自动核心更新的团队可立即行动：盘点版本、确认回移补丁、复核最近升级窗口的日志，并在异常时按事件响应处理。证据强度高在CISA的利用确认与WordPress的修复公告相互补足，局限是公开材料未披露受害规模。下一观察点是厂商是否补充取证指标、旧分支补丁是否全部到位及CVE状态是否更新。",
+      "category": "security",
+      "tags": ["CVE-2026-119977", "WordPress", "CISA KEV", "在野利用"],
+      "source_name": "Canadian Centre for Cyber Security",
+      "source_url": "https://www.cyber.gc.ca/en/alerts-advisories/wordpress-security-advisory-av26-1117",
+      "cover_image": null,
+      "published_at": "2026-11-07T08:10:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "CISA已按主动利用证据收录KEV，WordPress官方给出修复版本，影响广泛且可立即升级与排查；公开材料未给出受害规模，未把扫描量等同成功入侵。"
+    },
+    {
+      "slug": "20261107-microsoft-artex-exposed-secrets",
+      "title": "微软披露ARTEX智能体滥用公开仓库密钥攻击云环境",
+      "summary": "微软威胁情报于2026-11-05披露，攻击者使用ARTEX类智能体框架扫描公开GitHub仓库中的凭据并自动推进云端攻击。微软最早在2026-10-28观察到相关服务主体登录；至少一个案例从发现密钥到从Azure Key Vault外传数据仅用五分钟，暴露密钥应视为已泄露并立即轮换。",
+      "content": "2026-11-05，微软威胁情报与安全研究团队披露攻击者使用ARTEX类智能体攻击框架，搜索公开GitHub仓库中的凭据、应用密钥和AI推理API密钥，并把发现结果接入后续云端操作。微软称最早在2026-10-28观察到与该活动有关的服务主体成功登录，说明这不是单纯概念验证。\n\n报告把传统“搜密钥”与本次变化区分开来：智能体不仅提高跨仓库扫描速度，还能分析输出、尝试认证、枚举云资源并继续操作，减少人工逐步控制。在微软观察到的一个案例中，从GitHub中发现客户端密钥到从Azure Key Vault外传数据只经过五分钟；这一时间压缩直接削弱了依赖人工告警处置的防线。\n\n影响并不限于单个账户。微软调查到有效应用凭据被滥用，包含源头厂商拥有的多租户应用凭据被攻破后访问下游租户的情形。后续活动涉及Azure Key Vault、Storage Accounts、App Service、Azure DevOps和Azure AI服务；部分账户还被用于获取更多令牌、查找新密钥或操作虚拟机，因此泄露可能沿应用信任关系扩散。\n\n证据边界也需要说清：这些观察来自微软自身遥测与客户调查，属于一手威胁情报，但不等于所有公开仓库秘密都会被ARTEX利用，也不能从单一框架名推断同一攻击者。微软还提到外部机构报告了部分相同基础设施，这提供旁证，却没有公开一个可统计的全球受害规模。\n\n组织应把公开代码中的秘密视为已泄露，而不是仅删除提交记录。微软建议立即撤销或轮换相关客户端密钥、证书、联邦凭据、PAT与SSH密钥，并检查服务主体和非交互式登录、Key Vault及存储诊断、Azure DevOps审计等。更长期的措施包括启用秘密扫描与推送保护、用托管身份替代长期凭据，并缩小应用权限和跨租户信任。\n\n## 量仔观察\n\n这起事件最值得云安全、DevSecOps和MSP团队注意的不是“AI会攻击”这一口号，而是暴露凭据到横向访问之间的处置窗口已缩短到分钟级。证据由微软实际观测支撑，强度较高，但战役规模仍未知。读者应立即复核公开及镜像仓库、轮换而非只删除秘密，并建立机器速度的行为检测；下一步关注微软是否公布更多受影响应用类型和取证更新。",
+      "category": "security",
+      "tags": ["ARTEX", "云安全", "凭据泄露", "AI攻击"],
+      "source_name": "Microsoft Security",
+      "source_url": "https://www.microsoft.com/en-us/security/blog/2026/11/05/threat-actors-use-agentic-ai-tooling-to-find-and-abuse-exposed-secrets/",
+      "cover_image": null,
+      "published_at": "2026-11-07T08:10:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "微软基于实际租户遥测确认智能体从公开密钥发现推进到云数据外传，个案仅五分钟，直接要求暴露凭据立即轮换并检查下游租户；规模尚未公开。"
+    },
+    {
+      "slug": "20261107-siemens-node2shell-industrial-edge-fixes",
+      "title": "西门子更新Industrial Edge的Node2Shell修复清单",
+      "summary": "西门子ProductCERT于2026-11-06把SSA-443410更新至V1.1，为多项Industrial Edge管理应用加入修复版本，并新增DataXess Configurator受影响项。并非所有组件都已修复：Common Configurator仍需停用或卸载并配合防火墙/WAF，未安装管理应用的IEM则因易受影响功能未暴露而无需行动。",
+      "content": "2026-11-06，西门子ProductCERT将SSA-443410更新为V1.1，补充CVE-2026-111497（Node2Shell）对Industrial Edge管理与设备应用的影响。相较2026-10-30初版，本次明确加入多项产品的修复版本，并把DataXess Configurator列入受影响范围，属于可操作的实质更新而非重复提醒。\n\n公告把部署前提分成三类：若Industrial Edge Management未安装管理应用，虽然软件栈包含受影响的Brotli库，但相关功能没有使用或暴露，西门子称无需动作；安装了管理应用或设备应用的环境则需按产品条目更新或临时缓解。西门子托管的Industrial Edge Hub与Management Cloud已分别从2026-10-29和2026-10-28起在中心服务修复。\n\n已给出修复的组件包括Data Flow Monitoring 3.0.18、Cloud Connector Configurator 1.24.3、Databus Configurator 4.0.1、DataXess Configurator 1.5.7、Edge OPC UA Server Configurator 2.3.10和Flow Creator Configurator 1.15.1，均要求升级到列出的版本或更高版本。资产清单必须精确到应用和版本，不能只凭“Industrial Edge已更新”判断。\n\n仍有空缺。设备侧Common Configurator所有版本暂未提供修复，公告要求在修复前停止该应用；IEM侧Common Configurator同样没有修复，建议卸载全部管理应用，并以防火墙或WAF保护IEM实例。这里的临时措施取决于网络隔离是否真正生效，不能替代后续补丁。\n\n西门子说明受影响Brotli版本为1.0.3至1.2.0，漏洞可能造成相邻解码状态内存破坏、信息泄露、拒绝服务，或在特定条件下执行任意代码。公告给出的CVSS 3.1基础分为9.8、CVSS 4.0为9.2，但这些分数只表示严重度；本次材料没有宣称Industrial Edge中已出现成功在野利用。\n\n## 量仔观察\n\n这次更新最影响运行Industrial Edge管理应用的工控与制造团队：应按组件逐项核版本，已修复的立刻升级，Common Configurator则执行停用或卸载及网络缓解。证据来自厂商PSIRT且版本粒度明确，局限是评估与修复仍未覆盖所有组件。下一观察点是西门子为两个Common Configurator发布补丁，以及是否继续扩大受影响产品清单。",
+      "category": "security",
+      "tags": ["CVE-2026-111497", "Siemens", "Industrial Edge", "PSIRT"],
+      "source_name": "Siemens ProductCERT",
+      "source_url": "https://cert-portal.siemens.com/productcert/html/ssa-443410.html",
+      "cover_image": null,
+      "published_at": "2026-11-07T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "厂商PSIRT给出2026-11-06修复版本与未修复组件的具体缓解，工业环境可据此行动；当前没有厂商确认的在野利用证据，优先级不按CVSS自动上调。"
+    },
+    {
+      "slug": "20261107-chatgpt-lockdown-mode-bypass-fixed",
+      "title": "Check Point披露并复测ChatGPT Lockdown Mode绕过已修复",
+      "summary": "Check Point Research于2026-11-05公开ChatGPT Lockdown Mode绕过研究：HTML预览的嵌套沙箱与弹窗权限曾形成替代外连路径，可支持静默聊天数据外传、钓鱼与恶意软件诱导。OpenAI已在2026-09-18通知研究人员部署修复，研究团队复测确认文中方法不再有效。",
+      "content": "2026-11-05，Check Point Research公开一项已修复的ChatGPT Lockdown Mode绕过研究。研究者称，问题来自HTML页面预览周边的嵌套沙箱与弹窗处理，而不是模型权重本身；在修复前，这条路径可能绕过Lockdown Mode对外部请求的限制，支持聊天数据外传、钓鱼和恶意软件诱导。\n\nLockdown Mode的目标是降低提示注入把敏感内容带出会话的风险，它会限制实时网络内容、互联网图片、Canvas网络请求，并关闭部分Agent、连接器和下载能力。研究表明，专门的AI安全开关仍依赖整个客户端和渲染环境的安全边界；外围功能的沙箱权限配置错误，可以抵消中心策略的预期效果。\n\nCheck Point在桌面端演示了无需用户交互的数据外传场景，也展示了伪造受信界面进行钓鱼的可能性。恶意软件下载场景仍需要用户点击，不能与零点击数据外传混为一谈。稿件不复述可直接操作的利用代码或完整链条，只保留受影响功能、攻击前提与安全边界。\n\n关键状态是问题已经修复。研究团队称其通过负责任披露提交给OpenAI，OpenAI在2026-09-18通知已从外层HTML预览沙箱移除导致问题的弹窗权限；Check Point随后复测，确认本次披露的方法不再有效。因此，当前读者不应把研究标题理解为仍可直接复现的未修复零日。\n\n证据主要来自发现者的原始研究与复测记录，OpenAI公开页面可说明Lockdown Mode的设计目标，但本次材料没有单独的CVE编号、受影响客户端版本范围或已知真实受害者统计。对企业而言，风险管理重点应放在客户端更新、敏感信息最小化和对AI应用整体攻击面的审查，而非只检查模型提示策略。\n\n## 量仔观察\n\n这条研究对启用AI助手处理内部资料的团队有两层提醒：先确保客户端和服务端处于最新状态，再把HTML渲染、文件、连接器与外链等外围功能纳入威胁模型。发现者已复测修复，证据对“曾可绕过、现方法失效”较强，但版本范围和真实利用情况未知。下一观察点是OpenAI是否补充版本化公告，以及同类沙箱能力的持续回归测试。",
+      "category": "security",
+      "tags": ["ChatGPT", "Lockdown Mode", "提示注入", "已修复漏洞"],
+      "source_name": "Check Point Research",
+      "source_url": "https://research.checkpoint.com/2026/chatgpt-lockdown-mode-bypass-phishing-malware-delivery-and-silent-data-exfiltration/",
+      "cover_image": null,
+      "published_at": "2026-11-07T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "发现者给出原始研究、披露日期和修复后复测，说明AI应用外围沙箱可绕过专用安全模式；方法已失效且未见真实受害证据，按已修复研究报道。"
+    },
+    {
+      "slug": "20261107-gemini-omni-1-2-flash-ga",
+      "title": "Google正式开放Gemini Omni 1.2 Flash视频生成API",
+      "summary": "Google于2026-11-05宣布Gemini Omni 1.2 Flash在Gemini API与企业产品中正式可用：原生视频长度从10秒提高到15秒，支持多轮对话式编辑与多种参考输入，720p价格降至每秒0.07美元，比1.1版低30%。模型卡同步披露分发渠道、已知限制和语音编辑能力仍受限制。",
+      "content": "2026-11-05，Google宣布Gemini Omni 1.2 Flash在Gemini API、Google Cloud及企业产品中正式可用，而不是预览或仅作发布预告。官方给出的核心变化包括原生生成和编辑最长15秒视频、支持多轮对话式修改、提高对图像、短视频与音频参考的遵循，并将720p价格定为每秒0.07美元。\n\n与Gemini Omni 1.1 Flash相比，最长片段从10秒增加到15秒，时长可在3至15秒间按一秒递增选择。工作流允许先用360p或720p生成草稿，再把选中的结果升格到1080p或4K；多轮编辑可以在同一片段上替换背景、物体或视觉条件，减少整段重新生成的成本。\n\n成本变化具有直接采购意义。Google称每秒0.07美元的720p价格比1.1版下降30%，但这只是模型调用单价，不能自动推导完整项目的总成本：重试次数、升格、参考素材处理、存储与人工审核仍会影响预算。官方展示的品牌一致性、口型和运动效果属于厂商样例，尚不能当作独立基准。\n\n同步发布的[模型卡](https://deepmind.google/models/model-cards/gemini-omni-1-2-flash/)列出文本、图像、音频和视频输入，以及带音频的视频输出，并列出Gemini App、AI Studio、Vertex AI、Workspace等分发渠道。模型卡说明输出带SynthID水印，同时承认系统仍有局限；对于改变人物语音的编辑能力，Google表示目前限制开放并继续评估安全性。\n\n安全评估也需按原文边界理解。模型卡没有为1.2 Flash单独公布完整的新前沿能力分数，而是引用Gemini 3.1 Pro和3.7 Flash的框架评估，并称1.2 Flash没有相对这些模型的实质能力增长，因此预计不会达到已跟踪或关键能力等级。这是厂商判断，不是第三方独立复测。\n\n## 量仔观察\n\n这次正式可用对批量视频广告、虚拟试穿和产品演示团队最有影响：可以据每秒价格和15秒上限重算试验预算，并用真实素材做参考一致性、字幕、口型及重试率验收。证据对可用性与价格较强，但质量主张主要来自厂商样例。下一观察点是独立评测、地区与配额差异，以及受限语音编辑功能何时扩大开放。",
+      "category": "ai",
+      "tags": ["Gemini Omni", "视频生成", "API", "正式可用"],
+      "source_name": "Google",
+      "source_url": "https://blog.google/innovation-and-ai/technology/developers-tools/introducing-gemini-omni-1-2-flash/",
+      "cover_image": null,
+      "published_at": "2026-11-07T08:10:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "官方确认API与企业渠道正式可用，并给出可核价格、时长与模型卡，能影响开发与采购决策；质量提升主要是厂商自测，未写成独立验证。"
+    }
+  ]
+}
