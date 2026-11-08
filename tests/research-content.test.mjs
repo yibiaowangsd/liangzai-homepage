@@ -27,3 +27,15 @@ test('first notebook never presents planned tests as completed measurements', ()
   assert.equal(matrix.table.rows.length, 12);
   assert.ok(matrix.table.rows.every(row => row[0].includes('待执行')));
 });
+test('built research routes render evidence and reject unknown slugs', async () => {
+  const { default: worker } = await import('../dist/server/index.js');
+  async function render(path) {
+    const response = await worker.fetch(new Request('https://example.test' + path), { ASSETS: { fetch: async () => new Response('missing', { status: 404 }) } }, { waitUntil() {}, passThroughOnException() {} });
+    return { status: response.status, html: await response.text() };
+  }
+  const list = await render('/research');
+  assert.equal(list.status, 200); assert.match(list.html, /把它研究透/);
+  const article = await render('/research/tls-hybrid-binding-and-downgrade');
+  assert.equal(article.status, 200); assert.match(article.html, /实测待执行/); assert.match(article.html, /RFC 10024/); assert.match(article.html, /T12/); assert.match(article.html, /不含封装字段/);
+  assert.equal((await render('/research/does-not-exist')).status, 404);
+});
