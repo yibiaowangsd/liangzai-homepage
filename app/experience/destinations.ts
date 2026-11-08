@@ -43,6 +43,12 @@ export const destinations = [
     keywords: "wasm 实验 lab 密钥 签名 哈希 验证 sm2 测试",
   },
   {
+    href: "/research",
+    name: "深度研究",
+    description: "每日深入一个问题，公开研究过程、证据与可验证成果。",
+    keywords: "research 研究 深度 协议 实验 论文 过程 成果",
+  },
+  {
     href: "/topics",
     name: "技术档案",
     description: "按算法、协议与项目持续追踪进展，回查原始证据。",
