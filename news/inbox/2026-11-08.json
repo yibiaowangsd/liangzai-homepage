@@ -1,0 +1,115 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-08",
+  "coverage": {
+    "pqc": {
+      "count": 2,
+      "note": "检查 IACR ePrint、PLOS、NIST PQC 动态及中外高校和实现资料，窗口扩至 7 天。入选 Keyber 与嵌入式 ML-KEM 深度学习侧信道研究；两项均阅读全文并核对实验前提。近期实现攻击偏多，但未以低价值构造强行分散。"
+    },
+    "migration": {
+      "count": 0,
+      "note": "检查 NIST/NCCoE、英国 NCSC 试点、新加坡 CSA、国内银行及迁移供给方公开入口，覆盖方案方与采用方。江苏银行线索仍只有二手转述，未见一手试点范围或验收数据；其余近 7 天无可核实实质新增。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "检查 IETF TLS、SSHM、IPsecME、EMU、LAKE 文档与邮件入口，并补查国内协议实现线索。EAP-TLS -04、Extended Key Update -14、LAKE PQ suites -02仅见版本更新，未核实到新的互通、部署或故障事实，暂不成稿。"
+    },
+    "standards": {
+      "count": 0,
+      "note": "检查 NIST、IETF Datatracker、ETSI QSC 工作计划、ITU-T及全国标准信息公共服务平台。PQUIP 受限环境指南未出现新的 IESG 处置或修订文本；ETSI 页面只有工作计划日期变化，不等同标准状态变化，均排除。"
+    },
+    "security": {
+      "count": 1,
+      "note": "检查 CISA KEV、SonicWall PSIRT、加拿大 Cyber Centre、CERT-EU、JPCERT/JVN及国内应急入口。入选 CVE-2026-19868 已知在野利用；Siemens Common Configurator 后续未见新的官方修复状态，ARTEX 已于 2026-11-07 报道，不重复。"
+    },
+    "ai": {
+      "count": 1,
+      "note": "检查 OpenAI、Google、腾讯、Kakao、Liquid AI、Preferred Networks 模型/产品入口，以及 METR、MLCommons 等评测入口。入选 Kakao 多模态决策模型；Hy4 正式权重与系统卡仍未发布，继续观察，METR 风险评估与 Gemini Omni 已在近两期报道。"
+    },
+    "ngcc": {
+      "count": 0,
+      "note": "实际检查 NICCS 征集公告与算法评议入口、ngcc.dev 首页、Security、Performance、Side-Channel及分类规则。站点最后更新仍为 2026-11-05，新增项为 CHAMP 哈希 finding，不属于本栏；公钥签名/KEM/密钥交换无新 finding 或作者复测。"
+    },
+    "flash": {
+      "count": 1,
+      "note": "复核各专题检索中事实简明但可行动的公告，入选 PLaMo 3 Translate 开放权重与许可门槛变化。Liquid AI 1.7B 的主要发布说明早于本窗口，腾讯空模型页缺实质材料，均未采用。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261108-keyber-ml-kem-keygen-fault-attack",
+      "title": "Keyber 以单次密钥生成故障恢复 ML-KEM 长期私钥",
+      "summary": "IIT Bhilai 与 KU Leuven 团队发布 Keyber：攻击者在 ML-KEM 密钥生成时向误差向量注入一次特定故障，随后利用解封装成败收集线性不等式。论文在三组参数上完成恢复，并在 Cortex-M4 上对 ML-KEM-512 做端到端验证，提示防护不能只盯住解封装。",
+      "content": "2026-11-04，印度理工学院 Bhilai 与 KU Leuven 团队在 IACR ePrint 发布 [Keyber](https://eprint.iacr.asia/2026/2766.pdf)。论文研究的不是 ML-KEM 数学困难问题，而是实现者能否保护一次性的密钥生成过程：攻击者需要在目标设备生成密钥时注入一次受控故障，并在之后观察大量解封装是否成功，因此它不是可从互联网直接触发的通用远程攻击。\n\nML-KEM 公钥中的多项式向量可写成矩阵与秘密向量的乘积再叠加误差。Keyber 把故障施加到密钥生成的误差向量，使公开矩阵的种子保持不变、公开向量却带有已知偏差。该偏差会在此后每一次封装和解封装中持续存在；攻击者本地筛选让偏差峰值集中到单一系数的密文，再把解封装成败转换成关于秘密系数的线性不等式。\n\n与既有统计无效故障攻击通常在每次解封装时重新注入故障不同，论文声称 Keyber 只需在密钥生成阶段成功一次。全文给出的模拟结果覆盖 ML-KEM-512、ML-KEM-768 与 ML-KEM-1024：不同参数集中约 0.2% 至 27% 的封装可被筛为有用样本，完整密钥恢复分别最多需要约 20,000、25,000 与 30,000 条不等式。这个数量是求解输入，不等于只需同样数量的网络请求，因为低通过率会增加候选密文生成量。\n\n作者还在 ARM Cortex-M4 目标上对 ML-KEM-512 实现过频故障，向一个误差多项式系数引入 1 比特变化，并报告完成端到端私钥恢复。该实验把理论故障模型与物理设备连接起来，但适用范围仍有限：攻击者必须能在关键的密钥生成时刻影响时钟，并持续获得可区分的解封装结果；云端 HSM、智能卡和嵌入式设备的实际可行性取决于封装、传感器、错误处理和查询接口。\n\n论文提出两层防护：采样后检查误差系数是否仍在合法范围，以及密钥生成结束后多轮封装、解封装并比较共享秘密。前者便宜却可能被检查后的故障绕过，后者检出概率随测试轮数增加。工程团队不应把“密钥生成只运行一次”当作低风险理由，因为故障写入公钥后会伴随整段密钥生命周期；同时也应评估错误响应是否形成稳定可观察的 oracle。\n\n## 量仔观察\n\n这项结果对做 ML-KEM 固件、HSM 与安全芯片的团队影响最大，证据强度为已阅读全文并有 Cortex-M4 端到端实验，但尚不能外推到所有受保护硬件。建议把密钥生成故障测试、生成后自检和统一失败行为加入验证清单，并复核是否存在可被反复查询的解封装接口。下一观察点是作者代码、独立复现及厂商针对密钥生成阶段的具体加固成本。",
+      "category": "pqc",
+      "tags": ["ML-KEM", "故障攻击", "密钥恢复", "侧信道"],
+      "source_name": "IACR Cryptology ePrint Archive 镜像",
+      "source_url": "https://eprint.iacr.asia/2026/2766.pdf",
+      "cover_image": null,
+      "published_at": "2026-11-08T08:17:19+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：已阅读全文并核对 Cortex-M4 实验、参数与查询规模。结果触及标准化 ML-KEM 的长期密钥，但依赖物理故障注入和可观察解封装 oracle，重要而非普遍紧急。"
+    },
+    {
+      "slug": "20261108-plos-ml-kem-single-trace-cross-device",
+      "title": "PLOS 研究用单条功耗轨迹恢复嵌入式 ML-KEM 消息",
+      "summary": "逢甲大学团队在 PLOS ONE 发表嵌入式 ML-KEM 深度学习侧信道研究：针对 Cortex-M4 的画像攻击在单条功耗轨迹上取得 99.98% 字节准确率，并测试三颗同型号芯片间迁移。论文也用频段衰减定位泄漏来源，但明确离线滤波不能直接当作现实防御。",
+      "content": "2026-11-04，PLOS ONE 发表逢甲大学团队的 [嵌入式 ML-KEM 深度学习侧信道研究](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0358974)。作者在 ARM Cortex-M4 微控制器上采集功耗轨迹，训练画像模型，从 ML-KEM 解封装过程的 `poly_frommsg()` 阶段恢复 32 字节消息；这针对实现泄漏，并不改变 FIPS 203 所依赖的格困难假设。\n\n论文报告，多层感知机在实验设置下对单条轨迹的逐字节恢复准确率达到 99.98%。这里的“单条”是攻击阶段只需一条目标轨迹，并不意味着无需前期条件：画像攻击先在可控设备和已知数据上收集训练轨迹、学习泄漏特征，再迁移到目标测量。攻击者还需要近距离功耗或电磁采集条件，因此结果不能解释成普通网络对手可直接读出会话秘密。\n\n为了检验模型是否只记住一颗芯片的噪声，研究又把训练得到的特征用于三颗 STM32F415 设备。论文称跨设备逐字节准确率仍超过 99%，但完整 32 字节消息一次全部正确的成功率对器件差异更敏感。这一区分很重要：高字节准确率不自动等于每次都能完整恢复消息，部署风险还取决于纠错、重复测量和攻击者是否能获得多次相似操作。\n\n作者进一步对记录后的轨迹施加 Butterworth 与 Chebyshev 低通滤波，比较不同截止频率和阶数下的模型准确率。激进衰减令准确率明显下降，说明可学习泄漏有相当部分集中在较高频段。论文同时明确，这种离线数字滤波只是定位频谱敏感区域的分析工具，不能证明给软件输出做滤波就能阻止现实采集；可部署防护仍可能需要掩码、打乱、去同步以及电源或电磁采集路径的硬件调理。\n\n论文开放了相关数据与代码仓库，便于复核模型和预处理流程，但其结论仍受目标实现、板卡、采样设备、训练集与模型结构约束。工程评估应复现自己使用的 ML-KEM 代码路径和编译选项，尤其关注解码与重加密阶段，而不能把一组 Cortex-M4 数字直接套到不同 MCU、专用加速器或已有掩码的实现。\n\n## 量仔观察\n\n这项同行评审工作为嵌入式密码工程师提供了可复查的泄漏基线，证据强度高于单纯厂商自测，但仍是实验室画像场景。使用 Cortex-M4 或相近边缘平台的团队可把跨芯片训练、单轨迹恢复率和完整消息成功率纳入测试，并优先验证掩码与去同步后的残余泄漏。下一观察点是其他实现的独立复现，以及防护带来的延迟、代码体积和能耗代价。",
+      "category": "pqc",
+      "tags": ["ML-KEM", "功耗分析", "深度学习", "嵌入式安全"],
+      "source_name": "PLOS ONE",
+      "source_url": "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0358974",
+      "cover_image": null,
+      "published_at": "2026-11-08T08:17:19+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：已阅读全文、方法与局限，论文经同行评审且开放数据。单轨迹与跨芯片结果对嵌入式部署有明确评估价值，但依赖画像和物理测量条件。"
+    },
+    {
+      "slug": "20261108-sonicwall-cve-2026-19868-kev",
+      "title": "CISA 将 SonicWall CVE-2026-19868 纳入 KEV，厂商确认在野利用",
+      "summary": "加拿大网络安全中心确认，CISA 于 2026-11-06 将 SonicWall SonicOS 漏洞 CVE-2026-19868 加入 KEV，SonicWall 表示已发现利用。受影响的是 Gen 7 与 Gen 8 防火墙，官方修复线为 SonicOS 7.3.4-7013 及以上和 8.2.3-8015，边界设备应优先升级并排查异常。",
+      "content": "2026-11-06，加拿大网络安全中心发布 [AV26-1133](https://www.cyber.gc.ca/en/alerts-advisories/sonicwall-security-advisory-av26-1133)，确认 CISA 已把 CVE-2026-19868 加入已知被利用漏洞目录（KEV），并转述 SonicWall 已观察到利用。KEV 收录和厂商确认构成在野利用证据，但公开材料没有给出攻击活动规模、受害者范围或完整利用链，本文不据此推断大规模入侵。\n\nSonicWall 的 [SNWLID-2026-0014 预告与版本表](https://www.sonicwall.com/support/notices/kA1VN000002eBLN0A2) 面向 Gen 7 和 Gen 8 的物理及虚拟防火墙。厂商列出的受影响线为 Gen 7 上 SonicOS 7.3.3-7015 及更早版本，以及 Gen 8 上 8.2.2-8015 及更早版本；对应修复版本分别是 7.3.4-7013 或更高、8.2.3-8015。版本号相近，资产盘点时应核对完整 build，而不是只看主版本。\n\n厂商发布说明把该批次描述为多项高危和中危问题，最高 CVSS 为 8.8。SonicOS 8.2.3 的公开发行说明列出 SSL VPN 认证强制、预认证堆缓冲区溢出、TACACS+ 预认证缓冲区溢出、会话验证和弱口令哈希等修复项，但当前公开摘要没有可靠地把每一项逐一映射到 CVE-2026-19868。因而安全团队不应从补丁清单反推具体利用路径，核心可确认事实是该 CVE 已被利用且更新已可用。\n\n处置优先级应放在暴露管理面、SSL VPN 或远程访问能力的 Gen 7/Gen 8 设备。先从集中管理平台、配置备份和 CMDB 导出完整型号与 build，确认升级路径、HA 对切和回滚条件，再安装对应固件。升级不能替代事件响应：对互联网可达设备应同步检查管理登录、VPN 会话、配置变更、异常账户和出站连接，并保留日志供溯源。\n\nGen 6 及更早产品已经结束支持，无法依靠同一修复分支获得更新。仍在运行这些设备的组织需要把替换或隔离作为风险处置，而不是等待补丁。若业务暂时不能升级，应最小化管理与远程访问暴露、限制可信源地址并加强身份验证；这些措施只降低攻击面，不能视为修复。\n\n## 量仔观察\n\n这是边界设备且已有在野利用证据，对网络运维、SOC 与托管服务商具有即时行动价值；证据来自政府告警和厂商版本表，但利用范围与 CVE 到具体缺陷的映射仍有限。建议当天完成版本盘点、修复排程和暴露面核查，并对已暴露设备开展妥协评估。下一观察点是 SonicWall PSIRT 的完整 CVE 映射、CISA 到期要求及后续攻击活动披露。",
+      "category": "security",
+      "tags": ["CVE-2026-19868", "SonicWall", "CISA KEV", "在野利用"],
+      "source_name": "Canadian Centre for Cyber Security",
+      "source_url": "https://www.cyber.gc.ca/en/alerts-advisories/sonicwall-security-advisory-av26-1133",
+      "cover_image": null,
+      "published_at": "2026-11-08T08:17:19+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：政府告警确认 KEV 收录与厂商在野利用判断，厂商页面提供修复 build。影响互联网边界防火墙，需立即盘点、升级并检查既有入侵。"
+    },
+    {
+      "slug": "20261108-kakao-kanana-decision-model",
+      "title": "Kakao 开放 Kanana-2-v-decide 多模态决策模型权重",
+      "summary": "Kakao 于 2026-11-06 发布 Kanana-2-v-decide-3b-2611 权重。这一 3.67B 参数模型不生成自由文本，而是对选择、是非或有序评分问题输出候选概率，支持文本、JSON、聊天记录和最多10张图片。模型卡公布输入限制、基准和 KananaOpenLicense，适合路由与审核类受约束决策。",
+      "content": "2026-11-06，Kakao 在 Hugging Face 发布 [Kanana-2-v-decide-3b-2611](https://huggingface.co/kakaocorp/kanana-2-v-decide-3b-2611) 权重。它不是通用对话生成模型，而是受约束的“决策模型”：给定状态和一组问题，模型只在候选选项、是或否、或有序等级之间评分，并返回每个候选的概率分布。\n\n模型总计 3.67B 参数，其中视觉编码器约 0.49B、语言模型约 3.18B。输入状态可以是文本、JSON、聊天消息，并可附带最多 10 张图片；模型卡给出的最大输入为 20,480 tokens。问题与状态被编码为一个向量，候选答案分别编码，再以余弦相似度和 softmax 形成分布，因此它更接近可配置分类器或打分器，而不是用自然语言解释理由的助手。\n\nKakao 公布的自测中，模型在两个公开 Decision Index 0.4.1 基准上的平均分为 61.23；内部韩语决策集得分为 72.50。模型卡列出的比较对象、任务集合和分数可供复核，但这些仍是发布方提供的结果，没有看到独立机构在相同推理配置下复测。尤其是“概率”只表示给定候选间的相对分布，增加或改写选项会改变输出，不能直接当作经过校准的现实风险概率。\n\n这种输出形态适合需要固定动作空间的工程环节，例如工单路由、内容审核分流、表单判定、质检评分或 Agent 下一步工具选择。相较自由文本，它便于设置阈值、记录候选分布并接入规则系统；但模型不生成解释，复杂业务仍需另行保存输入、候选集、阈值和人工复核结果，才能满足审计要求。\n\n权重采用 KananaOpenLicense，部署方应在商用前直接审阅完整条款，而不能把“可下载”自动等同于无条件开源。模型卡还说明，超长输入默认会保留首尾并截短中间内容，图片会转成 RGB，EXIF 方向不会自动应用，视频不受支持；这些预处理细节可能改变分类结果，生产管线应显式标准化。\n\n## 量仔观察\n\n该发布对做工作流路由、审核和端侧多模态分类的团队最有价值，证据来自可下载权重和完整模型卡，但性能主张仍主要是厂商自测。建议先用真实候选集测试概率稳定性、截断行为与阈值漂移，再决定是否替换现有分类器。下一观察点是第三方复测、许可证边界以及不同语言和图像分布下的校准表现。",
+      "category": "ai",
+      "tags": ["Kakao", "Kanana", "多模态", "开放权重", "决策模型"],
+      "source_name": "Kakao Hugging Face",
+      "source_url": "https://huggingface.co/kakaocorp/kanana-2-v-decide-3b-2611",
+      "cover_image": null,
+      "published_at": "2026-11-08T08:17:19+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方模型卡与权重可读，输入、架构、基准和限制较完整。受约束概率输出对路由与审核有明确应用价值，但分数仍待独立复测。"
+    },
+    {
+      "slug": "20261108-plamo-3-translate-open-weights",
+      "title": "Preferred Networks 开放 PLaMo 3 Translate 四档权重",
+      "summary": "Preferred Networks 于 2026-11-05 开放 0.8B、2B、8B 和 31B 四档 PLaMo 3 Translate 权重，可在手机、笔记本或内网服务器本地翻译；年营收不超过10亿日元的个人和企业可依社区许可免费商用，超过门槛需另签商业许可。",
+      "content": "2026-11-05，Preferred Networks [发布 PLaMo 3 Translate](https://www.preferred.jp/en/news/pr20261105)，提供 0.8B、2B、8B、31B 四种参数规模及多种量化格式，面向日英和多语本地翻译、术语表与语体控制。权重已在 Hugging Face 可下载，可离线运行于手机、笔记本或内网服务器。\n\n许可条件是采购和部署的关键：最近财年年营收不超过 10 亿日元的个人与企业可依 PLaMo Community License 免费用于商业或非商业场景；超过门槛的组织需要另签商业许可。官方在发布当天更正过门槛措辞，使用方应保存当时的完整许可版本并核对量化模型的准确率变化。",
+      "category": "flash",
+      "tags": ["AI", "开放权重", "机器翻译", "许可证", "日本"],
+      "source_name": "Preferred Networks",
+      "source_url": "https://www.preferred.jp/en/news/pr20261105",
+      "cover_image": null,
+      "published_at": "2026-11-08T08:17:19+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方发布与模型卡可读，权重、规模和许可门槛明确；对本地翻译选型与商业合规可立即采取行动。"
+    }
+  ]
+}
