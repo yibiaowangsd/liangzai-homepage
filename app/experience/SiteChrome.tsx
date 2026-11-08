@@ -92,13 +92,13 @@ export function SiteHeader() {
         <nav className="desktop-nav" aria-label="主导航">
           {destinations
             .filter((item) =>
-              ["/", "/pqc-practice", "/news", "/topics", "/about"].includes(item.href),
+              ["/", "/pqc-practice", "/news", "/topics", "/research", "/about"].includes(item.href),
             )
             .map((item) => (
               <NavigationLink
                 key={item.href}
                 href={item.href}
-                aria-current={path === item.href || (item.href === "/topics" && path.startsWith("/topics/")) ? "page" : undefined}
+                aria-current={path === item.href || ((item.href === "/topics" || item.href === "/research") && path.startsWith(`${item.href}/`)) ? "page" : undefined}
               >
                 {item.href === "/" ? "首页" : item.name}
               </NavigationLink>
@@ -121,7 +121,7 @@ export function SiteFooter() {
       </div>
       <nav className="footer-groups" aria-label="页脚导航">
         <div><span>作品</span><Link href="/wo">我 · 网页回顾</Link><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">本站源码</a><Link href="/models">角色模型</Link></div>
-        <div><span>阅读</span><Link href="/news">前沿新闻</Link><Link href="/topics">技术进展档案</Link><Link href="/pqc-arsenal">算法原理</Link><Link href="/archive">量仔小传</Link></div>
+        <div><span>阅读</span><Link href="/news">前沿新闻</Link><Link href="/research">深度研究</Link><Link href="/topics">技术进展档案</Link><Link href="/pqc-arsenal">算法原理</Link><Link href="/archive">量仔小传</Link></div>
         <div><span>关于</span><Link href="/about#journey">个人经历</Link><Link href="/about#contact">联系与交流</Link></div>
       </nav>
       <div className="studio-footer-bottom">
