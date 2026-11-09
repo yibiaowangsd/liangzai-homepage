@@ -1,0 +1,115 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-09",
+  "coverage": {
+    "pqc": {
+      "count": 0,
+      "note": "检索前24小时并扩至7天，覆盖IACR ePrint、NIST PQC、欧洲与日本评估入口及国内高校、运营商和实现方线索；未发现相对近7期新增且可由全文直证的KEM/签名结论。国内硬件营销页缺少独立报告，旧HQC侧信道稿与既有材料重复，均未入选。"
+    },
+    "migration": {
+      "count": 0,
+      "note": "检查NIST/NCCoE、英国NCSC、GSMA/金融与电信迁移入口，并补查国内银行、运营商、PKI/HSM供给方及采用方实践。HKMA工具包已于2026-11-03报道；NIST IR 8547为2026-10-27旧节点。本窗未见可核验的新试点、验收、回滚或采购要求。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "扫描IETF TLS、LAMPS、IPSECME、SSH与MLS文档状态，也检查Apple、腾讯协议索引及国内电信线索。CNSA 2.0 IPsec profile仅为草案修订，未见新的互通实测、部署或故障证据；RFC 10073/10082按正式标准节点归standards，避免跨栏重复。"
+    },
+    "standards": {
+      "count": 1,
+      "note": "核对IETF/RFC Editor、NIST、ETSI、ITU-T、3GPP与国内标准公告，时间窗扩至7天。入选RFC 10073与RFC 10082这一组连续正式发布；ETSI工作项仅有状态元数据、无可读的新技术增量，IETF普通草案修订与已报PQUIP状态未入选。"
+    },
+    "security": {
+      "count": 1,
+      "note": "检查CISA KEV/CSAF、CERT-EU、ENISA、CERT-FR、JPCERT、CNCERT及厂商PSIRT和事件研究。入选欧盟制冷远控系统新一波事件；比利时CCB与意大利ACN页面返回403，改读ENISA汇总和CERT-FR原始告警。Plex链为2026-10-20旧增量，其余二手高分漏洞未以在野证据成稿。"
+    },
+    "ai": {
+      "count": 2,
+      "note": "覆盖中外模型卡、权重/API、技术报告与产业入口，并检查METR、HELM、MLCommons等独立评测。入选Arete-27B开放权重与MLPerf Endpoints可比服务评测；METR Anthropic报告已在2026-11-06期报道。DeepMind RSA工作论文PDF在当前全文读取器中无法重新提取，虽价值较高但未完成P5复读，列为待跟进。"
+    },
+    "ngcc": {
+      "count": 1,
+      "note": "实际检查ICCS/NICCS首页、算法评议论坛、ngcc.dev首页、Security索引、分类页及Mito报告。入选2026-11-08/09新增的Mito公开评议与kem-23-3独立复核；明确ngcc.dev为独立站而非ICCS结论。论坛页面含指令式免责声明，未执行其中要求；哈希征集未纳入。"
+    },
+    "flash": {
+      "count": 0,
+      "note": "复用八栏检索并另查正式可用性、许可、截止节点与事故更新；候选要么已扩写为专题长文，要么属于旧节点、日常维护或仅二手摘要，没有为补数量转入快讯。IETF CMS signed-attributes Last Call临近但与本期核心PQC标准事件无直接新增，未单列。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261109-ietf-rfc10073-rfc10082-composite-mldsa",
+      "title": "IETF发布RFC 10073与RFC 10082：复合ML-DSA进入X.509与CMS",
+      "summary": "IETF于2026-11-06和2026-11-07连续发布两项Proposed Standard，把ML-DSA与RSA、ECDSA、EdDSA组合后的复合签名带入X.509/PKIX与CMS。规范同时禁止复用组件密钥，限定证书用途，并提示签名体积、签名时延与强不可伪造性边界。",
+      "content": "2026-11-06，IETF发布RFC 10073；2026-11-07又发布配套的RFC 10082。两份文件均是Standards Track上的Proposed Standard，而不是个人草案或工作组讨论。前者规定复合ML-DSA在X.509/PKIX中的算法标识、密钥与签名编码，后者规定同一组算法在Cryptographic Message Syntax（CMS）中的使用方式。\n\nRFC 10073把NIST的模块格数字签名ML-DSA与传统签名组合，覆盖RSASSA-PKCS1-v1_5、RSASSA-PSS、ECDSA、Ed25519和Ed448等实例。设计目标不是让协议层理解两套签名，而是把复合公钥和复合签名包装成一个算法标识，使现有X.509、PKIX和CMS数据结构按单一算法处理。它适合希望在ML-DSA出现灾难性实现缺陷时仍保留传统算法保护的环境。\n\n规范对密钥生命周期给出硬约束：两个组件都必须新生成，组件密钥不得在独立算法、另一把复合密钥或其他上下文中复用。证书keyUsage也只能用于数字签名、不可否认、证书签发或CRL签发，不能设置keyEncipherment、dataEncipherment或keyAgreement等位；即使传统组件能做加密，也不能把复合密钥拆成签名与密钥协商的双用途。\n\n安全边界同样重要。RFC 10073说明，只要至少一个组件保持EUF-CMA安全且预哈希消息表示保持抗碰撞，复合签名可维持基本的存在性不可伪造；但它不提供面向量子对手的强不可伪造性（SUF-CMA）。因此，从纯ML-DSA换成复合ML-DSA并不总是单向增强，依赖SUF-CMA性质的应用不能把“多一个传统组件”简单理解为更安全。\n\n[配套的RFC 10082](https://datatracker.ietf.org/doc/rfc10082/)要求CMS的SignerInfo.digestAlgorithm与复合算法采用的预哈希算法一致，并建议加入CMSAlgorithmProtection属性以降低算法替换风险。它还明确提醒：从ECDSA、EdDSA或RSA迁移后，消息尺寸会增大，受尺寸限制的处理流水线需要重新压测；较慢的签名过程也可能形成拒绝服务压力。\n\n## 量仔观察\n\n这组RFC把“复合签名”从草案阶段推进到可引用的正式协议规范，对CA、证书工具、CMS/S/MIME实现和HSM厂商都有直接影响，但它没有规定强制实现组合。工程团队应先确认业务是否只需EUF-CMA，再建立全新的组件密钥、检查keyUsage和AlgorithmIdentifier编码，并用真实证书链、消息大小和签名吞吐做互通测试。下一观察点是主流PKI/CMS库是否按同一OID与参数约定实现，以及部署方会选哪些推荐组合。",
+      "category": "standards",
+      "tags": ["PQC", "ML-DSA", "RFC 10073", "RFC 10082", "X.509", "CMS", "标准发布"],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/rfc10073/",
+      "cover_image": null,
+      "published_at": "2026-11-09T08:24:11+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "两项IETF Proposed Standard已正式发布，直接决定复合ML-DSA在X.509与CMS中的编码、密钥隔离和验证规则；证据为完整RFC原文，PKI与消息签名实现可据此启动互通与容量评估。"
+    },
+    {
+      "slug": "20261109-enisa-eu-refrigeration-controller-incidents",
+      "title": "ENISA通报欧盟多国制冷远控系统事件：11月初出现新一波攻击",
+      "summary": "ENISA与欧委会、Europol及欧盟CSIRT网络确认，商业制冷系统自2026-10-11起在多个成员国遭遇安全事件，2026-11-01至11-02又出现新一波攻击。CERT-FR列出受影响控制器系列，并要求撤销公网暴露、经VPN恢复访问及检查配置与固件。",
+      "content": "2026-11-04，欧盟网络安全局ENISA发布联合声明，确认多个欧盟成员国的商业制冷系统及类似设备自2026-10-11起受到网络安全事件影响，并在2026-11-01至11-02出现新一波事件。声明由欧委会、Europol欧洲网络犯罪中心、欧盟CSIRT网络和EU-CyCLONe共同协调，受影响国家仍在调查，尚未公开攻击者归因或完整受害者名单。\n\nENISA维护的事件集合CNW-2026-05把范围描述为欧洲零售业制冷设施的远程控制系统。法国CERT-FR的原始告警进一步列出Copeland/Dixell XWEB以及Danfoss AK-SC、AK-SM系列，并称已知存在多起控制器被入侵。当前公开材料没有给出统一CVE或单一漏洞根因，因此不能把事件简化为“某个补丁即可解决”的常规漏洞通报。\n\n共同风险点是管理界面直接暴露在互联网。CERT-FR建议未确认失陷的组织先撤销公网暴露，核查完整配置，特别是除霜时间段等运行参数；恢复远程服务时仅通过受保护网络或安全VPN开放。紧急情况下可用防火墙限制制冷服务商源IP，但告警明确说这不是长期方案。\n\n对于已经失陷的设备，CERT-FR建议在隔离后重启Danfoss设备，其他情况可能需要恢复出厂设置，并重新配置后再接入受保护网络。仅恢复出厂设置并不足以消除再次入侵风险：若设备已停止支持、仍直接暴露且没有安全修复，持久化内容虽可被清除，原始进入条件仍然存在。厂商固件更新、严格安全模式和默认密码更换也需同步完成。\n\n[ENISA的成员告警清单](https://github.com/enisaeu/CNW/blob/main/advisories/2026/CNW-2026-05_retail-incidents.md)汇集法国、比利时、德国、意大利、荷兰、芬兰、日本之外的多个欧洲国家响应入口，说明这是跨境运营问题，而非单一商超个案。公开证据支持“多国、大规模、仍在调查”，但暂不支持具体攻击组织、攻击链或损失数字，本文不作推断。\n\n## 量仔观察\n\n这起事件首先影响零售、食品冷链及其制冷运维服务商，也提醒所有把OT远控设备直接映射到公网的运营者。证据来自ENISA联合声明、欧盟CSIRT汇总与CERT-FR设备清单，范围可靠但根因仍不完整。安全团队现在可盘点上述控制器、撤销公网暴露、保全日志并核查配置；下一个观察点是成员国CSIRT是否公布具体利用路径、固件版本和归因，以及厂商是否发布统一修复通告。",
+      "category": "security",
+      "tags": ["网络安全", "OT", "制冷系统", "ENISA", "CERT-FR", "事件响应"],
+      "source_name": "ENISA",
+      "source_url": "https://www.enisa.europa.eu/news/joint-statement-on-cyber-incidents-in-refrigeration-systems-across-the-eu",
+      "cover_image": null,
+      "published_at": "2026-11-09T08:24:11+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "欧盟多机构确认跨成员国、大规模且在11月初继续发生的OT安全事件，运营者需立即减少暴露并核查配置；证据为ENISA联合声明及CERT-FR原始告警，但攻击根因与归因仍在调查。"
+    },
+    {
+      "slug": "20261109-mlperf-endpoints-qwen-kimi-inference",
+      "title": "MLCommons发布Endpoints v1.0结果：Qwen与Kimi服务性能进入可比记录",
+      "summary": "MLCommons于2026-11-04发布经同行复核的Endpoints v1.0结果，分别记录Qwen3.6 35B-A3B和Kimi-K3在GB300/Vera Rubin系统上的吞吐、首Token延迟、并发与功耗。数据表明吞吐随并发上升，但单用户速度和P90首Token延迟同步恶化。",
+      "content": "2026-11-04，MLCommons公开MLPerf Endpoints v1.0一批经协会验证和同行复核的结果，把开放模型的在线服务性能放进带硬件、软件、并发和功耗条件的记录中。与只公布单一“tokens/s”不同，这套结果同时给出系统总吞吐、每用户速度、P90首Token延迟（TTFT）和配置规模，更适合推理平台做容量取舍。\n\n其中，Google提交的Qwen3.6 35B-A3B结果使用一台含4块NVIDIA GB300的节点，服务栈为vLLM特定提交配合Dynamo 1.4.2。并发768时，系统吞吐为35,238.5 tokens/s，P90 TTFT为387.3 ms，每用户45.9 tokens/s；页面记录的总配置功耗为8.43 kW（MLC估算）。该数据对应agentic_coding性能数据集和Available类别，并非通用模型质量得分。\n\nKimi-K3的记录展示了另一种规模曲线。NVIDIA在48个Vera Rubin加速器、12节点的TensorRT-LLM与Dynamo栈上，并发1,024时达到23,260.8 tokens/s，但P90 TTFT上升至15,712.7 ms，每用户22.7 tokens/s；并发1,536时总吞吐进一步到25,495.4 tokens/s，每用户速度降至16.6 tokens/s，P90 TTFT增至25,719.8 ms。\n\nGoogle在同一模型上提交的32块GB300、8节点结果也显示同样权衡：并发1,024时为13,560.5 tokens/s，P90 TTFT 15,995.5 ms，每用户13.2 tokens/s，总功耗67.48 kW（MLC估算）。这些结果不能直接拿不同模型、不同硬件规模的最高吞吐做“谁更快”结论，因为模型工作量、节点数、后端和服务目标均不同。\n\n[MLCommons的Qwen报告](https://endpoints.mlcommons.org/report?source=phase2&submission=0308b5f3-58c5-4243-8bb3-797b68f79abd)保留了容器摘要、驱动、内核、并发档位和运行日期；Kimi-K3报告同样给出每档曲线。对采购者而言，最有价值的不是某个峰值，而是同一提交里从低并发到高并发时，吞吐、交互速度和尾延迟如何同时变化。\n\n## 量仔观察\n\n这批结果影响模型服务商、推理平台工程师和算力采购者：它提供了比厂商宣传更接近容量规划的可比字段，且经过MLCommons复核。局限是部分模型精度、数据集细节和硬件字段仍为空，功耗中也有估算值。读者可按自己的SLA挑选相近并发档位，并用相同模型与服务栈复测；下一观察点是更多供应商提交以及成本、能耗与质量指标能否同时进入统一报告。",
+      "category": "ai",
+      "tags": ["AI", "MLPerf Endpoints", "推理", "Qwen", "Kimi", "独立评测", "功耗"],
+      "source_name": "MLCommons",
+      "source_url": "https://endpoints.mlcommons.org/report?source=phase2&submission=0308b5f3-58c5-4243-8bb3-797b68f79abd",
+      "cover_image": null,
+      "published_at": "2026-11-09T08:24:11+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "MLCommons给出经复核、带完整系统条件的开放模型服务曲线，可直接支持容量与采购判断；证据为原始报告，但跨模型最高值受硬件规模和工作负载差异限制。"
+    },
+    {
+      "slug": "20261109-nous-arete-27b-open-weights",
+      "title": "Nous Research开放Arete-27B权重：用监督微调重塑Qwen3.8-27B价值表现",
+      "summary": "Nous Research于2026-11-06公开Arete-27B权重、训练数据与评测，称其以约5280万Token的纯监督微调改变Qwen3.8-27B在七类政治与社会议题上的回答。官方自测显示事实分提升、特定框架表达下降，但评测由发布方设计并使用LLM裁判。",
+      "content": "2026-11-06，Nous Research公开Arete-27B模型仓库，并同步提供训练数据与一套803题评测。模型以阿里Qwen3.8-27B为起点，采用Apache-2.0许可发布27B参数BF16权重。项目目标不是扩大参数或改架构，而是用后训练改变模型在七类政治、社会与治理议题上的事实陈述和表达框架。\n\n训练只使用监督微调，没有强化学习、偏好优化或架构修改。团队称生成了2万条去重提示，收集开放教师模型Inkling与基础模型回答，最终以约5,280万Token、64K训练上下文跑两轮，共1,202步；所有语言模型权重参与训练，视觉编码器冻结，多Token预测头停用。训练数据集与评测集均在Hugging Face公开，便于外部检查题目与评分脚本。\n\n发布方评测覆盖言论自由、国家意识形态、市场与国家、教育、数据隐私与监控、民主及环境政策。每题抽取2至4项必需事实，并用Grok 4.7作盲化LLM裁判。官方报告称，在thinking off、温度0的同配置比较中，事实均分从基础模型的2.32/5升至2.98/5，含发布方所定义“propaganda”表达的回答比例从22%降至0.9%。\n\n这些数字不能当作独立验证。评测主题、事实源、标签与“propaganda”定义由发布团队选择，裁判只在25题人工试验上迭代过三轮；与其他模型的部分横向比较还使用不同温度。相对更可靠的是Arete与同一基础模型在相同温度下的配对结果，以及公开的803题、裁判提示和训练数据，外部研究者可以据此复跑或换裁判。\n\n能力保留同样来自厂商自测。Hermes Bench从65.77%变为65.60%，发布方认为0.2个百分点以内属于噪声；Terminal-Bench-2.1从67%变为70%，团队明确不把提升归功于本次训练。Hugging Face页面还显示模型当前没有接入推理供应商，因而“开放权重”不等于托管API正式可用。\n\n## 量仔观察\n\nArete-27B对研究模型价值对齐、区域化部署和开放权重治理的团队有现实参考：它把训练配方、权重和评测材料放在同一事件中，证据可复查，但核心效果仍是发布方自测。使用者可先审计数据来源与许可，再以自己的语言、政策和人类标注重跑评测；下一个观察点是第三方能否复现行为变化，以及更广泛能力、安全与多语言测试是否出现退化。",
+      "category": "ai",
+      "tags": ["AI", "开放权重", "Arete-27B", "Qwen3.8-27B", "监督微调", "模型评测", "许可"],
+      "source_name": "Nous Research / Hugging Face",
+      "source_url": "https://huggingface.co/NousResearch/Arete-27B",
+      "cover_image": null,
+      "published_at": "2026-11-09T08:24:11+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "权重、训练数据和评测材料均已公开，便于研究后训练如何改变模型价值表现；证据为发布方模型卡与日志，效果尚无独立复现，因此按重要进展而非重大结论处理。"
+    },
+    {
+      "slug": "20261109-ngcc-mito-kem23-public-analysis",
+      "title": "上海AI实验室发布Mito公开评议：长度校验缺失与条件式密钥恢复并存",
+      "summary": "上海AI实验室团队于2026-11-09在ICCS的NGCC论坛公开Mito分析，报告成本估计、密文长度校验、译码失配与观测内部译码输出下的密钥恢复。ngcc.dev独立确认短密文会触发越界读，并补充复核旧译码问题，但未复现内存泄露或端到端密钥恢复。",
+      "content": "2026-11-09，北京时间03:26，上海AI实验室的Hao Yan、Yuhang Cao、Yao Tong与Qiaosheng Zhang在ICCS的NGCC公钥算法评议论坛发布Mito（候选kem-23）公开分析；ngcc.dev于2026-11-08登记新增finding kem-23-3并更新旧finding kem-23-1。论坛材料属于评议者观点，不等于ICCS官方评审结论；ngcc.dev同样是独立分析站。\n\n最直接的实现问题是解封装包装层接收密文长度却未校验，随后按固定偏移解析。评议团队报告，在参考与优化两类、9组参数共18个构建中，给合法密文追加三种后缀的54次测试全部返回原共享密钥；其IND-CCA2论证依赖把变长字节串视为可查询密文域。建议是在读取前严格要求输入长度等于CIPHERTEXT_BYTES，并让调用者在错误返回后弃用共享密钥缓冲区。\n\nngcc.dev把稳定可复现的边界收窄为kem-23-3：它用AddressSanitizer检查一字节过短的堆缓冲区，在9组参数、参考与优化实现中都观察到固定偏移盐值复制的越界读。该站没有复现评议者提出的相邻字节恢复，因此明确“不声称内存披露或密钥恢复”；对超长密文被忽略的现象，也没有单独按固定长度密文域上的漏洞分类。\n\n第二条增量涉及Mito-E译码。ngcc.dev此前指出实现计算了Reed–Muller擦除位置与数量，却在进入Reed–Solomon译码前丢弃，导致提交代码并未实现规范依赖的错误与擦除联合译码。新评议给出条件式失败率上界和受控边界实验：4个256/512位参数集的上界弱于目标，但“上界高于目标”并不能证明实际失败率超标；测试也没有测量运行态真实DFR。\n\n评议还报告在能够无误观测全部内部RM译码输出的强前提下，对Mito-1-128的7把测试密钥各用24次在线查询恢复80/80个前缀块及7/7个展开秘密。这里的观测前提相当关键，在线查询数也不含离线模板训练与候选枚举，不能写成普通远程攻击已恢复长期私钥。其折叠ISD与种子筛选成本下降同样是启发式模型估计，结果仍高于名义安全位数，且两条路线不能相加。\n\n## 量仔观察\n\n这次更新对Mito提交者、NGCC评审者和复现团队都有行动价值：先修复精确长度检查，再分别验证译码实现、参数与DFR论证，不能用一个低严重度标签概括全部问题。直接证据包括公开评议、附件和ngcc.dev复现，但关键恢复结果依赖内部译码输出且尚无独立端到端复现。下一观察点是Mito作者公开回应、修订提交包版本，以及修复后的短密文与译码复测结果。",
+      "category": "ngcc",
+      "tags": ["NGCC", "Mito", "kem-23", "kem-23-3", "KEM", "实现安全", "公开评议"],
+      "source_name": "ICCS PKC Forum",
+      "source_url": "https://list.niccs.org.cn/archives/list/pkcforum@list.niccs.org.cn/message/767XHHZ62MOHOCT2V6HBJT43R6FTXOZV/",
+      "cover_image": null,
+      "published_at": "2026-11-09T08:24:11+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "公开评议与独立站复核给出可定位的长度校验和译码问题，并附受控实验；但密钥恢复依赖观测内部译码输出，内存披露也未被独立复现，影响明确而证据仍有边界。"
+    }
+  ]
+}
