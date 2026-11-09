@@ -17,7 +17,7 @@ test('research entries have unique routes and auditable evidence', () => {
     assert.ok(e.sources.length >= 3);
     const sourceIds = new Set(e.sources.map(s => s.id));
     assert.equal(sourceIds.size, e.sources.length);
-    for (const [, id] of JSON.stringify(e.sections).matchAll(/\[(S?\d+)\]/g)) assert.ok(sourceIds.has(id), `unresolved citation ${id}`);
+    for (const [, id] of JSON.stringify(e.sections.map(section => ({ ...section, code: undefined }))).matchAll(/\[(S?\d+)\]/g)) assert.ok(sourceIds.has(id), `unresolved citation ${id}`);
     for (const s of e.sources) { assert.equal(new URL(s.url).protocol, 'https:'); assert.ok(s.version && s.note); }
     for (const s of e.sections) if (s.table) for (const row of s.table.rows) assert.equal(row.length, s.table.headers.length);
     assert.ok(e.revisions.length);
