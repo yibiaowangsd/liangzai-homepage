@@ -15,6 +15,9 @@ test('research entries have unique routes and auditable evidence', () => {
     assert.equal(new Set(ids).size, ids.length);
     assert.ok(ids.every(id => !['question','process','sources','revisions'].includes(id)));
     assert.ok(e.sources.length >= 3);
+    const sourceIds = new Set(e.sources.map(s => s.id));
+    assert.equal(sourceIds.size, e.sources.length);
+    for (const [, id] of JSON.stringify(e.sections).matchAll(/\[(S?\d+)\]/g)) assert.ok(sourceIds.has(id), `unresolved citation ${id}`);
     for (const s of e.sources) { assert.equal(new URL(s.url).protocol, 'https:'); assert.ok(s.version && s.note); }
     for (const s of e.sections) if (s.table) for (const row of s.table.rows) assert.equal(row.length, s.table.headers.length);
     assert.ok(e.revisions.length);
@@ -35,7 +38,22 @@ test('built research routes render evidence and reject unknown slugs', async () 
   }
   const list = await render('/research');
   assert.equal(list.status, 200); assert.match(list.html, /把它研究透/);
+  for (const entry of entries) {
+    const page = await render(`/research/${entry.slug}`);
+    assert.equal(page.status, 200);
+    assert.ok(page.html.includes(entry.title));
+    assert.ok(list.html.includes(entry.title));
+  }
   const article = await render('/research/tls-hybrid-binding-and-downgrade');
   assert.equal(article.status, 200); assert.match(article.html, /实测待执行/); assert.match(article.html, /RFC 10024/); assert.match(article.html, /T12/); assert.match(article.html, /不含封装字段/);
   assert.equal((await render('/research/does-not-exist')).status, 404);
+});
+
+test('IKE notebook preserves erratum status and unexecuted test boundaries', () => {
+  const e = entries.find(e => e.slug === 'ikev2-hybrid-key-epochs-and-fragmentation');
+  assert.match(e.status, /未执行/);
+  assert.match(JSON.stringify(e.sections), /Held for Document Update/);
+  const matrix = e.sections.find(s => s.id === 'negative-tests');
+  assert.equal(matrix.table.rows.length, 7);
+  assert.match(matrix.title, /待执行/);
 });
