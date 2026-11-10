@@ -1,0 +1,128 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-10",
+  "coverage": {
+    "pqc": {"count": 2, "note": "核对IACR ePrint近7日、AIMer/KpqC资料、企业与政府评估入口及实现线索，覆盖学术攻击、实现与欧洲研究。入选AIMer单迹功耗分析和dimension-2 superspecial isogeny渐近攻击；AIMer掩码优化仅作对照，避免同项目集中。国内新线索多为旧项目转述。待跟进：AIMer维护方回应、完整固件复测及同源攻击的具体参数成本。"},
+    "migration": {"count": 2, "note": "扫描金融监管、供给方方案、采用方实践与中英美亚太公开入口，重点全文核对MAS咨询文件和FCA监督说明。入选新加坡分层期限及英国监督自评试点；AWS、NIST IR 8547与HKMA已超窗或已报，国内线索缺少新的直接发布。待跟进：MAS咨询2026-11-23截止后的定稿、FCA自评工具扩围。"},
+    "protocol": {"count": 0, "note": "扫描IETF TLS、LAMPS、IPSECME、SSH、QUIC、EMU、LAKE及IANA注册，覆盖草案状态与工程机制。CNSA 2.0 IPsec -05仍为非共识Informational文稿且RFC Editor阻塞，IKEv2复合认证、TLS复合ML-DSA与LAKE套件无近7期后的互通、部署或状态新增，未以例行修订凑稿。待跟进：CNSA档案解除阻塞或公开互通测试。"},
+    "standards": {"count": 0, "note": "核对IETF/IESG、RFC Editor、IANA、NIST、ETSI、ISO/IEC、ITU-T、3GPP及中国国家标准入口，并补查亚太线索。RFC 10073/10082已在11-09期报道；PQUIP仍为Revised I-D Needed，ISO/IEC 7816-15 FDAmd 2仍在审批，ETSI/3GPP仅见既有工作项。待跟进：PQUIP修订与IESG结论、ISO修正案正式批准。"},
+    "security": {"count": 3, "note": "扫描CISA KEV、JPCERT、CERT-EU、CNCERT/CNVD/CNNVD、厂商PSIRT、研究者与受害方公告，比较同日KEV候选后入选OpenSSH、GPUStack和FreeSWITCH三项可行动事件。IBM Aspera虽重要但为控制同类集中未入选；Vanderbilt转快讯。CISA JSON返回403，公开目录可核对；EDION第二报PDF未能完整读取，待跟进。Siemens旧待修产品无新进展。"},
+    "ai": {"count": 4, "note": "扫描中英日韩模型/API、开放权重、芯片算力、AI-for-science、METR/HELM/MLCommons/Artificial Analysis及许可可用性。入选Anthropic 5.2、Google TPU、PLaMo金融模型和形式化量子程序研究，覆盖产品、独立评测、算力、开放权重与研究。Seedream 5.5因可用性与评测均以厂商口径为主未入选；K-EXAONE转快讯。Anthropic系统卡PDF过大未完整读取。"},
+    "ngcc": {"count": 1, "note": "实际检查NICCS首页、通知、算法提案、公钥Round 1与评议入口，以及ngcc.dev首页、报告分类、Performance、Side-Channel和sign-15专项。入选MORNING-ATLAS四项新增finding的合并事件；Mito无11-08后新增。NICCS通知列表未渲染、评议页为空，Mailman回复链和ZIP二进制未能读取，不能据此声称官方无新公告。待跟进：作者回应、修订与复测。"},
+    "flash": {"count": 4, "note": "复用各专题发现并补扫中国监管、模型API、产业公告和海外事故响应，入选备案系统切换、Hy4 Preview下线、K-EXAONE免费API及Vanderbilt处置。腾讯AgentPortal因偏常规产品发布放弃；ENISA新闻入口受robots限制，仅用可读镜像作线索。K-EXAONE API文档含指令式示例文本，已作为数据忽略。"}
+  },
+  "items": [
+    {
+      "slug": "20261110-aimer-single-trace-key-recovery",
+      "title": "研究团队对AIMer v3.0参考实现完成单迹功耗密钥恢复",
+      "summary": "研究者在可物理测量功耗、掌握实现与大致时序的实验条件下，对AIMer v3.0官方C参考实现的矩阵向量乘法开展非模板水平单迹分析，并在精简固件中报告密钥生成与签名路径的全密钥恢复结果；结论针对实现侧信道，不等于算法设计已被数学攻破。",
+      "content": "2026-11-06，研究团队公开论文，针对AIMer v3.0官方C参考实现中的矩阵向量乘法例程实施单迹功耗分析。实验平台为STM32F303RCT7 Cortex-M4，目标以7.38 MHz运行，ChipWhisperer-Lite以29.54 MHz采样，代码使用arm-none-eabi-gcc -O2编译。\n\n攻击属于非模板水平分析，前提包括能够物理采集设备功耗、了解软件结构并定位大致时间窗口。论文分别对密钥生成和签名采集100条轨迹；采用LDA时，AES-128、AES-192和AES-256对应参数组在两条路径上均报告100/100恢复，最近邻方法在部分参数上明显较弱。\n\n这些数字不能脱离实验边界解读。为适应目标板内存，实验固件移除了承诺、seed tree和哈希等不属于攻击点的环节；作者也没有完整采集全部s参数，并用16个参与方模拟部分签名流程。因此，论文证明的是参考实现中一个关键运算的强泄漏，不是对完整产品固件的端到端演示。\n\n论文未给出AIMer或KpqC维护方的公开回应与修复。另一项同期实现研究尝试对AIMer-128f签名做一阶掩码，并在隔离S-box上通过固定/随机各50,000条轨迹的TVLA检查，但这项局部结果不能直接视为对本次攻击的完整修复或高阶安全证明。\n\n## 量仔观察\n\n这项结果直接影响采用AIMer参考代码的嵌入式评估者：应把gf_mat_vec_mul及其调用链列入泄漏评估，避免把算法入围或功能正确性测试当成实现安全认证。证据为已读全文与明确实验参数，强度较高，但精简固件和物理接触前提限制了现实外推。下一观察点是维护方是否发布恒时或掩码修订，以及完整签名固件在相同采集条件下的复测。",
+      "category": "pqc", "tags": ["AIMer", "侧信道", "功耗分析", "实现安全"], "source_name": "IACR ePrint", "source_url": "https://eprint.iacr.asia/2026/2795", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P1", "priority_reason": "E3论文全文给出可复核平台、轨迹数和恢复结果，显示官方参考实现关键路径存在强单迹泄漏；物理采集与精简固件限制已明确，仍需实现方及时评估。"
+    },
+    {
+      "slug": "20261110-superspecial-isogeny-asymptotic-attack",
+      "title": "研究者降低二维超奇异同源分裂问题的渐近攻击成本",
+      "summary": "新论文以Humbert曲面方程和批量多点求值改进二维超奇异同源问题中的分裂瓶颈，在一次与素数相关的预计算后给出每实例时间、内存均为p的3/4次方加低阶项的无条件渐近算法；作者同时强调优势主要出现于极大输入，尚无实现和具体方案参数折算。",
+      "content": "2026-11-06，研究者发布对dimension-2 superspecial isogeny problem的改进算法。论文把Costello–Smith路线中的分裂步骤转化为在Humbert曲面方程上的求值问题，并结合Kedlaya–Umans型批量多点求值来降低该瓶颈的渐近复杂度。\n\n在完成一次与素数p相关的预计算后，论文给出的每实例期望时间与内存均为p^(3/4+o(1))。若把预计算计入单个实例，时间为p^(19/23+o(1))、内存为p^(12/23+o(1))；在限制到与严谨Costello–Smith分析相同的p^(1/2+o(1))内存时，单实例时间为p^(5/6+o(1))。\n\n论文把主要结论表述为无启发式依赖的渐近改进，但实际优势不能只看指数。作者指出快速多点求值的理论常数和输入规模意味着，真正超过经典方法可能需要很大的p；目前没有实现、墙钟时间、内存实测，也没有把结果转换成某一具体签名或密钥交换参数的剩余安全位数。\n\n因此，这不是“攻破SQISign”或任何现有部署的证据。它更接近基础密码分析工具箱的推进：如果后续工程化能缩小常数，二维同源路线在参数选择时需要重新评估分裂问题的成本；如果没有实现，结论仍主要约束长期安全估计而非当前应急处置。\n\n## 量仔观察\n\n同源密码研究者应把新界纳入参数与安全归约讨论，但产品团队无需据此立刻撤回现有实现。证据来自完整预印本和主定理，数学结论清楚，工程成熟度却低。可采取的动作是复核依赖该问题的参数假设，并等待独立证明检查、原型实现和具体参数折算；下一观察点是作者或其他团队能否给出可运行代码与真实规模基准。",
+      "category": "pqc", "tags": ["同源密码", "密码分析", "渐近复杂度", "预印本"], "source_name": "IACR ePrint", "source_url": "https://eprint.iacr.asia/2026/2808", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P2", "priority_reason": "E3预印本给出无启发式的渐近改进，可能改变二维超奇异同源参数的长期评估；尚无实现和具体方案折算，行动紧迫性有限。"
+    },
+    {
+      "slug": "20261110-mas-quantum-safe-migration-timeline",
+      "title": "新加坡金管局就金融业量子安全迁移分层期限征求意见",
+      "summary": "新加坡金融管理局发布P019-2026咨询文件，拟以监管通函要求金融机构建立密码资产清单、董事会批准的风险迁移计划、采购可升级能力与第三方路线图，并提出2027年完成计划、2030年迁移关键系统、2034年覆盖其余系统的分层期限。",
+      "content": "2026-11-06，新加坡金融管理局发布P019-2026咨询文件，拟向所有金融机构发出量子安全迁移通函。文件明确，通函表达的是监督预期而非具有法律约束力的规则；意见征集截止2026-11-23，提交入口位于官方咨询页面。\n\n拟议框架要求机构明确治理责任，建立覆盖算法、密钥长度、协议、系统功能与依赖关系的密码资产清单，并由董事会批准风险导向的迁移计划。采购环节应优先选择已经支持量子安全算法或能够升级的产品，同时要求第三方供应商提供可对齐的路线图。\n\n时间表区分一般机构与关键基础设施运营者。所有金融机构拟在2027-12-31前完成迁移计划，2030-12-31前迁移关键系统，2034-12-31前完成其余系统；CIIO、DSIB及NETS须在2027-06-30前向MAS提交计划，CIIO还须在2029-12-31前完成CII系统迁移。\n\n文件还要求性能和互操作测试、分阶段实施、延后系统的补偿控制及量化检查点。由于PQC会增加计算、密钥和存储负担，机构不能只做算法替换清单，还要把容量、兼容性、回退安排、人员培训和供应商交付纳入运营风险管理。\n\n## 量仔观察\n\n这份咨询对在新加坡经营的银行、保险、支付和资本市场机构具有直接规划价值，也会影响其HSM、PKI、云与软件供应商。证据是MAS七页原始文件，期限与适用范围明确，但最终通函仍可能因咨询调整。机构现在可对照拟议里程碑补齐资产清单和采购条款；下一观察点是2026-11-23后反馈摘要及最终通函是否改变分层期限。",
+      "category": "migration", "tags": ["MAS", "金融业", "量子安全迁移", "征求意见"], "source_name": "Monetary Authority of Singapore", "source_url": "https://www.mas.gov.sg/publications/consultations/2026/consultation-paper-on-quantum-safe-migration-guidance-and-timelines-for-the-financial-sector", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P1", "priority_reason": "E3监管咨询首次给出新加坡金融业分层迁移期限，直接影响机构规划、采购与供应商交付；虽非最终强制规则，但咨询窗口短、行动价值高。"
+    },
+    {
+      "slug": "20261110-fca-pqc-supervisory-self-assessment",
+      "title": "英国FCA试行后量子迁移监督自评并要求金融机构立即盘点",
+      "summary": "英国金融行为监管局披露已向少量受监管机构试行后量子迁移监督自评工具，后续拟扩大范围并汇总挑战与良好实践；监管方要求机构现在盘点密码依赖、设定风险目标并持续测试迁移，同时沿用英国2028、2031和2035三阶段里程碑。",
+      "content": "2026-11-04，英国金融行为监管局发布监督说明，要求受监管金融机构立即开展量子安全准备，而不是等待密码标准和产品生态完全成熟。FCA把密码盘点、风险目标、实施、监测与测试列为当前就应推进的运营韧性工作。\n\n新增动作是FCA已经对一小批机构试行监督自评工具，用来衡量迁移计划成熟度，并计划在后续扩大使用范围。监管方希望借此汇总共性挑战和良好实践，同时考虑就包含后量子密码控制的网络韧性指导开展正式咨询。\n\n时间表引用英国国家网络安全中心的三阶段目标：2028年前完成发现与规划，2031年前迁移高优先级系统，2035年前完成所有系统、产品和服务。FCA没有在本次说明中把这些日期改写为新的强制规则，但明确表示机构应把它们转化为可监测的内部路线图。\n\n监管说明还把迁移失败与变更风险相联系。FCA称其2025年收到的事故报告中约五分之一与失败的变更项目有关，因此PQC工程不能只交给密码团队；业务连续性、供应商依赖、测试环境、回退和管理层问责都应进入同一治理框架。FCA同时提醒机构把迁移与既有外包、云服务和关键业务变更机制衔接，不能把供应商口头路线图视为已经完成的交付能力。\n\n## 量仔观察\n\n英国金融机构及其技术供应商应关注监督自评是否从试点转为常态化取证。证据来自FCA原文，试点和行动预期明确，但工具问题集、覆盖机构和评分方法尚未公开。当前可采取的动作是把NCSC里程碑映射到资产、预算和验收指标；下一观察点是FCA扩大试点和发布网络韧性咨询的时间。",
+      "category": "migration", "tags": ["FCA", "金融业", "监督自评", "运营韧性"], "source_name": "UK Financial Conduct Authority", "source_url": "https://www.fca.org.uk/news/blogs/act-now-be-resilient-quantum-future", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P2", "priority_reason": "E3监管原文确认自评试点和后续扩围方向，能促使机构把迁移纳入运营风险；工具细节与正式咨询尚未公布，属于重要准备节点。"
+    },
+    {
+      "slug": "20261110-openssh-cve-2026-123158-exploitation",
+      "title": "JPCERT通报OpenSSH CVE-2026-123158传感器成功利用与修复条件",
+      "summary": "JPCERT/CC通报OpenSSH 10.6p2之前版本在musl Linux、关闭PAM、启用密码认证并满足特殊账户散列组合时可能绕过认证；GreyNoise在传感器环境观察到成功利用及后续命令活动，CISA已收入KEV，但尚无真实组织受害得到确认。",
+      "content": "2026-11-09，JPCERT/CC发布CVE-2026-123158通报。漏洞影响OpenSSH 10.6p2之前版本，但并非所有部署都可利用：系统需采用musl libc、关闭PAM、启用密码认证，目标账户密码字段为特殊的星号值，同时还存在使用特定SHA散列格式的另一账户。\n\nOpenSSH已在10.6p2中修复，Alpine Linux等发行版也提供回移补丁。维护方建议优先更新发行版软件包并重启sshd；无法立即更新时，可暂时关闭密码认证。管理员还应核对容器、网络设备和商用产品中被封装的Alpine/OpenSSH版本，而非只检查通用服务器清单。\n\n证据必须分层理解。JPCERT称公开PoC已经出现；GreyNoise自2026-11-05观察到尝试，并在11-07于传感器环境看到成功绕过、后续命令执行和C2代理安装。CISA在11-09将漏洞加入KEV，确认存在利用，但这些信息没有给出活动规模、攻击者归因或真实机构受害数量。\n\nJPCERT截至发稿明确表示尚未确认组织遭入侵。安全团队应审计异常密码登录、权限提升、账户与密钥变化以及异常外联，尤其关注互联网暴露的musl设备；不满足前述组合条件的OpenSSH部署不应被笼统写成“可远程免密接管”。\n\n## 量仔观察\n\n这是需要优先排查但范围可以精确收敛的漏洞。E3证据来自维护者、发行版和JPCERT原始通报，传感器成功利用与KEV提高紧迫性，尚无真实受害确认则限制了影响估计。读者应先按libc、PAM、密码认证和账户散列四项筛选资产，再升级或关闭密码登录；下一观察点是厂商嵌入式产品公告和受害规模。",
+      "category": "security", "tags": ["OpenSSH", "CVE-2026-123158", "KEV", "在野利用"], "source_name": "JPCERT/CC", "source_url": "https://www.jpcert.or.jp/newsflash/2026110901.html", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P1", "priority_reason": "E3通报明确受影响条件、修复和传感器成功利用，且已被KEV收录；互联网暴露设备需立即筛查，但尚无真实组织受害确认。"
+    },
+    {
+      "slug": "20261110-gpustack-cve-2026-102895-kev",
+      "title": "CISA将GPUStack CVE-2026-102895收入KEV并要求修复至2.2.0",
+      "summary": "GPUStack 2.2.0之前版本在默认本地信任设置与反向代理真实IP处理组合下，外部请求可能被误判为回环来源并取得管理员能力；维护者公告称已观察到针对2.1.1部署的在野利用，CISA于2026-11-09收入KEV。",
+      "content": "2026-11-09，CISA将GPUStack CVE-2026-102895加入已知被利用漏洞目录。GPUStack维护者的安全公告称，2.2.0之前版本受影响，2.2.0完成修复，并明确表示已在2.1.1部署上观察到在野利用。\n\n问题来自默认的本地主机信任机制与反向代理地址处理交互。默认force_auth_localhost为false时，原本只应对回环请求生效的内置管理员信任可能把外部流量误判为本地，从而绕过正常身份验证。攻击是否成立取决于服务暴露方式和代理如何处理真实IP头。\n\n取得管理员能力后，攻击者可能修改用户、模型和worker配置，创建持久管理员密钥，并接触云或worker凭据；还可能借管理功能进一步影响执行节点。公告没有披露活动规模或攻击者归因，KEV收录也不意味着每个公网实例都已被入侵。\n\n首选处置是升级到2.2.0或更高版本。临时措施包括启用force_auth_localhost、确保代理不会把外部连接改写成回环来源、剥离客户端可伪造的真实IP头，并把管理API从不可信网络隔离。完成升级后还应检查新建管理员、密钥、worker与模型配置变更。\n\n## 量仔观察\n\nAI基础设施管理面常同时控制模型、算力和云凭据，因而这类身份绕过的横向影响高于普通控制台缺陷。E3证据来自维护者GHSA和KEV，受影响与修复版本清楚，但利用规模未知。运维团队应按暴露路径而非CVSS单独排序，立即核对代理链和管理员审计；下一观察点是受害范围与云凭据滥用证据。",
+      "category": "security", "tags": ["GPUStack", "CVE-2026-102895", "AI基础设施", "KEV"], "source_name": "GPUStack Security Advisory", "source_url": "https://github.com/gpustack/gpustack/security/advisories/GHSA-gj9m-f8ph-pmhr", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P1", "priority_reason": "E3维护者公告确认在野利用并给出修复版本，管理面失陷可能波及模型、worker和云凭据；公开信息尚未说明活动规模与归因。"
+    },
+    {
+      "slug": "20261110-freeswitch-cve-2026-116779-kev",
+      "title": "FreeSWITCH修复CVE-2026-116779并确认SIP MESSAGE路径遭利用",
+      "summary": "SignalWire确认FreeSWITCH 1.11.2及以下版本的入站SIP MESSAGE可触达已注册的API聊天接口，在特定配置下以服务进程权限执行命令；1.11.3已修复，CISA于2026-11-09收入KEV，临时缓解需关闭不必要的入站聊天。",
+      "content": "2026-11-09，CISA把FreeSWITCH CVE-2026-116779加入KEV。SignalWire安全公告显示，1.11.2及以下版本受影响，1.11.3及以上版本已修复；维护者同时明确表示该问题已经在野外被利用。\n\n漏洞位于入站SIP MESSAGE的分派路径。消息可能命中已注册的API聊天接口，进而以FreeSWITCH进程权限执行命令，造成配置、凭据与呼叫控制受影响。是否可利用取决于SIP profile是否接收入站MESSAGE；若启用消息认证，攻击者至少还需要有效账户。\n\n默认配置的内外profile通常启用聊天处理，因此互联网暴露的SIP边界需要优先检查。维护者没有公开受害规模、攻击组织或完整活动链，KEV只证明存在现实利用，不能据此断言所有VoIP平台均已被攻击。\n\n应优先升级到1.11.3或更新版本。不需要入站聊天的profile可暂时设置enable-chat=false；公告特别指出，仅启用auth-messages或只封禁部分系统命令并不足以消除风险。更新后应复核SIP消息日志、异常API调用、配置变化和服务账户权限。\n\n## 量仔观察\n\n语音基础设施常处在公网边界且变更窗口谨慎，这使明确的临时关闭路径很重要。E3维护者公告给出受影响版本、机制和在野确认，证据成熟，但活动规模未知，因此列为P2而非自动升为最高级。运营方应先按MESSAGE暴露和认证条件筛选，再升级；下一观察点是设备厂商回移补丁与实际受害披露。",
+      "category": "security", "tags": ["FreeSWITCH", "CVE-2026-116779", "VoIP", "KEV"], "source_name": "SignalWire Security Advisory", "source_url": "https://github.com/signalwire/freeswitch/security/advisories/GHSA-mg63-h38w-8p9p", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P2", "priority_reason": "E3维护者已确认在野利用并提供明确升级与临时关闭路径；VoIP边界可受影响，但利用规模、归因和受害数量尚未公开。"
+    },
+    {
+      "slug": "20261110-claude-fable-mythos-5-2",
+      "title": "Anthropic发布Claude Fable 5.2与受限安全配置Mythos 5.2",
+      "summary": "Anthropic发布同一底层模型的Fable 5.2与Mythos 5.2：前者面向全部API客户，后者仅向审核组织开放；新版本提供100万上下文、12.8万最大输出并下调标准价格。独立评测显示能力领先，但长任务延迟和成本仍高。",
+      "content": "2026-11-09，Anthropic发布Claude Fable 5.2与Claude Mythos 5.2。两者使用同一底层模型，但采用不同安全配置：Fable面向全部API客户正式可用，Mythos仅提供给通过验证计划的组织，不能把二者写成两套独立权重。\n\nFable 5.2提供100万token上下文与128K最大输出，API标识为claude-fable-5-2。标准价格从上一代每百万输入/输出10/50美元降至8/40美元；Fast模式为16/80美元。官方称生成速度最高提升30%，Fast模式最高可达2.5倍，但均属厂商口径。\n\nArtificial Analysis的独立页面给出另一组观察：其Intelligence Index v5.0.1得分65，在当次74个模型中居首；Max测试平均每任务44.1分钟、成本26.54美元，首个回答token为231.55秒。能力结果与实际交互延迟、成本应同时看，不能只引用排名。\n\n迁移还包含破坏性变化：账户级prefix校验更严格，思维块兼容规则改变，旧computer工具会报错，Fable 5.2执行器还需搭配同等级advisor。Mythos要求30天数据保留，默认不提供零数据保留，敏感工作负载需先核对合规条件。\n\n## 量仔观察\n\n对Agent和长任务开发者，价格下降与上下文扩大有直接价值，但API兼容和数据保留可能成为上线阻断点。发布与接口为E3官方证据，性能同时有独立测量，系统卡大文件未能完整读取是本次限制。建议先做回归测试、延迟预算和数据政策审查；下一观察点是更多独立安全评测及Mythos准入范围。",
+      "category": "ai", "tags": ["Anthropic", "Claude", "模型发布", "独立评测"], "source_name": "Anthropic", "source_url": "https://www.anthropic.com/claude-fable-and-mythos-5-2", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P1", "priority_reason": "E3官方发布与接口文档确认正式可用、价格和兼容变化，并有独立性能测量；对大规模Agent部署的成本、迁移与数据治理影响广。"
+    },
+    {
+      "slug": "20261110-google-tpu-8tx-8i-max",
+      "title": "Google Cloud发布TPU 8tx与TPU 8i Max系统设计",
+      "summary": "Google Cloud介绍TPU 8tx与TPU 8i Max：前者在TPU 8t基础上加入第五代AMD EPYC主机和运行中权重、数据硬件隔离，后者将两颗8i组合到单封装以翻倍计算、SRAM与HBM带宽；具体区域、订购和全面可用日期尚未公布。",
+      "content": "2026-11-09，Google Cloud发布TPU 8tx与TPU 8i Max系统信息。8tx沿用TPU 8t芯片并搭配第五代AMD EPYC主机，重点加入对运行中模型权重和数据的硬件级隔离，目标是把机密计算用于更敏感的训练与推理工作负载。\n\nGoogle称8tx相对8t最高可降低两倍延迟，且隔离带来的性能损失接近零；这些数字来自厂商内部测试，正文没有给出完整模型、批量、软件版本和区域条件，不能与第三方基准直接混用。\n\n8i Max则把两颗8i组合在单一封装中，计算能力、SRAM容量与HBM带宽均为单颗8i的两倍，面向超长上下文和高机架密度。同期软件包括预览版TPU agent suite、开源TPU Sync和XLA Serving Engine；官方称TPU Sync可把KV传输延迟与TTFT降低超过90%。\n\nCloud Pathways与GKE动态切片被明确标为GA，但发布文没有说明8tx和8i Max的订购方式、区域、配额或GA日期。因此更准确的状态是系统发布与能力披露，而不是“全球已可购买”；采购者仍需等待产品目录和合同条件。\n\n## 量仔观察\n\n这次更新对需要机密模型托管、长上下文和高密度推理的云架构团队有实质参考。核心发布为E3官方证据，性能为单方自测且可用性信息不完整。读者可先评估隔离需求和软件栈兼容，不宜据峰值数字直接换算成本；下一观察点是区域价格、配额、独立基准及8tx隔离威胁模型。",
+      "category": "ai", "tags": ["Google Cloud", "TPU", "机密计算", "AI算力"], "source_name": "Google Cloud", "source_url": "https://cloud.google.com/blog/topics/ai-infrastructure/tpu-8tx-and-tpu-8i-max", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P2", "priority_reason": "E3官方发布带来机密AI和高密度长上下文系统的新硬件选择；性能仍属厂商自测且商用区域、价格和GA状态未完整披露。"
+    },
+    {
+      "slug": "20261110-plamo-3-fin-open-weights",
+      "title": "Preferred Networks发布PLaMo 3.0 Fin开放权重金融模型",
+      "summary": "Preferred Networks发布约80亿参数的日语金融模型PLaMo 3.0 Fin，开放权重并提供受额度限制的Beta API；模型经过持续预训练、监督微调和DPO，支持推理与工具调用。模型卡同时披露基准落后项、推理停不下来的样本和幻觉风险。",
+      "content": "2026-11-09，Preferred Networks发布PLaMo 3.0 Fin。该模型约80亿参数，基于PLaMo 3 NICT 8B Base，依次经过金融语料持续预训练、监督微调和DPO，面向日语金融问答、推理与函数调用。\n\n权重已在Hugging Face提供，适合单GPU、闭域云或本地部署；PLaMo API和Chat以plamo-3.0-fin-beta提供受额度限制的免费方案。它采用PLaMo Community License，上一财年收入或销售额不超过10亿日元的个人与企业可免费商用，但商用仍需登记。\n\n厂商自测中，japanese-lm-fin-harness从基线48.0升至55.8，工具评测为71.3。后者仍低于其对比中的Gemma 4 E4B 76.2和Qwen3.5-9B 75.4，说明金融适配提高了目标任务表现，却不代表所有工具场景领先。\n\n模型卡还披露，在540个多工具样本中约有5至10个因推理持续不结束而触及上下文上限；80亿规模模型仍会产生幻觉。开发者应保留工具证据、约束最大步骤和token，并对投资、信贷或合规输出设置人工复核。\n\n## 量仔观察\n\n这项发布的价值在于把许可、部署路径和负面评测一并公开，便于金融机构做可控试验。E3证据来自新闻稿、技术博客与模型卡，性能仍主要为厂商自测。读者可先验证日语专业术语、工具终止和审计链；下一观察点是独立金融基准、Beta配额变化和真实机构试点。",
+      "category": "ai", "tags": ["PLaMo", "金融模型", "开放权重", "日本"], "source_name": "Preferred Networks", "source_url": "https://www.preferred.jp/ja/news/pr20261109", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P2", "priority_reason": "E3原始材料提供权重、许可、API与风险披露，对金融私有化部署有明确价值；性能尚缺独立验证，且模型卡承认终止与幻觉问题。"
+    },
+    {
+      "slug": "20261110-formal-quantum-program-discovery",
+      "title": "Google DeepMind用Lean验证多智能体发现的量子程序改进",
+      "summary": "Google DeepMind与Google Quantum AI论文提出由LLM智能体合成量子程序、再由冻结规格下的Lean比较器在干净沙箱中重放验证的流程，并报告多项资源改进；研究仍是预印本，模型名称未披露，端到端资源远高于早期容错硬件能力。",
+      "content": "2026-11-06，研究团队提交预印本，展示用LLM多智能体搜索量子程序并以Lean形式化验证的流程。人类选择问题并编写量子Hoare逻辑规格，智能体负责提出程序，外部比较器在冻结规格和干净沙箱中重放证明。\n\n验证器会拒绝修改定理、加入自定义公理或虚报成本的方案，使“找到更短程序”与“能通过机器检查”分离。论文报告平行搜索最高1.41倍改进、固定点arcsin的时空成本最高290倍改进，以及聚变、光化学和药物代谢模拟中的10.9倍、8.08倍与2.49倍改进。\n\n这些结果不能解释成量子硬件已经完成相应计算。论文未披露所用模型名称，问题和规格由人类设定，智能体不能优化规格之外的目标；路由、布局、纠错与硬件噪声也没有被完整纳入。作者明确表示端到端资源仍远超早期容错量子机。\n\nLean库、规格和解答在论文中仅称将开源，截至本次核查尚未找到正式仓库。研究因此具备较强的原始方法证据，但独立复现和同行评审仍缺失；报告的倍数还依赖各任务定义与成本模型，不能跨任务横向比较。形式化比较器还为并行探索提供统一验收门槛，多个智能体提出的结构最终都要在同一规格下重放。\n\n## 量仔观察\n\n这项工作对AI辅助科学编程的启示是：把可机检规格放在生成模型外部，能减少“看似正确”的结果进入工程链。E3论文全文支持方法和数字，但预印本、未公开模型与代码限制成熟度。研究者可先复核规格是否覆盖真实硬件约束；下一观察点是代码开放、独立重放和加入纠错路由后的收益。",
+      "category": "ai", "tags": ["AI for Science", "量子程序", "形式化验证", "Lean"], "source_name": "arXiv", "source_url": "https://arxiv.org/abs/2611.09822", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P2", "priority_reason": "E3预印本给出可机检验证流程和多项资源改进，方法价值明确；模型、代码与硬件约束尚不完整，距离现实量子执行仍远。"
+    },
+    {
+      "slug": "20261110-ngcc-morning-atlas-findings",
+      "title": "ngcc.dev公布MORNING-ATLAS四项新增安全finding",
+      "summary": "ngcc.dev在MORNING-ATLAS/sign-15归档中新增四项finding，其中实现层的文档化签名附消息模式可用一个特定签名打开任意同长度消息，设计层BUFF稀疏挑战存在低于部分目标强度的碰撞估计；另两项采样偏差与越界写影响较低。",
+      "content": "2026-11-10 01:11北京时间，ngcc.dev更新MORNING-ATLAS（候选sign-15）报告与复现材料，合并公布sign-15-14至sign-15-17四项finding。该站是独立分析平台，报告状态和Severity不代表商用密码标准研究院ICCS的官方评审结论。\n\nsign-15-14被标为Critical、Confirmed、Implementation。报告称四个参数集的文档化签名附消息模式可用一个特定形式的签名打开任意同长度消息；分离签名模式会拒绝伪造，但成功验证路径仍可能越界读取并覆盖消息。这里的Confirmed是站点证据状态，不等于本站复现。\n\nsign-15-15被标为High、Confirmed、Design，针对可选BUFF稀疏挑战给出约2^64.8、2^94.1、2^128.5和2^138.7的碰撞成本估计。报告没有运行全尺寸攻击，BUFF也不是NGCC必选模式，因此不能把估计写成候选整体已被现实攻破。\n\n另两项影响较低：sign-15-16描述128/192参数的秘密采样范围偏移，估计安全余量仍高于目标；sign-15-17描述256/512参数续填时越界写一个系数，ASan试验出现13/40与10/40次，但报告称攻击者不能控制该写入。当前未见作者回应、修复版本或复测通过。\n\n## 量仔观察\n\n实现团队应优先停用或隔离附消息模式，并复核BUFF是否启用、验证API的消息缓冲区边界。证据来自可读报告、归档哈希和复现提交，finding分层清楚，但本站未自行实验，设计碰撞也缺少全尺寸运行。下一观察点是提交团队公开回应、规范或代码修订，以及独立复测是否关闭sign-15-14至17。",
+      "category": "ngcc", "tags": ["NGCC", "MORNING-ATLAS", "签名", "实现安全"], "source_name": "ngcc.dev", "source_url": "https://ngcc.dev/reports/sign-15.html", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P1", "priority_reason": "E3独立报告与复现提交给出稳定finding和清晰影响分层，其中附消息模式涉及直接伪造能力；尚无作者回应或修复复测，需优先处置。"
+    },
+    {
+      "slug": "20261110-cac-filing-system-launch",
+      "title": "国家网信办上线新技术新应用备案系统并停用原入口",
+      "summary": "国家网信办于2026-11-09上线互联网新技术新应用信息服务备案系统，整合生成式人工智能、算法推荐、深度合成和区块链备案，原算法与区块链备案系统同步停止使用。",
+      "content": "2026-11-09 15:00，国家网信办宣布互联网新技术新应用信息服务备案系统正式上线，将生成式人工智能、算法推荐、深度合成和区块链备案纳入同一入口，原算法备案系统与区块链信息服务备案系统同步停止使用。相关服务提供者应更新内部申报链接、账号和材料流转流程，避免继续向旧入口提交。",
+      "category": "flash", "tags": ["AI监管", "备案", "中国", "系统切换"], "source_name": "国家互联网信息办公室", "source_url": "https://www.cac.gov.cn/2026-11/09/c_1795978604463007.htm", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P2", "priority_reason": "E3官方公告确认多类备案统一入口和旧系统停用，直接影响服务提供者的申报工作流，需及时切换。"
+    },
+    {
+      "slug": "20261110-tencent-hy4-preview-retirement",
+      "title": "腾讯云将于2026-12-07下线Hy4 Preview并迁移部分请求",
+      "summary": "腾讯云公告将于2026-12-07 00:00停止TokenHub、ADP和CloudBase中的hy4-preview，建议改用hy4；部分用户会自动切换，不符合条件者届时请求报错，迁移还可能带来秒级超时、输出和价格变化。",
+      "content": "2026-11-09 17:36，腾讯云公告hy4-preview将在2026-12-07 00:00停止服务，涉及TokenHub、ADP和CloudBase。平台会为部分符合条件的用户自动切换至hy4，不符合条件的调用届时将报错；切换可能出现秒级超时，模型输出与价格也可能变化。使用方应在截止日前固定测试集回归质量、超时和成本，并显式改用正式模型标识。",
+      "category": "flash", "tags": ["模型API", "产品下线", "Hy4", "迁移"], "source_name": "腾讯云", "source_url": "https://cloud.tencent.com/announce/detail/2559", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P2", "priority_reason": "E3官方公告给出明确停用日期、自动迁移边界和失败条件，现有调用方需要在四周内完成回归与切换。"
+    },
+    {
+      "slug": "20261110-k-exaone-2-5-free-api",
+      "title": "LG AI Research开放K-EXAONE 2.5免费技术验证API",
+      "summary": "LG AI Research于2026-11-09开放K-EXAONE 2.5技术验证模型API，文档称其为7500亿总参数、310亿激活参数的韩英文本模型，支持OpenAI兼容接口与524,288 token上下文；长期免费额度和SLA未说明。",
+      "content": "2026-11-09，LG AI Research向开发者、企业和研究机构开放K-EXAONE 2.5免费API，申请密钥后可通过OpenAI兼容的聊天接口调用。官方文档称模型为750B总参数、31B激活参数，支持韩语和英语、524,288 token上限，reasoning不可关闭。公告列出的AutomationBench、SWE-Bench Pro、BrowseComp与Claw-Eval成绩均为厂商自测；这是闭源技术验证服务，不是权重发布，长期额度和SLA仍待明确。",
+      "category": "flash", "tags": ["K-EXAONE", "模型API", "韩国", "免费服务"], "source_name": "LG AI Research", "source_url": "https://www.lgresearch.ai/news/view?seq=755", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P2", "priority_reason": "E3官方新闻与接口文档确认免费API实际可用，对韩英长上下文与Agent试验有行动价值；基准尚无独立验证，长期服务条件未明。"
+    },
+    {
+      "slug": "20261110-vanderbilt-cybersecurity-response",
+      "title": "范德堡大学处置活跃网络安全事件并要求设备离线",
+      "summary": "范德堡大学于2026-11-09 11:19美东时间通报正在处置可能影响校方设备、系统和云服务的网络安全事件，要求人员关闭校方设备并断开校方Wi-Fi；官方尚未确认攻击类型、数据影响或攻击者。",
+      "content": "2026-11-10 00:19北京时间，范德堡大学发布活跃网络安全事件更新，称事件可能影响大学设备、系统和云服务，并要求全体人员关闭校方设备、断开校方Wi-Fi，发现异常时不要自行操作而应联系IT。公告没有确认勒索、数据泄露、入口、受影响数量或攻击者，外部传言不应写成已证实事实。对关联机构而言，当前行动重点是遵循校方隔离指令并等待后续取证结论。",
+      "category": "flash", "tags": ["安全事件", "教育机构", "事故处置", "美国"], "source_name": "Vanderbilt University", "source_url": "https://news.vanderbilt.edu/2026/11/09/nov-9-active-cybersecurity-incident-updates/", "cover_image": null, "published_at": "2026-11-10T08:17:00+08:00", "status": "published", "priority": "P2", "priority_reason": "E3受害方公告给出正在执行的隔离要求，行动性强；攻击类型与数据影响尚未确认，因此按官方处置进展报道。"
+    }
+  ]
+}
