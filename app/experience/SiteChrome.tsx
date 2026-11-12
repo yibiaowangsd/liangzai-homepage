@@ -75,7 +75,7 @@ export function SiteHeader() {
       <a className="skip-link" href="#main-content">
         跳到主要内容
       </a>
-      <header className="site-chrome" data-scene={path === "/" ? "home" : "page"}>
+      <header className="site-chrome" data-scene={path === "/" ? "home" : path === "/storybook" ? "night" : "page"}>
         <Link className="brand" href="/" aria-label="量仔首页">
           <span className="brand-mark" aria-hidden="true">
             <img
@@ -98,7 +98,7 @@ export function SiteHeader() {
               <NavigationLink
                 key={item.href}
                 href={item.href}
-                aria-current={path === item.href || ((item.href === "/topics" || item.href === "/research") && path.startsWith(`${item.href}/`)) ? "page" : undefined}
+                aria-current={path === item.href || (item.href !== "/" && path.startsWith(`${item.href}/`)) ? "page" : undefined}
               >
                 {item.href === "/" ? "首页" : item.name}
               </NavigationLink>
@@ -112,10 +112,13 @@ export function SiteHeader() {
     </>
   );
 }
+/** Story pages end with the full night; work pages fold it smaller. */
+const storyRoutes = new Set(["/", "/about", "/archive", "/models", "/storybook"]);
+
 export function SiteFooter() {
   const path = usePathname();
   return (
-    <footer className="milk-footer" data-flush={path === "/storybook" || undefined}>
+    <footer className="milk-footer" data-flush={path === "/storybook" || undefined} data-size={storyRoutes.has(path) ? undefined : "compact"}>
       <img className="milk-footer-sleeper" src="/assets/naiwa/sleep.webp" width="1140" height="760" alt="喝完奶、趴着睡着的奶蛙，空奶瓶倒在身边" loading="lazy" decoding="async" />
       <span className="milk-footer-zzz" aria-hidden="true">z z z</span>
       <div className="milk-footer-top">

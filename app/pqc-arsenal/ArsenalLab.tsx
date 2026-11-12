@@ -9,6 +9,7 @@ import {
   ScrollTrigger,
 } from "../experience/Motion";
 import "./cinematic-arsenal.css";
+import "./milk-arsenal.css";
 
 type WeaponId = "ml-kem" | "ml-dsa" | "slh-dsa" | "fn-dsa";
 type LegacyId = "rsa" | "ecc";
@@ -568,8 +569,8 @@ export default function ArsenalLab() {
 
       <header className="arsenal-hero">
         <div className="arsenal-hero-copy">
-          <p className="arsenal-eyebrow" data-intro>
-            面向未来的密码学
+          <p className="milk-intro-kicker" data-intro>
+            <i>Field guide,</i>面向未来的密码学
           </p>
           <h1 data-title>
             密码<em>图鉴</em>
@@ -579,21 +580,14 @@ export default function ArsenalLab() {
             <br />
             一路走到后量子武器的数学内核。
           </p>
-          <a className="silver-button" data-intro data-magnetic href="#weapons">
+          <a className="milk-button" data-intro data-magnetic href="#weapons">
             探索四种守护之力
-            <i aria-hidden="true" />
           </a>
           <a className="arsenal-practice-link" data-intro href="/pqc-practice">
-            已了解原理？进入密码实验室 <span aria-hidden="true"></span>
+            已了解原理？进入密码实验室
           </a>
         </div>
         <figure className="arsenal-intro-art" aria-hidden="true"><img src="/assets/pqc/ml-dsa-studio-v2.webp" width="1200" height="800" alt="" /></figure>
-        <div className="hero-index" aria-label="学习路径">
-          <span>01 RSA / ECC</span>
-          <span>02 LWE / SIS</span>
-          <span>03 KEM / DSA</span>
-          <span>04 实现风险</span>
-        </div>
       </header>
 
       <section className="algorithm-directory" aria-labelledby="directory-title">

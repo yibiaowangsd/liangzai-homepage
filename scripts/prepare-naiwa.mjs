@@ -8,7 +8,7 @@ import sharp from "sharp";
 const source = resolve(process.argv[2] || ".");
 const out = resolve("public/assets/naiwa");
 mkdirSync(out, { recursive: true });
-const poses = { sit: [820, 1230], ask: [760, 1140], book: [760, 1140], wave: [760, 1140], stand: [760, 1140], sleep: [1140, 760] };
+const poses = { sit: [820, 1230], ask: [760, 1140], book: [760, 1140], wave: [760, 1140], stand: [760, 1140], sleep: [1140, 760], read: [820, 1230], album: [820, 1230], peek: [760, 1140], key: [760, 1140], mail: [760, 1140] };
 
 for (const [pose, [width, height]] of Object.entries(poses)) {
   const file = join(source, `naiwa-${pose}.png`);

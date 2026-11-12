@@ -1,4 +1,5 @@
 import "./news.css";
+import "./milk-news.css";
 
 export default function NewsLayout({
   children,

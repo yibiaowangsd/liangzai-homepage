@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import PageIntro from "../../milk/PageIntro";
 import Link from "next/link";
 import TopicDesk from "../TopicDesk";
 import index from "../topic-index.json";
@@ -12,5 +13,17 @@ export default async function TopicPage({ params }: { params: Promise<{ slug: st
   const { slug } = await params;
   const topic = index.topics.find(item => item.slug === slug);
   if (!topic) notFound();
-  return <main id="main-content" className="dossier-page"><header className="dossier-heading"><Link className="dossier-back" href="/topics">全部技术档案</Link><p className="dossier-eyebrow">{topic.category} · 持续追踪</p><h1>{topic.name}</h1><p>{topic.description}</p><div className="dossier-heading-meta"><span>{topic.events.length} 项进展</span><span>收录至 {index.throughDate}</span></div></header><TopicDesk topic={topic} /></main>;
+  return <main id="main-content" className="dossier-page">
+    <PageIntro
+      latin="Tracking,"
+      kicker={`${topic.category} · 持续追踪`}
+      title={topic.name}
+      dynamicTitle
+      back={<Link className="milk-intro-back" href="/topics">全部技术档案</Link>}
+      meta={<><span className="milk-chip" data-tone="accent">{topic.events.length} 项进展</span><span>收录至 {index.throughDate}</span></>}
+    >
+      <p>{topic.description}</p>
+    </PageIntro>
+    <div className="dossier-body"><TopicDesk topic={topic} /></div>
+  </main>;
 }

@@ -153,15 +153,24 @@ git diff --check
 - 人工回归需覆盖 1180×757、1311px、1770px 和窄屏：头条阅读入口、分类顶对齐、正文宽度、来源图完整性，以及弹窗 Tab/Shift+Tab、Escape、点击关闭、文章跳转、返回和减少动态效果。本次云端本地 Chromium 因系统 socket 限制未能启动，不能将上述静态/单元检查视为真实浏览器验证。
 
 
-### 「一天的奶」个人页面设计（2026-11-12）
+### 「一天的奶」全站设计（2026-11-12）
 
-适用范围：首页、关于我、角色档案、模型鉴赏、星际漫游阅读器与全站页脚。新闻、订阅与审核、密码实验室及其独立 HTML 页不使用这套样式，修改时保持原样。
+同一套设计语言覆盖全站，按页面性质分两种浓度：
 
-- **共享样式** `app/milk/milk.css`：配色变量（钴蓝 `#2443D6`、夜蓝、奶白、奶黄）、展示字体、奶面波浪、奶瓶刻度与页脚。钴蓝与夜蓝区块在两种主题下固定；纸面区块跟随主题变量。各页局部样式在 `app/milk/home.css`、`app/about/about.css`、`app/archive/archive.css`；模型页和阅读器只用 `milk-models.css`、`milk-reader.css` 覆盖外观，布局与交互仍在原文件。
+- **故事页**（首页、关于我、角色档案、模型鉴赏、星际漫游）：大面积钴蓝/夜蓝色块，角色登场，页脚是完整的「奶蛙睡着了」。
+- **工作页**（新闻、周报、订阅与审核、技术档案、深度研究、「我」回顾、密码图鉴、密码实验室与接入记录）：同样的字体、颜色、圆角与胶囊按钮，装饰克制、信息密度不降；页脚用紧凑版（`data-size="compact"`）。
+
+文件分工：
+
+- **共享样式** `public/theme/milk.css`：由 `app/layout.tsx` 与实验室两个独立 HTML 页最后加载。包含配色变量（钴蓝 `#2443D6`、夜蓝、奶白、奶黄）、展示字体、统一页头（`html:root body .site-chrome` 前缀压过旧的导航/主题层，不用 `!important`；首页为钴蓝场景，`/storybook` 为夜色场景）、页面抬头 `.milk-intro`、标签 `.milk-chip`、搜索与目录弹窗、奶面波浪、奶瓶刻度和页脚。钴蓝与夜蓝区块在两种主题下固定；纸面区块跟随主题变量。
+- **页面抬头** `app/milk/PageIntro.tsx`：工作页统一用它开场——时间标签（属于一天某个时段的页面，如新闻 08:10）或拉丁斜体引题、宋体标题、一句说明、操作行、可选的数据侧栏或奶蛙。标题来自数据时（专题名、研究标题）传 `dynamicTitle`，改用系统无衬线，避免子集字体缺字。
+- **皮肤文件**：布局留在原文件，外观单独覆盖——`app/news/milk-news.css`（由 `app/news/layout.tsx` 引入，覆盖列表、正文、周报）、`app/pqc-arsenal/milk-arsenal.css`、`public/pqc-practice/lab-milk.css`、`app/models/milk-models.css`、`app/storybook/milk-reader.css`。`news.css`、`studio.css`、`styles.css` 保持系统字体栈（测试约束）。技术档案、深度研究、「我」回顾的样式已整体重写为可读格式（`topics.css`、`research.css`、`wo.css`）。
+- **字体规则**：站点自己写的字（页面标题、栏目名、日期）用展示宋体；外来内容（新闻标题、算法名、数据）用系统无衬线。
+- **实验室**：只改外框（页头、标题区、页脚、面板圆角、按钮），工作台布局、数据流和 WASM 运行时不动；导航顺序与 React 页一致，含「深度研究」。
 - **角色**：黄色角色在新页面称「奶蛙」；绘本正文与已录旁白保留「奶龙」，阅读器底部注明二者为同一角色。不要改 `storyData.ts` 中的名字，否则文字与音频对不上。
-- **奶蛙图片** `public/assets/naiwa/*.webp`：由 Codex CLI 依据作者提供的三视图生成透明底 PNG，再用 `node scripts/prepare-naiwa.mjs <源图目录>` 收紧半透明边缘、裁边并输出固定尺寸。新增姿势时同步更新该脚本中的尺寸表与页面上的 `width`/`height`。
-- **字体**：标题用思源宋体 Heavy 子集（Milk Song），拉丁斜体用 Fraunces Italic 子集（Milk Latin），均为 SIL OFL 1.1，许可文本在 `public/assets/fonts/OFL.txt`。子集只含扫描到的文字，**修改上述页面文案后**运行 `python scripts/build-display-fonts.py <源字体目录>`（需 `pip install fonttools brotli`），否则新字回退到系统宋体。
+- **奶蛙图片** `public/assets/naiwa/*.webp`：由 Codex CLI 依据作者提供的三视图生成透明底 PNG，再用 `node scripts/prepare-naiwa.mjs <源图目录>` 收紧半透明边缘、裁边并输出固定尺寸。新增姿势时同步更新该脚本中的尺寸表与页面上的 `width`/`height`。工作页姿势：读报（新闻）、放大镜（深度研究）、钥匙（实验室）、信封（订阅）、相册（「我」回顾）。
+- **字体**：标题用思源宋体 Heavy 子集（Milk Song），拉丁斜体用 Fraunces Italic 子集（Milk Latin），均为 SIL OFL 1.1，许可文本在 `public/assets/fonts/OFL.txt`。子集只含扫描到的文字（扫描范围见脚本，含新闻栏目名与实验室 HTML），**修改页面文案后**运行 `python scripts/build-display-fonts.py <源字体目录>`（需 `pip install fonttools brotli`），否则新字回退到系统宋体。
 - **交互**：首页奶蛙可轻点切换问题，每个问题链接到站内对应页面；问候按访客本地时间变化（服务端固定输出早安）。奶瓶刻度只在首页、关于我与角色档案显示，滚动即「喝奶」，喝完后点击回到顶部。波浪、漂浮与 zzz 动画遵循系统减少动态效果和站内动效开关。
-- **移除**：旧首页的电影序幕（`CinemaEntrance`、`cinema-shortcut.ts`、`studio/home.css`）及其测试已删除；`about/profile.module.css`、`archive/dossier.css` 由新样式替代。
-- **测试**：`tests/milk-design.test.mjs` 检查字体子集与来源、奶蛙图片尺寸、奶瓶刻度的显示范围与减少动态效果、角色命名，以及原有标题标点和实验室通道样式规则。
+- **移除**：旧首页的电影序幕（`CinemaEntrance`、`cinema-shortcut.ts`、`studio/home.css`）及其测试已删除；`about/profile.module.css`、`archive/dossier.css` 由新样式替代；`studio/scenes.css` 与 `system.css` 中已无引用的旧目录弹层、旧页脚与展台样式已删除；实验室旧的 `practice-footer` 换成共享页脚。周报摘要原先误用订阅横幅的三栏网格（摘要被挤进 44px 列），已改为独立的 `.weekly-summary`。
+- **测试**：`tests/milk-design.test.mjs` 检查字体子集与来源、各页引用的奶蛙图片尺寸、奶瓶刻度的显示范围与减少动态效果、角色命名、工作页统一抬头与页脚、实验室样式加载顺序与导航、周报摘要结构，以及原有标题标点和实验室通道样式规则。
 - **Windows 注意**：`core.autocrlf=true` 的检出会把实验室 `.mjs` 转成 CRLF，使 `ngcc-portable-recovery.test.mjs` 的哈希校验失败；这是检出换行问题，不是代码改动。Linux CI 或 `autocrlf=false` 的检出不受影响。
