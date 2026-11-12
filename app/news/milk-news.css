@@ -1,0 +1,85 @@
+/* Morning skin for the news pages: list, article, weekly. Layout rules stay in
+ * news.css; this file re-dresses them in the shared milk language (public/theme/milk.css).
+ * Headlines arrive from the feed, so they keep the system sans; labels the
+ * site writes itself (category desks, dates) use the display serif. */
+
+/* ---------- Toolbar: dates and sections only, the intro carries the title ---------- */
+html .newsroom .news-toolbar { min-height: 68px; padding-block: 10px; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; background: color-mix(in srgb, var(--milk-paper) 92%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+html .newsroom .news-day-controls { gap: 8px; }
+html .newsroom .news-day-controls > a { display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--milk-rule); border-radius: 999px; background: var(--milk-card); }
+html .newsroom .news-date-trigger { border-radius: 999px; }
+html .newsroom .news-category-menu { min-width: 172px; }
+html .newsroom .news-category-menu > summary { border-radius: 999px; background: var(--milk-card); }
+html .newsroom .news-category-menu > nav,
+html .newsroom .news-calendar { border-radius: var(--milk-radius); box-shadow: 0 18px 50px #0b14362b; overflow: hidden; }
+html .newsroom .news-category-menu > nav a[aria-current] { color: var(--milk-accent); background: var(--milk-accent-soft); }
+
+/* Intro actions: subscribe is the one filled button on the page. */
+html .newsroom .news-subscribe-link { min-height: 44px; padding: 10px 22px; border-radius: 999px; background: var(--milk-cobalt); color: var(--milk-white); font-size: 14px; gap: 10px; }
+html .newsroom .news-subscribe-link::after { content: "→"; transition: transform .25s var(--milk-ease); }
+html .newsroom .news-subscribe-link:hover { filter: none; background: var(--milk-cobalt-deep); }
+html .newsroom .news-subscribe-link:hover::after { transform: translateX(3px); }
+html .newsroom .news-dossiers-link { margin: 0; font-size: 14px; }
+
+/* ---------- Front page ---------- */
+html .newsroom .front-page { padding-block: clamp(28px, 3.5vw, 56px); }
+html .newsroom .lead-visual { overflow: hidden; border-radius: var(--milk-radius-l); }
+html .newsroom .lead-visual img { transition: transform .8s var(--milk-ease); }
+html .newsroom .lead-visual:hover img { transform: scale(1.03); }
+html .newsroom :is(.lead-kicker, .desk-kicker) { color: var(--milk-accent); }
+html .newsroom .lead-copy h2 { font-weight: 800; letter-spacing: -.01em; }
+html .newsroom .lead-meta span { padding: 3px 11px; border-radius: 999px; background: var(--milk-card); font: 500 12px/1.5 var(--font-sans); }
+html .newsroom .editorial-link { border-radius: 999px; padding-inline: 18px; gap: 10px; color: var(--milk-ink); }
+html .newsroom .editorial-link::after { content: "→"; color: var(--milk-accent); transition: transform .25s var(--milk-ease); }
+html .newsroom .editorial-link:hover { border-color: var(--milk-accent); }
+html .newsroom .editorial-link:hover::after { transform: translateX(3px); }
+html .newsroom :is(.deck-thumb, .desk-lead-image, .brief-thumb) { overflow: hidden; border-radius: 16px; }
+html .newsroom .desk-lead-image { border-radius: var(--milk-radius); }
+html .newsroom :is(.deck-thumb, .brief-thumb):empty { background: var(--milk-soft); }
+
+/* ---------- One edition, then a desk per section ---------- */
+html .newsroom .edition-head { align-items: center; padding-bottom: 18px; border-bottom: 2px solid var(--milk-ink); }
+html .newsroom .edition-head .news-date-trigger { font: 900 clamp(26px, 2.6vw, 38px)/1.3 var(--milk-display); }
+html .newsroom .edition-head p { font-size: 14px; }
+html .newsroom .desk { margin-top: clamp(28px, 3vw, 44px); border-top: 0; }
+html .newsroom .desk-head { min-height: 0; padding-bottom: 14px; border-bottom: 1px solid var(--milk-rule); }
+html .newsroom .desk-head h3 { font: 900 clamp(24px, 2.2vw, 32px)/1.3 var(--milk-display); }
+html .newsroom .desk-head strong { font: italic 500 clamp(30px, 3vw, 44px)/1 var(--milk-latin); color: var(--milk-accent); }
+html .newsroom .brief-no,
+html .newsroom .flash-number { font: italic 500 18px/1.4 var(--milk-latin); color: var(--milk-accent); }
+
+/* ---------- Pagination, notes, empty states ---------- */
+html .newsroom .news-pagination { font: 600 13px/1.4 var(--font-sans); border-bottom: 0; }
+html .newsroom .news-pagination > div a,
+html .newsroom .news-pagination > a { border-radius: 999px; }
+html .newsroom .news-pagination > a { padding-inline: 20px; }
+html .newsroom .news-pagination > div a[aria-current] { background: var(--milk-cobalt); color: var(--milk-white); border-color: var(--milk-cobalt); }
+html .newsroom .news-method-note { width: auto; margin: 0 var(--news-gutter); padding: clamp(24px, 3vw, 40px); grid-template-columns: 140px minmax(0, 820px); border-radius: var(--milk-radius-l); background: var(--milk-soft); }
+html .newsroom .news-method-note span { font: 900 18px/1.6 var(--milk-display); letter-spacing: 0; color: var(--milk-ink); }
+html .newsroom .news-state h2 { font: 900 clamp(28px, 3.4vw, 44px)/1.3 var(--milk-display); }
+
+/* ---------- Article ---------- */
+html .article-page .article-back { gap: 8px; padding: 0 18px 0 14px; border-radius: 999px; }
+html .article-page .article-back::before { content: "←"; }
+html .article-page .article-kicker { color: var(--milk-accent); }
+html .article-page .article-header h1 { font-weight: 800; letter-spacing: -.01em; }
+html .article-page .article-byline i { padding: 3px 11px; border-radius: 999px; background: var(--milk-card); font-weight: 500; }
+html .article-page .article-reading-start { margin-top: 24px; padding: clamp(18px, 2vw, 26px); border: 0; border-radius: var(--milk-radius); background: var(--milk-soft); }
+html .article-page .article-hero-image > .story-image-frame { overflow: hidden; border-radius: 14px; }
+html .article-page .article-takeaway-label { color: var(--milk-accent); }
+html .article-page .article-body h2 { font-weight: 800; }
+html .article-page .article-source { border-radius: var(--milk-radius); }
+html .article-page .article-reading-nav > a { border-radius: var(--milk-radius); background: var(--milk-card); transition: border-color .2s, transform .3s var(--milk-ease); }
+html .article-page .article-reading-nav > a:hover { transform: translateY(-3px); }
+
+@media (max-width: 780px) {
+  html .newsroom .news-toolbar { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  html .newsroom .news-day-controls { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; grid-column: 1; grid-row: 1; }
+  html .newsroom .news-day-controls > div { min-width: 0; }
+  html .newsroom .news-day-controls .news-date-trigger { justify-content: center; width: 100%; white-space: nowrap; }
+  html .newsroom .news-category-menu { grid-column: 1; grid-row: 2; justify-self: stretch; }
+  html .newsroom .news-method-note { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html .newsroom .lead-visual img { transition: none; }
+}

@@ -110,3 +110,26 @@
 .subscription-robot-fields .subscription-field:first-child { margin-bottom: 8px; }
 .subscription-field-help { font-size: 12px; color: var(--theme-muted); margin: 0; }
 @media (max-width: 380px) { .subscription-channels > div { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Milk skin (shared tokens from public/theme/milk.css) ---------- */
+.subscription-page { padding-top: clamp(32px, 4vw, 64px); }
+.subscription-page.subscription-apply-page { max-width: none; padding-inline: var(--milk-gutter); }
+.subscription-page header > h1 { font: 900 clamp(34px, 4.2vw, 64px)/1.18 var(--milk-display); letter-spacing: -.01em; margin-top: 16px; }
+.subscription-intro h1 > span { color: var(--milk-accent); }
+.subscription-intro > p:not(.milk-intro-kicker) { font-size: 16px; line-height: 1.95; }
+.subscription-benefits span { padding: 5px 14px; border-radius: 999px; background: var(--milk-accent-soft); color: var(--milk-accent); }
+.subscription-preview { padding: 24px; border: 0; border-radius: var(--milk-radius-l); background: var(--milk-soft); }
+.subscription-preview h2 { font: 900 22px/1.5 var(--milk-display); }
+.subscription-preview li { border-left-color: var(--milk-accent); }
+.subscription-naiwa { display: block; width: clamp(120px, 11vw, 168px); height: auto; margin: 28px 0 0 auto; filter: drop-shadow(0 12px 14px #0b143626); }
+.subscription-card { border-radius: var(--milk-radius-l); padding: clamp(24px, 2.6vw, 40px); box-shadow: 0 20px 60px #0b14360f; }
+.subscription-card h2 { font: 900 24px/1.4 var(--milk-display); }
+.subscription-review-badge { background: var(--milk-butter); color: var(--milk-night); border-color: transparent; }
+.subscription-page input:not([type=checkbox]):not([type=radio]), .subscription-page textarea, .subscription-page select { border-radius: 14px; }
+.subscription-categories label, .subscription-channels label, .subscription-recipient { border-radius: 16px; }
+.subscription-page button { border-radius: 999px; }
+.subscription-page button.subscription-primary { background: var(--milk-cobalt); color: var(--milk-white); }
+.subscription-page button.subscription-primary:hover:not(:disabled) { background: var(--milk-cobalt-deep); }
+.subscription-topic-summary li { border-radius: 999px; padding-inline: 14px; }
+.subscription-applications article { border-top-color: var(--milk-rule); }
+@media (max-width: 900px) { .subscription-naiwa { display: none; } }

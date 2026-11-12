@@ -1,0 +1,68 @@
+/* Noon skin for the algorithm atlas. Teaching widgets and their layout stay in
+ * cinematic-arsenal.css; this file re-dresses the frame in the shared milk
+ * language (public/theme/milk.css): display headings, pill controls, round cards. */
+
+/* Chapter index under the masthead */
+html .cinematic-arsenal .arsenal-index { min-height: 60px; margin: 0; padding: 0 var(--milk-gutter); border-bottom: 1px solid var(--milk-rule); background: color-mix(in srgb, var(--milk-paper) 92%, transparent); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+html .cinematic-arsenal .arsenal-index > span { font: 900 16px/1 var(--milk-display); letter-spacing: 0; color: var(--milk-ink); }
+html .cinematic-arsenal .arsenal-index > div { gap: 4px; }
+html .cinematic-arsenal .arsenal-index a { min-height: 40px; padding: 0 14px; border-radius: 999px; font-size: 14px; transition: background .2s, color .2s; }
+html .cinematic-arsenal .arsenal-index a:hover { background: var(--milk-soft); color: var(--milk-accent); }
+
+/* Hero: the same opening as every work page, with the atlas art beside it */
+html .cinematic-arsenal .arsenal-hero { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 32px clamp(32px, 5vw, 96px); padding: clamp(40px, 5vw, 88px) var(--milk-gutter) clamp(40px, 4vw, 72px); border-bottom: 1px solid var(--milk-rule); }
+html .cinematic-arsenal .arsenal-hero h1 { margin: clamp(12px, 1.4vw, 20px) 0 0; padding: 0; font: 900 clamp(44px, 5.6vw, 92px)/1.12 var(--milk-display); letter-spacing: -.01em; }
+html .cinematic-arsenal .arsenal-hero h1 em { font-style: normal; color: var(--milk-accent); }
+html .cinematic-arsenal .arsenal-lead { max-width: 30em; margin: clamp(14px, 1.6vw, 22px) 0 clamp(24px, 2.6vw, 36px); font-size: clamp(15px, 1.15vw, 18px); line-height: 1.9; color: var(--milk-dim); }
+html .cinematic-arsenal .arsenal-hero .milk-button { color: var(--milk-white); }
+html .cinematic-arsenal .arsenal-practice-link { display: flex; align-items: center; min-height: 44px; margin-top: 14px; font-size: 14px; color: var(--milk-accent); }
+html .cinematic-arsenal .arsenal-intro-art { aspect-ratio: 1.6; border-radius: var(--milk-radius-l); box-shadow: 0 30px 70px #0b143633; }
+
+/* Directory of the four algorithms */
+html .cinematic-arsenal .algorithm-directory { padding: clamp(36px, 4vw, 72px) var(--milk-gutter); }
+html .cinematic-arsenal .algorithm-directory .arsenal-eyebrow { font-size: 14px; letter-spacing: 0; color: var(--milk-dim); }
+html .cinematic-arsenal .algorithm-directory h2 { margin-top: 10px; font: 900 clamp(30px, 3.4vw, 52px)/1.2 var(--milk-display); }
+html .cinematic-arsenal .algorithm-directory input { width: 300px; padding-inline: 18px; border-color: var(--milk-rule); border-radius: 999px; }
+html .cinematic-arsenal .algorithm-directory-grid { gap: clamp(14px, 1.6vw, 24px); }
+html .cinematic-arsenal .algorithm-directory-grid article { display: flex; flex-direction: column; border: 1px solid var(--milk-rule); border-radius: var(--milk-radius-l); background: var(--milk-card); transition: transform .35s var(--milk-ease), box-shadow .35s var(--milk-ease); }
+html .cinematic-arsenal .algorithm-directory-grid article:hover { transform: translateY(-4px); box-shadow: 0 18px 44px #0b14361f; }
+html .cinematic-arsenal .algorithm-directory-grid article > div { display: flex; flex-direction: column; flex: 1; padding: clamp(20px, 1.8vw, 28px); }
+html .cinematic-arsenal .algorithm-directory-grid span { align-self: start; padding: 3px 12px; border-radius: 999px; background: var(--milk-accent-soft); color: var(--milk-accent); font-size: 12.5px; }
+html .cinematic-arsenal .algorithm-directory-grid h3 { margin: 14px 0 8px; font-size: clamp(24px, 2vw, 30px); font-weight: 800; }
+html .cinematic-arsenal .algorithm-directory-grid p { margin: 0 0 12px; color: var(--milk-dim); }
+html .cinematic-arsenal .algorithm-directory-grid small { margin-bottom: 14px; }
+html .cinematic-arsenal .algorithm-directory-grid a { justify-content: center; min-height: 42px; margin-top: 8px; border: 1px solid var(--milk-rule); border-radius: 999px; text-decoration: none; color: var(--milk-ink); }
+html .cinematic-arsenal .algorithm-directory-grid a:hover { border-color: var(--milk-accent); color: var(--milk-accent); }
+html .cinematic-arsenal .algorithm-directory-grid a:last-child { margin-top: auto; border-color: transparent; background: var(--milk-cobalt); color: var(--milk-white); }
+html .cinematic-arsenal .algorithm-directory-grid a:nth-last-child(2) { margin-top: auto; }
+html .cinematic-arsenal .algorithm-directory-grid a:nth-last-child(2) + a { margin-top: 8px; }
+html .cinematic-arsenal .algorithm-directory-grid a:last-child:hover { background: var(--milk-cobalt-deep); color: var(--milk-white); }
+html .cinematic-arsenal .algorithm-empty { border-radius: var(--milk-radius); }
+
+/* Chapters */
+html .cinematic-arsenal .arsenal-section { border-top: 0; }
+html .cinematic-arsenal .arsenal-section + .arsenal-section,
+html .cinematic-arsenal .algorithm-directory + .arsenal-section { border-top: 1px solid var(--milk-rule); }
+html .cinematic-arsenal .arsenal-section-head span { display: inline-flex; align-items: baseline; gap: 12px; font: 500 13px/1.4 var(--milk-mono); letter-spacing: .08em; color: var(--milk-accent); }
+html .cinematic-arsenal .arsenal-section-head span::after { content: ""; width: 56px; height: 1px; background: currentColor; opacity: .5; align-self: center; }
+html .cinematic-arsenal :is(.big-question h2, .math-heading h2, .loadout-title h2) { font: 900 clamp(30px, 3.4vw, 52px)/1.3 var(--milk-display); letter-spacing: -.01em; }
+html .cinematic-arsenal :is(.big-question h2, .math-heading h2, .loadout-title h2) em { font-style: normal; color: var(--milk-accent); }
+html .cinematic-arsenal .marker-note { font: italic 500 18px/1.5 var(--font-sans); color: var(--milk-accent); }
+
+/* Teaching consoles: same rounding as every other card on the site */
+html .cinematic-arsenal :is(.legacy-lab, .lattice-lab, .weapon-console, .crypto-demo, .flow-detail, .grover-note, .implementation-notes, .parameter-bench, .final-map, .arsenal-sources) { border-radius: var(--milk-radius-l); }
+html .cinematic-arsenal :is(.legacy-tabs, .weapon-tabs, .job-switch, .attack-flow, .algorithm-flow) button { border-radius: 14px; }
+html .cinematic-arsenal .silver-button { border-radius: 999px; background: var(--milk-cobalt); border-color: var(--milk-cobalt); color: var(--milk-white); }
+
+@media (max-width: 1000px) {
+  html .cinematic-arsenal .arsenal-hero { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 680px) {
+  html .cinematic-arsenal .arsenal-index { overflow-x: auto; }
+  html .cinematic-arsenal .algorithm-directory input { width: 100%; }
+  html .cinematic-arsenal .algorithm-directory-grid article { display: grid; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html .cinematic-arsenal .algorithm-directory-grid article { transition: none; }
+  html .cinematic-arsenal .algorithm-directory-grid article:hover { transform: none; }
+}

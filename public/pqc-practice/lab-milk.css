@@ -1,0 +1,42 @@
+/* Laboratory frame in the shared milk language (/theme/milk.css).
+ * Only the frame changes: heading, panels' rounding, buttons and the footer.
+ * Workbench layout, data flow and the WASM runtimes are untouched; the
+ * workbench keeps the system sans so code, keys and numbers stay legible. */
+
+/* Heading: the noon chapter of the day, with Naiwa holding the key */
+html body .main { padding-bottom: 0; }
+html body .page-heading { align-items: end; gap: 24px clamp(24px, 4vw, 80px); padding: clamp(32px, 4vw, 64px) 0 clamp(24px, 2.6vw, 36px); border-bottom: 1px solid var(--milk-rule); }
+html body .page-heading .milk-time { margin: 0; }
+html body .page-heading .milk-intro-kicker { margin: 0; }
+html body .page-heading h1 { margin: clamp(10px, 1.2vw, 16px) 0 0; font: 900 clamp(36px, 4vw, 64px)/1.15 var(--milk-display); letter-spacing: -.01em; }
+html body .page-heading h1 em { color: var(--milk-accent); font-style: normal; }
+html body .page-heading > div > p:not(.milk-time):not(.milk-intro-kicker) { max-width: 40em; margin: clamp(12px, 1.4vw, 18px) 0 0; font-size: 15px; line-height: 1.9; color: var(--milk-dim); }
+html body .page-heading .heading-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: clamp(16px, 1.8vw, 24px); padding: 0; }
+html body .page-heading .heading-links a { min-height: 40px; padding: 0 16px; border: 1px solid var(--milk-rule); border-radius: 999px; background: var(--milk-card); font-size: 13.5px; color: var(--milk-ink); }
+html body .page-heading .heading-links a:hover { border-color: var(--milk-accent); color: var(--milk-accent); }
+.lab-naiwa { flex-shrink: 0; align-self: end; width: clamp(108px, 9vw, 150px); height: auto; margin-bottom: calc(-1 * clamp(24px, 2.6vw, 36px)); filter: drop-shadow(0 12px 14px #0b143626); pointer-events: none; }
+
+/* Panels: the same rounding as cards everywhere else */
+html body :is(.library-sidebar, .configuration, .dialogue .actor, .kex-peer, .result-panel, .report-panel, .catalog-detail, .hash-workbench, .candidate-workbench, .audit-legend, .audit-table-scroll, .channel, .kex-channel) { border-radius: var(--milk-radius); }
+html body .actor-head { border-radius: var(--milk-radius) var(--milk-radius) 0 0; }
+html body :is(.material, .message-input, .secret-box, .verification-card, .packet, .channel .route, .kex-channel .route) { border-radius: 14px; }
+html body .sidebar-top h2,
+html body .lab-heading h2,
+html body .candidate-work-heading h2 { font-family: var(--milk-display); font-weight: 900; letter-spacing: 0; }
+html body .lab-heading h2 { font-size: clamp(24px, 2vw, 30px); }
+
+/* Controls: pills, cobalt for the next step */
+html body :is(.primary, .actor-right .primary, .send-button, .quiet-button) { border-radius: 999px; }
+html body :is(.primary, .actor-right .primary, .primary.is-next, .send-button.is-next, .kex-channel .send-button.is-next) { background: var(--milk-cobalt); border-color: var(--milk-cobalt); color: var(--milk-white); }
+html body :is(.primary, .actor-right .primary, .primary.is-next, .send-button.is-next):hover:not(:disabled) { background: var(--milk-cobalt-deep); border-color: var(--milk-cobalt-deep); color: var(--milk-white); }
+html body :is(.configuration select, .sidebar-body > input, .catalog-sidebar input, .audit-filters :is(input, select)) { border-radius: 999px; }
+html body .sidebar-toggle { border-radius: 999px; }
+html body .library-sidebar button[aria-current], html body .library-sidebar button.is-active { border-radius: 14px; }
+
+/* The shared footer sits directly under the workbench */
+html body .milk-footer { margin-top: clamp(64px, 7vw, 112px); }
+
+@media (max-width: 900px) {
+  .lab-naiwa { display: none; }
+  html body .page-heading { flex-direction: column; align-items: start; }
+}

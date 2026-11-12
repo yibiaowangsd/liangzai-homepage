@@ -3,11 +3,11 @@ import type { Metadata } from "next";
 import StoryImage from "./StoryImage";
 import NewsDatePicker from "./NewsDatePicker";
 import NewsCategoryMenu from "./NewsCategoryMenu";
+import PageIntro from "../milk/PageIntro";
 import { newsListingHref, newsStoryHref, parseNewsContext, type NewsSearchParams } from "./navigation";
 import {
   categoryLabels,
   coreCategories,
-  formatEditionDate,
   getNewsEditions,
   parseTags,
   type NewsItem,
@@ -182,12 +182,22 @@ export default async function NewsPage({
 
   return (
     <main id="main-content" className="newsroom">
-      <section className="news-toolbar" aria-label="前沿新闻导航">
-        <div className="news-toolbar-title">
-          <h1>前沿新闻</h1>
+      <PageIntro
+        time="08:10"
+        kicker="早 · 每天这个点更新"
+        title="前沿新闻"
+        naiwa={{ src: "/assets/naiwa/read.webp", width: 820, height: 1230, alt: "坐着读报纸的奶蛙" }}
+        meta={<>
+          <Link className="news-subscribe-link" href={category ? `/news/subscribe?category=${encodeURIComponent(category)}` : "/news/subscribe"}>订阅日报</Link>
+          <Link href="/news/weekly">阅读周报</Link>
           <Link href="/topics" className="news-dossiers-link">按专题追踪进展</Link>
-        </div>
-        {!failed && selectedDate && (
+        </>}
+      >
+        <p>后量子算法、迁移与协议，标准、网络安全、AI 与 NGCC 公钥征集。每条都回到原始来源核实并标明日期；周五另有一份七天周报。</p>
+      </PageIntro>
+
+      <section className="news-toolbar" aria-label="前沿新闻导航">
+        {!failed && selectedDate ? (
           <nav className="news-day-controls" aria-label="本期日期与日刊切换">
             <Link href={makeHref(Math.max(meta.page - 1, 1))} aria-label="查看较新一天" aria-disabled={meta.page <= 1} tabIndex={meta.page <= 1 ? -1 : undefined}>←</Link>
             <div>
@@ -195,7 +205,7 @@ export default async function NewsPage({
             </div>
             <Link href={makeHref(Math.min(meta.page + 1, meta.totalPages))} aria-label="查看较早一天" aria-disabled={meta.page >= meta.totalPages} tabIndex={meta.page >= meta.totalPages ? -1 : undefined}>→</Link>
           </nav>
-        )}
+        ) : <span />}
         <NewsCategoryMenu className="news-category-menu">
           <summary>
             <span>{category ? categoryLabels[category] : "全部新闻"}</span>
@@ -218,12 +228,6 @@ export default async function NewsPage({
         </NewsCategoryMenu>
       </section>
 
-      <section className="news-subscription-banner" aria-labelledby="news-subscription-title">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 6 9 7 9-7" /></svg>
-        <div><h2 id="news-subscription-title">让每天的前沿，直接抵达邮箱</h2><p>日报每日 08:10 更新 · 周五另有周报 · 北京时间 · <Link href="/news/weekly">阅读周报</Link></p></div>
-        <Link className="news-subscribe-link" href={category ? `/news/subscribe?category=${encodeURIComponent(category)}` : "/news/subscribe"}>订阅日报 <span aria-hidden="true">→</span></Link>
-      </section>
-
       {failed ? (
         <section className="news-state">
           <h2>新闻暂时无法载入</h2>
@@ -237,12 +241,6 @@ export default async function NewsPage({
       ) : (
         <>
           {heroLead && category !== "flash" && <section className="front-page">
-            <div className="edition-label">
-              <NewsDatePicker key={newest.date} date={newest.date} dates={availableDates} category={category} variant="stamp" />
-              <strong>{formatEditionDate(newest.date)}</strong>
-              <span>{newest.total} 条新闻</span>
-            </div>
-
             <article className="lead-story">
               <Link
                 className="lead-visual"

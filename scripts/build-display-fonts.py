@@ -19,13 +19,17 @@ source = Path(sys.argv[1])
 out = root / "public/assets/fonts"
 out.mkdir(parents=True, exist_ok=True)
 
-scanned = [root / "app/QuantumHome.tsx", root / "app/experience/SiteChrome.tsx", root / "app/experience/destinations.ts"]
-for folder in ("milk", "about", "archive", "models", "storybook", "studio"):
+scanned = [root / "app/QuantumHome.tsx", root / "app/experience/SiteChrome.tsx", root / "app/experience/destinations.ts",
+           root / "news/edition-policy.json", root / "public/pqc-practice/index.html", root / "public/pqc-practice/audit.html"]
+# Every page that uses the display serif for text the site writes itself.
+# Data files (topic-index.json, research/*.json) are deliberately not scanned:
+# titles from data use the system sans (data-source="dynamic").
+for folder in ("milk", "about", "archive", "models", "storybook", "studio", "news", "topics", "research", "wo", "pqc-arsenal"):
     scanned += sorted((root / "app" / folder).rglob("*.ts*"))
 text = "".join(path.read_text(encoding="utf8") for path in scanned)
 chars = {c for c in text if ord(c) > 0x2000 and not c.isspace()}
 chars |= {chr(c) for c in range(0x20, 0x7F)}
-chars |= set("，。、；：？！“”‘’（）《》〈〉—…·×∞0123456789")
+chars |= set("，。、；：？！“”‘’（）《》〈〉—…·×∞0123456789年月日周一二三四五六七八九十")
 
 def save(font, name, unicodes, features):
     options = subset.Options()
