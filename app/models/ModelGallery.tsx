@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { useExperience } from "../experience/Motion";
 import type { ModelMode, ModelView } from "../experience/three/character-assets";
 import type { GalleryScene } from "./gallery-scene";
-const labels = { liangzai: "量仔", nailong: "奶龙", duo: "双人合照" };
+const labels = { liangzai: "量仔", nailong: "奶蛙", duo: "双人合照" };
 export default function ModelGallery() {
     const canvas = useRef<HTMLCanvasElement>(null), scene = useRef<GalleryScene | null>(null);
     const { enabled } = useExperience();

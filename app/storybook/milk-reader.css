@@ -1,0 +1,39 @@
+/* Bedtime skin for the story reader: lights off, one lamp on the page.
+ * Layout and controls stay in cinema-reader.css; this file only re-dresses them. */
+html .cinema-reader { --studio-ink: var(--milk-white); --studio-muted: #b9c4f0; --studio-rule: #ffffff26; --studio-blue: var(--milk-butter); padding: 0 var(--milk-gutter) 0; background: var(--milk-night); color: var(--milk-white); }
+html .cinema-reader :focus-visible { outline: 2px solid var(--milk-butter); outline-offset: 4px; }
+html .cinema-reader .reader-bar { border-color: #ffffff26; font-size: 12px; }
+html .cinema-reader .reader-back { font: 900 24px/1.2 var(--milk-display); letter-spacing: 0; color: var(--milk-white); text-decoration: none; }
+html .cinema-reader .reader-bar > span { font: italic 400 17px/1.2 var(--milk-latin); letter-spacing: 0; color: var(--milk-butter); }
+html .cinema-reader .reader-bar button { min-height: 44px; border-color: #ffffff59; color: var(--milk-white); background: transparent; }
+html .cinema-reader .reader-bar button:hover { background: #ffffff1a; }
+html .cinema-reader .story-contents { background: var(--milk-night-soft); border-color: #ffffff26; color: var(--milk-white); }
+html .cinema-reader .story-contents button { color: #dfe5ff; }
+html .cinema-reader .story-contents button[aria-current] { color: var(--milk-butter); }
+html .cinema-reader .reader-stage { border: 0; border-radius: 32px; overflow: hidden; background: var(--milk-white); color: var(--milk-night); box-shadow: 0 40px 90px #00000080; }
+html .cinema-reader .reader-copy { color: var(--milk-night); }
+html .cinema-reader .reader-copy .eyebrow { font: 12px/1.5 var(--milk-mono); letter-spacing: .12em; color: var(--milk-cobalt); }
+html .cinema-reader .reader-copy h1 { font: 900 clamp(34px, 3.6vw, 60px)/1.2 var(--milk-display); letter-spacing: -.01em; color: var(--milk-night); }
+html .cinema-reader .reader-body { font-size: 16px; line-height: 2.05; color: #33405f; }
+html .cinema-reader .reader-copy blockquote { font: 900 clamp(18px, 1.5vw, 22px)/1.8 var(--milk-display); border-left: 3px solid var(--milk-butter); color: var(--milk-cobalt-deep); }
+html .cinema-reader .reader-copy .silver-button { display: inline-flex; align-items: center; gap: 12px; min-height: 52px; padding: 14px 28px; border: 0; border-radius: 999px; background: var(--milk-cobalt); color: var(--milk-white); font: 650 15px/1.2 var(--font-sans); box-shadow: none; cursor: pointer; text-decoration: none; }
+html .cinema-reader .reader-copy .silver-button:hover { background: var(--milk-cobalt-deep); color: var(--milk-white); }
+html .cinema-reader .reader-caption { font-family: var(--milk-mono); }
+html .cinema-reader .reader-controls { margin-inline: calc(-1 * var(--milk-gutter)); padding-inline: var(--milk-gutter); border-color: #ffffff26; background: var(--milk-night); color: var(--milk-white); }
+html .cinema-reader .reader-audio button, html .cinema-reader .reader-pagination button { color: var(--milk-white); font-size: 14px; }
+html .cinema-reader .audio-icon { border-color: var(--milk-butter); background: var(--milk-butter); color: var(--milk-night); }
+html .cinema-reader .reader-audio > span { font-size: 13px; color: #b9c4f0; }
+html .cinema-reader .reader-pagination { font-size: 14px; }
+html .cinema-reader .reader-pagination b { font: italic 500 22px/1 var(--milk-latin); color: var(--milk-butter); }
+html .cinema-reader .reader-timeline button { color: #b9c4f0; }
+html .cinema-reader .reader-timeline button > span { border-radius: 10px; }
+html .cinema-reader .reader-timeline [aria-current] { color: var(--milk-butter); }
+html .cinema-reader .reader-note { border-color: #ffffff26; color: #8f9cd6; padding-bottom: 40px; }
+
+/* The listener: Naiwa follows along and is asleep by page nine. */
+.reader-listener { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.reader-listener img { width: auto; height: 74px; margin-block: -14px; filter: drop-shadow(0 8px 10px #00000066); }
+.reader-listener[data-asleep="true"] img { height: 54px; margin-block: -4px; }
+.reader-listener span { font-size: 13px; line-height: 1.5; color: #b9c4f0; }
+.reader-listener b { display: block; font: 900 15px/1.4 var(--milk-display); color: var(--milk-white); }
+@media (max-width: 900px) { .reader-listener span { display: none; } }

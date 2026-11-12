@@ -6,7 +6,7 @@ import { spawnSync } from "node:child_process";
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
 
-test("renders the news homepage with the integrated practice destination", async () => {
+test("renders the homepage: Naiwa, the latest dispatch and the practice destination", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -43,9 +43,13 @@ test("renders the news homepage with the integrated practice destination", async
   }
   assert.match(html, /进入密码实验室/);
   assert.match(html, /打开显示设置/);
-  assert.match(html, /看见技术的新进展/);
-  assert.match(html, /播放序幕/);
-  assert.match(html, /cinema-entrance/);
+  assert.match(html, /喂自己/);
+  assert.match(html, /奶蛙/);
+  assert.match(html, /\/assets\/naiwa\/sit\.webp/);
+  assert.match(html, /戳一下奶蛙，换一个问题/);
+  assert.match(html, /milk-gauge/);
+  assert.match(html, /嘘，奶蛙睡着了/);
+  assert.doesNotMatch(html, /播放序幕|cinema-entrance|奶娃/);
   assert.match(html, /href="\/models"/);
   assert.doesNotMatch(html, /href="\/observatory"/);
   assert.match(html, /最新简报/);
@@ -91,6 +95,7 @@ test("renders the interactive storybook route", async () => {
   assert.match(html, /共 11 页/);
   assert.match(html, /Kyber 与 Aigis/);
   assert.match(html, /合体绝技靓龙/);
+  assert.match(html, /奶蛙在听/);
 });
 
 test("renders the redesigned character archive", async () => {
@@ -107,6 +112,9 @@ test("renders the redesigned character archive", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /角色档案 001/);
+  assert.match(html, /角色档案 002/);
+  assert.match(html, /id="naiwa"/);
+  assert.match(html, /\/assets\/naiwa\/stand\.webp/);
   assert.match(html, /密码图鉴/);
 });
 
@@ -193,7 +201,7 @@ test("models live in their own SSR-safe gallery with independent controls", asyn
     { waitUntil() {}, passThroughOnException() {} });
   assert.equal(response.status, 200);
   const html = await response.text();
-  for (const label of ["模型鉴赏", "量仔", "奶龙", "双人合照", "正面", "侧面", "背面", "自动旋转", "重置视角", "放大模型", "缩小模型"])
+  for (const label of ["模型鉴赏", "量仔", "奶蛙", "双人合照", "正面", "侧面", "背面", "自动旋转", "重置视角", "放大模型", "缩小模型"])
     assert.ok(html.includes(label), label);
   assert.doesNotMatch(html, /长按唤醒|轻点量仔三次/);
 });
