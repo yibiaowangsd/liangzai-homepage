@@ -6,7 +6,23 @@ import { spawnSync } from "node:child_process";
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
 
-test("renders the news homepage with the integrated practice destination", async () => {
+test("renders the news homepage with the integrated practice destination", async (t) => {
+  const requests = [];
+  // Install before importing the Worker: vinext captures global fetch on first
+  // use. An actual fixture also proves HomeDispatch did not hide a fetch error.
+  t.mock.method(globalThis, "fetch", async (input, init) => {
+    const url = new URL(input instanceof Request ? input.url : String(input));
+    const method = init?.method ?? (input instanceof Request ? input.method : "GET");
+    requests.push(`${method} ${url.origin}${url.pathname}`);
+    assert.equal(method, "GET");
+    assert.equal(url.origin, "https://api.wangyibiao.com");
+    assert.equal(url.pathname, "/api/news/featured");
+    return Response.json({ edition_date: "2026-10-02", data: [{
+      id: 1, slug: "homepage-fixture", title: "首页离线新闻样本", summary: "确定性的首页渲染回归数据。",
+      category: "protocol", tags: null, source_name: "测试来源", source_url: "https://example.test/source",
+      cover_image: null, published_at: "2026-10-02T07:00:00Z",
+    }] });
+  });
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -29,6 +45,9 @@ test("renders the news homepage with the integrated practice destination", async
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
   const html = await response.text();
+  assert.deepEqual(requests, ["GET https://api.wangyibiao.com/api/news/featured"]);
+  assert.match(html, /首页离线新闻样本/);
+  assert.doesNotMatch(html, /暂时无法读取最新简报/);
   assert.match(html, developmentPreviewMeta);
   assert.match(html, /量仔小传/);
   assert.match(html, /星际漫游/);

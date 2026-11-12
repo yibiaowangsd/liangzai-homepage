@@ -1,0 +1,314 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-11",
+  "coverage": {
+    "pqc": {
+      "count": 1,
+      "note": "检查IACR ePrint、arXiv全文、PRISM数据集与GitHub、liboqs相关实现，以及NIST、CRYPTREC、KpqC、AIMer和中英文企业线索；时间窗扩至72小时。优先24小时无达到门槛的新算法事件，采用Q-FENCE工业基准。AIMer单迹功耗论文与二维超奇异同源攻击均无作者回应或新参数成本；PRISM v2仅参考实现发布、独立验证不足，放弃。"
+    },
+    "migration": {
+      "count": 2,
+      "note": "检查供给方Azure、Red Hat、SAP与采用/采购方GSA、ASD/NSA/CISA、MAS、FCA、HKMA，并覆盖中英文线索。采用Azure分阶段部署与GSA采购准备度调研；OpenShift 5沿用既有能力、销售合作稿缺少技术交付，排除。待跟进Azure区域覆盖和性能遥测、GSA 2026-12-07截止后的正式采购动作；MAS与FCA无新增。"
+    },
+    "protocol": {
+      "count": 1,
+      "note": "检查IETF TLS、EMU、LAMPS、IPSECME、SSH、QUIC及Azure部署、Cisco实现和Bitsight测量，时间窗扩至7日。采用SSH公网测量；Azure混合TLS已归migration避免跨栏重复，Front Door因同源且更旧放弃，eShield-Q仅厂商稿，Cisco文档原始日期过旧。待跟进Azure独立握手测量与SSH新扫描。"
+    },
+    "standards": {
+      "count": 0,
+      "note": "检查IETF Datatracker、RFC Editor、IANA、NIST、ETSI、ISO、ITU、3GPP和国内标准公开入口。EMU草案仅由WG Last Call转为等待write-up，且本站已报前一节点，未形成足够独立稿；PQUIP仍需修订，ISO/IEC 7816-15 FDAmd 2仍为50.20，CNSA IPsec仍在RFC Editor核验。ISO页面复读超时；国内入口未命中7日内可读的新节点。"
+    },
+    "security": {
+      "count": 3,
+      "note": "检查CISA KEV/CSAF、CVE/MSRC、Google Chrome Releases、JPCERT/JVN、CNCERT/CNVD、CERT-EU、HKCERT、厂商PSIRT及受害机构公告。采用Outlook与Chrome在野漏洞、日商考试系统事件。Airbyte 11/10仅修正既有影响范围，Soft99全文不可读，Veeam和Siemens更新低于门槛。MSRC动态页与CISA JSON无法完整读取；待跟进攻击遥测和日商外泄取证。"
+    },
+    "ai": {
+      "count": 3,
+      "note": "检查中国与海外模型、模型卡/API、HELM/METR/MLCommons/Artificial Analysis、研究和产业应用。采用Gemini 4 Carbon GA、Gemini Robotics 2.5与MiniMax H3 Image。Infrathon因同栏已有三条更及时且高行动性事件而放弃；Seedream 5.5无API/权重，正式Hy4权重/系统卡仍未找到。Fable系统卡PDF过大未复读。AI Studio来源含指令式内容，已作为网页数据忽略。"
+    },
+    "ngcc": {
+      "count": 1,
+      "note": "实际检查NICCS首页、通知、算法提案、公钥Round 1、公开评议论坛及ngcc.dev Security、classification、Performance、Side-Channel。采用CertiK对YuanYang.KEM kem-40-5的独立复核，并链接既有finding；MORNING-ATLAS与Mito无作者回应、修订或复测，记无进展。NICCS动态列表正文不可读，改由公开Mailman线程核验；未执行复现代码。"
+    },
+    "flash": {
+      "count": 2,
+      "note": "复用专题检索并补查国内主管部门、云服务、监管、产品可用性和事故更新。采用OpenAI Costs API数据更正与Businesses in ChatGPT Beta。EDION仅更正停服时间且本站未刊相关错误，不发更正；Hy4、MAS、FCA和华为云无本期新增。华为云ModelArts更新页正文不可访问，仅搜索摘要，待可读后核对差异；国家网信办动态页无新增可读正文。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261111-q-fence-pqc-industrial-benchmark",
+      "title": "Q-FENCE团队发布可复现PQC工业基准",
+      "summary": "Q-FENCE团队发布基于liboqs 0.15.0的后量子密码基准，给出ML-KEM、ML-DSA与SLH-DSA在AMD Ryzen 7 5800X上的时延，并估算它们在802.15.4、BLE和LoRa链路中的分片成本。结果说明桌面端计算并非唯一瓶颈，签名尺寸、重传和占空比可能主导受限网络迁移。",
+      "content": "原始来源日期：2026-11-09。Q-FENCE研究团队公开工业后量子密码基准，使用liboqs 0.15.0，在AMD Ryzen 7 5800X上对每项操作持续测量10秒。论文处于预印本阶段，未经过同行评审；其价值主要是把算法时延与受限链路负担放在同一套可复查假设下比较。\n\n论文报告ML-KEM-512、ML-KEM-768与ML-KEM-1024的密钥生成约为6.7、11.0、15.1微秒，封装约为7.6、11.6、15.8微秒，解封装约为8.4、13.3、18.6微秒。数字仅对应所列处理器、编译环境与库版本，不能直接外推到微控制器、HSM或移动端。\n\n签名侧的差异更受尺寸支配。ML-DSA在该平台上的签名操作约为0.14至0.27毫秒，但签名长度约2.4至4.6KB；SLH-DSA相关配置的签名时间约14至557毫秒，签名长度约7.9至35.7KB。论文没有把不同安全级别和参数的结果混成单一排名。\n\n链路部分是解析估算而非真实握手。研究者估计ML-KEM-768在IEEE 802.15.4中约需15个与14个帧，在常见BLE通知配置下约需60个与55个通知；LoRa DR0条件下约需24个与22个分片。采用SF12和1%占空比假设时，发送窗口可延伸至约1.8小时与1.6小时。\n\n这些链路数字未计入全部分片头、确认、重传、丢包和应用层状态，因此更适合做容量上界提醒，而不是部署承诺。论文也没有测量内存、代码体积、能耗或硬件加速，且liboqs并非认证实现；Java与C测试结果不能脱离运行时和参数直接比较。\n\n## 量仔观察\n\n这项工作对嵌入式、工业物联网和远距离低速网络团队更有影响：计算时延可能尚可，报文尺寸和法规占空比却会改变协议设计。证据来自完整预印本和可说明的方法，但尚无独立复测。读者可先用自己的MTU、重传和能耗模型重算，不应照抄桌面数字；下一观察点是微控制器实测、内存峰值和端到端协议实验。",
+      "category": "pqc",
+      "tags": [
+        "PQC",
+        "基准",
+        "ML-KEM",
+        "ML-DSA",
+        "受限网络"
+      ],
+      "source_name": "arXiv",
+      "source_url": "https://arxiv.org/abs/2611.12479",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3预印本给出明确版本、硬件和测量方法，并把计算与链路尺寸联系起来；结果尚未同行评审，链路部分为估算，适合工程评估而非直接采购结论。"
+    },
+    {
+      "slug": "20261111-azure-app-service-pqc-tls-rollout",
+      "title": "Azure App Service与Functions分阶段启用X25519MLKEM768",
+      "summary": "微软开始在公共Azure的App Service Web Apps与部分Azure Functions入站TLS 1.3连接中分阶段启用X25519MLKEM768混合密钥交换。协商只覆盖客户端到平台前端，前端到worker是另一条TLS链路；旧客户端仍回退经典组，当前也没有强制只用混合组的开关。",
+      "content": "原始来源日期：2026-11-09。微软宣布在公共Azure对App Service Web Apps以及基于App Service基础设施的Azure Functions分阶段启用后量子混合TLS。目标密钥交换组为X25519MLKEM768，把经典X25519与ML-KEM-768结合，双方都支持时由TLS 1.3协商。\n\n官方说明Windows与Linux工作负载、各类App Service托管计划都在此次范围内，但运行在Azure Container Apps上的Functions不属于这一部署。发布采取分阶段方式，公告没有给出所有区域完成时间；因此不能把“开始rollout”写成所有实例已经统一启用。\n\n连接边界尤其重要：混合协商发生在客户端与App Service前端之间。前端到worker是独立的TLS连接，外层成功使用X25519MLKEM768并不自动证明内部链路也采用同一组。证书、应用代码和常规平台配置无需为了这次协商机制变化而修改。\n\n不支持该混合组的TLS 1.3客户端会继续选择经典密钥交换，服务不会因PQC能力缺失而拒绝连接。平台当前没有提供强制只接受混合组的设置，因此运维侧必须通过握手遥测区分成功协商、经典回退和版本回退；TLS 1.3本身也不能当作PQC已经生效的证据。\n\n微软称握手时间可能略有增加，但没有在公告中提供可独立比较的延迟、失败率或区域样本。对于经过代理、WAF、中间盒或自定义客户端的链路，真正影响还取决于扩展支持、报文大小和网络路径。该结论目前属于供应方工程公告，尚无公开独立测量。\n\n## 量仔观察\n\n这次部署对使用App Service和Functions承载公网入口的团队有直接影响，因为它把迁移从实验选项推进到平台默认协商路径。证据足以确认范围和机制，但覆盖率与性能仍由微软单方说明。读者应采集实际ClientHello、协商组、握手时延和失败率，并分别检查前端与worker链路；下一观察点是区域完成度、可观测指标和是否提供策略控制。",
+      "category": "migration",
+      "tags": [
+        "PQC迁移",
+        "Azure",
+        "TLS",
+        "X25519MLKEM768",
+        "云服务"
+      ],
+      "source_name": "Azure App Service Team",
+      "source_url": "https://azure.github.io/AppService/2026/11/09/post-quantum-tls-app-service-azure-functions.html",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3官方工程公告明确了部署范围、协商回退与双段TLS边界，对云端迁移有可执行价值；分阶段覆盖率和性能数据尚无独立验证。"
+    },
+    {
+      "slug": "20261111-gsa-pqc-market-research",
+      "title": "美国GSA调研联邦PQC产品验证与采购准备度",
+      "summary": "美国总务管理局以Sources Sought形式征集后量子产品和服务的市场信息，关注NIST批准算法、FIPS 140-2/3验证、采购可得性、实施成熟度、互操作与迁移支持。该通知是市场研究，不是招标、询价或采购承诺，回复截止为2026-12-07 23:59（美国东部时间）。",
+      "content": "原始来源日期：2026-11-06。美国总务管理局联邦采购服务发布Notice ID 1106202612072026，以Sources Sought方式了解后量子密码产品和服务的市场准备度。通知在SAM.gov公开，回复截止为2026-12-07 23:59美国东部时间，行业分类为NAICS 541519。\n\n问题覆盖NIST批准的后量子算法在产品中的可获得性，以及相关模块是否取得FIPS 140-2或FIPS 140-3验证。GSA还要求供应方说明产品能否通过既有采购渠道获得，避免把“支持ML-KEM”这类功能声称直接等同于已完成验证或可被联邦机构采购。\n\n调研同时询问实施成熟度、运营影响、互操作、迁移服务与生命周期支持。这使供应方必须把算法能力落到密钥管理、证书、HSM、密码敏捷和系统集成层面，而不是仅列算法名称。对于采用方，答案可帮助识别需要更换硬件、升级固件或改变架构的环节。\n\n该通知不是RFP或RFQ，不构成合同要约，也不保证后续采购。公开页面明确其市场研究性质，故不能写成美国政府已经选型、下单或设定强制迁移日期。页面存在后续版本记录，但当前可读正文未展示足够的差异证据，本文以最初公开日期与现行问题为准。\n\n供应商应避免在回应中只提交营销材料，而应给出具体版本、验证证书状态、部署前提、兼容范围与迁移支持边界。采购团队也可用这份问题表反向检查现有目录：算法实现、验证状态、交付渠道和运维能力是否真的在同一产品版本上成立。\n\n## 量仔观察\n\n这项调研影响准备进入美国联邦市场的密码产品、云服务和系统集成商，也给其他大型采购方提供了一份尽调框架。证据来自公开采购记录，状态清楚但尚未形成采购要求。读者可先整理产品版本、FIPS证书、互操作矩阵与升级路径；下一观察点是2026-12-07截止后的公开反馈、正式采购文件或目录调整。",
+      "category": "migration",
+      "tags": [
+        "PQC迁移",
+        "GSA",
+        "政府采购",
+        "FIPS 140-3",
+        "市场调研"
+      ],
+      "source_name": "SAM.gov",
+      "source_url": "https://sam.gov/workspace/contract/opp/584d9822a413468ba6f859a7452c6710/view",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3政府采购公开记录提出可核验的验证、可得性和迁移问题，对供应商及采购方均可行动；当前仅为市场研究，不应误读为招标或强制要求。"
+    },
+    {
+      "slug": "20261111-bitsight-ssh-pqc-kex-scan",
+      "title": "Bitsight扫描152万SSH主机：45.2%宣告PQC KEX",
+      "summary": "Bitsight研究者扫描1,523,998个公网22端口SSH主机，发现45.2%宣告至少一种研究定义的后量子密钥交换；其中绝大多数来自OpenSSH长期提供的SNTRUP761-X25519混合组，ML-KEM-768-X25519仅占5.79%。宣告能力不等于真实会话采用，也不等于组织主动完成迁移。",
+      "content": "原始来源日期：2026-11-06。Bitsight研究者公开公网SSH后量子密钥交换测量，数据来自2026-02-16的22端口扫描。清洗后样本包含1,523,998台主机，其中688,814台宣告至少一种论文规则匹配的PQC密钥交换，占45.2%。\n\n研究者还把主机映射到27,012个实体，其中10,788个实体至少有一台主机宣告相关算法，占39.9%。实体归因来自Bitsight专有数据，外部研究者无法完全复现；同一组织可能拥有多种软件版本和配置，不能把主机比例直接转成迁移完成率。\n\n算法分布揭示了总比例的来源：`sntrup761x25519-sha512@openssh.com`占44.86%，而`mlkem768x25519-sha256`占5.79%，不同算法占比可重叠。SNTRUP混合组随OpenSSH默认能力传播，因而45.2%更多说明软件能力暴露，而非所有管理员主动制定PQC策略。\n\n扫描只读取服务器宣告列表，没有建立长期业务会话，也没有观察客户端最终选择。实际协商还取决于客户端算法、优先级、代理与策略。非22端口、未公开服务和暂时离线主机不在样本内，扫描日距离论文公开约九个月，当前比例可能已经变化。\n\n尽管有这些限制，数据仍能提醒迁移团队区分“软件支持”“服务器宣告”“会话选择”和“组织治理”四个层级。尤其在ML-KEM成为标准化迁移重点后，旧的SNTRUP混合组占主导并不代表ML-KEM部署已经普及。\n\n## 量仔观察\n\n这项测量对SSH资产盘点和基线制定有价值，因为它把高比例拆解为具体算法。证据来自完整方法与大样本，但专有归因和历史扫描日限制了复现与时效。读者可在自有环境采集KEXINIT与实际协商结果，按客户端和服务器版本分层；下一观察点是新的扫描轮次、真实会话遥测及ML-KEM组的增长速度。",
+      "category": "protocol",
+      "tags": [
+        "SSH",
+        "PQC KEX",
+        "OpenSSH",
+        "ML-KEM",
+        "互联网测量"
+      ],
+      "source_name": "arXiv",
+      "source_url": "https://arxiv.org/abs/2611.09703",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3论文全文披露样本、算法分布和方法局限，可纠正“支持即部署”的误读；扫描数据较早且实体映射专有，不能视作实时全球采用率。"
+    },
+    {
+      "slug": "20261111-outlook-cve-2026-124194-kev",
+      "title": "Microsoft修复Outlook CVE-2026-124194，CISA纳入KEV",
+      "summary": "Microsoft在2026-11-10披露并修复Office Outlook漏洞CVE-2026-124194，厂商标记已遭利用，CISA同日纳入KEV并要求美国联邦机构在2026-11-24前处置。公开记录显示攻击需用户交互、影响机密性；目前没有公开攻击规模、归因或可验证PoC。",
+      "content": "原始来源日期：2026-11-10。Microsoft为Office Outlook分配CVE-2026-124194，CVE记录将其归为CWE-356，并给出CVSS 3.1基础分6.5。厂商标记该漏洞已遭利用，[CISA随后把它加入KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-124194)。\n\n公开元数据显示攻击可经网络发起，不要求攻击者预先拥有权限，但需要用户交互，主要影响机密性。本文不提供利用步骤，也不根据二手描述扩展攻击链。已知“在野利用”来自厂商与KEV状态，不代表已经公开攻击活动规模、受害者或归因。\n\n受影响范围包括Microsoft 365 Apps for Enterprise，以及部分Office LTSC版本。Office LTSC 2021需更新到16.0.14334.21048或更高，Office LTSC 2024需更新到16.0.17932.21140或更高。企业应以微软更新指南中的具体产品条目和部署通道核对。\n\nCISA给美国联邦民用机构的处置期限为2026-11-24。KEV收录是有在野利用证据的风险信号，不等同漏洞可自动化、大规模传播或已经公开PoC。公开材料目前没有给出可靠的攻击遥测，故不应以CVSS分数替代利用证据。\n\n组织应优先清点Outlook与Office LTSC版本，确认补丁真正进入终端，而不是只在管理平台显示批准。无法立即更新的环境应加强邮件内容过滤、外联监控和用户提示，并检查是否存在异常认证或外部资源访问，但不要把一般告警自动归因于该CVE。\n\n## 量仔观察\n\n这项漏洞影响广泛邮件终端，且在披露时已经具备厂商与KEV双重在野状态，补丁优先级高。证据足以支持升级行动，但技术FAQ动态页在本轮无法完整渲染，本文没有采用未能复核的细节。读者应在2026-11-24前完成资产核对与更新验证；下一观察点是微软公开更多攻击前提、检测线索和影响范围。",
+      "category": "security",
+      "tags": [
+        "CVE-2026-124194",
+        "Outlook",
+        "KEV",
+        "在野利用",
+        "补丁"
+      ],
+      "source_name": "CVE Program",
+      "source_url": "https://www.cve.org/CVERecord?id=CVE-2026-124194",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3结构化CVE与KEV元数据共同支持在野状态、版本和期限，且Office覆盖广、需立即补丁；攻击规模与归因尚未公开，未采用无法直接复核的利用细节。"
+    },
+    {
+      "slug": "20261111-chrome-cve-2026-125350-zero-day",
+      "title": "Google修复Chrome CVE-2026-125350并确认在野利用",
+      "summary": "Google为桌面版Chrome 157发布稳定更新，修复包括CVE-2026-125350在内的9个安全问题，并明确知道该XML组件释放后使用漏洞的利用程序已在野外存在。CISA于2026-11-10将其纳入KEV，联邦处置期限为2026-11-24；攻击活动细节仍受限。",
+      "content": "原始来源日期：2026-11-09。Google Chrome Releases宣布桌面稳定通道更新，Windows和macOS推进至157.0.8103.50或157.0.8103.51，Linux推进至157.0.8103.50。更新将按稳定通道节奏逐步覆盖用户。\n\n本次版本修复9个安全问题，其中CVE-2026-125350被列为高危，类型是XML组件中的use-after-free。Google明确表示已知该漏洞的利用程序在野外存在；这比仅有PoC或理论可利用更强，但公告没有披露受害者、攻击规模或活动归因。\n\n研究者在2026-11-06向Google报告该问题。厂商暂时限制漏洞细节访问，以便更多用户先完成升级。本文不补写利用链或触发方式，也不把详情受限解释为攻击不可复现；真正可行动的信息是修复版本和在野状态。\n\n[CISA于2026-11-10把CVE-2026-125350加入KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog?field_cve=CVE-2026-125350)，美国联邦民用机构的处置期限为2026-11-24。KEV与Google的在野确认相互一致，但仍不等于已经有公开PoC，也没有披露攻击活动规模或已知勒索使用。\n\n管理员应核对浏览器实际重启后的版本，而不是只看更新策略是否下发。对固定版本、VDI、企业封装和Linux仓库存在延迟的环境，应检查通道同步和强制重启窗口；无法立即更新时，可通过浏览器隔离和限制不可信内容降低暴露。\n\n## 量仔观察\n\n浏览器是高频入口，厂商确认在野且CISA已纳入KEV后，版本覆盖速度比漏洞评分更关键。证据来自Google原始发布与CISA目录，修复版本和期限明确，但攻击遥测仍未公开。读者应在2026-11-24前完成Chrome 157.0.8103.50/.51核对并记录残留终端；下一观察点是Google后续技术细节和是否出现可归因的攻击活动。",
+      "category": "security",
+      "tags": [
+        "CVE-2026-125350",
+        "Chrome",
+        "零日漏洞",
+        "在野利用",
+        "浏览器安全"
+      ],
+      "source_name": "Google Chrome Releases",
+      "source_url": "https://chromereleases.googleblog.com/2026/11/stable-channel-update-for-desktop_018223192.html",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3厂商发布给出修复版本并确认在野，CISA又于11月10日纳入KEV并给出11月24日期限；浏览器攻击面广，公开材料仍无攻击规模、归因或PoC细节。"
+    },
+    {
+      "slug": "20261111-jcci-exam-system-incident",
+      "title": "日本商工会议所披露网络考试系统遭不正访问",
+      "summary": "日本商工会议所披露其网络考试管理服务器遭外部不正访问并被放置恶意程序，可能影响2022-04-01至2026-11-04参加指定网络考试的最多约98万人、约197万件记录。官方确认入侵，但截至公告仅称数据“可能泄露”，尚未确认实际外泄或不正利用。",
+      "content": "原始来源日期：2026-11-10。日本商工会议所发布网络考试系统安全事件公告，称外部攻击者对考试管理服务器实施不正访问并放置恶意程序。管理公司在2026-11-04报告并删除该程序，当晚完成补丁处置。\n\n潜在影响范围覆盖2022-04-01至2026-11-04参加指定网络考试的人员，最多约98万人、约197万件记录。可能涉及姓名、假名、性别、出生日期、成绩或分数，以及部分用户自行填写的联系方式；官方说明不包含支付卡信息。\n\n需要严格区分已确认事实与待调查事项：服务器入侵和恶意程序放置已经确认，但个人数据是否被实际导出仍是“可能性”。公告没有公开漏洞编号、受影响软件、入侵者身份或数据外传证据，因此不能写成98万人已经泄露。\n\n日本商工会议所在2026-11-09确定潜在影响并向监管部门报告。补丁完成后考试服务继续运行，官方提醒相关人员警惕利用考试信息实施的仿冒邮件、短信和电话。任何自称掌握泄露数据的说法仍需独立核验。\n\n受影响机构应关注后续调查结果、通知范围和技术根因。考生可对包含考试名称、成绩或身份信息的定向联系保持警惕，不应点击陌生链接或提供验证码。企业安全团队也可把该事件作为第三方考试与培训平台数据生命周期审查的案例。\n\n## 量仔观察\n\n事件对考试平台、培训采购方和考生都有现实影响，尤其是长期累积的身份与成绩数据可被用于精准欺诈。证据来自受影响机构原始公告，但外泄尚未证实，技术根因未公开。读者当前可采取的是加强仿冒防范并保存通知；下一观察点是取证结论、实际外泄确认、受影响人数收敛和监管处置。",
+      "category": "security",
+      "tags": [
+        "数据安全事件",
+        "日本",
+        "考试系统",
+        "不正访问",
+        "个人信息"
+      ],
+      "source_name": "日本商工会议所",
+      "source_url": "https://www.jcci.or.jp/news/news/2026/1110170000.html",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3受影响机构公告确认入侵、时间线和潜在数据范围，人数大且可触发针对性欺诈；实际外泄与技术根因仍未确认，已在正文明确降级。"
+    },
+    {
+      "slug": "20261111-gemini-4-carbon-ga",
+      "title": "Google将Gemini 4 Carbon转为正式可用",
+      "summary": "Google于2026-11-10将gemini-4-carbon从预览推进至正式可用，并公布统一上下文、输出限制与分阶段价格。Artificial Analysis独立运行的MKA结果显示Carbon Climb加权成功率54%，低于Fable 5.2的57%、高于Opus 5.5的53%；该私有任务集和模型裁判仍限制结论外推。",
+      "content": "原始来源日期：2026-11-10。Google宣布Gemini 4 Carbon正式可用，模型ID为`gemini-4-carbon`，可经付费API、企业渠道与符合条件的订阅产品访问。相对此前预览，本次新增了GA状态、正式文档、模型卡和明确的分阶段定价。\n\n官方文档给出1,048,576 tokens的统一输入上下文上限。单段流式输出最高65,536 tokens，非流式输出最高32,768 tokens。模型卡标注知识截止为2026-03；这些限制是产品边界，不代表所有工具调用、文件格式或企业入口都具有相同可用能力。\n\n2026-11-30前，标准付费API介绍价为每百万输入tokens 2美元、每百万输出tokens 10美元；自2026-12-01起调整为4美元与20美元。输出计价包含思考tokens，缓存、批处理、弹性与优先服务另有价格。免费层不可用，团队应按实际推理量重算成本。\n\n独立评测方面，[Artificial Analysis在MKA](https://artificialanalysis.ai/evaluations/mka)上运行200个私有任务、10个行业和14,284项加权标准，每个任务最多250轮或8小时。Carbon Climb的加权成功率为54%，低于Fable 5.2的57%，高于Opus 5.5的53%。这说明“最强”类厂商措辞不能替代外部比较。\n\nMKA仍有明显局限：任务集不公开，裁判使用GPT-6 Luna，基准又由Google合作设计。单一Agent基准不能覆盖事实可靠性、延迟、成本和安全表现。正式可用也不等于已有企业级稳定性数据，用户仍需在自己的工具链和任务上做回归。\n\n## 量仔观察\n\nCarbon对高上下文编码、研究和多模态工作负载的团队最有影响，尤其是12月即将翻倍的标准价格会改变容量规划。证据由官方GA资料和独立运行结果共同构成，但基准透明度有限。读者可在11月底前完成真实任务、成本与失败模式测试；下一观察点是公开系统评测、长期稳定性和正式价格生效后的采用变化。",
+      "category": "ai",
+      "tags": [
+        "Gemini 4 Carbon",
+        "模型发布",
+        "API",
+        "定价",
+        "独立评测"
+      ],
+      "source_name": "Google",
+      "source_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3官方GA、模型卡和价格资料加上独立运行评测，状态和成本变化均可行动；私有基准与模型裁判限制了性能结论，未照搬厂商“最强”表述。"
+    },
+    {
+      "slug": "20261111-gemini-robotics-2-5",
+      "title": "Google DeepMind发布Gemini Robotics 2.5并启动伙伴试点",
+      "summary": "Google DeepMind发布Gemini Robotics 2.5，称在200类任务中较上一代成功率提高30%至100%、速度提高20%至30%，并与Apptronik和奔驰开展产线零件分拣PoC。模型目前只向机器人伙伴滚动开放，量化结果均来自厂商或合作方，暂无公开权重、API或独立复测。",
+      "content": "原始来源日期：2026-11-10。Google DeepMind发布Gemini Robotics 2.5，面向跨机器人平台的感知、推理与动作控制。官方称在200类任务上，相较Gemini Robotics 2成功率提高30%至100%，完成速度提高20%至30%。\n\n这些百分比来自厂商自测，任务分布、硬件差异和统计区间没有完全开放，不能直接与第三方基准混合。模型强调跨形态适配，官方展示了多种机器人，但当前并非面向普通开发者的公开API或可下载权重。\n\n工业场景中，Apptronik Apollo 2在奔驰匈牙利和德国生产线进行零件分拣概念验证。合作方报告成功率为96%。这属于限定任务和现场PoC，不能写成奔驰已经规模部署，也不能从单项成功率推断整条生产线的可靠性。\n\n安全侧，团队同时发布ASIMOV-Jailbreak评测，包含数百条伪装成正常任务的不安全请求。官方报告新模型Argon的抗越狱率为99.5%，旧基线ER 2为82%。推理时安全引导还被称为在障碍物附近提高安全完成率33%、人员附近提高43%。\n\n上述安全数字仍是厂商评测，尚无独立复现。模型正向机器人伙伴滚动开放，并由100余家可信测试方参与或候补。企业评估时应确认硬件、任务、失效保护、日志和人工接管条件，而不是只看视频或汇总成功率。\n\n## 量仔观察\n\n这次更新对工业机器人集成商和具身智能安全团队更有价值，因为它同时给出现场PoC与新的越狱测试框架。证据足以确认发布和合作阶段，但性能与安全结论仍属单方或合作方数据。读者可要求任务级失败记录、独立复测和安全停机机制；下一观察点是公开API、基准数据、更多现场周期以及事故与回滚信息。",
+      "category": "ai",
+      "tags": [
+        "具身智能",
+        "机器人",
+        "Gemini Robotics",
+        "工业试点",
+        "AI安全"
+      ],
+      "source_name": "Google DeepMind",
+      "source_url": "https://deepmind.google/blog/gemini-robotics-2-5-accelerates-real-world-physical-intelligence/",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3官方全文确认模型、PoC和安全基准，但量化结果均为厂商或伙伴自测，且仅伙伴滚动开放；工业适用价值明确，证据成熟度仍需降级表述。"
+    },
+    {
+      "slug": "20261111-minimax-h3-image-open-weights-license",
+      "title": "MiniMax开放H3 Image权重并公布高限制许可证",
+      "summary": "MiniMax开放MiniMax-H3-Image主模型与文生图提示扩展模型权重，模型卡给出33.1B参数DiT、6步采样和最高约16MP输出。许可证并非通用开源：排除欧盟、英国、韩国和美国，部分商业与托管场景需另行授权；图像编辑提示扩展权重仍在开发。",
+      "content": "原始来源日期：2026-11-10。MiniMax在Hugging Face公开MiniMax-H3-Image相关权重、模型卡和许可证。主模型统一文生图与多图编辑，采用约33.1B参数的DiT结构与6步采样，官方列出的原生输出可覆盖约4096×4096至6272×2688。\n\n主checkpoint约68.65GB，另需约66.7GB的H3文本编码器。提示扩展模型MiniMax-H3-Image-PE基于Qwen3.8-27B，提供NVFP4权重，文件约17.9GB，模型卡称推理约需19GiB显存。上述资源需求须结合运行框架和显卡重新验证。\n\n目前开放的PE权重只覆盖文生图提示扩展。图像编辑PE仍在开发，页面只给出提示和消息组装示例，因此不能把两个任务都写成权重已经完整开放。API、网页和桌面入口虽已列出，但部署能力和本地权重范围也应分开描述。\n\n许可证不是通用开源许可：适用范围排除欧盟、英国、韩国和美国；年化收入超过100万美元，或向第三方提供托管服务，需取得额外书面授权。商业用户界面还须显著展示模型名称，并存在不得用模型或输出改进其他AI模型等限制。\n\n这些条款会直接影响跨地区部署、SaaS集成、微调和衍生模型计划。模型卡中的能力排名主要来自发布方评测，本文不采用“最强开源”等表述，也不把可下载权重自动等同于开放源码、开放数据或无限制商业使用。\n\n## 量仔观察\n\n这次发布对本地生成与商业部署团队的关键不是模型体积，而是权重、任务和许可证三者的精确边界。证据来自可读模型卡、文件与许可证，开放范围可核验，但能力尚缺独立评测。读者应先让法务核对地区、收入和托管条件，再评估显存与框架；下一观察点是图像编辑PE权重、许可证澄清和第三方质量评测。",
+      "category": "ai",
+      "tags": [
+        "MiniMax",
+        "图像生成",
+        "开放权重",
+        "许可证",
+        "模型部署"
+      ],
+      "source_name": "Hugging Face",
+      "source_url": "https://huggingface.co/MiniMaxAI/MiniMax-H3-Image/blob/main/LICENSE",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3模型卡、文件与许可证可直接核验，真实可下载范围和商业限制会改变部署决策；性能主要是厂商自评，且图像编辑PE尚未开放。"
+    },
+    {
+      "slug": "20261111-yuanyang-kem-40-5-independent-review",
+      "title": "CertiK独立复核YuanYang.KEM-2048种子截断",
+      "summary": "CertiK研究者对YuanYang.KEM-2048既有finding kem-40-5进行独立复核，在参考与优化实现中用逐字节影响测试确认64字节加密种子只有55字节进入DRBG，并给出2^8缩小搜索见证。完整2^440搜索未执行，该结论仍是低于声称强度的理论区分界限，不是现实密钥恢复。",
+      "content": "原始来源日期：2026-11-11。Xifeng Jin（CertiK）在NGCC公开评议论坛发布对YuanYang.KEM-2048的独立复核，指向既有稳定finding [`kem-40-5`](https://ngcc.dev/reports/kem-40.html)。本次对象是yuanyang-2048参考与优化实现，提交包SHA-256为fe1bf3d78272bb79048e7d456819160324c6140206798cb77a22c2babcfdcf4a。\n\n规格算法要求64字节加密种子，但调用路径只有55字节进入DRBG，末尾9字节和域字节不影响密文。研究者对两套实现做逐字节影响测试，并以yuanyang-512与yuanyang-1024作为对照，说明问题不能自动套用到其他参数集。\n\n新帖还给出2^8规模的缩小搜索见证，用较小空间验证区分逻辑。对于原始参数，理论上需要枚举约2^440个有效DRBG输入来构造挑战密钥区分器；面对随机512位比较键，报告给出误命中联合上界不高于2^-72。\n\n完整2^440搜索没有执行，也没有给出现实时间、内存或量子电路估计。该结论不是长期私钥恢复，更不是已完成的端到端攻击。理论上限低于提交声称的512位经典强度具有评估意义，但与今天可实施的攻击成本仍有巨大距离。\n\nngcc.dev是独立分析站，`Critical`、`Confirmed`和`Implementation`分别描述严重度、证据状态与层次，不代表ICCS官方评审结论，也不等于本站复现。本站已在[2026-10-11日报](https://wangyibiao.com/news?date=2026-10-11)介绍原finding；本次增量是独立双实现复核，尚无提交方回应、修订包或复测。\n\n## 量仔观察\n\n这条更新的价值在于独立团队重复确认了既有机制，并给出更直观的双实现测试，而不是把理论界限包装成“攻破”。证据来自公开评议全文和稳定finding映射，但本站未运行代码。候选作者应修正种子传递并重新生成测试向量；下一观察点是官方回应、修订版本、兼容影响和独立复测。",
+      "category": "ngcc",
+      "tags": [
+        "NGCC",
+        "YuanYang.KEM",
+        "kem-40-5",
+        "独立复核",
+        "实现安全"
+      ],
+      "source_name": "NICCS公开评议论坛",
+      "source_url": "https://list.niccs.org.cn/archives/list/pkcforum@list.niccs.org.cn/message/YJESV7JPJ3K2NB2UWX6T3BOSBSLJIZ4Z/",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3原始公开评议对既有kem-40-5给出独立双实现验证和缩小搜索见证，是相对本站2026-10-11稿的实质新增；完整2^440搜索未执行，现实可行性有限。"
+    },
+    {
+      "slug": "20261111-openai-costs-api-export-correction",
+      "title": "OpenAI修复Costs API导出错误成本数据",
+      "summary": "OpenAI确认2026-11-06至2026-11-09发布的Costs API导出包含错误成本数据，并在2026-11-10完成记录更正与恢复。使用导出结果做内部计费、项目分摊或预算告警的团队应重新导出受影响日期，核对差异并修正下游报表。",
+      "content": "原始事件日期：2026-11-09；实质更新日期：2026-11-10。OpenAI状态页确认Costs API在2026-11-06至2026-11-09发布的导出含错误成本数据，随后更正记录并把事件标记为恢复。\n\n这不是一般可用性波动：错误数据可能已经进入财务分摊、客户转计费、预算阈值或异常检测。受影响团队应重新导出对应日期，与已落库结果做逐项差异核对，并保留修正记录，避免只覆盖汇总数字后失去审计链。",
+      "category": "flash",
+      "tags": [
+        "OpenAI",
+        "Costs API",
+        "成本数据",
+        "更正",
+        "运维"
+      ],
+      "source_name": "OpenAI Status",
+      "source_url": "https://status.openai.com/incidents/01M71W79MAGEXEX93QTVTBYJ4K",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3官方状态记录明确给出受影响日期和恢复状态，错误成本数据会直接影响内部计费与预算；团队可立即重新导出并校正。"
+    },
+    {
+      "slug": "20261111-openai-businesses-chatgpt-beta",
+      "title": "OpenAI上线Businesses in ChatGPT与Business Agents Beta",
+      "summary": "OpenAI于2026-11-10上线Businesses in ChatGPT Beta：符合条件的企业可通过Business Hub认领和更新资料、提交商品价格与库存，并查看聚合提及和点击；Business Agents先向美国符合条件的电商与在线服务企业开放。官方称企业不会收到用户原始对话。",
+      "content": "原始来源日期：2026-11-10。OpenAI发布Businesses in ChatGPT Beta，Business Hub允许符合条件的企业认领主体、更新信息、提交商品价格与库存feed，并查看聚合后的提及、点击和主题数据。\n\nBusiness Agents目前先向美国符合条件的电商与在线服务企业开放，企业对话会单独标识。官方表示企业不会获得用户原始对话；这仍是Beta和分地区推出，不能写成全球企业均已开放或已有独立转化成效。",
+      "category": "flash",
+      "tags": [
+        "OpenAI",
+        "ChatGPT",
+        "Business Agents",
+        "Beta",
+        "企业应用"
+      ],
+      "source_name": "OpenAI",
+      "source_url": "https://openai.com/index/introducing-businesses-chatgpt/",
+      "cover_image": null,
+      "published_at": "2026-11-11T08:25:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3官方发布明确了Beta功能、适用对象、地区和隐私边界，对企业资料管理与代理入口有实际影响；尚无独立效果数据。"
+    }
+  ]
+}
+
