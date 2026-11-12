@@ -1,0 +1,13 @@
+/* Showroom skin for the model gallery. Sizing and control layout stay in
+ * models.css; this file re-dresses them in the milk palette. */
+html .model-gallery-page { padding-inline: var(--milk-gutter); }
+html .model-page-heading h1 { font-family: var(--milk-display); font-weight: 900; letter-spacing: -.01em; }
+html .model-page-heading > div > p { display: flex; align-items: baseline; gap: 10px; font: 13px/1.4 var(--font-sans); letter-spacing: 0; color: var(--milk-dim); }
+html .model-page-heading > div > p i { font: italic 400 22px/1 var(--milk-latin); color: var(--milk-accent); }
+html .model-gallery { border-radius: 28px; border-color: var(--milk-rule); }
+html .model-gallery button { min-height: 44px; border-radius: 999px; }
+html .model-gallery button[aria-pressed=true] { background: var(--milk-cobalt); color: var(--milk-white); }
+html .model-gallery-stage { background: radial-gradient(ellipse at 50% 108%, #2443d62e, transparent 62%), var(--theme-soft, #e6e7e1); }
+html .model-gallery-number { border-radius: 999px; }
+html .model-page-footer { flex-wrap: wrap; }
+html .model-page-footer a { display: inline-flex; align-items: center; min-height: 44px; }

@@ -15,20 +15,20 @@ export const destinations = [
   {
     href: "/models",
     name: "模型鉴赏",
-    description: "旋转、缩放，近距离欣赏量仔与奶龙。",
-    keywords: "models 模型 鉴赏 量仔 奶龙 旋转 三维",
+    description: "旋转、缩放，近距离欣赏量仔与奶蛙。",
+    keywords: "models 模型 鉴赏 量仔 奶蛙 奶龙 旋转 三维",
   },
   {
     href: "/storybook",
     name: "星际漫游",
-    description: "量仔与奶龙，十一页关于并肩的冒险。",
-    keywords: "story 故事 星际 奶龙 冒险 绘本",
+    description: "量仔与奶蛙，十一页关于并肩的睡前故事。",
+    keywords: "story 故事 星际 奶蛙 奶龙 冒险 绘本 睡前",
   },
   {
     href: "/archive",
     name: "量仔小传",
-    description: "认识一位把好奇心带向未知的守护者。",
-    keywords: "guardian 人物 档案 量仔 角色",
+    description: "两份角色档案：负责测量的量仔，和负责守着的奶蛙。",
+    keywords: "guardian 人物 档案 量仔 奶蛙 角色",
   },
   {
     href: "/pqc-arsenal",

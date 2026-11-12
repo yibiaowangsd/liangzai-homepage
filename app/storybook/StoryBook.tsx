@@ -4,6 +4,7 @@ import Link from "next/link";
 import { pages, narrationTracks } from "./storyData";
 import { gsap, useGSAP, useExperience } from "../experience/Motion";
 import "./cinema-reader.css";
+import "./milk-reader.css";
 
 export default function StoryBook() {
   const [current, setCurrent] = useState(0),
@@ -126,7 +127,7 @@ export default function StoryBook() {
         <Link href="/" className="reader-back">
           星际漫游
         </Link>
-        <span>INTERACTIVE STORY · 约 5 分钟</span>
+        <span>A bedtime story · 约 5 分钟</span>
         <button
           ref={tocButton}
           aria-expanded={contents}
@@ -227,6 +228,10 @@ export default function StoryBook() {
                 ? "正在讲述 · 结束后自动翻页"
                 : "点击收听 · 随时暂停"}
           </span>
+        </div>
+        <div className="reader-listener" data-asleep={current >= 8}>
+          <img key={current >= 8 ? "sleep" : "book"} src={current >= 8 ? "/assets/naiwa/sleep.webp" : "/assets/naiwa/book.webp"} width={current >= 8 ? 1140 : 760} height={current >= 8 ? 760 : 1140} alt="" />
+          <span><b>{current >= 8 ? "奶蛙睡着了" : "奶蛙在听"}</b>{current >= 8 ? "后面的，替他小声读完" : "故事里，大家叫他奶龙"}</span>
         </div>
         <div className="reader-pagination">
           <button

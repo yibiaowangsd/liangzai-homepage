@@ -6,7 +6,7 @@
 
 | 页面 | 入口 | 关键实现 |
 | --- | --- | --- |
-| `/` | `app/page.tsx` | `app/QuantumHome.tsx`、`app/experience/InteractiveGuardian.tsx`、`QuantumSculpture.tsx` |
+| `/` | `app/page.tsx` | `app/QuantumHome.tsx`、`app/milk/`（问候、奶蛙发问、奶面波浪、奶瓶刻度）、`app/studio/HomeDispatch.tsx` |
 | `/observatory` | `app/observatory/page.tsx` | `Observatory.tsx` 的创作控制、`ArtCanvas.tsx` 的按需绘制、`art-state.ts` 的可分享参数 |
 | `/storybook` | `app/storybook/page.tsx` | `StoryBook.tsx` 负责翻页与旁白，`storyData.ts` 负责页面和音轨路径 |
 | `/archive` | `app/archive/page.tsx` | 角色档案和战后内容 |
@@ -151,3 +151,17 @@ git diff --check
 - 首页先显示可关闭的当期新闻提示，访客点击后才展开简报。简报使用原生 `<dialog>.showModal()` 让背景不可交互。打开时聚焦关闭按钮，Escape 和关闭按钮都记录当期关闭状态，卸载时恢复滚动与原焦点。浏览器存储不可用时仍可关闭；不支持原生 modal 的旧浏览器跳过可选简报。
 - `tests/news-gate-modal.test.mjs` 检查弹窗生命周期及存储失败；`tests/news-rendering.test.mjs` 用固定新闻数据验证服务端输出。新闻 PR 会运行类型检查、lint、生产构建及这两组回归。
 - 人工回归需覆盖 1180×757、1311px、1770px 和窄屏：头条阅读入口、分类顶对齐、正文宽度、来源图完整性，以及弹窗 Tab/Shift+Tab、Escape、点击关闭、文章跳转、返回和减少动态效果。本次云端本地 Chromium 因系统 socket 限制未能启动，不能将上述静态/单元检查视为真实浏览器验证。
+
+
+### 「一天的奶」个人页面设计（2026-11-12）
+
+适用范围：首页、关于我、角色档案、模型鉴赏、星际漫游阅读器与全站页脚。新闻、订阅与审核、密码实验室及其独立 HTML 页不使用这套样式，修改时保持原样。
+
+- **共享样式** `app/milk/milk.css`：配色变量（钴蓝 `#2443D6`、夜蓝、奶白、奶黄）、展示字体、奶面波浪、奶瓶刻度与页脚。钴蓝与夜蓝区块在两种主题下固定；纸面区块跟随主题变量。各页局部样式在 `app/milk/home.css`、`app/about/about.css`、`app/archive/archive.css`；模型页和阅读器只用 `milk-models.css`、`milk-reader.css` 覆盖外观，布局与交互仍在原文件。
+- **角色**：黄色角色在新页面称「奶蛙」；绘本正文与已录旁白保留「奶龙」，阅读器底部注明二者为同一角色。不要改 `storyData.ts` 中的名字，否则文字与音频对不上。
+- **奶蛙图片** `public/assets/naiwa/*.webp`：由 Codex CLI 依据作者提供的三视图生成透明底 PNG，再用 `node scripts/prepare-naiwa.mjs <源图目录>` 收紧半透明边缘、裁边并输出固定尺寸。新增姿势时同步更新该脚本中的尺寸表与页面上的 `width`/`height`。
+- **字体**：标题用思源宋体 Heavy 子集（Milk Song），拉丁斜体用 Fraunces Italic 子集（Milk Latin），均为 SIL OFL 1.1，许可文本在 `public/assets/fonts/OFL.txt`。子集只含扫描到的文字，**修改上述页面文案后**运行 `python scripts/build-display-fonts.py <源字体目录>`（需 `pip install fonttools brotli`），否则新字回退到系统宋体。
+- **交互**：首页奶蛙可轻点切换问题，每个问题链接到站内对应页面；问候按访客本地时间变化（服务端固定输出早安）。奶瓶刻度只在首页、关于我与角色档案显示，滚动即「喝奶」，喝完后点击回到顶部。波浪、漂浮与 zzz 动画遵循系统减少动态效果和站内动效开关。
+- **移除**：旧首页的电影序幕（`CinemaEntrance`、`cinema-shortcut.ts`、`studio/home.css`）及其测试已删除；`about/profile.module.css`、`archive/dossier.css` 由新样式替代。
+- **测试**：`tests/milk-design.test.mjs` 检查字体子集与来源、奶蛙图片尺寸、奶瓶刻度的显示范围与减少动态效果、角色命名，以及原有标题标点和实验室通道样式规则。
+- **Windows 注意**：`core.autocrlf=true` 的检出会把实验室 `.mjs` 转成 CRLF，使 `ngcc-portable-recovery.test.mjs` 的哈希校验失败；这是检出换行问题，不是代码改动。Linux CI 或 `autocrlf=false` 的检出不受影响。

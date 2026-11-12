@@ -23,8 +23,10 @@ test('utility page headings stay compact across desktop and mobile', async () =>
   const lab=await read('public/pqc-practice/studio.css');
   assert.match(lab,/\.page-heading \{\s*padding: 20px 0 16px/);
   assert.doesNotMatch(lab,/font-size: (48px|clamp\(42px,5\.8vw,82px\))/);
-  for(const file of ['app/archive/dossier.css','app/about/profile.module.css','app/pqc-arsenal/cinematic-arsenal.css']) {
+  for(const file of ['app/about/about.css','app/pqc-arsenal/cinematic-arsenal.css']) {
     assert.match(await read(file),/font-size: clamp\(36px, 4\.5vw, 64px\)/);
+  }
+  for(const file of ['app/archive/archive.css','app/about/about.css','app/milk/home.css','app/pqc-arsenal/cinematic-arsenal.css']) {
     assert.doesNotMatch(await read(file),/font-size: (29|23|24)vw/);
   }
 });

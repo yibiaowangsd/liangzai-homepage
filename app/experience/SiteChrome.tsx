@@ -113,20 +113,24 @@ export function SiteHeader() {
   );
 }
 export function SiteFooter() {
+  const path = usePathname();
   return (
-    <footer className="studio-footer">
-      <div className="studio-footer-top">
-        <p>量仔 · 前沿新闻与技术实践</p>
-        <a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer" className="studio-footer-cta">GitHub</a>
+    <footer className="milk-footer" data-flush={path === "/storybook" || undefined}>
+      <img className="milk-footer-sleeper" src="/assets/naiwa/sleep.webp" width="1140" height="760" alt="喝完奶、趴着睡着的奶蛙，空奶瓶倒在身边" loading="lazy" decoding="async" />
+      <span className="milk-footer-zzz" aria-hidden="true">z z z</span>
+      <div className="milk-footer-top">
+        <div>
+          <p className="milk-footer-night">嘘，奶蛙睡着了</p>
+          <p>今天这一瓶喝完了。明早 08:10，新的简报会重新温好；在那之前，轻一点翻页。</p>
+        </div>
+        <nav className="milk-footer-groups" aria-label="页脚导航">
+          <div><span>阅读</span><Link href="/news">前沿新闻</Link><Link href="/research">深度研究</Link><Link href="/topics">技术进展档案</Link><Link href="/pqc-arsenal">算法原理</Link></div>
+          <div><span>家里</span><Link href="/archive">量仔小传</Link><Link href="/storybook">星际漫游</Link><Link href="/models">角色模型</Link><Link href="/wo">我 · 网页回顾</Link></div>
+          <div><span>关于</span><Link href="/about#journey">个人经历</Link><Link href="/about#contact">联系与交流</Link><a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">本站源码</a></div>
+        </nav>
       </div>
-      <nav className="footer-groups" aria-label="页脚导航">
-        <div><span>作品</span><Link href="/wo">我 · 网页回顾</Link><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">本站源码</a><Link href="/models">角色模型</Link></div>
-        <div><span>阅读</span><Link href="/news">前沿新闻</Link><Link href="/research">深度研究</Link><Link href="/topics">技术进展档案</Link><Link href="/pqc-arsenal">算法原理</Link><Link href="/archive">量仔小传</Link></div>
-        <div><span>关于</span><Link href="/about#journey">个人经历</Link><Link href="/about#contact">联系与交流</Link></div>
-      </nav>
-      <div className="studio-footer-bottom">
-        <span>© 2026 量仔 · Yibiao</span>
-        <span>新闻 · 解读 · 技术实践</span>
+      <div className="milk-footer-bottom">
+        <span>© 2026 Yibiao · 量仔与奶蛙</span>
         <a href="#main-content">回到顶部 ↑</a>
       </div>
     </footer>

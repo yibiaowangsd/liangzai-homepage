@@ -15,13 +15,15 @@ test('searchable algorithm directory retains working lessons and clear lab navig
  assert.doesNotMatch(source, /RSA 与 ECC 没有突然变弱/);
 });
 
-test('navigation keeps practical home entry points after retiring the observatory', async () => {
+test('navigation keeps practical home entry points after retiring the observatory and the intro film', async () => {
  const home = await read('app/QuantumHome.tsx');
  assert.match(home, /href="\/pqc-practice"/);
  assert.doesNotMatch(home, /portal-observatory|href="\/observatory"/);
  assert.doesNotMatch(await read('app/experience/destinations.ts'), /href: "\/observatory"/);
  for (const page of ['index', 'audit']) assert.doesNotMatch(await read(`public/pqc-practice/${page}.html`), /href="\/observatory"/);
- assert.match(home, /<CinemaEntrance/);
+ assert.doesNotMatch(home, /CinemaEntrance/);
+ assert.match(home, /<NaiwaAsks/);
+ for (const id of ['morning', 'noon', 'family', 'night']) assert.ok(home.includes(`id="${id}"`), id);
 });
 
 test('reader and model controls remain reachable in compact responsive layouts', async () => {

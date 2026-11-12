@@ -7,14 +7,16 @@ import "./experience/news-gate.css";
 import "./studio/system.css";
 import "../public/theme/site-theme.css";
 import "./studio/scenes.css";
+import "./milk/milk.css";
 import { ExperienceProvider } from "./experience/Motion";
 import { HomeEffectsProvider } from "./experience/HomeEffects";
 import AboutPushTransition from "./experience/AboutPushTransition";
 import PageArrival from "./experience/PageArrival";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
+import BottleGauge from "./milk/BottleGauge";
 
 export const metadata: Metadata = {
-  title: "量仔 · 前沿新闻与技术实践",
+  title: "Yibiao · 量仔与奶蛙",
   description:
     "量仔的前沿新闻与技术实践。跟进密码、协议、标准、网络安全与 AI 的新进展，探索真实算法实验与角色故事。",
   other: { "codex-preview": "development" },
@@ -43,6 +45,7 @@ export default function RootLayout({
             <SiteHeader />
             {children}
             <SiteFooter />
+            <BottleGauge />
           </ExperienceProvider>
         </HomeEffectsProvider>
       </body>
