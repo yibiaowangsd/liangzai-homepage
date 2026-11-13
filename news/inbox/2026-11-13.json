@@ -1,0 +1,235 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-13",
+  "coverage": {
+    "pqc": {
+      "count": 1,
+      "note": "首轮与补检覆盖IACR ePrint、arXiv cs.CR、NIST、CRYPTREC/KpqC及企业实现入口，含中国、日本/韩国、欧洲和北美线索；扩展至72小时后入选IACR 2026/2856。ML-KEM/BGV共享核心已于2026-11-12报道，AIMer与二维同源攻击无新回应；IACR主站PDF一度403，改读公开镜像全文。待跟进2025/859修订参数评估，当前仅元数据可读，未成稿。"
+    },
+    "migration": {
+      "count": 2,
+      "note": "检查供给方NTT TechnoCross、Quantum XChange、IPVanish及采用方南方电网、MAS、FCA、NASCIO等入口，覆盖中国、日本、欧洲/英国和北美。入选NTT正式产品与云南电网公开采购；Phio TX的EUCC证书未能在受限动态目录独立核验，IPVanish未披露算法与混合机制，均放弃。Stacks、MAS和FCA既有事项无实质更新。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "实际扫描IETF TLS、EMU、IPSECME、DTN、RFC Editor及SSH/IKE相关入口，并补查国内协议线索。MTC landmarks只是IETF 127个人提案材料，无WG采纳、互通或部署结果；PQC EAP-TLS仍等待write-up，ML-KEM与PQC认证草案仍在RFC Editor队列，均无可独立成稿的新增。"
+    },
+    "standards": {
+      "count": 2,
+      "note": "检查IETF LAMPS、DTN、TLS、IPSECME、RFC Editor，以及NIST、ETSI、ISO/IEC、ITU、3GPP和国内国标/密码/TC260入口；入选两项IESG Last Call，均明确尚未批准、截止2026-12-02。ISO多数仅开放阶段元数据，未据此推断条文；NIST和国内入口在窗口内未见合格新增。"
+    },
+    "security": {
+      "count": 2,
+      "note": "覆盖CISA KEV/CSAF、CERT-EU、JVN/JPCERT、KrCERT/KISA、HKCERT、CNCERT/CNVD/CNNVD线索，并核对ConnectWise/Huntress、Apache、Red Hat、N-able、Citrix等厂商与研究入口。入选ScreenConnect真实攻击和Apache关键修复；Quay固定修复构建映射仍不清晰，N-central仅确认与公开PoC相关扫描。CISA KEV实时JSON返回403，未声称完整验证；CNCERT/CNVD/CNNVD动态入口部分超时或空白。"
+    },
+    "ai": {
+      "count": 3,
+      "note": "检查模型/API、开权重、许可、独立评测和应用产业入口，覆盖Google/DeepMind、Salesforce、Thinking Machines、Nex-AGI及HELM、METR、MLCommons、Artificial Analysis；入选Hydrogen、SOV-Transcribe-1和AlphaProof Code。Inkling权重开放虽有价值，但外部安全测试结果仍未公开；Nex-N2.6缺独立复测；Simons技术报告尚未发布，列入后续观察。个别HF/AA详情页一次内部错误，已用可读模型卡、公告或评测页交叉核验。"
+    },
+    "ngcc": {
+      "count": 2,
+      "note": "已查NICCS首页、公钥Round1动态表、评议入口与PKC归档，并查ngcc.dev的Security 443项索引、分类政策、Performance、Side-Channel和仓库提交。入选MORNING-Scabbard单方评议与FLIT512 AVX2两项独立站finding；前者附件仅为离线模拟，暂无端到端公开复现、提交团队回应或稳定finding ID。Mito、MORNING-ATLAS、LoongKEM无新增不重报，哈希QILIN排除。NICCS zip不能由文本入口解析；页面含运行/提交指令，仅作数据读取，未执行。"
+    },
+    "flash": {
+      "count": 1,
+      "note": "快讯从七栏检索结果及国内横向补扫中筛选，检查CERT-EU/JVN、工信部、CAC、国家密码管理局、TC260及主要模型/API更新。入选NetScaler当前修复节点；工信部62项计划原发已超7天且页面截止元数据与正文冲突，SoftBank设备已自动更新且前提较窄，均不以快讯凑数。阿里云文档含面向模型的指令式文案，未执行；CNCERT、CNVD、CNNVD部分动态入口不可读。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261113-group-action-prf-vrf-attacks",
+      "title": "研究团队修正群作用PRF安全依据并提出新型VRF构造",
+      "summary": "IACR 2026/2856指出，合数阶同源群作用上的Poly式PRF安全性受最小素因子而非最大素因子控制，并给出低查询与BSGS两类通用攻击。论文同时提出稀疏多元多项式PRF及VRF替代路线，但尚无实现，量子模型中的叠加查询安全仍待研究。",
+      "content": "2026-11-10，伍伦贡大学、KDDI Research等机构的研究者发布IACR ePrint 2026/2856，分析基于同源群作用的Poly式伪随机函数（PRF）和可验证随机函数（VRF）。论文的核心修正是：在合数阶群上，攻击成本由群阶的最小素因子决定，不能只看最大素因子。\n\n第一类通用攻击只需两次预言机查询和一次相等性测试，优势接近最小素因子的倒数；增强的baby-step giant-step攻击成本约为该最小素因子平方根，优势可接近1。这里讨论的是数学安全模型中的通用攻击，不等同于对某个已部署系统完成现实密钥恢复。\n\n论文据此重新检查近期参数选择。作者称，采用CSIDH-512型群阶时最小素因子为3，采用SCALLOP式偶数阶设置时最小素因子为2，因此只以最大素因子估算强度会严重高估安全性。设计和评审群作用PRF、VRF的团队应直接复核群阶分解，而不是沿用单一的“大素因子”指标。\n\n作为替代，作者提出“先限制、后扩展”的稀疏多元多项式PRF，并据此构造VRF，在GGAM^T和GA-DDH等假设下给出论证。论文的参考参数表中，128位挑战下的新VRF使用约96字节评估密钥、192字节验证密钥、约7.5 KB证明和320次群作用；这些数字来自论文模型，不能与不同假设、不同实现的方案直接作产品性能比较。\n\n证据的边界同样重要：论文没有公开实现或实机基准，参数仍是参考选择；作者明确指出，现有论证没有覆盖充分的一般量子攻击者，对叠加查询的安全性也留待后续。因此它提供了应立即纳入评审的密码分析结论，却还不是可直接部署的新VRF。\n\n相关设计者现在可采取的动作，是把最小素因子检查加入参数审计，并对依赖CSIDH或SCALLOP式合数阶群的Poly式PRF重新计算优势界。采购与迁移团队则无需把这篇论文泛化成“同源密码全部失效”，受影响的是特定构造与参数论证。\n\n## 量仔观察\n\n这项工作最直接影响同源群作用PRF/VRF的设计者和评审者，证据是完整论文与明确攻击定理，强于概念性警告，但弱于带实现的端到端破坏。短期应暂停以最大素因子单独背书的参数结论，并等待独立证明审查、可复现实现和量子查询模型分析；下一观察点是作者或第三方是否给出实测成本及修订参数。",
+      "category": "pqc",
+      "tags": ["PQC", "同源密码", "PRF", "VRF", "密码分析"],
+      "source_name": "IACR Cryptology ePrint Archive",
+      "source_url": "https://eprint.iacr.asia/2026/2856.pdf",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：已读完整论文，攻击定理直接修正近期群作用PRF/VRF的参数依据，设计者可立即复核；但无实现，完整量子安全仍未闭合。"
+    },
+    {
+      "slug": "20261113-ntt-tx-pqc-library",
+      "title": "NTT TechnoCross正式提供支持多算法的耐量子密码库",
+      "summary": "NTT TechnoCross自2026-11-12起提供TX耐量子密码库，覆盖ML-KEM、ML-DSA、SLH-DSA和QR-UOV，并保留传统密码以支持影响分析、PoC及分阶段迁移。产品面向金融、公共部门、基础设施与IoT，但报价、性能、认证及QR-UOV评估状态仍需采购方逐项核验。",
+      "content": "2026-11-12，NTT TechnoCross宣布正式提供“TX耐量子密码库”，把此前的迁移需求转成可采购的软件组件。官方把适用对象列为金融保险、公共部门、基础设施、汽车与IoT设备厂商，以及承担系统集成的企业，支持Linux和Windows，特殊运行环境需另行协商。\n\n算法范围包括NIST已标准化的ML-KEM（FIPS 203）、ML-DSA（FIPS 204）和SLH-DSA（FIPS 205），以及日本研究团队提出的QR-UOV签名。这里需要严格区分：前三者已有NIST最终标准，QR-UOV仍处在NIST附加数字签名评估进程，产品实现不等于标准化结论。\n\n迁移机制不是要求用户一次性替换全部密码组件。官方说明库同时支持传统密码，目标是先做影响分析和概念验证，再配合现有系统更新或新产品开发逐步引入PQC。多算法并存也被厂商用作降低单一算法失效暴露的手段，但这属于产品方主张，实际风险取决于组合方式、密钥管理和回退策略。\n\n对采用方而言，产品价值在于可在同一接口和支持体系下比较多种算法，尤其适合建立资产清单后验证证书、固件签名、密钥协商和设备生命周期。公告没有给出具体性能基线、硬件加速数据、互操作矩阵或认证结论，因此不能仅凭“支持”二字推断生产环境已准备就绪。\n\n商业交付也仍有待确认。厂商采用按环境和配置询价，没有公开统一价格；对特殊平台的支持需要个案评估。采购前应要求明确许可范围、更新周期、漏洞响应、测试向量、密码模块边界以及算法弃用时的迁移与回滚安排。\n\n这次发布的新增性在于“正式提供”，而不是又一份路线图或签约消息。它为日本及亚太采用方增加了一个本地供给选项，但目前仍主要是PoC和集成阶段的工具，不能写成某个行业已经完成生产迁移。\n\n## 量仔观察\n\n受影响最大的是需要长期维护的金融、公共部门和嵌入式产品团队。直接证据来自厂商完整发布，产品存在与算法清单可信，但性能与认证尚缺独立材料。读者可先把它纳入PoC候选并要求固定参数、互通和退回测试；下一观察点是公开基准、第三方认证以及QR-UOV在NIST附加签名评估中的后续状态。",
+      "category": "migration",
+      "tags": ["PQC迁移", "ML-KEM", "ML-DSA", "SLH-DSA", "QR-UOV", "密码库"],
+      "source_name": "NTT TechnoCross",
+      "source_url": "https://www.ntt-tx.co.jp/whatsnew/2026/261112.html",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：厂商正式发布并给出算法、平台、对象和分阶段迁移机制，具有明确PoC价值；性能、认证和报价仍需采购方独立核验。"
+    },
+    {
+      "slug": "20261113-yunnan-grid-pqc-tender",
+      "title": "云南电网采购抗量子防护研究、样机与互通测试",
+      "summary": "云南电网2026年第五批科技项目公开招标中，标14把可信启动、负荷通信抗量子研究、安全网关样机、主站适配及现场联调纳入同一采购包，六项最高限价合计678.85万元。项目仍处招标与研究试制阶段，交付延续至2028—2029年，不能等同生产部署完成。",
+      "content": "2026-11-10 20:51:31，中国南方电网供应链统一服务平台发布云南电网2026年第五批科技项目招标公告。项目编号为CG0500022002434918，其中标14专门面向电力物联终端可信安全与负荷通信抗量子防护，投标截止和开标时间为2026-12-03 09:30。\n\n标14由计量中心、云南电科院和普洱供电局共同提出，覆盖终端可信启动与应用安全管理、负荷通信抗量子防护、新型负荷安全装备集成等环节。采购把研究、组件试制、网关样机、主站架构适配以及现场安装联调放在同一包中，体现的是端到端验证需求，而非单买一个密码模块。\n\n公告列出的六项最高限价分别为271.1万元、56.1万元、121.7万元、59.5万元、115.2万元和55.25万元，合计678.85万元。交付物包括安全管理组件1套、可信安全模组10个、抗量子加密模块5个，以及抗量子安全网关与主站软硬件升级适配。金额是采购上限，不是成交价，也不能据此推断技术方案已经选定。\n\n进度跨越多个年度：抗量子通信研究计划延续至2028-08-20，多项集成研究至2029-02-20，组件、网关和模块的现场集成联调最晚至2029-05-20。这意味着采购重点是研究、样机和互通验证，离规模化生产部署、验收和长期运维仍有多个阶段。\n\n对电力行业供应方，公告给出了比口号更具体的需求边界：既要覆盖端侧可信根和应用管控，也要处理通信链路、网关、主站架构及现场互通。投标方还需面对电力设备长生命周期、既有协议兼容、离线维护和回滚等工程问题，公告本身没有指定算法、参数或认证体系，不应补造。\n\n对其他采用方，这一事件的参考价值在于采购写法：将研究结论与样机数量、现场集成和时间节点绑定，便于后续验收。当前最值得跟踪的不是“是否已部署”，而是中标后的技术路线、互操作标准、性能指标和实际验收结果。\n\n## 量仔观察\n\n这项采购直接影响电力安全、密码产品和系统集成团队，证据是完整官方招标公告，阶段和金额清晰。读者可据此对照自己的资产盘点、网关和主站改造范围，但不要把招标当成应用完成；下一观察点是2026-12-03开标后的中标结果、算法参数、互通方案和2028—2029年的阶段验收材料。",
+      "category": "migration",
+      "tags": ["PQC迁移", "电力", "采购", "安全网关", "互操作"],
+      "source_name": "中国南方电网供应链统一服务平台",
+      "source_url": "https://www.bidding.csg.cn/zbgg/1200449385.jhtml",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方招标给出可量化的研究、样机、适配、联调和期限，采用方需求明确；仍处采购阶段，不能视为生产部署。"
+    },
+    {
+      "slug": "20261113-ietf-rfc6211-update-last-call",
+      "title": "IETF就RFC 6211算法保护属性修订启动Last Call",
+      "summary": "IESG对draft-ietf-lamps-rfc6211-update-04启动IETF Last Call，意见截止2026-12-02。草案拟纠正CMS算法保护属性的ASN.1对象标识符，并加入单实例计数约束；作者记录两种实现因RFC与IANA编号不一致而无法互通。该文件目标为Proposed Standard，尚未获批。",
+      "content": "2026-11-12 00:49 UTC，IESG对draft-ietf-lamps-rfc6211-update-04启动IETF Last Call，征求意见至2026-12-02。流程状态必须准确表述：这是一份LAMPS工作组Internet-Draft，目标是Proposed Standard，尚未成为RFC，也不代表IESG已经批准。\n\n草案更新RFC 6211中CMS Algorithm Identifier Protection属性的定义。现行RFC把id-aa-cmsAlgorithmProtect写成1.2.840.113549.1.9.52，而IANA登记一直是1.2.840.113549.1.9.16.2.52；修订稿采用IANA一致的后者，并说明IANA注册表无需改变。\n\n这不是纯文字勘误。作者明确记录两种RFC 6211实现因分别使用RFC正文和IANA登记的对象标识符而不能互操作。对CMS、S/MIME以及使用该属性的PKI工具链，OID差异会直接造成编码、解析或验证结果不一致。\n\n修订稿还在ASN.1属性定义中加入COUNTS MAX 1，呼应RFC正文关于属性只能出现一次、属性值不能为零个或多个的要求。作者同时说明，这类约束并不能自动强制所有正文要求，实施者仍需在解析和验证逻辑中检查异常实例。\n\n安全意义来自该属性的用途：它把消息中的摘要、签名、MAC或内容加密算法标识绑定起来，降低攻击者替换算法后诱使验证方采用不同算法的风险。如果实现使用不同OID，原本的保护也无法按预期互通。因此修订同时涉及互操作与算法替换防护。\n\n实现团队现在应盘点编码器、解码器、测试向量和证书/CMS中间件使用的OID，并准备对修订稿做双向互通测试。由于Last Call仍可能带来文本或规范变化，生产规则不宜提前把草案状态写死；意见应按公告发送至last-call邮件列表，并抄送LAMPS相关列表。\n\n## 量仔观察\n\n该节点主要影响CMS、S/MIME、PKI库和验证设备维护者。证据为IESG公告与草案全文，问题和修订可直接核查，但最终标准文本尚未确定。读者可先定位错误OID并建立兼容测试，不应宣称新RFC已发布；下一观察点是2026-12-02 Last Call结束后的IESG处理、勘误处置和RFC Editor状态。",
+      "category": "standards",
+      "tags": ["IETF", "CMS", "RFC 6211", "Last Call", "ASN.1"],
+      "source_name": "IETF Announce",
+      "source_url": "https://mailarchive.ietf.org/arch/msg/ietf-announce/YtwU3nijm7Rqs6FBM33Gf0NhnNE/",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：IESG公告与草案全文可读，修订对应已记录的实现互通失败和算法替换防护；当前仅为Last Call，尚未批准。"
+    },
+    {
+      "slug": "20261113-ietf-bpsec-cose-last-call",
+      "title": "IETF就BPSec的COSE安全上下文启动Last Call",
+      "summary": "IESG对draft-ietf-dtn-bpsec-cose-18启动IETF Last Call，意见截止2026-12-02。草案为Bundle Protocol Security定义COSE完整性与机密性上下文、算法互通配置、PKIX证书和CDDL规则，并拟更新RFC 9172。它面向延迟容忍网络，当前仍是拟议标准草案。",
+      "content": "2026-11-11 17:27 UTC，IESG宣布对draft-ietf-dtn-bpsec-cose-18进行IETF Last Call，评论截止2026-12-02。文档由Delay/Disruption Tolerant Networking工作组提交，目标状态为Proposed Standard；它仍是Internet-Draft，只有获批并完成RFC编辑流程后才会成为正式RFC。\n\n草案解决Bundle Protocol Security（BPSec）的一个工程空缺。RFC 9172定义了完整性块和机密性块的结构与编码，却没有给出具体安全上下文；新草案把CBOR Object Signing and Encryption（COSE）的签名、MAC、加密和密钥派生机制配置到这些块中。\n\n为减少不同实现各自选算法造成的互通失败，文本按算法家族给出COSE配置和最低互操作要求，并定义公钥证书配置。内容覆盖对称算法、ECC、RSA和ML类算法，还讨论多个签名、多个接收者、密钥标识、PKIX验证以及算法降级等运维与安全问题。\n\n文档还用CDDL补充可扩展安全块内容规则，拟更新RFC 9172。对航天、灾害通信和间歇连接网络，这类规则有实际价值，因为节点可能长时间离线、时钟不稳定，证书状态和密钥分发不能照搬持续联网环境。\n\n范围也有明确边界：草案不定义CA如何签发证书、私钥如何配置、CRL如何部署，也不替网络运营者决定安全策略。即使规范通过，实施者仍需为节点身份、撤销、算法组合和密钥生命周期制定环境相关规则。\n\n工程团队可在Last Call期间核对已有BPSec实现对COSE消息、CDDL、证书和多接收者结构的解析，并提交可复现的互通问题。由于规范仍可能改变，不宜把草案版本18直接写入长期兼容承诺；更不能把“拟更新RFC 9172”描述成已经更新。\n\n## 量仔观察\n\n这项标准节点主要影响DTN、航天链路和离线容忍系统开发者，受众较窄但机制完整。直接证据来自IESG公告和草案全文，状态清楚；读者可在2026-12-02前提交互通与运维意见。下一观察点是IESG评议、算法配置是否调整，以及后续RFC发布和独立实现间的互操作测试。",
+      "category": "standards",
+      "tags": ["IETF", "BPSec", "COSE", "DTN", "Last Call"],
+      "source_name": "IETF Announce",
+      "source_url": "https://mailarchive.ietf.org/arch/msg/ietf-announce/-sXfyv01nHU5ZaUOuktdkL8r8Lo/",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：Last Call公告和草案机制、范围及安全章节均可读，对DTN互通有明确价值；受众较窄且尚未获批，列P2。"
+    },
+    {
+      "slug": "20261113-screenconnect-sckit-campaign",
+      "title": "Huntress披露ScreenConnect面板批量部署SCKit的真实攻击",
+      "summary": "Huntress在2026-11-11观察到攻击者通过多个云托管ScreenConnect面板批量下发命令，至少影响其可见范围内288台主机和48家组织。SCKit具备从终端向技术员工作站再传播的设计，但研究者尚未观察该链成功；ConnectWise仍在调查初始入口和完整范围。",
+      "content": "2026-11-11 17:47 UTC左右，Huntress在多个ScreenConnect环境发现异常活动：操作者利用云托管面板的批量命令能力，在约90分钟内向至少288台主机部署攻击者控制的第二个ScreenConnect客户端和SCKit工具包，涉及其可见范围内48家组织。\n\n事件证据来自Huntress的实际遥测和恶意工具分析，属于已确认攻击活动，不是根据CVE严重度推测。与此同时，ConnectWise在当日22:45 UTC的通告中表示，已识别五个可能相关的第三方扩展，并预防性地在约400个合作伙伴环境中禁用；扩展存在本身不等于环境已遭入侵。\n\n初始入口和完整范围仍未确定。研究者看到的是攻击者从多个面板主动批量下发命令，而不是SCKit自动完成跨环境扩散。代码确实设计了“受感染终端—技术员工作站—其他会话”的自传播路径，但Huntress明确称，在已检查日志中控制台接管尝试均失败，尚未观察该传播链成功。\n\n这一区分会改变处置方式。运营团队不能只等待产品漏洞编号或KEV收录，应立即审计Run Command和Toolbox历史、检查是否出现未授权的第二个客户端，并从独立可信通道调查疑似主机。不要直接通过ScreenConnect连接可疑终端，以免让技术员工作站暴露给尚未完全厘清的传播逻辑。\n\n隔离也不等于清除。Huntress报告有主机解除隔离后再次受影响，建议在可信终端上终止活动会话、轮换相关凭据与身份提供方会话，保全审计日志，并确认异常客户端和持久化均已移除后再恢复服务。本文不复述可利用步骤或恶意代码。\n\n当前不能把事件归因为ScreenConnect本体的新漏洞，也不能把五个扩展全部定性为恶意。防守方应把“已确认攻击”“工具具备某能力”“初始入口未知”分开记录，并持续关注ConnectWise、Huntress及受影响MSP后续公布的范围和根因。\n\n## 量仔观察\n\n这起事件对MSP、远程运维团队和PSIRT具有即时行动价值，E3证据包括真实遥测、厂商处置和工具分析。局限是完整范围与入口仍未知，自传播也未观测成功。读者应先用带外工具排查、撤销会话并核对第三方扩展；下一观察点是ConnectWise的根因结论、受影响版本或扩展清单及可验证的清理结果。",
+      "category": "security",
+      "tags": ["ScreenConnect", "SCKit", "MSP", "攻击活动", "事件响应"],
+      "source_name": "Huntress",
+      "source_url": "https://www.huntress.com/blog/sckit-worm-rogue-screenconnect",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：研究者真实遥测与厂商处置互相印证，跨多个MSP环境且需立即带外排查；入口和自传播成功与否仍有明确不确定性。"
+    },
+    {
+      "slug": "20261113-apache-httpd-2471-cve-2026-119618",
+      "title": "Apache HTTP Server 2.4.71修复mod_http2远程代码执行风险",
+      "summary": "Apache HTTP Server项目发布2.4.71，修复CVE-2026-119618：mod_http2在并发共享资源同步不当时可发生堆破坏并导致远程代码执行，影响httpd 2.4.55—2.4.70及mod_h2 2.0.8—2.0.42。官方未声明存在在野利用，运营方仍应优先升级外网实例。",
+      "content": "2026-11-11，Apache HTTP Server项目发布2.4.71，并在官方安全清单中列出三项修复。其中CVE-2026-119618被Apache评为critical，涉及mod_http2的assign_headers函数在并发执行时对共享资源同步不当，可造成堆内存破坏并进一步导致远程代码执行。\n\n受影响范围由上游明确给出：Apache HTTP Server 2.4.55至2.4.70，以及GitHub发布的mod_h2 2.0.8至2.0.42。2.4.71于同日提供修复。资产盘点不能只看操作系统包名，还应确认发行版是否回移补丁、是否启用HTTP/2模块，以及实际加载的mod_h2版本。\n\n同一版本还修复CVE-2026-106023和CVE-2026-109163。前者是mod_md空指针解引用导致子进程崩溃，影响2.4.30至2.4.70；后者是mod_vhost_alias的一字节栈覆盖，影响2.4.69和2.4.70。三项严重度与前提不同，不应把整批修复都写成远程代码执行。\n\n截至本期核验，Apache公告没有声称CVE-2026-119618已被在野利用，CISA KEV也不是本文的利用证据；但[Red Hat的官方CVE说明](https://access.redhat.com/security/cve/cve-2026-119618)称，公开研究已经在启用mod_http2的默认配置服务器上展示可靠利用。应把“存在公开可靠复现”与“确认在野利用”分开，不能把前者遗漏，也不能把它升级成正在发生的攻击。\n\n处置优先级因此很高。维护者应先升级面向互联网且启用mod_http2的实例到2.4.71或采用发行版等效修复，随后核对反向代理、容器基础镜像和托管面板内嵌版本。Red Hat同时指出，RHEL 9和10的分配器差异增加利用复杂度并将其产品评级定为Important，发行版差异需要单独核查。\n\n升级后还应做回归验证，确认HTTP/2协商、代理链、连接复用和限流策略未被版本变化影响。由于内存破坏类缺陷可能表现不稳定，单次压测无异常不能证明旧版本安全；真正的完成条件是修复版本或可核验的回移补丁已进入生产资产。\n\n## 量仔观察\n\n该修复影响广泛的Web基础设施，官方版本范围、后果和公开可靠复现构成较强证据，且升级动作明确，因此列为高优先级；但没有在野利用证据，不能制造正在遭攻击的印象。读者应优先盘点外网HTTP/2实例和发行版补丁状态；下一观察点是CISA KEV变化、更多发行版公告及上游利用状态更新。",
+      "category": "security",
+      "tags": ["Apache HTTP Server", "CVE-2026-119618", "mod_http2", "RCE", "漏洞修复"],
+      "source_name": "Apache HTTP Server Project",
+      "source_url": "https://httpd.apache.org/security/vulnerabilities_24",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：Apache上游明确影响版本与修复版，Red Hat记录公开可靠复现，外网HTTP/2实例需要及时升级；尚无在野利用证据。"
+    },
+    {
+      "slug": "20261113-gemini-4-hydrogen",
+      "title": "Google发布Gemini 4 Hydrogen并向AI Studio与API开放",
+      "summary": "Google发布面向快速执行与Agent工作流的Gemini 4 Hydrogen，已在AI Studio、Gemini API、企业与消费产品中开放，提供100万Token统一上下文和四档thinking，价格为每百万输入/输出Token 1.50/7.50美元。独立评测显示质量与耗时存在明显档位权衡，完整安全报告仍待发布。",
+      "content": "2026-11-12，Google发布Gemini 4 Hydrogen，定位为快速执行、日常编码和Agent工作流模型，并在Google AI Studio各层级、Gemini API、企业版、Gemini应用、Search及付费Antigravity中开放。它是独立模型层级，不是此前Carbon发布的改名或维护更新。\n\n开发者侧最直接的变化是可用性和成本：Hydrogen提供100万Token上下文窗口，统一定价为每百万输入Token 1.50美元、每百万输出Token 7.50美元，并提供low、medium、high和xhigh四档thinking。官方把high设为默认，允许用户在延迟、输出长度和任务质量之间选择。\n\nGoogle公布了多项自测，包括Terminal-Bench 4.1、Agents’ Last Exam、AutomationBench-AA和OSWorld-2.1。厂商称其相对Gemini 3.8 Flash在终端任务上更快且得分更高，也公布了权限边界和间接提示注入测试；这些均应写成Google自测，不能当成第三方已经复现。\n\nArtificial Analysis提供了独立锚点：其指数中xhigh和high档得分不同，xhigh每项任务耗时和成本也明显高于low档。这说明“同一模型”在不同thinking设置下并非单一性能点，团队做选型时应锁定具体档位、提示、工具和预算，而不是只比较榜单最高分。\n\n安全证据仍不完整。模型卡披露当前自动化评测结果，并指出完整Safety & Security Report将在后续发布；过度拒答等指标也并非全面改善。Hydrogen是托管API与产品能力，并未发布权重，因此“开放使用”不能写成开源。\n\n对工程团队，合理动作是以真实任务建立小规模A/B测试，分别记录准确率、工具调用成功率、端到端时延、输出Token和单任务成本。采用Agent模式时还应测试失败回退、权限检查和间接提示注入，不要用厂商平均值替代自身工作负载。\n\n## 量仔观察\n\nHydrogen影响API开发者、企业Agent平台和高吞吐推理采购，正式可用、定价和模型卡构成E3证据，独立评测补充了档位权衡。局限是多数能力数字仍来自厂商，完整安全报告未出。读者可立即做受控换型测试；下一观察点是安全报告、更多独立复测以及不同区域和企业功能的实际可用性。",
+      "category": "ai",
+      "tags": ["Gemini 4 Hydrogen", "大模型", "Agent", "API", "模型评测"],
+      "source_name": "Google",
+      "source_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-hydrogen/",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：模型已广泛正式可用，价格、上下文和模型卡明确，并有独立评测锚点；完整安全报告尚待发布，厂商成绩未冒充独立结论。"
+    },
+    {
+      "slug": "20261113-salesforce-sov-transcribe-1",
+      "title": "Salesforce发布SOV-Transcribe-1开放权重语音模型",
+      "summary": "Salesforce发布SOV-Transcribe-1非流式语音识别模型，26B总参数、4B激活参数，权重以Apache-2.0许可开放。Artificial Analysis给出2.3% AA-WER并列其为开放权重模型第一，但VoiceCodeBench属私有榜、其余多项结果来自团队自测，技术报告也尚未发布。",
+      "content": "2026-11-12，Salesforce Sovereign Intelligence发布SOV-Transcribe-1，一款面向非流式自动语音识别的开放权重模型。官方给出的规模为260亿总参数、40亿激活参数，权重已在Hugging Face以Apache-2.0许可提供，适合需要在自有基础设施处理语音的团队评估。\n\n模型强调实体恢复、口音和噪声鲁棒性、格式指令与上下文偏置。例如用户可以要求数字写法、保留或删除语气词，或提供专业词汇提示。它面向批量转写、呼叫中心、听写和语音Agent，不是流式低延迟ASR；Hugging Face页面当前也没有托管Inference Provider。\n\n独立评测提供了重要锚点。Artificial Analysis的非流式语音榜给出约2.3%的AA-WER，并把它列为开放权重模型第一、总榜第七。官方文章引用的VoiceCodeBench则是第三方私有榜，任务成功率76.3%、实体恢复率93.4%，方法和数据不可按公开基准同等复现。\n\nSalesforce还公布14种英语口音、真实财报电话噪声和格式偏好等测试结果。这些数字有助于理解目标场景，但主要由发布团队执行。模型卡中的单卡吞吐与30秒音频延迟使用RTX PRO 6000 96GB、BF16和特定开发版vLLM，不能直接外推到消费级GPU或不同批量设置。\n\n“开放权重”也不自动等于完整开源研究。权重许可清楚，但技术报告仍标注即将发布，训练数据、训练配方和更完整的风险评估尚不足。语音系统还涉及隐私、口音公平性、敏感实体误识别和下游工具误调用，部署方需要单独建立治理措施。\n\n可行动的评估方法是用本机构的口音、噪声、实体和合规数据做盲测，同时比较显存、批处理、实时系数和总成本。对涉及账户、药品或代码符号的工作流，应把关键实体正确率与人工复核纳入验收，而不是只看平均WER。\n\n## 量仔观察\n\nSOV-Transcribe-1对希望本地部署语音Agent和呼叫中心转写的团队最有价值，权重、许可与独立AA-WER属于较强证据；私有榜和厂商吞吐仍有局限。读者可立即下载做场景化评估，但不宜跳过隐私和人工复核；下一观察点是技术报告、更多语言独立测试以及稳定推理框架支持。",
+      "category": "ai",
+      "tags": ["SOV-Transcribe-1", "语音识别", "开放权重", "ASR", "独立评测"],
+      "source_name": "Hugging Face",
+      "source_url": "https://huggingface.co/blog/salesforce-sovereign-intelligence/sov-transcribe-1",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：权重与Apache-2.0许可已可核验，并有独立AA-WER；技术报告未出、部分榜单私有且吞吐为厂商条件测试。"
+    },
+    {
+      "slug": "20261113-alphaproof-code-signal-verification",
+      "title": "DeepMind用AlphaProof Code验证Signal核心机器码安全性质",
+      "summary": "Google DeepMind发布AlphaProof Code研究：人类确定并审核Lean规格，AI代理为libsignal的AArch64机器码生成约650万行机器核验的证明，覆盖PQXDH与Triple Ratchet。结果把协议性质连接到未修改实现，但依赖受信规格、外部函数契约和理想化密码假设，且计算模型结论主要针对经典攻击者。",
+      "content": "2026-11-10，Google DeepMind发布AlphaProof Code研究及形式化产物，报告用多代理AI框架验证libsignal参考实现的关键安全性质。研究对象是标准rustc编译后的AArch64机器码，而不是为证明专门改写的玩具实现，覆盖Signal的PQXDH握手和Triple Ratchet。\n\n工作流把AI输出与可信检查分开。人类研究者决定要证明的性质并审核Lean规格，规格编写代理协助形式化；证明代理随后生成证明，只有Lean内核核验、且比较器确认对应保留规格的结果才被接受。团队报告约650万行机器核验的Lean证明，建立在约2.6万行受信规格和AArch64语义之上。\n\n论文称证明连接了前向保密、认证、失陷后安全和握手保密等协议性质与编译后二进制。研究者还把两个已修复的历史缺陷重新引入隔离版本，系统证明相应安全定理不再成立，用于检验规格能否区分正确和错误代码。公开形式化产物允许社区检查，而不是只接受模型自然语言答案。\n\n这项结果不能简化成“Signal已被证明绝对安全”。读者必须信任Lean内核、人工批准的规格、AArch64语义、外部例程契约以及底层密码原语假设；没有写进规格的漏洞类别不会自动被排除。论文也只验证特定编译目标、命令行封装和固定范围，不覆盖所有平台、产品集成与运行环境。\n\n后量子表述尤其需要克制。论文说明，计算安全证明面向经典攻击者，未来量子攻击者的握手保密主要在符号模型中讨论；某些ratchet定理还允许攻击者选择部分SPQR密钥，因此不能把当前结果写成对全部后量子恢复性质的完整计算证明。\n\n对研发团队，真正可复用的是方法：让AI扩大证明工程规模，同时把规格、信任基和机器检查结果交给人类审阅。若应用到其他关键系统，应优先公开规格、构建链、外部函数契约和未覆盖范围，并用已知缺陷做负向验证。\n\n## 量仔观察\n\n这项研究影响形式化验证、密码协议和AI辅助研发团队，完整论文与证明产物构成E3证据，规模和实现层级具有实质新增。局限集中在规格与信任基，而非Lean检查本身。读者可审计公开产物并评估可迁移性；下一观察点是第三方复核、其他架构复现，以及更完整的量子计算安全和多会话证明。",
+      "category": "ai",
+      "tags": ["AlphaProof Code", "形式化验证", "Signal", "Lean", "AI研发"],
+      "source_name": "Google DeepMind",
+      "source_url": "https://deepmind.google/blog/introducing-alphaproof-code/",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：论文与机器核验证明产物公开，首次把大规模AI证明工程连接到libsignal机器码；结论受规格、契约、架构和攻击模型限制。"
+    },
+    {
+      "slug": "20261113-morning-scabbard-ctlen-review",
+      "title": "上海AI实验室报告MORNING-Scabbard长度检查可转化为长期密钥恢复",
+      "summary": "上海AI实验室研究者在NGCC公开评议中称，MORNING-Scabbard提交实现若允许调用方控制ct_len，可令FO比较跳过，并把共享密钥相等性转成消息判定预言机；团队报告对三组参数分别用3168、4608和9216次官方解封调用恢复长期秘密。该结论尚无独立复测或提交团队回应。",
+      "content": "2026-11-12，上海人工智能实验室研究者在NICCS的NGCC公钥征集公开评议归档发布MORNING-Scabbard（kem-24）新分析。评议对象是Round 1归档包，作者为Hao Yan、Yuhang Cao、Yao Tong和Qiaosheng Zhang，并说明由多种模型辅助发现、再经人工复核。\n\n此前评议已指出提交实现没有严格校验密文长度。新帖进一步声称：如果调用界面允许攻击者提供完整密文缓冲区却把ct_len声明为0，Fujisaki–Okamoto比较会被跳过，派生中的固定哈希输入可被预测；共享密钥是否相等随后可用作消息相等性的判定信号。\n\n研究团队称，通过选择稀疏输入并逐步筛选系数组合，对官方Reference Scabbard-128、256和512分别进行3168、4608和9216次official kem_dec调用后，恢复出的长期IND-CPA秘密与official kem_keygen输出逐字节一致。这是评议者的实验陈述，不是ICCS官方评审结论。\n\n证据仍有重要缺口。公开附件包含README、离线模拟和DFR替代模型，但不生成真实密钥或密文，也不调用提交版KEM API，因此没有把帖子声称的端到端恢复完整交给第三方复现。扫描截止时未见提交团队回应、修复版本或独立复测，ngcc.dev也尚无对应稳定finding ID。\n\n攻击前提必须保留：上层接口要允许不可信调用者控制ct_len_bytes。如果封装层始终强制固定密文长度，直接暴露会显著下降；但库实现仍应在密码边界自行拒绝长度不符输入，不能把安全完全寄托于调用方。帖子中的DFR和矩阵结构分析也只是额外主张，不应与已声称的密钥恢复混成一个结论。\n\n候选实现维护者应先在API边界加入固定长度检查，并用归档版本做回归和端到端复测；评估方应保存准确的提交包哈希、参数集和编译配置。修复提出不等于复测通过，旧版问题也不能未经验证直接套到未来版本。\n\n## 量仔观察\n\n这项评议若成立会影响长期密钥安全，采用者和评审者应立即关注；但当前只有原始评议者报告，附件不足以独立重跑端到端攻击，所以列P2而非P1。读者可先强制长度校验、隔离提交版实现并要求复现材料；下一观察点是提交团队回应、完整代码日志、独立复测及稳定finding分类。",
+      "category": "ngcc",
+      "tags": ["NGCC", "MORNING-Scabbard", "KEM", "实现安全", "公开评议"],
+      "source_name": "NGCC PKC Forum",
+      "source_url": "https://list.niccs.org.cn/archives/list/pkcforum@list.niccs.org.cn/message/B2RYPKXMBW55CE4HBVGTBUI4IQMO2PC7/",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3原始评议记录、但结论成熟度仅中等：作者报告可恢复长期秘密，公开附件却不是端到端复现，尚无独立复测或团队回应。"
+    },
+    {
+      "slug": "20261113-flit512-avx2-findings",
+      "title": "ngcc.dev确认FLIT512 AVX2逆NTT与栈越界两项实现缺陷",
+      "summary": "独立分析站ngcc.dev为FLIT512提交版AVX2实现新增kem-15-4和kem-15-5，均标为Low、Confirmed、Implementation：前者在5万次测试中出现8次诚实封装与解封密钥不一致，后者在每次操作触发固定栈越界写，并令clang构建200次往返全部失败。尚未证明秘密恢复或可控利用。",
+      "content": "2026-11-12，独立分析站ngcc.dev为NGCC候选FLIT（kem-15）新增kem-15-4和kem-15-5。两项均针对Round 1归档包中的FLIT512 AVX2实现，站点分类都是Severity Low、Status Confirmed、Layer Implementation；这些标签属于ngcc.dev，不代表ICCS官方评审。\n\nkem-15-4定位到AVX2逆NTT的16位整数溢出。报告在归档KAT种子流上运行5万次往返，8次出现诚实封装与解封得到不同共享密钥，约为1.6×10^-4，第一次在第11058次；参考实现、替换为标量逆变换的对照以及FLIT128/256 AVX2对照没有失败。\n\n这一结果证明的是正确性和互通故障，不是秘密相关解封失败。报告把错误归因于封装侧乘积进入逆变换时的有符号表示和溢出，并明确没有展示基于秘密密钥的解封预言机，因此没有把Low升级为密钥恢复或机密性破坏。\n\nkem-15-5则定位到base multiplication和base inverse中的固定栈越界读写。AddressSanitizer在首次密钥生成即可报告8字节或16字节越界；报告称GCC 15.2布局下未见功能失败，但clang 21构建的200次往返全部失败，扩容相关数组后则全部通过。\n\n越界写涉及密钥生成、封装和解封路径，值得立即停用提交版AVX2实现；但当前没有证明攻击者可控制覆盖值、读取内存或改变控制流。不能因为出现“栈越界”就把它写成远程代码执行，也不能把“Confirmed”理解为本站或ICCS复现了任意攻击链。\n\n报告给出原始issue、复现脚本和仓库提交，证据可审计。扫描截止时未见FLIT提交团队针对这两项新finding的修复回应或复测通过记录；旧finding的修复也不能自动覆盖本次逆NTT和栈数组问题。\n\n## 量仔观察\n\n这两项发现直接影响使用提交版FLIT512 AVX2做评估或集成的团队，复现证据强，适合立即停用并回归测试；影响目前限于正确性和内存安全，未展示秘密恢复或远程利用。下一观察点是提交团队补丁、独立复测、编译器范围及修复版是否同时消除密钥不一致与越界。",
+      "category": "ngcc",
+      "tags": ["NGCC", "FLIT512", "AVX2", "实现缺陷", "内存安全"],
+      "source_name": "ngcc.dev",
+      "source_url": "https://ngcc.dev/reports/kem-15.html",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：独立站报告、原始issue和复现脚本可审计，提交版AVX2需立即停用或回归；当前仅确认Low级正确性/内存安全影响。"
+    },
+    {
+      "slug": "20261113-netscaler-memory-fixes",
+      "title": "NetScaler修复28项内存缺陷，默认部署也受其中一项影响",
+      "summary": "CERT-EU于2026-11-12通报NetScaler ADC/Gateway修复28项内存缺陷，其中CVE-2026-120868影响包括默认配置在内的部署，CVE-2026-107412涉及启用Gateway或AAA的入口。官方未报告在野利用或公开PoC，互联网暴露设备仍应优先升级。",
+      "content": "2026-11-12，CERT-EU发布2026-020安全公告：NetScaler ADC与Gateway修复28项内存安全缺陷。CVE-2026-120868无需认证且默认配置也受影响，厂商描述的后果为不可预测行为或拒绝服务；CVE-2026-107412同样无需认证，但前提是启用Gateway或AAA。\n\n修复版本为14.1-73.57、13.1-64.39、14.1-73.58 FIPS及13.1-37.293 FIPS/NDcPP或更高版本。其余缺陷是否可达取决于具体功能配置。公告明确未报告已知在野利用或公开PoC，因此不能把高分、远程可达或互联网暴露写成“已经被利用”。运营方应先盘点Gateway/AAA与公网管理面，备份配置后升级，并按NetScaler支持矩阵完成高可用切换和回归验证。",
+      "category": "flash",
+      "tags": ["安全快讯", "NetScaler", "CVE-2026-120868", "漏洞修复"],
+      "source_name": "CERT-EU",
+      "source_url": "https://cert.europa.eu/publications/security-advisories/2026-020/",
+      "cover_image": null,
+      "published_at": "2026-11-13T08:23:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：CERT-EU基于厂商公告给出前提和修复版本，互联网入口可立即升级；没有在野利用或公开PoC证据。"
+    }
+  ]
+}
