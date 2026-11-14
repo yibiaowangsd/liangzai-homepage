@@ -1,0 +1,67 @@
+{
+  "kind": "arithmetic_model_not_protocol_measurement",
+  "assumptions": [
+    "no address validation yet",
+    "no further received datagrams",
+    "no previous server sends",
+    "target includes all server UDP payload bytes",
+    "loss, pacing, congestion, CPU and packet scheduling are not modeled"
+  ],
+  "rows": [
+    {
+      "received_udp_payload_bytes": 1200,
+      "server_target_wire_bytes": 6000,
+      "unvalidated_budget_bytes": 3600,
+      "shortfall_bytes": 2400
+    },
+    {
+      "received_udp_payload_bytes": 1200,
+      "server_target_wire_bytes": 12000,
+      "unvalidated_budget_bytes": 3600,
+      "shortfall_bytes": 8400
+    },
+    {
+      "received_udp_payload_bytes": 1200,
+      "server_target_wire_bytes": 18000,
+      "unvalidated_budget_bytes": 3600,
+      "shortfall_bytes": 14400
+    },
+    {
+      "received_udp_payload_bytes": 2400,
+      "server_target_wire_bytes": 6000,
+      "unvalidated_budget_bytes": 7200,
+      "shortfall_bytes": 0
+    },
+    {
+      "received_udp_payload_bytes": 2400,
+      "server_target_wire_bytes": 12000,
+      "unvalidated_budget_bytes": 7200,
+      "shortfall_bytes": 4800
+    },
+    {
+      "received_udp_payload_bytes": 2400,
+      "server_target_wire_bytes": 18000,
+      "unvalidated_budget_bytes": 7200,
+      "shortfall_bytes": 10800
+    },
+    {
+      "received_udp_payload_bytes": 3600,
+      "server_target_wire_bytes": 6000,
+      "unvalidated_budget_bytes": 10800,
+      "shortfall_bytes": 0
+    },
+    {
+      "received_udp_payload_bytes": 3600,
+      "server_target_wire_bytes": 12000,
+      "unvalidated_budget_bytes": 10800,
+      "shortfall_bytes": 1200
+    },
+    {
+      "received_udp_payload_bytes": 3600,
+      "server_target_wire_bytes": 18000,
+      "unvalidated_budget_bytes": 10800,
+      "shortfall_bytes": 7200
+    }
+  ],
+  "mldsa65_two_cert_plus_cv_plus_hybrid_share_lower_bound_bytes": 14951
+}
