@@ -1,0 +1,220 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-14",
+  "coverage": {
+    "pqc": {
+      "count": 1,
+      "note": "首轮检查IACR ePrint、arXiv、NIST/PQShield、KpqC及实现入口，覆盖学术、评估、企业研发与实现角色，并检索中国、韩国、北美和欧洲线索；时间窗扩至72小时。采用IACR 2026/2865的Cortex-M4 NTT侧信道研究。AIMer v3无新回应；Signatures Zoo页面日期与搜索缓存冲突，未作为新增。"
+    },
+    "migration": {
+      "count": 1,
+      "note": "检查南方电网、苏州银行、民生银行、GSA、加拿大SSC及Cyera、Horizen Labs等采用方与供给方入口，覆盖国内、北美与欧洲线索；扩至72小时。采用南网北京研究院可完整读取的二次采购。南网超高压11月13日两项应用验证官方页重开失败；苏州银行与南京南瑞仅有转载或聚合，列待跟进。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "实际检查IETF TLS、EMU、IPSECME、SSHM、QUIC、RFC Editor、OQS及中外协议实现入口，覆盖标准组织与实现/部署两类角色并扩至7天。ML-KEM TLS/IKE仍在RFC Editor阶段，EAP-TLS后量子草案仍待write-up；所见个人草案或旧部署没有可核实的新状态，未成稿。"
+    },
+    "standards": {
+      "count": 2,
+      "note": "检查IETF Datatracker、RFC Editor、NIST、ETSI、ISO/IEC、ITU-T、3GPP及TC260公告，覆盖国际组织与国内标准入口。采用RPKI-to-Router v2进入IETF Last Call、TC260下达14项推荐性国标计划。ISO全文受访问限制；其余入口未发现同等重要且有新状态的节点。待跟进8210bis在2026-12-03后的IESG状态。"
+    },
+    "security": {
+      "count": 3,
+      "note": "扫描CISA KEV/CSAF、加拿大Cyber Centre、CERT-EU、JPCERT/JVN、HKCERT、新加坡CSA、CNCERT/CNVD/CNNVD及厂商PSIRT/研究入口，覆盖应急机构、受影响厂商和真实事件。采用Check Point在野利用、N-central新增IOC、Notion披露Fireworks客户侧影响。BSI/Danfoss原始PDF读取失败且版本摘要冲突；SignDrop无厂商确认、CVE、补丁或在野证据，继续跟进。"
+    },
+    "ai": {
+      "count": 2,
+      "note": "检查模型/产品、研究与独立评测、应用/产业三类角色，包括官方模型卡、Hugging Face、Arena、Artificial Analysis、HELM、METR和MLCommons，兼顾中外来源。采用Perplexity Decider v1.3及Inkling 2 Small权重与Agent Arena新增结果。Hy4 Cyber Index页面缺稳定发布日期；百度与Wizshot仅有单方简要材料，未成稿。"
+    },
+    "ngcc": {
+      "count": 1,
+      "note": "实际检查NICCS首页、公钥Round 1提案/评议、PKC Forum，以及ngcc.dev首页、443项finding索引、classification、Performance、Side-Channel和ngcc-harness。采用GreatWall/sign-13单方公开评议；无团队回应、稳定finding ID或复现代码。FLIT issue #39属11月13日已报事件且无修复变化，不重报。官方ZIP无法文本展开，改读固定哈希规格镜像；来源含运行指令式内容，仅作数据未执行。"
+    },
+    "flash": {
+      "count": 2,
+      "note": "复用八栏发现并补查TC260、CAC、工信部、CNCERT、腾讯云、阿里云、华为云、IPA与亚太CERT公告。采用TC260 2027年标准需求征集和腾讯云ADP天气工具下线。腾讯云文档解析计费亦属真实更新，但同源集中且行动紧迫度较低而放弃；IPA月报为趋势汇编，不作为新攻击事件。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261114-hit-single-trace-ntt-side-channel",
+      "title": "上海交大团队提出HIT单轨迹NTT侧信道推断，覆盖ML-KEM与ML-DSA实现",
+      "summary": "上海交通大学研究团队在IACR ePrint发布HIT层级推断树，以单遍树形合并替代循环置信传播，对Cortex-M4上的ML-KEM-768与ML-DSA实现开展profiling侧信道实验。论文报告显著缩短推断时间并恢复秘密多项式，但结论严格依赖所测实现、已知设备画像与采集条件，不代表标准算法数学安全性失效。",
+      "content": "原始公开日期：2026-11-11。上海交通大学研究团队在IACR ePrint发布论文2026/2865，提出Hierarchical Inference Tree（HIT，层级推断树），面向后量子标准ML-KEM与ML-DSA实现中的数论变换（NTT）功耗侧信道。研究对象是物理实现泄漏，不是对格困难问题或标准安全证明的数学攻击。\n\nNTT会直接处理秘密多项式，既有软分析侧信道攻击通常在含环的因子图上反复运行置信传播。作者认为，这类方法在噪声升高时可能振荡，并且更新成本随模数增大，使ML-DSA场景尤其昂贵。HIT利用小秘密输入会确定递归蝶形网络中间值的结构，从叶到根合并和剪枝候选，只进行一次树形推断。\n\n论文在ML-KEM-768上报告，HIT相对其选取的先进SASCA基线快超过900倍，并提高可容忍噪声；它还把同类单轨迹分析扩展到ML-DSA的NTT。这里的倍数来自作者实验配置和比较基线，不能外推到所有采集设备、编译选项、掩码实现或其他侧信道算法。\n\n在ARM Cortex-M4物理实验中，作者先用profiling设备建立泄漏模型，再对单条目标攻击轨迹推断秘密。论文报告ML-KEM-768用20条profiling轨迹即可完成目标秘密向量恢复；ML-DSA-44与ML-DSA-65在80条profiling轨迹条件下，多项式精确恢复率分别为100%与98.7%。这些数字描述特定实现和测量流程，并非无画像远程攻击。\n\n对实现团队而言，直接行动是把NTT中间值纳入侧信道评估，检查编译器、内存访问、蝶形调度和随机化是否留下可稳定建模的泄漏。仅以恒定运行时或隐藏单个中间量作为防护并不充分；需要结合掩码、随机化、泄漏检测和针对单轨迹推断的回归测试，同时验证防护不会在性能优化后被破坏。\n\n## 量仔观察\n\n受影响的首先是把标准算法移植到可被近距离测量的嵌入式设备、令牌与边缘硬件的团队，而不是所有ML-KEM或ML-DSA用户。证据为已读完整论文和实机实验，但尚缺跨实现独立复现。读者可据此扩充NTT泄漏测试而不必更换算法；下一观察点是作者代码、其他芯片复现以及掩码实现对HIT的抵抗结果。",
+      "category": "pqc",
+      "tags": ["ML-KEM", "ML-DSA", "侧信道", "Cortex-M4", "研究"],
+      "source_name": "IACR Cryptology ePrint Archive镜像",
+      "source_url": "https://eprint.iacr.asia/2026/2865",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：完整论文和实机实验可读，直接影响标准PQC在嵌入式设备上的实现评估；但攻击属于profiling侧信道，必须限定设备与采集前提。"
+    },
+    {
+      "slug": "20261114-csg-pqc-module-procurement-second-round",
+      "title": "南网北京研究院二次采购后量子加密模块测试加工服务",
+      "summary": "南网北京研究院重新启动后量子加密模块测试加工服务采购，预算29万元，要求供应方提供从加密协议到模块组装、加工、测试、验证与优化的全流程集成，服务期至2027-06-30。公告代表工程验证和供应商遴选节点，不是已中标、已交付或生产部署，响应截止时间为2026-11-19。",
+      "content": "原始公开日期：2026-11-11。南方电网供应链统一服务平台发布南网北京研究院2026年度加密模块测试加工服务公开谈判采购项目（二次采购）公告，采购编号为CG3100062002392742。项目预算29万元，实施地点为北京，服务期自合同签订起至2027-06-30。\n\n公告把采购对象明确为专业后量子密码厂商，要求具备加密模块组装、加工、测试和验证经验，并提供从加密协议到加密模块的全流程集成服务，配合优化与技术验证。这比单纯购买现成密码机更靠近工程样机和集成验证阶段，但公开页没有给出算法清单、接口规范、性能门槛或验收测试向量。\n\n本次标注为“二次采购”有直接背景：同一编号的原采购在2026-11-06公告中止，随后重新发布。新公告不是成交结果，也不能据此推断已有供应方或技术路线被选定。供应商获取文件截至2026-11-17 18:00，响应文件递交截至2026-11-19 09:00，后续谈判在远程形式下开展。\n\n对迁移项目而言，这项采购把协议、硬件组装和测试验证放在一个交付链条中，说明采用方关注的不只是算法可用，还包括接口、模块形态与集成后的可验证性。与此同时，公开信息没有说明是混合密码还是纯PQC、证书和PKI怎样衔接、硬件侧信道如何验收，也没有部署规模和业务系统范围。\n\n供应方若参与，应避免用通用基准替代项目验证，至少准备参数集、密钥与签名/密文尺寸、吞吐与延迟、失败处理、固件更新、回滚和生命周期证据。采用方则需要在采购文件和验收中固定算法版本、实现版本、测试向量、硬件配置与兼容边界，否则“模块完成”难以转化为可审计的迁移资产。\n\n## 量仔观察\n\n这项事件对电力密码设备供应商和承担模块集成的研发团队最有影响。证据来自南方电网官方完整公告，能确认采购范围与时间节点，但技术附件未公开，不能评价安全性或性能。读者当前可跟踪响应与成交结果；下一观察点是2026-11-19后的成交公示、最终验收指标以及是否形成可复用的电力场景接口。",
+      "category": "migration",
+      "tags": ["后量子迁移", "电力", "采购", "密码模块", "工程验证"],
+      "source_name": "南方电网供应链统一服务平台",
+      "source_url": "https://www.bidding.csg.cn/fzbgg/1200449445.jhtml",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方采购全文明确全流程集成、预算和截止节点，对国内PQC硬件工程化具有具体价值；尚处采购阶段，未形成部署或验收结论。"
+    },
+    {
+      "slug": "20261114-ietf-rpki-router-v2-last-call",
+      "title": "IETF启动RPKI-to-Router v2最后征询，草案加入ASPA与有序PDU处理",
+      "summary": "IETF将draft-ietf-sidrops-8210bis-29置于最后征询，截止2026-12-03，目标状态为Proposed Standard。草案把RPKI-to-Router协议升级到版本2，加入ASPA PDU、强制的载荷PDU顺序、缓存重启与关闭流程，并限制单个PDU最大64 KB；当前仍是工作草案，不能写成RFC已经发布。",
+      "content": "IETF公告原始时间：2026-11-12 20:37 UTC（北京时间2026-11-13 04:37）；草案版本日期：2026-11-12。IETF Datatracker显示draft-ietf-sidrops-8210bis-29已进入IETF Last Call，意见截止2026-12-03，拟发布类别为Proposed Standard。该状态表示全社区最后征询正在进行，并不等于IESG已批准或RFC Editor已完成出版。\n\n草案定义RPKI-to-Router（RTR）协议版本2，用于把经过密码学验证的前缀源、路由器密钥以及ASPA数据从可信缓存送到路由器。相较RFC 8210定义的版本1，本版新增ASPA PDU，以便传递自治系统提供商授权信息，同时保留与版本0和版本1的协商和降级路径。\n\n工程变化不只是一种新PDU。草案为缓存端规定载荷PDU顺序，并记录客户端处理选择，以降低更新竞态；还增加缓存重启、缓存关闭操作和相应错误码，澄清多缓存配置行为。单个PDU最大尺寸被限制为64 KB，实施者需要把边界检查、错误处理和事务切换纳入互通测试。\n\nDatatracker同时显示工作组状态为“Submitted to IESG for Publication”，IANA审查状态为“Version Changed - Review Needed”，安全领域审查当前状态为Requested，页面所列期望完成日期为2026-12-02。此前早期评审和Last Call评审留下的意见并不自动意味着文档不合格，但说明发布前仍可能修改，部署方不应把-29视为不可变的最终线格式。\n\nRPKI缓存与路由器实现团队可先以-29进行双版本互通、PDU顺序和重启/关闭故障注入测试，并确认遇到未知版本或超大PDU时不会造成状态不同步。网络运营者若计划ASPA验证，还应把缓存、路由器软件和监控告警作为一个升级单元，避免只升级一端后误判为数据缺失。\n\n## 量仔观察\n\n受影响的是RPKI缓存、路由器软件开发者和准备部署ASPA验证的网络运营者。状态与全文均来自IETF一手记录，证据充分，但协议仍可能在IESG处理阶段变化。读者可在2026-12-03前提交技术意见，并以草案做互通准备；下一观察点是Last Call结论、IANA复审和IESG是否要求新版本。",
+      "category": "standards",
+      "tags": ["IETF", "RPKI", "ASPA", "Last Call", "路由安全"],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/draft-ietf-sidrops-8210bis/29/",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：IETF状态页与草案全文可读，最后征询是明确标准节点，并对ASPA部署和实现互通有直接影响；尚未成为RFC。"
+    },
+    {
+      "slug": "20261114-tc260-fourteen-national-standard-plans",
+      "title": "TC260下达14项推荐性国家标准计划，覆盖非对称密钥管理与AI安全",
+      "summary": "全国网安标委下达14项网络安全推荐性国家标准计划，清单包含《密钥管理 第3部分：采用非对称技术的机制》、智能密码钥匙应用接口修订、两项数字签名附录修订，以及具身智能和拟人化AI安全项目。它们是获批的制修订计划而非已经生效的标准，最早一批应报批日期为2027-04-30。",
+      "content": "原始公开日期：2026-11-13；计划下达日期：2026-10-30。全国网络安全标准化技术委员会发布通知，转达国家标准化管理委员会下达的14项网络安全推荐性国家标准计划。通知要求相关工作组和牵头单位制定推进计划、协调研制并按期完成，当前节点是计划获批，不是标准文本发布或实施。\n\n密码相关项目包括计划号20265441-T-469《网络安全技术 密钥管理 第3部分：采用非对称技术的机制》，研制周期6个月，应报批日期为2027-04-30。另有20265440-T-469《智能密码钥匙应用接口规范》修订，周期12个月，应报批日期为2027-10-30。\n\n清单还列入两项带附录数字签名标准的修订计划，计划号为20265439-T-469与20265442-T-469，应报批日期均为2027-04-30。此时只能确认项目名称、计划号、性质和周期；通知附件未给出可供实施的最终条文，因此不能据此判断算法参数、接口兼容性或迁移要求已经改变。\n\n人工智能部分包括具身智能安全指南计划20265447-T-469，以及《网络安全技术 人工智能拟人化互动服务安全基本要求》计划20265428-T-469，两项应报批日期均为2028-01-30。它们显示国内标准研制开始细分到具身系统和拟人交互，但“指南”与“要求”的约束方式和具体适用对象仍要等待草案。\n\n密码库、智能密码钥匙、认证产品和AI系统供应商应先建立计划号到现有产品规范的映射，关注后续征求意见稿和兼容性变化。采购方不应把计划清单直接写成当前强制验收条件；在正式文本和实施日期明确前，更合适的做法是设置标准更新条款与版本可追溯性。\n\n## 量仔观察\n\n这批计划对国内密码产品、身份设备和AI安全合规团队影响最大。证据是TC260通知及完整附件，能够确认项目与时间表，但没有可执行条文。读者当前可把计划号加入标准观察清单，不宜抢跑宣称合规；下一观察点是征求意见稿、具体技术内容以及2027-04-30前后的应报批状态。",
+      "category": "standards",
+      "tags": ["TC260", "国家标准计划", "密钥管理", "数字签名", "AI安全"],
+      "source_name": "全国网络安全标准化技术委员会",
+      "source_url": "https://www.tc260.org.cn/tc260/tzgg/202611/67ff3c40ec9c4be5a794adb8b5319eb1.shtml",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方通知和附件明确计划号、项目名称与周期，关系国内密码和AI安全产品路线；目前仅为研制计划，紧迫性低于正式发布。"
+    },
+    {
+      "slug": "20261114-check-point-dynamiccli-exploitation-jhf",
+      "title": "Check Point披露DynamicCLI本地提权在野利用并发布JHF修复",
+      "summary": "Check Point确认CVE-2026-123039在少数案例中遭到在野利用，影响R80.30至R82.20的多类Gaia部署，永久处置是安装对应Jumbo Hotfix Accumulator。该漏洞本身是低权限本地用户到root的提权，并非远程初始入口；厂商研究显示实际攻击链先利用另一项Mobile Access PHP问题获得访问。",
+      "content": "原始通告日期：2026-11-12。Check Point发布三项Gaia相关漏洞通告，其中CVE-2026-123039为DynamicCLI本地权限提升，影响Management、Multi-Domain、Log Server和Security Gateway的R80.30至R82.20版本。厂商称已知少数在野利用案例，并提供新版JHF作为永久修复。\n\n漏洞边界必须准确理解：CVE-2026-123039需要本地低权限访问，作用是提升至root，不是无需认证的远程入口。[Check Point威胁研究](https://research.checkpoint.com/2026/php2shell-exploitation-on-check-point-gateway/)披露的实际链路中，攻击者先通过此前的Mobile Access PHP2Shell问题获得初始访问，再利用DynamicCLI完成提权。把两个阶段合并成“DynamicCLI远程RCE”会夸大该CVE自身能力。\n\n研究记录涉及2026-10-30和2026-11-02的攻击活动，部分以色列目标出现破坏行为；厂商同时指出更广泛扫描中未观察到同等破坏证据。现有一手材料能够确认少数在野利用，但没有证明每个暴露设备均已被攻陷，受害规模和攻击链覆盖范围仍需等待厂商后续更新。\n\n永久处置是按版本安装Check Point发布的Jumbo Hotfix Accumulator。若业务可以接受DynamicCLI功能损失，厂商还提供停用该服务的临时缓解。Spark防火墙不受这三项新CVE影响，但厂商明确提醒Spark仍可能受此前PHP RCE影响，因此资产筛选要按产品、版本和漏洞链分别处理。\n\n运营团队应优先核对互联网暴露的Mobile Access入口、Gaia版本和JHF状态，检查低权限账户与提权后的异常，而不是只在边界阻断一个IOC。无法立即打补丁时，应限制管理面访问并评估停用DynamicCLI的业务代价；完成修复后仍需调查此前暴露窗口，因为补丁不会自动消除既有驻留。\n\n## 量仔观察\n\n这起事件直接影响Check Point网关与管理平台的运营和应急团队。证据由厂商通告和研究报告相互支持，但个别受害范围仍由厂商描述。读者应立即核对JHF和初始入口暴露；下一观察点是厂商对攻击规模、IOC和补丁覆盖范围的后续更新，而非等待新的严重度评分。",
+      "category": "security",
+      "tags": ["Check Point", "CVE-2026-123039", "在野利用", "JHF", "权限提升"],
+      "source_name": "Check Point",
+      "source_url": "https://community.checkpoint.com/t5/General-Topics/ACTION-REQUIRED-Security-Advisory-Three-Vulnerabilities-Fixed-in/td-p/284887",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：厂商确认少数在野利用且已有JHF，属于需要立即核查和修复的网关提权风险；该CVE本身是本地提权而非远程初始入口。"
+    },
+    {
+      "slug": "20261114-nable-ncentral-legacy-api-iocs",
+      "title": "N-able为N-central Legacy API相关活动发布IOC并追加临时处置",
+      "summary": "N-able在2026-11-13更新N-central事件响应，称发现仅与未禁用Legacy API客户相关的失陷指标，并对托管环境实施临时保护、停用Intune集成。本地部署仍需确认Legacy API关闭、安装2026.4 HF2并升级Agent与Probe；厂商尚未在通告中确认所有出现IOC的环境均发生成功入侵。",
+      "content": "原始更新日期：2026-11-13。N-able更新N-central安全响应，公布一组与仍启用Legacy API的客户相关的失陷指标，并调整托管与本地部署的临时保护措施。这是相对2026-11-11“观察到公开PoC相关扫描、托管服务器未见失陷迹象”的实质新增，但仍需区分IOC、扫描和已确认入侵。\n\n厂商表述是调查发现与未关闭Legacy API客户相关的IOC，但未披露已确认成功入侵的客户范围。Legacy API在产品中默认关闭；曾为兼容旧集成而重新启用它的本地部署需要立即复核配置。公开IOC可用于排查，命中仍需结合进程、账户、网络和时间线证据判断。\n\nN-central Hosted环境已由N-able直接应用临时保护，服务器侧无需客户操作；厂商同时暂时停用Intune集成，等待额外保护完成验证。对本地部署，厂商要求确认Legacy API关闭，并继续遵循2026.4 HF2指导，包括升级服务器、Agent和Probe。不能把暂时停用集成写成漏洞已经彻底修复。\n\nN-able还表示正在评估2026-11-12的新披露并开发额外修复，说明HF2并非此次所有研究线索的最终终点。此前厂商称HF2已处理可由未认证用户利用的已识别问题，剩余问题需要认证账户或附加条件；运营者仍应以厂商最新公告和后续热修复为准，不应自行从PoC推导全部影响面。\n\n托管服务商和MSP应先导出Legacy API配置与使用方清单，关闭不需要的入口，确认HF2和端点组件版本，再以厂商IOC开展历史排查。若业务依赖Legacy API或Intune集成，需要记录临时中断、替代流程和恢复条件；恢复功能前应等待新增保护和验证，而不是仅因扫描减少就重新开放。\n\n## 量仔观察\n\n受影响的是运行N-central的MSP、托管运维团队和依赖旧API集成的客户。证据来自厂商连续两次一手更新，能确认IOC和处置变化，但没有证明全面成功入侵。读者可立即关闭Legacy API、完成HF2与组件升级并排查；下一观察点是追加热修复、功能恢复和厂商对已确认受害范围的说明。",
+      "category": "security",
+      "tags": ["N-able", "N-central", "Legacy API", "IOC", "热修复"],
+      "source_name": "N-able",
+      "source_url": "https://www.n-able.com/blog/new-security-update-on-n-central",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：厂商从仅确认扫描升级到发布Legacy API相关IOC和功能处置，对MSP有即时排查价值；仍未确认所有环境均遭成功入侵。"
+    },
+    {
+      "slug": "20261114-notion-fireworks-ai-transcripts-keys",
+      "title": "Notion披露Fireworks事件影响AI聊天记录并处置暴露密钥",
+      "summary": "Notion确认Fireworks AI安全事件影响少于1%的工作区，最终数据集包含Insights功能的Notion AI聊天记录；绝大多数受影响工作区的聊天无法归属具体作者或工作区，但正文中若含秘密仍可能暴露。公司已撤销发现的Notion API密钥，并把第三方API密钥报告给签发厂商。",
+      "content": "原始公开日期：2026-11-12；实质更新日期：2026-11-13。Notion发布Fireworks AI事件客户侧通告，称影响少于1%的Notion工作区。调查确认最终数据集包含用于Insights功能的Notion AI聊天记录；绝大多数受影响工作区的聊天无法归属具体作者或工作区，也不含工具调用结果，但聊天文本本身可能包含用户粘贴的敏感信息。\n\nNotion说明，2026-11-02最初获知被访问数据仅含合成测试数据，随后在11月6日被告知可能涉及客户数据，并于11月8日确认最终数据集、11月9日通知受影响客户。公司在11月3日切断与Fireworks的通信，11月4日删除Fireworks系统中的自身数据，并停用Insights。\n\n密钥处置形成了本次新增的重要部分：Notion在2026-11-11撤销受影响消息中发现的Notion API密钥，11月12日把发现的第三方API密钥报告给相应签发厂商，页面于11月13日记录该动作。通告没有声称这些第三方密钥都被滥用，因此应按“暴露并需轮换”处理，而非写成已发生后续攻击。\n\nFireworks此前通告称，底层事件涉及受限账户的秘密、部分数据集与不完整模型，调查仍在继续；Notion的更新首次把影响落到具体下游功能和聊天记录。Notion已不再通过Fireworks提供开权重模型。没有收到Notion通知的工作区当前无需采取事件专属操作，但仍可检查组织是否把凭据输入AI对话。\n\n受影响组织应使用Notion提供的安全渠道查看自身受影响数据，把其中出现的密码、API密钥或令牌按已暴露处理，并在签发端撤销和轮换，同时检查相应服务日志。只删除聊天或供应商侧副本不能使凭据失效。采购和架构团队还应核对AI功能的数据流、子处理方、保留期与零数据保留边界。\n\n## 量仔观察\n\n这起事件影响使用Notion AI Insights的企业安全、隐私和密钥管理团队，也提醒AI产品存在下游推理供应链。Notion与Fireworks一手通告相互补充，但调查尚未结束，不能推断全部数据或密钥均被利用。受影响者应立即轮换凭据；下一观察点是最终调查、供应商恢复条件及Notion是否给出更精确的数据范围。",
+      "category": "security",
+      "tags": ["Notion", "Fireworks AI", "供应链", "数据暴露", "API密钥"],
+      "source_name": "Notion",
+      "source_url": "https://www.notion.com/en-gb/security/advisories/security-incident-involving-a-third-party-ai-vendor",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：上下游双方一手通告确认客户数据与密钥处置，影响AI供应链和企业凭据管理；影响面小于1%，且密钥实际滥用未证实。"
+    },
+    {
+      "slug": "20261114-perplexity-decider-v13-release",
+      "title": "Perplexity发布Decider v1.3与Flash v1.3，新增文本跨度定位",
+      "summary": "Perplexity发布pplx-decider-v1.3和较小的Flash v1.3，继续面向二分类、多分类、打分、路由与重排，并新增locate能力，可返回命中文本、字符位置和置信度。两款模型通过Decisions API、OpenRouter和Hugging Face提供，权重标为Apache-2.0；官方91.6%平均准确率属于厂商自测。",
+      "content": "原始公开日期：2026-11-12。Perplexity发布pplx-decider-v1.3与pplx-decider-flash-v1.3，定位为通用决策和分类模型：输入状态、问题与候选答案后，返回各答案的概率分布，可用于二分类、多分类、等级评分、请求路由、内容审核和检索重排。Flash版本由较大模型蒸馏而来。\n\n本次最明确的功能增量是locate。它不只在预定义选项中选择，而是从原始输入抽取匹配文本，返回起止字符位置和置信信息，可面向命名实体、个人信息识别和抽取式问答。locate与分类、打分可以在同一输入上组合，适合把“是否存在风险”和“风险文本在哪里”放入一次处理流程。\n\n官方技术说明称，模型采用双向注意力、改进数据整理和多阶段训练；locate使用独立跨度头和适配器，普通决策请求时不启用。Perplexity坦言，把locate适配器直接合并进骨干会使决策任务出现回退，因此当前保持分离。这一限制意味着部署者需要验证两种请求路径和适配器切换，而非假设单一服务配置即可等价运行。\n\nPerplexity报告，在63个由前沿模型重新标注参考答案的分类任务上，Decider v1.3平均准确率为91.6%，比其生产分类器高6.54个百分点；在72个检索任务上平均nDCG@10为83.99。上述数据是厂商自建评测和自测结果，不是独立验证，任务重标注方式、领域分布与真实流量仍需结合具体用途评估。\n\n模型通过Perplexity Decisions API、OpenRouter和Hugging Face提供，官方称采用Apache-2.0许可。Hugging Face模型卡显示本地BF16运行约需49 GiB权重空间及额外工作内存，并且仓库需要具备访问权限的令牌；“开放权重”不等于匿名下载或完整训练数据开放。部署前还应检查输入长度、并发序列化和特殊标记处理限制。\n\n## 量仔观察\n\n这次更新对构建分类、路由、审核、提示注入检测和结构化抽取管线的研发团队最有价值。证据包括官方训练说明与模型卡，但性能尚缺独立复测。读者可在自身类别分布和失败成本下做校准、阈值和locate边界测试；下一观察点是第三方评测、访问条件变化及locate适配器能否无损合并。",
+      "category": "ai",
+      "tags": ["Perplexity", "Decider", "分类模型", "开放权重", "模型发布"],
+      "source_name": "Perplexity",
+      "source_url": "https://www.perplexity.ai/en-GB/hub/blog/perplexity-decider",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方训练说明和模型卡可读，locate为可操作的新能力并有权重/API可用性；性能数字仍是厂商自测。"
+    },
+    {
+      "slug": "20261114-inkling-2-small-open-weights-arena",
+      "title": "Thinking Machines开放Inkling 2 Small权重，Agent Arena给出初步结果",
+      "summary": "Thinking Machines在2026-11-12开放Inkling 2 Small权重并接入多种推理、后训练与API平台；该模型为5940亿总参数、170亿激活参数的多模态MoE，支持最长100万token上下文。Agent Arena随后给出基于11500次会话的初步结果，在开放许可筛选中暂列第二，但误差区间仍宽。",
+      "content": "原始模型公告日期：2026-11-05；权重实质更新日期：2026-11-12。Thinking Machines Lab更新Inkling 2 Small发布页，确认模型权重已可从Hugging Face下载，许可为Apache-2.0，并已接入Unsloth、SGLang、vLLM与TokenSpeed等推理工具，以及多家API服务。此前首发时权重尚未开放，因此本次是交付状态变化。\n\nInkling 2 Small是混合专家模型，总参数5940亿、每次激活170亿，支持图像输入、可变推理强度和最长100万token上下文。官方模型卡还提供NVFP4与MXFP8版本。本地运行并不轻量：官方建议聚合显存至少约500 GB至800 GB，具体取决于量化格式和部署方式，个人工作站通常无法直接承载。\n\n[Agent Arena开放许可榜](https://arena.ai/leaderboard/agent?license=open-source)在权重开放后出现该模型的初步外部观测。页面显示Inkling 2 Small基于11500次真实会话，净改善指标为2.92%±1.42%，每任务成本中位数约0.26美元，在22个开放许可模型中暂列第二。页面明确标记Preliminary，排名和数值会随会话增加而变化。\n\n这项Arena结果不等同于固定题库的准确率。其指标综合任务成功、用户满意度、可引导性、工具可靠性等真实会话信号，能够补充厂商自测，但仍受用户任务构成、服务配置、价格和样本量影响。11500次会话少于榜单上一些成熟模型，置信区间也提示当前名次并非稳定结论。\n\n官方发布还披露了大量内部能力与安全评测，但不同模型使用条件和任务配置不完全一致，不能只比较单个百分比。采用方更应从权重格式、显存、长上下文缓存成本、工具调用策略和许可入手，先在自己的代理任务中复现实用性，并把开放权重后的安全微调与运行隔离单独评估。\n\n## 量仔观察\n\n这次变化影响需要私有部署多模态代理模型、具备大型GPU集群的研发团队。权重可用性由官方确认，Arena提供独立但仍初步的真实会话证据。读者可先以成本、延迟和工具可靠性做小规模对照，不应按暂列第二直接采购；下一观察点是Arena样本扩大、外部安全报告和不同量化格式的可复现吞吐。",
+      "category": "ai",
+      "tags": ["Thinking Machines", "Inkling 2 Small", "开放权重", "Agent Arena", "MoE"],
+      "source_name": "Thinking Machines Lab",
+      "source_url": "https://thinkingmachines.ai/news/inkling-2-small/",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方权重开放与模型卡可读，并有Agent Arena独立初步数据；实际部署门槛高，榜单结果仍随样本变化。"
+    },
+    {
+      "slug": "20261114-greatwall-pylon-polynomial-analysis",
+      "title": "公开评议提出GreatWall Pylon参数低于声称强度的启发式估计",
+      "summary": "PKC Forum公开一项针对NGCC签名候选GreatWall中Pylon单向函数的评议，以逆Mersenne S盒代数约束构造低度布尔方程，并估计四个参数集的复杂度分别约为121.45、186.57、249.55和507.38位。评议依赖结构化方程近似随机系统的假设，尚无代码、完整求解、团队回应或稳定finding ID，不能称为攻破。",
+      "content": "原始公开时间：2026-11-13 21:52，论坛页面未明确显示时区。PKC Forum出现一项针对NGCC签名候选GreatWall（sign-13）中Pylon单向函数的公开评议。作者Hongsen Yang利用首个逆Mersenne S盒的代数关系进行无损代换，尝试把安全评估转化为低度布尔方程求解。\n\nGreatWall R1规格日期为2026-06-30，版本记录更新到2026-09-20。Pylon四组参数为(λ,n,e1,e2)=(128,137,70,75)、(192,197,94,105)、(256,263,129,136)和(512,521,248,273)，规格声称相应经典安全强度为128、192、256和512位。这里的λ是候选声称目标，不是独立认证结果。\n\n评议以Pylon-128为例，利用2e=140在模137下同余3，把变量写成特定幂形式，使首段约束降到较低布尔次数；代入后续乘法约束，得到137个变量、137个最高6次方程。作者再套用多项式法复杂度公式，并以n³成本归一化一次Pylon调用。\n\n由此得到的四组最佳估计约为121.45、186.57、249.55和507.38位，分别比规格声称低约6.55、5.43、6.45和4.62位。本站独立复核了Pylon-128的代数恒等式、次数和算术换算，内部一致；但这不是完整规模求解，也没有复现程序或测得运行时间。\n\n核心不确定性是多项式法公式对结构化Pylon方程的适用性。论坛作者明确承认系统有结构、近似随机布尔系统的模型尚未证明；方程独立性和n³“primitive-call”归一化也需要讨论。GreatWall团队尚未公开回应，ngcc.dev没有为此建立稳定finding ID、分类或复测记录。\n\n## 量仔观察\n\n这项评议主要影响NGCC评审者和GreatWall提交团队，而非现网用户。原始评议与规格均已读，代数算术可核，但安全复杂度结论成熟度有限，不能写成Confirmed或本站复现。评审者可优先复核方程独立性、随机系统假设和归一化；下一观察点是提交团队回应、修订规格、公开代码或ngcc.dev稳定finding。",
+      "category": "ngcc",
+      "tags": ["NGCC", "GreatWall", "Pylon", "公开评议", "复杂度估计"],
+      "source_name": "NGCC PKC Forum",
+      "source_url": "https://list.niccs.org.cn/archives/list/pkcforum@list.niccs.org.cn/thread/BIAJ2HMHT7CWEUYORSMMUCB77GG3I63R/",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：完整评议与候选规格可读，代数和算术内部一致，关系参数安全余量；模型适用性未证且无复现、团队回应或稳定finding。"
+    },
+    {
+      "slug": "20261114-tc260-2027-standard-needs-call",
+      "title": "TC260征集2027年网络安全国家标准需求建议",
+      "summary": "TC260于2026-11-13启动2027年网络安全国家标准需求建议征集，申报截止2026-11-30 18:00，需通过官网“标准需求征集”模块提交。该节点只是收集立项需求，不代表项目已经获批或标准进入起草；相关机构可据此提交问题、范围、必要性与预期应用证据。",
+      "content": "原始公开日期：2026-11-13。全国网络安全标准化技术委员会启动2027年网络安全国家标准需求建议征集，提交截止时间为2026-11-30 18:00，入口为TC260官网“标准需求征集”模块。通知对应的是需求收集环节，不是项目立项、征求意见或标准发布。\n\n官方要求提交较成熟的标准文本。准备提交的机构还应把现有规范缺口、适用对象、跨产品互操作或安全风险写成可验证的问题，并说明与现有国标、行标和国际标准的关系。后续是否进入计划仍取决于评估与立项程序，不能把一份建议包装成即将实施的合规要求。",
+      "category": "flash",
+      "tags": ["标准", "TC260", "需求征集", "截止日期"],
+      "source_name": "全国网络安全标准化技术委员会",
+      "source_url": "https://www.tc260.org.cn/tc260/tzgg/202611/94a30961349844b686e443607dcc7932.shtml",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方通知明确提交入口与截止时间，对标准研制参与方具有直接行动价值；仍处需求征集阶段。"
+    },
+    {
+      "slug": "20261114-tencent-adp-weather-tool-retirement",
+      "title": "腾讯云ADP天气工具将于12月11日下线",
+      "summary": "腾讯云宣布智能体开发平台ADP内置天气工具将于2026-12-11 00:00下线，现有智能体和工作流不会自动迁移。使用方需改接腾讯位置服务天气查询或WeatherAPI，自行调整参数、鉴权与返回解析，重新发布并回归测试依赖天气数据的流程。",
+      "content": "原始公开日期：2026-11-13。腾讯云宣布智能体开发平台ADP内置天气工具将在2026-12-11 00:00停止服务，平台不会自动替现有智能体和工作流迁移。官方建议改用腾讯位置服务天气查询或WeatherAPI。\n\n使用方应先盘点调用该工具的生产智能体、定时任务和兜底逻辑，替换参数与鉴权、校验字段和错误码差异，再重新发布并做回归测试。尤其要检查位置解析、单位、超时和第三方配额，避免在下线日把工具失败误判成无天气结果。",
+      "category": "flash",
+      "tags": ["AI", "智能体", "腾讯云", "工具下线", "迁移"],
+      "source_name": "腾讯云",
+      "source_url": "https://cloud.tencent.com/announce/detail/2569",
+      "cover_image": null,
+      "published_at": "2026-11-14T08:15:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：云厂商公告给出确定下线时间且不自动迁移，现有ADP智能体需要在约四周内替换和回归测试。"
+    }
+  ]
+}
