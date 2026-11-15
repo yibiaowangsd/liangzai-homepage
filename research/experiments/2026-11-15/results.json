@@ -1,0 +1,112 @@
+{
+  "kind": "offline deterministic HKDF dependency checks, not protocol or performance testing",
+  "python": "3.12.14",
+  "hash": "SHA-256",
+  "all_inputs_public_fixtures": true,
+  "checks": [
+    {
+      "name": "rfc5869_extract_A1",
+      "passed": true
+    },
+    {
+      "name": "rfc5869_expand_A1",
+      "passed": true
+    },
+    {
+      "name": "stolen_traffic_secret_predicts_generation_1",
+      "passed": true
+    },
+    {
+      "name": "stolen_traffic_secret_predicts_generation_2",
+      "passed": true
+    },
+    {
+      "name": "stolen_traffic_secret_predicts_generation_3",
+      "passed": true
+    },
+    {
+      "name": "stolen_traffic_secret_predicts_generation_4",
+      "passed": true
+    },
+    {
+      "name": "stolen_traffic_secret_predicts_generation_5",
+      "passed": true
+    },
+    {
+      "name": "stolen_traffic_secret_predicts_generation_6",
+      "passed": true
+    },
+    {
+      "name": "stolen_traffic_secret_predicts_generation_7",
+      "passed": true
+    },
+    {
+      "name": "stolen_traffic_secret_predicts_generation_8",
+      "passed": true
+    },
+    {
+      "name": "distinct_fixture_generations",
+      "passed": true
+    },
+    {
+      "name": "key_and_iv_labels_differ",
+      "passed": true
+    },
+    {
+      "name": "public_nonce_does_not_heal",
+      "passed": true
+    },
+    {
+      "name": "wrong_fresh_input_changes_fixture_output",
+      "passed": true
+    },
+    {
+      "name": "known_fresh_input_predicts_fixture_output",
+      "passed": true
+    },
+    {
+      "name": "context_changes_fixture_output",
+      "passed": true
+    }
+  ],
+  "passed": 16,
+  "generations": [
+    {
+      "epoch": 1,
+      "secret_sha256": "1e13386690a7cc0f33b865a3100b0e9c4dd70ed8656efbe50959ade92f4719f0"
+    },
+    {
+      "epoch": 2,
+      "secret_sha256": "665602d9fc6506006faede7b08f9f7291105835df86dc0ee85a88fe56ca19f78"
+    },
+    {
+      "epoch": 3,
+      "secret_sha256": "a696b80e334ea0e5044f3d1fe3d6a26383455396308317f424f3c1672c88ce1f"
+    },
+    {
+      "epoch": 4,
+      "secret_sha256": "49a9204f754847dd3e682a84677322e685eba74b9452b08142cc0e3b6051be59"
+    },
+    {
+      "epoch": 5,
+      "secret_sha256": "fac030604666ffadd4a1f265ad2628a42d036fd84ddb10015b591fff2b1779f2"
+    },
+    {
+      "epoch": 6,
+      "secret_sha256": "6a74a214e82ca0ee3eb4417c83a033e6e3239e7b887f5abeb59f05c7ba7d442a"
+    },
+    {
+      "epoch": 7,
+      "secret_sha256": "190e5bc4b3a1985faa4efe4a856c4939ec198ff738f7b242daa7c18798b1ea98"
+    },
+    {
+      "epoch": 8,
+      "secret_sha256": "4ae8663d78fe12ccd63f99b74e0ed53b8529572f6f49e9180c1851d2ecad4464"
+    }
+  ],
+  "limits": [
+    "No cryptographic security proof",
+    "No TLS records, KEM, network, authentication or memory-erasure test",
+    "Different outputs are not proof of attacker ignorance"
+  ]
+}

@@ -7,8 +7,15 @@ import { Miniflare } from 'miniflare';
 const bundle = await build({ entryPoints: ['news-worker/index.js'], bundle: true, write: false, format: 'esm', platform: 'browser' });
 
 test('real Worker cache, indexed calendar and scalar fuzzy search preserve the archive', async t => {
-  const mf = new Miniflare({ modules: true, script: bundle.outputFiles[0].text, compatibilityDate: '2026-05-22', d1Databases: { DB: 'news-read-runtime' } });
+  const outbound = [];
+  const mf = new Miniflare({ modules: true, script: bundle.outputFiles[0].text, compatibilityDate: '2026-05-22', d1Databases: { DB: 'news-read-runtime' },
+    outboundService: request => {
+      outbound.push(`${request.method} ${new URL(request.url).origin}${new URL(request.url).pathname}`);
+      throw new Error('Read-runtime tests must not make outbound requests');
+    },
+  });
   t.after(() => mf.dispose());
+  t.after(() => assert.deepEqual(outbound, [], 'Read API stays inside the local Worker and D1 fixtures'));
   const db = await mf.getD1Database('DB');
   await db.prepare(`CREATE TABLE news(id INTEGER PRIMARY KEY, slug TEXT UNIQUE, title TEXT, summary TEXT, content TEXT,
     category TEXT, tags TEXT, source_name TEXT, source_url TEXT, cover_image TEXT, published_at TEXT, status TEXT)`).run();
