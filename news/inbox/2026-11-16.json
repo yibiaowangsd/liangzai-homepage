@@ -46,7 +46,7 @@
       "source_name": "IACR Cryptology ePrint Archive",
       "source_url": "https://eprint.iacr.org/2026/2872",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "论文给出针对具体候选构造的等价密钥恢复及多参数实验，可能改变CML安全判断；证据为E3原始论文，但尚无独立复现或方案团队回应。"
@@ -61,7 +61,7 @@
       "source_name": "IACR Cryptology ePrint Archive",
       "source_url": "https://eprint.iacr.org/2026/2873",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "原始论文把高质量泄漏与后续格求解成本连接起来，对实现评估有直接价值；但结果依赖大量完美提示，不能等同ML-KEM被直接攻破。"
@@ -76,7 +76,7 @@
       "source_name": "AWS Documentation",
       "source_url": "https://docs.aws.amazon.com/documentdb/latest/devguide/release-notes.html",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "正式托管数据库版本把混合PQC握手和可观测指标交付给生产用户，行动路径清晰；证据为AWS原始发布说明与技术文档。"
@@ -91,7 +91,7 @@
       "source_name": "IETF Datatracker",
       "source_url": "https://datatracker.ietf.org/doc/draft-wang-ipsecme-kem-auth-ikev2/",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "安全章节从算法提案推进到完整协议威胁面，对IPsec研发有直接评审价值；证据为IETF原始草案，但仍是个人提交。"
@@ -106,7 +106,7 @@
       "source_name": "IETF Datatracker",
       "source_url": "https://datatracker.ietf.org/doc/draft-ietf-rats-verifiable-proof-of-environment/",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "个人提案升级为RATS工作组文档是明确标准进展，且影响远程证明与位置约束架构；仍非RFC，成熟度需按草案表述。"
@@ -121,7 +121,7 @@
       "source_name": "Coinone",
       "source_url": "https://coinone.co.kr/info/notice/5950",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P1",
       "priority_reason": "客服工单可能包含高敏感身份、账户和钱包资料，用户需要立即防范社工和凭据复用；事件由当事方公告确认，但规模仍在调查。"
@@ -136,7 +136,7 @@
       "source_name": "UnrealIRCd",
       "source_url": "https://forums.unrealircd.org/viewtopic.php?t=9487",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P1",
       "priority_reason": "厂商确认恶意利用且CISA已列入KEV，公网服务管理员需要立刻升级并排查；修复版本和受影响范围均有原始资料支持。"
@@ -151,7 +151,7 @@
       "source_name": "TradeWaltz",
       "source_url": "https://www.tradewaltz.com/news/13816/",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "事件已确认第三方服务器、管理密钥与130份文件的具体影响，并仍在停机处置；证据为受影响机构原始更新，后续范围待定。"
@@ -166,7 +166,7 @@
       "source_name": "Amazon Web Services",
       "source_url": "https://aws.amazon.com/blogs/security/amazon-threat-intelligence-observes-threat-actors-running-cybercrime-campaigns-with-artex-ai-agents/",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "两份原始情报材料显示AI代理已进入真实多阶段恶意活动，防守模型需及时调整；但归因和外部攻击结果均按来源置信度保留。"
@@ -181,7 +181,7 @@
       "source_name": "OpenAI",
       "source_url": "https://openai.com/index/step-toward-defining-the-standard-model/",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "披露提供真实科研任务中模型参与构造和证明的可解释案例，价值明确；但结论仍是候选路线，证据主要来自作者与模型提供方。"
@@ -196,7 +196,7 @@
       "source_name": "Artificial Analysis",
       "source_url": "https://artificialanalysis.ai/evaluations/mka",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "200项多行业任务把代理评测推进到真实文件产物，能影响企业选型；独立运行增强证据，但私有题集与模型裁判仍限制复现。"
@@ -211,7 +211,7 @@
       "source_name": "OpenAI",
       "source_url": "https://openai.com/index/introducing-chatgpt-wallet/",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "AI代理进入真实支付链，逐笔确认和令牌化对产品与风控团队有直接行动价值；上线范围和安全效果仍需独立数据验证。"
@@ -226,7 +226,7 @@
       "source_name": "ngcc.dev",
       "source_url": "https://ngcc.dev/reports/kem-17.html",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "报告定位具体实现错误并量化理论安全上界，对候选评议有直接价值；但2²⁰⁸级完整搜索未执行，且尚无作者回应或复测。"
@@ -241,7 +241,7 @@
       "source_name": "Bitrise Status",
       "source_url": "https://status.bitrise.io/incidents/7055z4g9nbck",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "上一期重大事件出现可操作的恢复增量，但服务仍未完全恢复，客户仍需轮换凭据并验证构建链。"
@@ -256,7 +256,7 @@
       "source_name": "火山方舟文档",
       "source_url": "https://docs.volcengine.com/docs/ark/model-release-announcement?lang=zh",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "新模型已通过官方API文档公开可用，能力与限制明确，视频应用团队可直接评估；质量与成本仍待独立测试。"
@@ -271,7 +271,7 @@
       "source_name": "Cloudflare Developers",
       "source_url": "https://developers.cloudflare.com/changelog/post/2026-11-12-kitesurf-open-source/",
       "cover_image": null,
-      "published_at": "2026-11-16T08:18:00+08:00",
+      "published_at": "2026-11-16T08:25:00+08:00",
       "status": "published",
       "priority": "P3",
       "priority_reason": "开源许可和部署入口真实可用，对代理浏览器研发有参考价值；项目仍实验性且缺少内置认证，影响范围有限。"
