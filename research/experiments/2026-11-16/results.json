@@ -39,7 +39,7 @@
   "limits": [
     "No ML-KEM or X25519 computation",
     "No signatures, network, rejection tests or performance measurement",
-    "Synthetic share lengths are not valid public keys",
+    "Synthetic shares were not generated or validated by cryptographic algorithms",
     "Only first SHA256 KDF block implemented"
   ]
 }
