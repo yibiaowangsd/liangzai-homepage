@@ -50,7 +50,7 @@ export default function QuantumHome() {
           <nav className="mk-topics" aria-label="新闻栏目">{coreCategories.map(category => <Link key={category} href={`/news?category=${category}`}>{categoryLabels[category]}</Link>)}</nav>
           <Suspense fallback={<div className="mk-dispatch-empty" role="status"><p>正在温今天这一瓶…</p><Link className="milk-link" href="/news">直接去新闻页</Link></div>}><HomeDispatch /></Suspense>
           <div className="mk-morning-foot">
-            <div><Link href="/news" className="milk-link">阅读完整技术简报</Link><Link href="/topics" className="milk-link">按算法与协议追踪后续进展</Link></div>
+            <div><Link href="/news" className="milk-link">阅读完整技术简报</Link><Link href="/tracking" className="milk-link">动态跟踪</Link><Link href="/topics" className="milk-link">按算法与协议追踪后续进展</Link></div>
             <div className="mk-subscribe"><p>按板块订阅，每天在邮箱或群聊读前沿。<span>申请审核通过后接收。</span></p><Link href="/news/subscribe" className="milk-button">订阅日报</Link></div>
           </div>
         </section>
