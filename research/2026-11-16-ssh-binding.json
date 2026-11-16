@@ -1,0 +1,312 @@
+{
+  "slug": "ssh-hybrid-byte-contract-and-session-binding",
+  "date": "2026-11-16",
+  "updated": "2026-11-16",
+  "title": "SSH 混合密钥协商：共享秘密相同，为什么仍然互通失败？",
+  "subtitle": "从 RFC 10042 的字节契约，到 rekey 不变的 session_id：26 项可复现编码检查",
+  "question": "移植 mlkem768x25519-sha256 时，哪些字节边界、认证绑定和 rekey 状态必须保持一致，才能避免“算法都对了，协议仍不通”？",
+  "status": "文献与固定版本源码核查完成；26 项离线检查通过；真实协议互通待执行",
+  "tags": [
+    "SSH",
+    "ML-KEM",
+    "互通测试",
+    "会话绑定",
+    "密码迁移"
+  ],
+  "summary": [
+    "同一数学秘密不保证同一 SSH 输入：固定长度、string 与 mpint、KEXINIT 消息类型和双重长度前缀均需逐字节核对。",
+    "一个容易漏测的现象：某些 K 的 string 与 mpint 编码恰好相同，正常样例可掩盖错误；边界向量必须覆盖高位与前导零。",
+    "rekey 更新 K/H，却保留首次 H 作为 session_id。混合密钥建立与主机／用户抗量子认证是不同验收项。"
+  ],
+  "scope": "以正式发布的 RFC 10042（2026-08，Informational）为协议依据，以 OpenSSH V_10_0_P1 为固定实现对照，不声称它是最新版。实验只计算公开合成字节的序列化与 SHA-256 依赖关系，不运行 ML-KEM、X25519、签名或网络握手。",
+  "process": [
+    {
+      "title": "先排除重复选题",
+      "detail": "对照已发布的 TLS 绑定、IKE epoch、外部 PSK、QUIC 预算及 TLS KeyUpdate 五篇，本篇选择 SSH 特有的编码与固定会话标识，不重复论证一般混合安全性。"
+    },
+    {
+      "title": "规范与实现交叉核查",
+      "detail": "2026-11-16 查阅 RFC 10042、4251、4252、4253、8731；对照 OpenSSH V_10_0_P1 的 kexmlkem768x25519.c、kexc25519.c、kexgen.c、kex.c，并独立复核端序和 session_id。"
+    },
+    {
+      "title": "回看证明适用对象",
+      "detail": "核读 2023/972 预印本作者 PDF 的 SSH 讨论，确认涉及早期 -00 草案，不能写成最终 RFC 与实现的完整验证。"
+    },
+    {
+      "title": "先做失败可见的最小实验",
+      "detail": "Python 标准库生成固定公共输入，运行 26 项断言并提交结果。初始 mpint 负例没有产生差异，由此加入“恰好相同”正例与高位边界反例；这属于测试设计发现，不是已复现的 OpenSSH 缺陷。"
+    }
+  ],
+  "sections": [
+    {
+      "id": "threat-model",
+      "title": "1. 研究对象与威胁模型",
+      "paragraphs": [
+        "考虑两个各自实现 SSH 混合 KEX 的端点，以及能够监听、替换、截断和重放传输字节的主动网络对手。另考虑迁移时的实现错误：编码层职责不清、rekey 覆盖 session_id、仅检查首次协商策略。",
+        "本文不假设对手已经控制端点或读取内存，也不把信任首次使用（TOFU）等同于可信主机认证。混合 KEX 的保密目标、主机身份真实性和用户身份授权必须分别讨论；若传统签名日后可伪造，混合 KEX 本身不会补上该认证缺口。[1][3]"
+      ]
+    },
+    {
+      "id": "wire-contract",
+      "title": "2. 先固定字节契约，再讨论算法",
+      "table": {
+        "headers": [
+          "对象",
+          "mlkem768x25519-sha256 字节契约",
+          "实现风险"
+        ],
+        "rows": [
+          [
+            "C_INIT",
+            "1184 字节 ML-KEM 公钥 || 32 字节 X25519 公钥，共 1216",
+            "这里不是完整 SSH 包长度"
+          ],
+          [
+            "S_REPLY",
+            "1088 字节 ML-KEM 密文 || 32 字节 X25519 公钥，共 1120",
+            "不能交换两个分量"
+          ],
+          [
+            "K",
+            "SHA256(K_PQ || K_CL)，两个输入各固定 32 字节",
+            "不要先 mpint 编码输入"
+          ],
+          [
+            "encoded_K",
+            "SSH string(K)，4 字节长度 + 32 字节结果",
+            "不要改成 mpint 或重复加长度"
+          ]
+        ]
+      },
+      "paragraphs": [
+        "RFC 10042 还要求精确长度、KEM 公钥及经典公钥检查。实验中的等长零字节不是有效 KEM 公钥，不能拿长度通过冒充密码学验证通过。[1]"
+      ]
+    },
+    {
+      "id": "endianness",
+      "title": "3. “大端”不意味着把 X25519 输出反转",
+      "paragraphs": [
+        "RFC 8731 将 X25519 原始输出字节重新解释为无符号大端整数；它不是让实现把该字节串倒序。RFC 10042 再以固定宽度编码该整数，得到原字节串。固定版 OpenSSH 的 raw=1 分支直接追加 shared_key，与此一致。[5][7]",
+        "真正需要区分的是固定宽度与 mpint：高位为 1 的正整数需要符号零字节，前导零则可能被移除。我们的边界断言覆盖零、0x80、0x007f；没有执行曲线运算，也没有证明任何实现恒定时间。"
+      ]
+    },
+    {
+      "id": "transcript",
+      "title": "4. H 的八个边界与缓冲区所有权",
+      "paragraphs": [
+        "交换哈希 H 按规范顺序绑定版本、两份 KEXINIT、主机公钥、双方交换 blob 和 K。版本不含 CRLF，KEXINIT 含消息类型但不是外层包头与填充。每个字段的 string 边界属于协议，而非随意的序列化选择。[1][2]",
+        "源码交叉核查的关键不是函数名，而是缓冲区当前状态：kexmlkem768x25519.c 已写入 string(K)，kexgen.c 原样追加它。新移植若再包装一层 string，虽然内层秘密完全正确，H 仍不同。[6][8]",
+        "本地实验逐一修改八个字段，得到不同 H；再分别去掉 KEXINIT 类型、双重包装 K，差异同样可见。这是所选样本的哈希依赖检查，不是碰撞安全证明，更不是签名拒绝测试。"
+      ]
+    },
+    {
+      "id": "rekey",
+      "title": "5. 两个 H：当前交换与首次会话",
+      "paragraphs": [
+        "RFC 4253 的初始 session_id 来自第一次 H；rekey 更新 K 和 H，不覆盖该标识。首块派生输入是 encoded_K || H || 一字节方向标签 || session_id，其中 H 与 session_id 是裸字节，不是 string。用户认证签名输入则以 string(session_id) 开头，不能复用相同拼接函数而忽略语境。[2][3][9]",
+        "这解释了一个移植故障：初次登录成功不代表 rekey 成功。错误实现用新 H 同时替换 session_id，首次运行看不出差异，第二次派生才分叉。实验用两轮固定输入显示正确与错误派生结果不同；没有运行真实 rekey。",
+        "NEWKEYS 自身仍由旧密钥保护，发送与接收方向随后各自切换。规范允许 rekey 重新协商算法，不能从“首轮混合”推导“所有 epoch 始终混合”；持续策略约束属于另一个需要验证的状态机问题。[2]"
+      ]
+    },
+    {
+      "id": "experiment",
+      "title": "6. 已完成实验：26 项，而非 26 次握手",
+      "bullets": [
+        "5 项基础检查：SHA-256 已知答案、string 已知字节、三个 mpint 边界。",
+        "3 项组合输入检查：分量顺序、错误 mpint 包装、X25519 字节不反转。",
+        "8 项 transcript 字段变化检查。",
+        "4 项编码检查：KEXINIT 类型、双层 string、普通 K 的偶然编码等价、高位边界的不等价。",
+        "6 项状态与尺寸检查：A–F 标签、rekey H、固定 session_id、用户认证绑定、两类 share 长度。"
+      ],
+      "code": "python3 research/experiments/2026-11-16/ssh_binding.py\n# 固定结果：research/experiments/2026-11-16/results.json",
+      "paragraphs": [
+        "关键发现来自一次失败的测试设计：原本预期把 K 改成 mpint 必定改变 H，但该样本首字节无需符号扩展，两个编码实际相同。修正后的实验明确保留这个“错误实现可能侥幸通过”的例子，并加入 0x80 边界。它提示互通向量不能只采用一份随机输入。",
+        "所有断言均来自本仓库公开合成输入。输出保留 K、首次 H、rekey H 与两种派生结果，可逐字节复核；这里只计算 SHA-256 首块，不实现任意长度密钥扩展。"
+      ]
+    },
+    {
+      "id": "comparison",
+      "title": "7. 对照：为什么算法单测与一次登录都不够",
+      "table": {
+        "headers": [
+          "测试层",
+          "能够回答",
+          "不能据此声称"
+        ],
+        "rows": [
+          [
+            "KEM 官方已知答案",
+            "算法输出是否符合向量",
+            "SSH string 边界正确"
+          ],
+          [
+            "本篇编码检查",
+            "固定字节的哈希与会话依赖",
+            "真实密钥有效或恶意输入被拒绝"
+          ],
+          [
+            "首次 SSH 登录",
+            "某一配置能完成首轮",
+            "rekey、跨实现或降级策略正确"
+          ],
+          [
+            "跨实现与故障注入（待做）",
+            "状态机及错误路径行为",
+            "涵盖所有攻击或完整形式化证明"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "proof-boundary",
+      "title": "8. 安全论证的版本边界",
+      "paragraphs": [
+        "RFC 10042 是 2026 年 8 月的 Informational RFC，不能标成仍在审议的草案，也不能标成 Standards Track。其安全讨论明确依赖组合器与哈希建模假设；“一个分量安全即可”不能脱离输入检查、随机性和认证条件无限推广。[1]",
+        "2023/972 是预印本，其 SSH 段落分析的是早期草案，彼时直接连接秘密的设计与最终 RFC 的先哈希步骤有区别。该论文提供理解组合器假设的依据，不是 OpenSSH V_10_0_P1 全实现证明。[10]",
+        "OpenSSH 固定版本提供的是可审计实现证据，不是本次运行证据。本文没有编译或执行该版本，没有测吞吐、延时、CPU 或内存；因此不报告性能提升或安全漏洞。"
+      ]
+    },
+    {
+      "id": "test-matrix",
+      "title": "9. 下一步真实互通验收矩阵",
+      "table": {
+        "headers": [
+          "状态",
+          "用例",
+          "观察与通过条件"
+        ],
+        "rows": [
+          [
+            "待执行 T1",
+            "两个独立实现正常协商",
+            "抓取算法名及消息尺寸，双方完成认证"
+          ],
+          [
+            "待执行 T2",
+            "高位／前导零编码向量",
+            "中间 K/H 与参考向量逐字节一致"
+          ],
+          [
+            "待执行 T3",
+            "C_INIT/S_REPLY 少一字节、多一字节",
+            "可靠拒绝，无越界、无部分成功"
+          ],
+          [
+            "待执行 T4",
+            "等长但非法 KEM／经典公钥",
+            "在规范要求的检查阶段失败"
+          ],
+          [
+            "待执行 T5",
+            "修改 KEXINIT 或主机 key",
+            "认证失败，非静默接受"
+          ],
+          [
+            "待执行 T6",
+            "主动 rekey 多轮与交错流量",
+            "session_id 不变，方向切换及数据完整"
+          ],
+          [
+            "待执行 T7",
+            "第二轮仅提供经典算法",
+            "符合本地持续混合策略，记录拒绝或明确例外"
+          ],
+          [
+            "待执行 T8",
+            "传统与候选 PQ 主机／用户认证组合",
+            "分别报告保密、主机认证、用户认证边界"
+          ]
+        ]
+      },
+      "paragraphs": [
+        "这些是验收设计，不是已通过记录。未来实现需给出双方版本、完整配置、随机源、失败原因、抓包范围与基线；敏感私钥不得写入日志。"
+      ]
+    },
+    {
+      "id": "conclusion",
+      "title": "10. 结论与实现建议",
+      "paragraphs": [
+        "最有价值的实现拆分不是“一个混合算法函数”，而是三个有明确所有权的层：固定长度秘密组合、SSH 数据类型编码、会话与方向状态。每层都应有独立向量，并在跨层测试中检查是否重复编码。",
+        "本次可以确定的是规范与固定源码的对应关系，以及 26 项公开合成检查的结果。真实互通、时序安全、恶意输入拒绝与抗量子认证尚未验证。可研究的创新线索是带类型的编码接口、跨 epoch 策略断言及自动生成边界向量；这里只作为后续研究方向，不宣称新颖性或可专利性。"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "1",
+      "title": "RFC 10042: Post-Quantum Traditional Hybrid SSH Key Exchange",
+      "url": "https://www.rfc-editor.org/rfc/rfc10042.html",
+      "version": "2026-08；Informational RFC",
+      "note": "最终协议、长度及安全假设。"
+    },
+    {
+      "id": "2",
+      "title": "RFC 4253: SSH Transport Layer Protocol",
+      "url": "https://www.rfc-editor.org/rfc/rfc4253.html",
+      "version": "2006-01；Standards Track",
+      "note": "§7.2、§7.3、§9：KDF、NEWKEYS、rekey。"
+    },
+    {
+      "id": "3",
+      "title": "RFC 4252: SSH Authentication Protocol",
+      "url": "https://www.rfc-editor.org/rfc/rfc4252.html",
+      "version": "2006-01；Standards Track",
+      "note": "用户公钥认证的 session_id 绑定。"
+    },
+    {
+      "id": "4",
+      "title": "RFC 4251: SSH Protocol Architecture",
+      "url": "https://www.rfc-editor.org/rfc/rfc4251.html",
+      "version": "2006-01；Standards Track",
+      "note": "SSH string 与 mpint 类型定义。"
+    },
+    {
+      "id": "5",
+      "title": "RFC 8731: Curve25519/Curve448 SSH Key Exchange",
+      "url": "https://www.rfc-editor.org/rfc/rfc8731.html",
+      "version": "2020-02；Standards Track",
+      "note": "§3.1 解释字节与整数转换。"
+    },
+    {
+      "id": "6",
+      "title": "OpenSSH kexmlkem768x25519.c",
+      "url": "https://github.com/openssh/openssh-portable/blob/V_10_0_P1/kexmlkem768x25519.c",
+      "version": "固定标签 V_10_0_P1；非最新版声明",
+      "note": "组合秘密后将哈希写为 SSH string。"
+    },
+    {
+      "id": "7",
+      "title": "OpenSSH kexc25519.c",
+      "url": "https://github.com/openssh/openssh-portable/blob/V_10_0_P1/kexc25519.c",
+      "version": "固定标签 V_10_0_P1",
+      "note": "raw=1 保留原始共享秘密字节。"
+    },
+    {
+      "id": "8",
+      "title": "OpenSSH kexgen.c",
+      "url": "https://github.com/openssh/openssh-portable/blob/V_10_0_P1/kexgen.c",
+      "version": "固定标签 V_10_0_P1",
+      "note": "交换哈希组装与已编码缓冲区追加。"
+    },
+    {
+      "id": "9",
+      "title": "OpenSSH kex.c",
+      "url": "https://github.com/openssh/openssh-portable/blob/V_10_0_P1/kex.c",
+      "version": "固定标签 V_10_0_P1",
+      "note": "derive_key 和 kex_derive_keys 的会话标识生命周期。"
+    },
+    {
+      "id": "10",
+      "title": "Security of Hybrid Key Establishment using Concatenation",
+      "url": "https://eprint.iacr.org/2023/972",
+      "version": "2023-06-21；预印本",
+      "note": "核读作者 PDF；SSH 分析对应早期草案，不冒充最终实现证明。"
+    }
+  ],
+  "revisions": [
+    {
+      "date": "2026-11-16",
+      "detail": "初版：完成标准／固定源码比对及 26 项公开合成输入检查；保留真实互通、故障注入与性能测试为后续工作。"
+    }
+  ]
+}

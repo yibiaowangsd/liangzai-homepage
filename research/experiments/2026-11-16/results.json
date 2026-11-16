@@ -1,0 +1,45 @@
+{
+  "experiment": "synthetic SSH serialization dependency checks; NOT protocol interoperability",
+  "passed": 26,
+  "checks": {
+    "sha256_known_answer": true,
+    "ssh_string_known_answer": true,
+    "mpint_zero": true,
+    "mpint_high_bit": true,
+    "mpint_leading_zero": true,
+    "secret_order": true,
+    "fixed_width_not_mpint": true,
+    "x25519_no_reverse": true,
+    "transcript_V_C": true,
+    "transcript_V_S": true,
+    "transcript_I_C": true,
+    "transcript_I_S": true,
+    "transcript_K_S": true,
+    "transcript_C_INIT": true,
+    "transcript_S_REPLY": true,
+    "transcript_K": true,
+    "kexinit_message_type": true,
+    "double_string": true,
+    "mpint_can_hide_bug": true,
+    "key_string_not_mpint_boundary": true,
+    "six_direction_labels": true,
+    "rekey_new_hash": true,
+    "rekey_fixed_session_id": true,
+    "userauth_session_binding": true,
+    "client_share_length": true,
+    "server_share_length": true
+  },
+  "vectors": {
+    "K": "692ad7b1734f469491cd141294700a02130a37b7faef4211a272327387360f67",
+    "H_initial": "ae8142e3a7e163ac5a7139c8c1493e3ecbc6dcfb0ef3f84172ed625707d2bec6",
+    "H_rekey": "7afd2f2a49523b83eace55743469b9dd18a0f50bf146f6284c2bfa7b15450362",
+    "key_C_rekey_correct": "d42d8c04383b1030b13f6e834d1bd0c631233bf58f8167a822cb6c19e0dfb3c1",
+    "key_C_rekey_wrong_sid": "03ed662c78be28e020596cb19ff380f72fc0ddeb17e564e972429e1fc8e6b2d4"
+  },
+  "limits": [
+    "No ML-KEM or X25519 computation",
+    "No signatures, network, rejection tests or performance measurement",
+    "Synthetic share lengths are not valid public keys",
+    "Only first SHA256 KDF block implemented"
+  ]
+}
