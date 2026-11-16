@@ -12,6 +12,7 @@ Yibiao 的个人主页，以量仔和奶蛙（绘本旁白里仍叫奶龙）为�
 | `/topics` | 技术进展档案：按对象阅读跨日期进展，追踪未读与报道修订，关联原始报告和实验室 |
 | `/wo` | 「我」App本地网页回顾：读取用户主动选择的日记录、分片及记忆，不上传生活内容 |
 | `/news` | 每日前沿：由 Worker + D1 提供动态数据，展示 PQC、协议标准、网络安全、AI 与产业动态 |
+| `/tracking` | 动态跟踪：标准与协议文档、组件接入与版本、性能对比、迁移政策和系列导读 |
 | `/about` | 项目作者简介 |
 
 技术栈：Next.js App Router、React 19、TypeScript、Vinext/Vite、Cloudflare Worker、Three.js 与 GSAP。武器库的教学交互是概念演示；武器实战页面在浏览器中使用保留来源说明的 WASM 执行真实算法运算。NIST 标准算法模块源自 PQMagic 项目，页面不宣称该实现经过 FIPS 验证。
@@ -34,5 +35,7 @@ npm run lint
 开发入口、目录职责、模型生成、素材管理、验证与发布方式见 [DEVELOPMENT.md](./DEVELOPMENT.md)。3D 和动效细节分别见 [docs/liangzai-3d.md](./docs/liangzai-3d.md)、[docs/gsap-motion.md](./docs/gsap-motion.md)，验证台的资源来源见 [docs/pqc-practice.md](./docs/pqc-practice.md)。
 
 `main` 是现有 [wangyibiao.com](https://wangyibiao.com) 的 Cloudflare 部署代码源；`.openai/hosting.json` 属于仓库已有的另一条 Sites 托管配置。
+
+动态跟踪的中文资料索引核对于 2026-11-16，详见各页的来源链接。页面目录位于 `app/tracking/data/`，性能页读取 `public/assets/tracking/` 下本地保存的测量数据，站内筛选无需请求新闻 Worker。
 
 新增工作区的功能边界、数据协议和验证见 [技术档案与作品联动](docs/technical-dossiers-and-workspaces.md)。

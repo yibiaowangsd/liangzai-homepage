@@ -13,6 +13,12 @@ export const destinations = [
     keywords: "news 新闻 ai 前沿 技术 标准 资讯",
   },
   {
+    href: "/tracking",
+    name: "动态跟踪",
+    description: "查看后量子标准、组件支持、性能及各地迁移路线。",
+    keywords: "tracking 动态 跟踪 pqc 组件 政策 性能 标准资料",
+  },
+  {
     href: "/models",
     name: "模型鉴赏",
     description: "旋转、缩放，近距离欣赏量仔与奶蛙。",
