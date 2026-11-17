@@ -46,7 +46,7 @@
       "source_name": "IACR ePrint",
       "source_url": "https://eprint.iacr.org/2026/2888",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "E3完整论文在指定板卡和参考实现上给出端到端密钥恢复，直接影响嵌入式PQC实现评估；攻击需物理剖析条件，未形成远程紧急风险。"
@@ -61,7 +61,7 @@
       "source_name": "NTT Research",
       "source_url": "https://ntt-research.com/post-quantum-attribute-based-encryption/",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "论文和企业一手资料共同说明LWE属性加密已进入产品集成测试，适用价值明确；仍有大尺寸与慢路径，且未正式上线或获独立产品评测。"
@@ -76,7 +76,7 @@
       "source_name": "Google Cloud Documentation",
       "source_url": "https://docs.cloud.google.com/load-balancing/docs/release-notes",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P1",
       "priority_reason": "官方E3资料确认大范围云入口从可选转为默认启用，并给出2027年10月强制节点；客户需及时验证中间盒、策略与前后端边界。"
@@ -91,7 +91,7 @@
       "source_name": "Liquid Intelligent Technologies",
       "source_url": "https://liquid.tech/about-us/news/liquid-c2-and-graphiant-launches-quantum-secure-network-as-a-service/",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "一手公告和架构资料确认非洲托管PQC网络服务及混合密钥机制，采购价值明确；尚无客户实测，且身份认证仍依赖经典ECDSA。"
@@ -106,7 +106,7 @@
       "source_name": "IETF Announce",
       "source_url": "https://mailarchive.ietf.org/arch/msg/ietf-announce/0dMb4d8czWAXoZeTLx2P3FWCzXA/",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "IESG一手公告确认重要AAA安全协议进入批准阶段，草案包含可执行迁移要求；当前仍待RFC发布，故不按最终标准或紧急事件处理。"
@@ -121,7 +121,7 @@
       "source_name": "IETF Datatracker",
       "source_url": "https://datatracker.ietf.org/doc/draft-irtf-cfrg-ml-kem-security-considerations/00/",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "CFRG工作稿以E3原文系统化ML-KEM协议边界，可直接用于设计审计；目前只是IRTF -00草案，尚非正式标准或最终共识。"
@@ -136,7 +136,7 @@
       "source_name": "IETF Announce",
       "source_url": "https://mailarchive.ietf.org/arch/msg/ietf-announce/DARQJaclWAbLTviQkjPzgIlWLO4/",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "IESG公告确认直接影响签名与互操作的标准草案进入最后征询，并给出明确截止日；尚未获批，紧迫性主要在反馈窗口。"
@@ -151,7 +151,7 @@
       "source_name": "IETF Datatracker",
       "source_url": "https://datatracker.ietf.org/doc/draft-ietf-pquip-pqc-hsm-constrained/history/",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "Datatracker E3记录显示长期跟进的受限设备PQC指南已脱离需修订状态，直接影响设备选型；仍待IANA与IESG后续处理。"
@@ -166,7 +166,7 @@
       "source_name": "PLAID",
       "source_url": "https://plaid.co.jp/news/20261116/",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P1",
       "priority_reason": "受害机构E3公告确认真实入侵、79,249个邮箱及可被滥用的外部集成凭据，客户需立即撤销令牌；总范围仍在调查。"
@@ -181,7 +181,7 @@
       "source_name": "N-able Status",
       "source_url": "https://status.n-able.com/2026/11/16/n-central-2026-4-hf3-release-notes/",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P1",
       "priority_reason": "厂商E3发行说明给出关键安全构建和明确升级要求，未更新端点仍可被冒充；影响集中运维环境且需要立即行动。"
@@ -196,7 +196,7 @@
       "source_name": "Axis PSIRT",
       "source_url": "https://www.axis.com/dam/public/permalink/294609/cve-2026-119618pdf-en-US_294609.pdf",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P1",
       "priority_reason": "Axis E3公告确认广泛设备分支受高影响漏洞波及且补丁尚需数周，形成明确缓解窗口；目前无公开利用或在野证据。"
@@ -211,7 +211,7 @@
       "source_name": "Alibaba Cloud",
       "source_url": "https://www.alibabacloud.com/en/press-room/alibaba-unveils-qwen4-max?_p_lc=1",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "官方E3文档确认预览转正式、API规格和架构，直接影响模型选型；性能主张仍以厂商自测为主，未提升为独立验证。"
@@ -226,7 +226,7 @@
       "source_name": "MLCommons",
       "source_url": "https://mlcommons.org/2026/11/mlperf-training-v6-1-results/",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "独立组织E3结果新增Agent后训练与推荐负载，且覆盖大规模多供应商系统，能直接辅助算力选型；不等同真实业务成本。"
@@ -241,7 +241,7 @@
       "source_name": "METR",
       "source_url": "https://metr.org/notes/2026-11-16-measuring-alignment-eval-tells/",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "E3研究笔记揭示对齐评测可识别性这一关键方法风险，并公开样本与局限；尚未证明识别线索会因果改变模型行为。"
@@ -256,7 +256,7 @@
       "source_name": "ngcc.dev",
       "source_url": "https://ngcc.dev/reports/sign-06.html",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "独立站在四档参考与优化实现给出密钥恢复和伪造witness，影响严重；需特定分配失败且未证明远程触发，也非ICCS官方结论。"
@@ -271,7 +271,7 @@
       "source_name": "ngcc.dev",
       "source_url": "https://ngcc.dev/reports/kem-36.html",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "独立站在四参数八个实现中复现多条可预测密钥失败路径，影响长期密钥与会话；前提为特定分配失败，未证明远程触发。"
@@ -286,7 +286,7 @@
       "source_name": "ngcc.dev",
       "source_url": "https://ngcc.dev/reports/sign-17.html",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "独立站在三参数参考实现给出跨消息验签witness，影响签名完整性；需要摘要分配失败、栈复用和特定顺序，现实稳定触发未证实。"
@@ -301,7 +301,7 @@
       "source_name": "TradeWaltz",
       "source_url": "https://www.tradewaltz.com/news/13816",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "受害机构E3更新给出当前停服状态和新复服节点，客户需继续替代流程；未新增泄露范围或技术根因，适合快讯。"
@@ -316,7 +316,7 @@
       "source_name": "OpenAI API Changelog",
       "source_url": "https://developers.openai.com/api/docs/changelog",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "官方E3更新与模型卡确认新的受限安全API，可直接改变内容审核流程；适用机构受限且必须保留人工与法律判断。"
@@ -331,7 +331,7 @@
       "source_name": "工业和信息化部网络安全管理局",
       "source_url": "https://wap.miit.gov.cn/jgsj/waj/gzdt/art/2026/art_2c00d9154fe14d8bbb0f69dc8faf9855.html",
       "cover_image": null,
-      "published_at": "2026-11-17T08:32:00+08:00",
+      "published_at": "2026-11-17T08:27:00+08:00",
       "status": "published",
       "priority": "P2",
       "priority_reason": "政府E3通报给出明确主体、数量与整改要求，对平台治理和用户防诈可操作；附件名单未读，报道严格限定已核实正文。"
