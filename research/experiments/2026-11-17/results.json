@@ -1,0 +1,49 @@
+{
+  "kind": "offline synthetic byte experiment; not certificate or handshake benchmark",
+  "zlib_runtime": "1.3.2",
+  "passed": 16,
+  "checks": {
+    "repeated-8192-roundtrip": true,
+    "repeated-8192-frame-delta": true,
+    "mixed-8192-roundtrip": true,
+    "mixed-8192-frame-delta": true,
+    "hash-derived-8192-roundtrip": true,
+    "hash-derived-8192-frame-delta": true,
+    "declared-short": true,
+    "declared-long": true,
+    "local-cap": true,
+    "truncated": true,
+    "corrupt": true,
+    "trailing-data": true,
+    "compression-bomb-bound": true,
+    "client-context-changes-body": true,
+    "extension-changes-body": true,
+    "chain-content-changes-cache-key": true
+  },
+  "samples": [
+    {
+      "name": "repeated-8192",
+      "body_bytes": 8201,
+      "compressed_bytes": 39,
+      "plain_handshake_bytes": 8205,
+      "compressed_handshake_bytes": 51,
+      "net_saved_bytes": 8154
+    },
+    {
+      "name": "mixed-8192",
+      "body_bytes": 8201,
+      "compressed_bytes": 6311,
+      "plain_handshake_bytes": 8205,
+      "compressed_handshake_bytes": 6323,
+      "net_saved_bytes": 1882
+    },
+    {
+      "name": "hash-derived-8192",
+      "body_bytes": 8201,
+      "compressed_bytes": 8212,
+      "plain_handshake_bytes": 8205,
+      "compressed_handshake_bytes": 8224,
+      "net_saved_bytes": -19
+    }
+  ]
+}
