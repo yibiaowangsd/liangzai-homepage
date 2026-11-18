@@ -1,0 +1,129 @@
+{
+  "scope": "Actual local OpenSSL CLI ML-KEM tests, random fresh keys; no protocol/side-channel/ACVP certification or performance measurement",
+  "openssl": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)\nbuilt on: Tue Sep 29 20:10:28 2026 UTC\nplatform: debian-amd64\noptions:  bn(64,64)\ncompiler: gcc -fPIC -pthread -m64 -Wa,--noexecstack -Wall -fzero-call-used-regs=used-gpr -Wa,--noexecstack -g -O2 -Werror=implicit-function-declaration -ffile-prefix-map=/build/reproducible-path/openssl-3.5.7=. -fstack-protector-strong -fstack-clash-protection -Wformat -Werror=format-security -fcf-protection -DOPENSSL_USE_NODELETE -DL_ENDIAN -DOPENSSL_PIC -DOPENSSL_BUILDING_OPENSSL -DZLIB -DZSTD -DNDEBUG -Wdate-time -D_FORTIFY_SOURCE=2\nOPENSSLDIR: \"/usr/lib/ssl\"\nENGINESDIR: \"/usr/lib/x86_64-linux-gnu/engines-3\"\nMODULESDIR: \"/usr/lib/x86_64-linux-gnu/ossl-modules\"\nSeeding source: os-specific\nCPUINFO: OPENSSL_ia32cap=0xfffa32035f8bffff:0x1a415f66f1bf2fbb:0x00001c3020814010:0x0000000000000000:0x0000000000000000",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "checks": [
+    {
+      "parameter": 512,
+      "check": "ciphertext-and-secret-length",
+      "pass": true
+    },
+    {
+      "parameter": 512,
+      "check": "honest-roundtrip",
+      "pass": true
+    },
+    {
+      "parameter": 512,
+      "check": "same-length-mutation-returns-32-bytes",
+      "pass": true
+    },
+    {
+      "parameter": 512,
+      "check": "mutation-differs-from-original-secret",
+      "pass": true
+    },
+    {
+      "parameter": 512,
+      "check": "same-key-and-ciphertext-repeat-stable",
+      "pass": true
+    },
+    {
+      "parameter": 512,
+      "check": "short-ciphertext-explicit-error",
+      "pass": true
+    },
+    {
+      "parameter": 512,
+      "check": "long-ciphertext-explicit-error",
+      "pass": true
+    },
+    {
+      "parameter": 512,
+      "check": "different-key-returns-different-secret",
+      "pass": true
+    },
+    {
+      "parameter": 768,
+      "check": "ciphertext-and-secret-length",
+      "pass": true
+    },
+    {
+      "parameter": 768,
+      "check": "honest-roundtrip",
+      "pass": true
+    },
+    {
+      "parameter": 768,
+      "check": "same-length-mutation-returns-32-bytes",
+      "pass": true
+    },
+    {
+      "parameter": 768,
+      "check": "mutation-differs-from-original-secret",
+      "pass": true
+    },
+    {
+      "parameter": 768,
+      "check": "same-key-and-ciphertext-repeat-stable",
+      "pass": true
+    },
+    {
+      "parameter": 768,
+      "check": "short-ciphertext-explicit-error",
+      "pass": true
+    },
+    {
+      "parameter": 768,
+      "check": "long-ciphertext-explicit-error",
+      "pass": true
+    },
+    {
+      "parameter": 768,
+      "check": "different-key-returns-different-secret",
+      "pass": true
+    },
+    {
+      "parameter": 1024,
+      "check": "ciphertext-and-secret-length",
+      "pass": true
+    },
+    {
+      "parameter": 1024,
+      "check": "honest-roundtrip",
+      "pass": true
+    },
+    {
+      "parameter": 1024,
+      "check": "same-length-mutation-returns-32-bytes",
+      "pass": true
+    },
+    {
+      "parameter": 1024,
+      "check": "mutation-differs-from-original-secret",
+      "pass": true
+    },
+    {
+      "parameter": 1024,
+      "check": "same-key-and-ciphertext-repeat-stable",
+      "pass": true
+    },
+    {
+      "parameter": 1024,
+      "check": "short-ciphertext-explicit-error",
+      "pass": true
+    },
+    {
+      "parameter": 1024,
+      "check": "long-ciphertext-explicit-error",
+      "pass": true
+    },
+    {
+      "parameter": 1024,
+      "check": "different-key-returns-different-secret",
+      "pass": true
+    }
+  ],
+  "passed": 24,
+  "total": 24
+}
