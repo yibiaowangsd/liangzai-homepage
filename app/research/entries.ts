@@ -1,3 +1,4 @@
+import rejectionEntry from "../../research/2026-11-18-mlkem-rejection.json";
 import compressionEntry from "../../research/2026-11-17-certificate-compression.json";
 import sshEntry from "../../research/2026-11-16-ssh-binding.json";
 import ikeEntry from "../../research/2026-11-09-ike-key-epochs.json";
@@ -7,4 +8,4 @@ import recoveryEntry from "../../research/2026-11-15-tls-keyupdate-recovery.json
 import firstEntry from "../../research/2026-11-08-tls-hybrid-binding.json";
 import type { ResearchEntry } from "./types";
 /** Explicit imports keep publishing deterministic; latest research appears first. */
-export const researchEntries: ResearchEntry[] = [compressionEntry, sshEntry, recoveryEntry, quicEntry, pskEntry, ikeEntry, firstEntry].sort((a, b) => b.date.localeCompare(a.date));
+export const researchEntries: ResearchEntry[] = [rejectionEntry, compressionEntry, sshEntry, recoveryEntry, quicEntry, pskEntry, ikeEntry, firstEntry].sort((a, b) => b.date.localeCompare(a.date));
