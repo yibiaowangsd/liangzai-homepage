@@ -20,7 +20,7 @@
     },
     "security": {
       "count": 3,
-      "note": "扫描2026-11-16至18日CISA KEV、CNCERT/CNVD/CNNVD、CERT-EU/JPCERT、厂商PSIRT、事故方公告与独立研究；入选Optimizely供应链注入、理化学研究所Fugaku/RIKYU入侵、Puppet KEV。Trezor/Skladon虽披露约2.7万笔订单数据泄露，但本期新增技术处置与行动信息弱于入选事件，未成稿，Pleasanter、TELLUS影响较低；Axis无补丁且无其产品在野利用证据，N-central仅元数据不足。待跟进：Optimizely取证范围、Fugaku是否证实数据外泄、Puppet利用规模。"
+      "note": "扫描2026-11-16至18日CISA KEV、CNCERT/CNVD/CNNVD、CERT-EU/JPCERT、厂商PSIRT、事故方公告与独立研究；入选Optimizely供应链注入、理化学研究所Fugaku入侵及RIKYU用户资料风险、Puppet KEV。Trezor/Skladon虽披露约2.7万笔订单数据泄露，但本期新增技术处置与行动信息弱于入选事件，未成稿，Pleasanter、TELLUS影响较低；Axis无补丁且无其产品在野利用证据，N-central仅元数据不足。待跟进：Optimizely取证范围、Fugaku是否证实数据外泄、Puppet利用规模。"
     },
     "ai": {
       "count": 3,
@@ -229,7 +229,7 @@
       "published_at": "2026-11-18T08:38:44+08:00",
       "status": "published",
       "priority": "P1",
-      "priority_reason": "报告展示在明确故障前提下恢复见证并伪造可接受签名的完整影响链，评审价值高；但无远程触发且非ICCS官方结论。"
+      "priority_reason": "报告展示在明确故障前提下恢复签名密钥分量s1并构造可接受签名的影响链，评审价值高；但无远程触发且非ICCS官方结论。"
     },
     {
       "slug": "20261118-ngcc-mamba-frost-pseudoxof-finding",
@@ -244,7 +244,7 @@
       "published_at": "2026-11-18T08:38:44+08:00",
       "status": "published",
       "priority": "P2",
-      "priority_reason": "实现故障可让共享密钥退化为公开可计算值，报告范围和见证明确；但没有远程触发证据，现实影响取决于本地故障能力。"
+      "priority_reason": "故障一方可能输出攻击者可重算或全零的密钥且与诚实方不一致，报告范围和见证明确；但没有远程触发证据。"
     },
     {
       "slug": "20261118-ngcc-bit-signature-malleability-sign-02-4",
@@ -289,7 +289,7 @@
       "published_at": "2026-11-18T08:38:44+08:00",
       "status": "published",
       "priority": "P2",
-      "priority_reason": "恢复窗口再次延后，直接影响贸易文件交换与业务连续性；事实来自公司第16次通告，但确切恢复时间仍待更新。"
+      "priority_reason": "确切重启时刻的公告期限被延后且服务仍未恢复，直接影响贸易文件交换；事实来自公司第16次通告。"
     }
   ]
 }
