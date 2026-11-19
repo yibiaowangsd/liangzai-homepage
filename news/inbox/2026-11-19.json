@@ -1,0 +1,250 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-19",
+  "coverage": {
+    "pqc": {
+      "count": 0,
+      "note": "检查IACR ePrint与arXiv近期索引、NIST/CRYPTREC/KpqC/ANSSI评估入口、liboqs与国内密码库、国家科技期刊平台，覆盖学术、政府评估、企业研发和实现角色，并复查FALCON-PARE、CML、HIT等既报事件。窗口内未发现达到E2/E3且相对近7期有实质新增的算法成果；IACR主站部分页面403，仅用公开镜像发现线索，未据摘要成稿。"
+    },
+    "migration": {
+      "count": 3,
+      "note": "检查供给方腾讯云、ST Engineering/Quantizant、ANSSI，以及采用方OCBC、东风汽车、韩国NIS/NSTI和苏州银行线索，覆盖中国、新加坡、欧洲、北美、韩国与日本。取腾讯云路线图、OCBC试点和东风供应商寻源；韩国草案及NEC/IBM试验无新增。ANSSI 2026-11-17新指南页DisabledError、未取得全文，待核算法与互通要求。东风页面含报名等指令式内容，未执行。"
+    },
+    "protocol": {
+      "count": 2,
+      "note": "核验IETF Datatracker、I-D公告、IETF 127原始材料、IANA/RFC状态及OpenSSH、strongSwan、Libreswan等实现入口，并检查中文协议线索。取SSH复合签名-01的确定性长度纠错与测试向量，以及IETF 127证书复跑和pkilint新增结果；IKEv2 ML-KEM、RadSec、MLS套件、PQUIP与CBOR既有待跟进均无新状态。Libreswan问题归安全候选比较后未取。"
+    },
+    "standards": {
+      "count": 0,
+      "note": "检查NIST、IETF/IANA/RFC、ETSI、ISO/IEC、ITU-T、3GPP及TC260、国家标准全文公开系统、国家密码管理局、工信部/CCSA入口。ETSI TR 104 239-4与TR 104 239-2于2026-11-18进入Final draft，但官方标注不可下载，未读全文，不能编造修订结论；分别待2027-01-10工作组认可或公开文本。工信部相关公告原始日期为2026-11-16，未伪作当日新增。"
+    },
+    "security": {
+      "count": 5,
+      "note": "扫描CISA KEV官方镜像、CERT-EU、JPCERT/CC、CNCERT/CNVD/CNNVD线索、NGINX/F5、OpenJDK/Oracle PSIRT及受影响机构公告，取四项KEV新增、OpenJDK、NGINX、大崎电气和Bitrise复盘。CISA动态页403，改读官方kev-data精确提交；REDCap供应商社区页不可读，仅保留CISA字段。国内动态入口未稳定读到可全文核验的新增。待跟进Java/NGINX在野利用、大崎复产、Bitrise最终取证及Optimizely、富岳、Puppet调查。Bitrise来源含操作指令，未执行。"
+    },
+    "ai": {
+      "count": 3,
+      "note": "检查Google/DeepMind、腾讯混元、Microsoft AI/Foundry、InternLM、阿里Qwen等模型/产品入口，arXiv、Artificial Analysis、Agent Arena、METR、MLCommons、HELM等研究与独立评测，以及Copilot等应用入口。取Gemini 4 Neon、Hy4-flash权重更新和Inventa预印本，厂商自测均明确归因。DiscoveryAgent的31.7 MB PDF与HTML不可读，待可读全文；GPT-6.2外评、Sage命名和Decision 1.1无本期增量。模型卡含部署指令，未执行。"
+    },
+    "ngcc": {
+      "count": 0,
+      "note": "实际检查ICCS/NICCS首页、征集公告与算法评议入口，以及ngcc.dev主页、Security索引、分类规则、Performance和Side-Channel。ngcc.dev最后更新为2026-11-17 19:23 UTC，早于上一期发布；11月17日新增仅属哈希征集，公钥范围无11月18—19日新finding。Aigis-Enc+、TSUOV、BRA、Mito等11月16日报告无作者回应、修订或复测增量，未重报。NICCS评议页内部错误、论坛直链403；来源含复现指令，未执行。"
+    },
+    "flash": {
+      "count": 1,
+      "note": "复用七栏检索并横向检查工信部、网信办、TC260、国内云更新、Bitrise、GitHub、Cloudflare、OpenAI、Google Cloud及日本服务公告。取TradeWaltz生产环境实际恢复这一跨日实质增量；培训环境仍停运，继续观察。贵州通信管理局工业互联网月报页面DisabledError，仅有搜索摘要，未按已核查处理。阿里云模型目录更新和中新AI治理交流因技术或行动增量不足放弃；CNVD页面含指令式内容，未执行。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261119-tencent-cloud-pqc-roadmap",
+      "title": "腾讯云发布后量子密码迁移路线图，规划2029年覆盖产品与服务",
+      "summary": "腾讯云公布2026—2029年后量子密码迁移路线，先建设密码资产盘点与算法敏捷能力，再在管理面、EdgeOne和CLB等入口引入X25519MLKEM768混合密钥协商，随后推进证书、签名、存储封装及硬件信任根迁移。公告明确这是可调整的规划，不构成产品承诺或SLA。",
+      "content": "2026-11-18，腾讯云发布后量子密码迁移路线图，称已在2026年启动迁移，并以2029年使产品和服务具备后量子保护能力为目标。公告同时明确，年度里程碑会随标准、监管、生态与第三方依赖调整，不构成具体功能发布时间承诺或服务水平保证，因此现阶段应把它理解为公开架构与排期依据，而不是已经交付的能力清单。\n\n路线图把2026年定义为密码敏捷与资产梳理阶段，依托KMS和CloudHSM建设算法切换、密钥轮换和使用监测能力，并盘点密钥、证书、协议及其依赖。根证书、固件签名和硬件信任根因更换周期长，也被列为需要提前启动的对象。这一顺序说明迁移首先是资产与治理工程，而非简单替换某个密码库。\n\n2027年的重点是管理面入口、EdgeOne和CLB等公网接入服务。腾讯云计划在TLS 1.3中支持RFC 10024定义的混合密钥协商，例如X25519MLKEM768，同时推进证书、签名和密钥管理基础设施演进。混合方式保留经典与后量子分量，意在降低新算法或生态尚不成熟时的单点风险，并兼顾旧客户端和中间设备的兼容性。\n\n2028年规划随CA/Browser Forum规则和主流客户端支持情况推进混合后量子证书，并扩展到各云服务独立维护的公网入口；2029年则覆盖剩余协议、身份认证、数字签名、密钥管理、存储密钥封装和历史密文兼容。公告还强调国内后量子算法标准尚未公布，后续将按正式标准调整，这限制了当前路线图中“国密体系”部分的确定性。\n\n对云客户而言，可立即借用的不是尚未上线的产品开关，而是路线图提出的四步法：盘点算法和证书、按数据保密期与暴露面排序、实施混合迁移、验证保护是否生效。采购和架构团队还应把客户端、源站、网络设备、第三方密码库和硬件模块纳入依赖图，避免只看到云端能力而忽略端到端链路的降级路径。\n\n## 量仔观察\n\n这份一手路线图对云安全负责人和长期数据持有者影响最大，证据强度足以确认腾讯云的规划，却不能证明各里程碑已经交付或完成互通。读者可先建立密码资产清单、数据保密期和产品依赖矩阵，并把RFC 10024兼容性纳入2027年前的测试计划。下一观察点是EdgeOne、CLB和管理面出现可验证的产品文档、启用方式、性能数据及跨客户端互通结果。",
+      "category": "migration",
+      "tags": ["后量子迁移", "腾讯云", "密码敏捷", "路线图"],
+      "source_name": "腾讯云",
+      "source_url": "https://cloud.tencent.com/announce/detail/2551",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "云服务商公开覆盖资产、TLS、证书、存储与信任根的分年路线，能直接影响企业迁移排期；依据官方全文为E3，但仍是可调整规划而非已交付承诺。"
+    },
+    {
+      "slug": "20261119-ocbc-qfinex-readiness-pilot",
+      "title": "OCBC加入Q-FINEX试点，使用Quantizant评估后量子迁移准备度",
+      "summary": "OCBC与GFTN、澳大利亚西澳大学QUISA中心及ST Engineering启动Q-FINEX银行试点。ST Engineering将部署Quantizant盘点密码资产、评估量子风险并生成后量子算法迁移优先路线；另两项量子计算用例将用于研究比较。当前仍是测试平台上的评估与路线图工作，不是生产迁移完成。",
+      "content": "2026-11-18，ST Engineering宣布新加坡华侨银行OCBC加入Q-FINEX测试平台，与Global Finance & Technology Network、西澳大学QUISA研究中心共同开展银行场景试验。合作把量子计算用例和后量子密码准备度放在同一项目中，但两条工作线目的不同：前者比较计算方法，后者评估现有密码依赖与迁移顺序。\n\n在迁移部分，ST Engineering将部署Quantizant平台，对OCBC开展量子准备度评估并形成后量子算法转换的优先路线图。[Quantizant产品资料](https://www.stengg.com/en/smart-city/financial-services-technologies/quantizant/)把流程描述为发现密码资产与依赖、识别风险、生成迁移剧本，并为混合迁移路径及回退提供规划支持。公告没有披露扫描覆盖率、资产数量、生产系统范围或独立测量结果，因此这些能力目前仍属于参与方陈述。\n\nOCBC还会提交信用与交易对手风险、优化两类用例，由QUISA研究人员设计量子或混合算法，并与传统方法比较。只有测得可重复的优势后，ST Engineering才可能进一步实施。该部分不能被当作后量子密码部署的证据，也不能反过来用量子计算研究的进展证明银行密码迁移已进入生产。\n\n本次新增的编辑价值在于采用方参与，而不只是供应商发布一份通用白皮书。银行把实际业务问题、密码资产发现和迁移路线放进受控试验，至少建立了从风险识别到优先级排序的工作链。对于监管、采购和安全架构团队，这比单纯宣布合作更接近可验收的准备度项目，但仍需等待交付指标公开。\n\nOCBC称其量子路线始于2021年，并已培训一百多名具备中级量子技术能力的员工；这些背景可以解释试点基础，却不是本次成效。正式判断迁移成熟度仍需看到资产覆盖、风险分类方法、混合算法选择、回退机制、与既有HSM及PKI的集成，以及试点后是否进入可审计的实施阶段。\n\n## 量仔观察\n\n这项试点对金融机构的安全架构、风险和采购团队有参考价值，一手公告可确认参与方与工作范围，但效果证据仍是单方且没有独立评测。读者可把资产发现、依赖映射、风险排序、迁移剧本和回退验证拆成验收项，而不要把“加入测试平台”写成生产上线。下一观察点是Quantizant评估结果、OCBC公开的资产覆盖与迁移优先级，以及任何可复现的传统方法对照数据。",
+      "category": "migration",
+      "tags": ["后量子迁移", "银行", "OCBC", "试点"],
+      "source_name": "ST Engineering",
+      "source_url": "https://www.stengg.com/en/newsroom/news-releases/ocbc-joints-global-testbed-with-gftn-uwa-st-engineering/",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "银行采用方把密码资产发现、风险评估和迁移路线纳入实际试点，行动路径明确；官方全文为E3，但尚无生产范围、指标或独立评测。"
+    },
+    {
+      "slug": "20261119-dongfeng-quantum-safe-vehicle-sourcing",
+      "title": "东风汽车征集车云量子加密系统供应商，计划开展台架与实车验证",
+      "summary": "东风汽车发布供应商寻源公告，拟构建PQC、QKD与TEE分层协同的车云安全架构：车云TLS和双栈密码模块由甲方团队负责，供应商提供云端TEE密码模块、车端HSM充注、KMS接入及QKD业务层加密支持，并完成台架和实车验证。公告是寻源与验收基线，不代表已签约或部署。",
+      "content": "2026-11-17，东风汽车电子采购平台发布“汽车量子加密防护系统研究采购项目”供应商寻源公告，提出构建PQC、QKD与TEE分层协同的车云安全架构，并进行台架和实车多工况验证。该日期处于本期72小时扩展窗口；公告同时说明寻源不承诺签约，因此不能将它表述为中标、采购完成或生产部署。\n\n架构把职责拆得较清楚：东风PQC团队负责车云TLS抗量子升级和车端双栈密码模块，供应商提供技术支持；供应商侧还需交付云端TEE软件密码模块、车端HSM预置充注密钥、车云SDK与KMS对接。QKD提供的会话密钥用于业务数据对称加密，并与现有TLS通道相互独立，不能写成QKD取代TLS。\n\n公告列出的云端密码模块需支持SM2、SM3、SM4，以及FIPS 203的ML-KEM、FIPS 204的ML-DSA和Aigis+等候选能力；接口涉及SDF、JCE和REST，部署要求包括容器化、多节点集群、负载均衡、自动故障切换和弹性扩容。页面也明确部分指标由甲方开发或组织测试，不都属于乙方独立验收责任。\n\n项目还要求打通车端、东风云业务平台和武汉量子城域网之间的链路，使用本地主密钥、预置充注密钥和QKD会话密钥组成三级体系，并对接TSP与OTA平台。验收输出包括接口、部署运维、测试报告和行业技术建议。公开材料给出了目标结构，却没有说明既有车辆型号、量产范围、延迟与吞吐基线，也没有公布测试方法细节。\n\n对车联网团队而言，这份公告的价值在于展示了PQC、QKD、TEE、HSM和KMS的职责边界，以及台架到实车的验证路径。真正的工程风险仍集中在车辆生命周期、旧固件兼容、密钥注入与召回成本、网络不可用时的降级策略，以及跨省量子资源调度能否满足可靠性和时延要求，这些都要等后续方案和测试报告验证。\n\n## 量仔观察\n\n该寻源对汽车安全架构和采购团队具有直接参考价值，官方项目页为E3，但它只是需求与验收基线，不证明供应商已经选定或系统有效。读者可据此检查PQC与QKD是否被清楚分层、TLS降级和KMS故障是否纳入测试，并要求参数、硬件、负载和统计口径可复现。下一观察点是正式招采结果、台架与实车报告、接口规范，以及量产车型和运维责任边界。",
+      "category": "migration",
+      "tags": ["后量子迁移", "车联网", "东风汽车", "采购"],
+      "source_name": "东风汽车电子采购平台",
+      "source_url": "https://etp.dfmc.com.cn/tzgg/001002/20261117/8b9a5b1b-cf1f-4a11-ba40-b2a63eab122e.html",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "官方寻源给出车云PQC、QKD、TEE、HSM和KMS的具体分工及实车验收目标，工程参考价值明确；但仍未签约或部署，紧迫度有限。"
+    },
+    {
+      "slug": "20261119-ssh-composite-sigs-01",
+      "title": "IETF SSHM修订SSH复合签名草案，纠正ML-DSA-87长度并补齐向量",
+      "summary": "IETF SSHM工作组草案draft-ietf-sshm-composite-sigs-01纠正ssh-mldsa87-p384中ML-DSA-87签名长度，将错误的4896字节改为4627字节，并补充完整密钥测试向量、SSHFP示例与实现状态。变更可直接影响编码、边界检查和互通测试；文件仍是工作组Internet-Draft，尚未成为RFC。",
+      "content": "2026-11-17，IETF SSHM工作组发布draft-ietf-sshm-composite-sigs-01。与-00版本相比，本次最直接的工程修正是把ssh-mldsa87-p384中ML-DSA-87签名分量长度从错误的4896字节改为FIPS 204规定的4627字节；[作者修订记录](https://github.com/djmdjm/drafts/commit/5f0c23044dcbb5d7b63d054a76c3d1b604b05cd0)可直接核对这一变化。文件在11月18日凌晨进入北京时间窗口内的I-D公告流。\n\n该组合把ML-DSA-87与ECDSA P-384签名串联，验证时两个分量都必须成功。长度字段会影响序列化、缓冲区边界、测试夹具和跨实现互通；若实现者沿用-00的错误常量，可能拒绝合法签名、分配错误缓冲区或生成与其他实现不一致的消息。草案仍使用SSH的string与mpint编码，并没有把两个分量压缩成一个新算法。\n\n-01还补齐了ssh-mldsa87-p384的完整密钥测试向量，并增加SSHFP记录示例，便于实现者验证密钥编码、指纹和DNS发布路径。[另一笔作者提交](https://github.com/djmdjm/drafts/commit/fc76739d10a54e8e69cf5187f9ac4b3ef8fff0b4)记录了相关互操作材料；草案同时记载OpenSSH和Bitvise的实现状态。这些材料能降低“各自按文字理解”的偏差，但实现出现并不等于协议已经获得IETF最终共识。\n\n状态必须严格区分：Datatracker把文件列为SSHM工作组文档，IESG状态仍是I-D Exists，没有工作组Last Call、负责AD或RFC编号；IANA算法值仍写作TBA。此前OpenSSH 10.6启用的ssh-mldsa44-ed25519是相关但不同的参数组合，不能据此声称本次ssh-mldsa87-p384已在主流产品默认可用。\n\nSSH库和设备厂商现在可以用4627字节常量与完整向量重新跑编码、签名和SSHFP测试，并检查旧实现是否固化了4896。部署方则不宜把草案算法当作跨供应商稳定标识，应保持协商可配置、避免把临时编号写入长期资产，并保留与经典算法或已发布算法的兼容路径。\n\n## 量仔观察\n\n这次修订对正在实现SSH复合签名的协议工程师影响具体，IETF正文和作者差异提供E3证据，但影响范围仍限于早期实现者，且草案可能继续变化。读者可立即搜索4896这一旧常量、导入新向量并把IANA临时值隔离在实验配置中。下一观察点是工作组Last Call、正式IANA分配、OpenSSH和Bitvise的互通结果，以及后续版本是否改变消息或证书格式。",
+      "category": "protocol",
+      "tags": ["SSH", "ML-DSA", "复合签名", "IETF"],
+      "source_name": "IETF Datatracker",
+      "source_url": "https://datatracker.ietf.org/doc/draft-ietf-sshm-composite-sigs/01/",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "长度纠错和完整向量会直接影响SSH编码、边界检查与互通，证据来自IETF正文和版本差异；但仍是早期工作组草案，影响面有限。"
+    },
+    {
+      "slug": "20261119-ietf127-pqc-cert-r5-rerun",
+      "title": "IETF 127更新PQC证书互通结果，检查262张证书发现DER与profile问题",
+      "summary": "IETF 127 PQC证书材料更新至-01：R5验证器复跑覆盖22个ZIP、752行，748行与多数结果一致，另有2行差异和2行平局；pkilint 0.13.4检查21个生产者的262张证书，发现非DER编码、禁止的keyUsage位和91项RFC 5280 profile finding。结果是互通测量，不等同标准合规认证。",
+      "content": "2026-11-15，IETF 127 Hackathon的PQC证书项目完成会后复跑，随后公开的-01材料补充了相对[2026-11-15本站旧稿](https://wangyibiao.com/news/20261115-ietf127-pqc-certificates-r5)的量化增量。新的R5验证矩阵覆盖22个ZIP、752行，其中748行与其他验证器的多数结果一致，2行存在差异，另有2行出现平局；此前-00只记录21个ZIP、722行和2行差异。\n\n这项工作使用独立JavaScript验证器检查ML-DSA、ML-KEM和12组SLH-DSA证书或私钥工件，再逐行与其他实现的多数判断比较。新增生产者带来30行全部通过，但早先的差异并未因此消失。多数一致只能说明实现间判断趋同，不能自动证明多数一方符合所有RFC或草案要求，平局也提示需要回到具体编码和规范条文定位。\n\n-01还披露用pkilint 0.13.4检查21个生产者生成的262张R5证书：12张不是有效DER，12张设置了相应RFC禁止的keyUsage位，91项命中RFC 5280 profile问题；未发现NULL参数，8个生产者在这些类别中没有问题。数字是材料对特定工件和工具版本的测量，不应扩写成所有PQC证书实现的缺陷率。\n\n这些结果把互通验收从“某个库能否解析”推进到编码规范、用途位和证书profile层面。PKI团队可以把DER严格性、算法参数、keyUsage、证书链角色和多数判定分歧纳入测试矩阵，并保留原始工件与工具版本，以便在草案或库更新后复跑。对KEM终端实体证书的语义问题，材料仍提出开放问题，没有给出最终规范答案。\n\n本次是同一Hackathon活动的实质更新，不是新的标准通过或独立部署。参与实现数量、工件分布和测试工具都可能造成样本偏差；同时，R5工件面向尚在演进的PQC证书生态，发现项可能来自生成器、profile选择或验证器解释，必须逐条归因后才能决定修复责任。\n\n## 量仔观察\n\n该更新直接影响PQC PKI实现者和互通测试负责人，原始会议材料为E3且给出可复核计数，但它不是正式认证，也没有覆盖所有证书产品。读者可把262张工件、pkilint 0.13.4和四类结果固定成回归基线，优先分析2个差异与2个平局，而非只追求通过率。下一观察点是具体finding归因、生成器修复、KEM证书用途共识及下一轮复跑是否减少profile问题。",
+      "category": "protocol",
+      "tags": ["PQC证书", "IETF 127", "互操作", "PKI"],
+      "source_name": "IETF 127 Hackathon",
+      "source_url": "https://datatracker.ietf.org/meeting/127/materials/slides-127-hackathon-sessd-pqc-certificates-noble-post-quantum-javascript-r5-verifier-and-artifacts-01",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "新增复跑和262张证书的profile检查为PKI验收提供可行动数据，原始材料为E3；但样本与工具有限，不能外推为全生态缺陷率。"
+    },
+    {
+      "slug": "20261119-cisa-four-kev-additions",
+      "title": "CISA新增四项KEV，涵盖Synology、LiteLLM、REDCap与Apache Axis",
+      "summary": "CISA在2026-11-18版KEV目录新增CVE-2024-10441、CVE-2026-40217、CVE-2026-90817和CVE-2026-90436，分别影响Synology DSM/BSM、LiteLLM、REDCap与已停止维护的Apache Axis 1.x。收录证明存在已知在野利用，但目录未确认勒索活动，也未公开四项完整攻击链。",
+      "content": "2026-11-18，CISA把四项漏洞加入Known Exploited Vulnerabilities目录，官方kev-data镜像将版本从2026.11.17更新为2026.11.18、总数由1782增至1786。新增项是CVE-2024-10441、CVE-2026-40217、CVE-2026-90817和CVE-2026-90436；KEV收录表明CISA掌握已知在野利用证据，但不等于公开了利用规模或攻击者身份。\n\nCVE-2024-10441涉及Synology DSM/BSM系统插件守护进程的输出处理，CISA描述为可导致远程代码执行，[Synology公告](https://www.synology.com/en-us/security/advisory/Synology_SA_24_20)列出受影响产品与更新；CVE-2026-40217影响BerriAI LiteLLM的自定义代码测试通道，可通过相关guardrails端点触发代码执行。[LiteLLM维护者公告](https://github.com/BerriAI/litellm/security/advisories/GHSA-wxxx-gvqv-xp7p)对修复版本文字存在1.83.10与1.83.11不一致，资产方宜核实所用发行版；无法确认时可保守升级至1.83.11或更新版本，并以厂商回归测试验证修复。\n\nCVE-2026-90817影响REDCap，攻击需要知道有效的公开问卷哈希，之后可借数据导入路径触发代码注入。CVE-2026-90436影响Apache Axis 1.x至1.4，可通过特制SOAP fault让服务加载并实例化类路径上的合适类。Axis 1.x已经停止维护，[Apache公告](https://lists.apache.org/thread/8slf0j9gz35z56t0glt5h0ncwlbn4bdz)建议迁移到受支持的Axis2或采用维护者提供的修复提交，而不是等待新的1.x正式版。\n\n目录给Synology、REDCap和Axis设置2026-11-21的处置日期，LiteLLM为2026-12-02；四项的knownRansomwareCampaignUse均为Unknown。这些日期是美国联邦机构BOD 26-04的执行节点，不是所有组织的统一法定期限，但能作为风险排序信号。REDCap供应商社区公开入口本轮不可读，因此本文不超出CISA已证实的前提与影响范围。\n\n防守方应先按产品、版本、互联网暴露和业务角色盘点，不要把CVSS或KEV标签直接当作所有实例都可利用。对于Axis要重点查遗留SOAP服务和捆绑组件；LiteLLM要核对管理端点暴露和补丁版本；REDCap要保护公开调查入口并依供应商指引升级；Synology则按型号与系统版本应用公告中的更新。\n\n## 量仔观察\n\n这批KEV同时覆盖AI网关、科研数据平台、存储设备和遗留Java组件，资产与PSIRT团队需要及时行动。CISA提交差异为E3，可确认收录、前提和期限，却不能说明攻击规模、勒索关系或每个产品的完整利用链。读者应把四项拆开建工单，以厂商版本表验证修复，并保存暴露面与日志证据。下一观察点是CISA或厂商披露攻击活动、LiteLLM修复版本口径统一及REDCap公开补丁说明恢复可读。",
+      "category": "security",
+      "tags": ["CISA KEV", "在野利用", "LiteLLM", "Apache Axis"],
+      "source_name": "CISA kev-data",
+      "source_url": "https://github.com/cisagov/kev-data/commit/a705bb0fa3ba6fc554cf8694c9c321364a4a094e",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "四项已知在野利用漏洞跨越AI、数据、存储和遗留中间件，且处置节点临近；CISA官方镜像差异为E3，但攻击规模与勒索关系仍未知。"
+    },
+    {
+      "slug": "20261119-openjdk-base64-cve-2026-114938",
+      "title": "OpenJDK修复CVE-2026-114938，特定AVX-512路径可触发内存破坏",
+      "summary": "OpenJDK与Oracle发布CVE-2026-114938修复，问题位于Base64解码硬件加速路径。研究者称在Keycloak、Jira、Confluence和Jenkins场景演示未认证远程代码执行；触发需x86-64、AVX-512 VBMI及恶意Base64输入进入脆弱路径，ARM64不受影响。JPCERT/CC截至11月18日未确认在野利用。",
+      "content": "2026-11-17，OpenJDK和Oracle发布CVE-2026-114938相关安全信息与更新；JPCERT/CC在2026-11-18进一步说明影响条件。漏洞位于JVM对Base64解码的硬件加速处理，可能造成堆内存破坏，进而导致信息泄露或任意代码执行。它不是所有Java请求都可直接触发的通用远程漏洞。\n\n研究组织Calif报告在Keycloak、Jira、Confluence和Jenkins等Java应用场景演示了无需认证的远程代码执行，但利用必须同时满足特定环境与数据流条件：运行在支持AVX-512 VBMI的x86-64处理器上，JVM启用相应内建加速，并让攻击者控制的Base64数据到达脆弱解码路径。JPCERT/CC称ARM64不受这条具体路径影响。\n\nJPCERT/CC列出的潜在范围包括Oracle Java SE、Oracle OpenJDK、Amazon Corretto、Eclipse Temurin、Microsoft Build of OpenJDK、Azul Zulu、Red Hat OpenJDK及其他OpenJDK发行版。研究者认为OpenJDK 17.0.6以后的脆弱版本可能受影响，但实际修复版本和产品打包情况应以各发行商公告为准，尤其要检查应用自带JRE而非只看系统Java。\n\n首选处置是升级到所用发行版明确标注已修复的版本。若短期不能更新，JPCERT/CC转述的临时措施包括关闭Base64内建加速或限制AVX使用级别，但这可能改变性能和运行行为，必须先在相同硬件与负载下验证。防守方还应定位哪些网络入口会处理外部Base64，而不是仅凭CPU型号判断风险。\n\n截至2026-11-18，JPCERT/CC没有确认该漏洞已被实际攻击利用。公开演示说明可利用性与潜在影响已经超过纯理论，但不能把研究者PoC写成在野利用，也不能推断所有被点名应用默认配置均可达。日志、崩溃和补丁前后行为需要结合具体JDK、CPU特性与调用路径分析。\n\n## 量仔观察\n\n该漏洞对使用x86-64高性能服务器的Java平台和上层产品影响广，OpenJDK、Oracle和JPCERT/CC的一手资料构成E3证据，但触发前提严格且暂无在野利用确认。读者应盘点实际JDK发行版、随应用捆绑的运行时、AVX-512能力和外部Base64入口，优先升级并在必要时测试临时禁用。下一观察点是各发行商的精确修复矩阵、产品厂商影响声明和任何可信在野利用通报。",
+      "category": "security",
+      "tags": ["OpenJDK", "CVE-2026-114938", "远程代码执行", "补丁"],
+      "source_name": "JPCERT/CC",
+      "source_url": "https://www.jpcert.or.jp/newsflash/2026111801.html",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "Java生态覆盖广且研究者已演示多种上层应用路径，官方修复与应急说明为E3；但依赖特定CPU和数据流，尚无在野利用证据。"
+    },
+    {
+      "slug": "20261119-nginx-1307-1319-security-fixes",
+      "title": "NGINX发布1.30.7与1.31.9，修复十项协议与内存安全问题",
+      "summary": "NGINX发布稳定版1.30.7和主线版1.31.9，集中修复十项HTTP/2、HTTP/3、TLS、resolver、mail与stream模块问题。CVE-2026-123007为HTTP/2流控内存破坏，F5称在ASLR关闭或可被绕过时存在远程代码执行可能；其余问题也各有模块和配置前提，不能概括为十项均可直接RCE。",
+      "content": "2026-11-18，NGINX发布开源稳定版1.30.7和主线版1.31.9，安全公告列出十项本轮修复，涉及resolver、HTTP/2、HTTP/3、TLS 1.3请求体、mail代理、PROXY protocol、alias与try_files、stream证书验证和ssl_preread。多数受影响范围延伸至1.31.8，具体下界和模块条件各不相同。\n\n其中CVE-2026-123007是HTTP/2流控内存破坏，NGINX将严重度标为major，受影响版本为1.9.5至1.31.8。[F5公告](https://my.f5.com/manage/s/article/K000163926)说明它通常可导致worker崩溃或内存破坏，在ASLR关闭或被绕过时可能进一步实现远程代码执行。这个条件必须保留，不能把“可能”改写成所有HTTP/2部署均可直接RCE。\n\n另外两项major问题是CVE-2026-118899的TLS 1.3请求体读取无限循环，以及CVE-2026-113425的mail代理use-after-free。HTTP/3、HTTP/2和resolver还各有中等严重度的释放后使用问题；stream中的客户端证书验证可能被SNI路径绕过。低或中等项同样需要按启用模块、协议与配置判断，不应只按总数分配优先级。\n\n开源部署应升级到1.31.9或1.30.7及以上；F5给出的NGINX Plus R37对应修复版本包括37.3.0.1或37.0.8.1。对无法立即升级的环境，公告没有为关键问题提供可替代补丁的通用缓解，因此应先识别公网HTTP/2、HTTP/3、TLS 1.3、stream和mail代理实例，减少暴露并安排滚动更新与回归测试。\n\n[CERT-EU公告](https://cert.europa.eu/publications/security-advisories/2026-022/)称其中若干问题在相应条件下可能导致未认证代码执行，但截至公告未见在野利用。运维团队需把崩溃、内存破坏、访问控制绕过和CPU耗尽分开监测，并在更新前后检查错误率、worker重启、TLS握手、HTTP/2窗口处理及stream客户端证书验证，避免把一个版本号升级等同于端到端风险已经关闭。\n\n## 量仔观察\n\n这批修复影响互联网入口、代理与邮件组件，NGINX安全表、F5细节和CERT-EU说明形成E3证据，具备立即升级价值；局限是各CVE的协议、模块、ASLR和配置前提差异很大。读者应按启用面建立实例清单，优先更新公网HTTP/2和相关Plus版本，并保留升级前后协议回归数据。下一观察点是厂商补充技术细节、发行版回移植状态和是否出现可信在野利用。",
+      "category": "security",
+      "tags": ["NGINX", "安全更新", "HTTP/2", "CVE-2026-123007"],
+      "source_name": "NGINX",
+      "source_url": "https://nginx.org/en/security_advisories.html",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "十项修复覆盖常见互联网协议和代理模块，且关键内存破坏具有RCE条件，官方与CERT资料为E3；应快速升级但不可忽略配置前提。"
+    },
+    {
+      "slug": "20261119-bitrise-preliminary-incident-review",
+      "title": "Bitrise公布初步复盘，确认15个客户workspace文件被未授权访问",
+      "summary": "Bitrise发布11月安全事件初步复盘：攻击者使用一个未启用2FA的内部测试机器人账户有效凭据进入，随后扩展访问。公司确认15个客户workspace中的文件被下载，包括证书文件、provisioning profile和13份旧构建日志；没有证据显示其他workspace的密钥库或源码被访问，最终结论仍待GitHub审计日志。",
+      "content": "2026-11-18，Bitrise发布11月安全事件初步复盘，相比本站同日关于[服务恢复的前稿](https://wangyibiao.com/news/20261118-bitrise-incident-final-update)，新增了入口、横向访问和客户文件级取证边界。公司称攻击者在2026-11-13使用一个内部测试机器人账户的有效用户名和密码进入；该账户原用于Apple开发者门户认证，却没有启用双因素认证，凭据来源仍在调查。\n\n进入后，攻击者从账户环境取得其他凭据并尝试枚举和提升访问。Bitrise在发现可疑活动后先关闭机器人账户，随后因看到GitHub仓库未授权访问而启动全平台关闭，撤销令牌、轮换生产凭据并从可信来源重建Linux和Mac构建基础设施。公司称恢复过程中轮换了919个云服务账户密钥，但这是处置规模，不等于919个密钥都已泄露。\n\n文件级分析确认15个客户workspace有文件被未授权访问：一个代码签名证书文件、一个provisioning profile和13份2026年5月的诊断构建日志。Bitrise称证书密码保存在密钥管理器中、攻击者未取得；13份日志包含少量源码或测试片段，其中一份含凭据、另一份含邮箱地址。受影响客户已被单独通知。\n\n对于其余workspace，Bitrise称未发现客户密钥库、代码签名文件、构建产物或源码出现在攻击者访问集合中，也没有迹象显示客户secret store被尝试访问。但公司仍在等待GitHub审计日志与自身记录关联，这是进入最终报告阶段前的最后阻塞项。因此“未发现证据”不能写成已证明不存在任何访问。\n\n复盘还给出轮换密钥、重新授权GitHub App和恢复OAuth连接等建议。它们是来源中的操作指导，不是本站执行指令；客户应按自身暴露、审计记录和业务连续性评估后实施。安全团队更重要的是核对11月12日至13日的构建、GitHub、OAuth和部署密钥活动，并确认旧日志是否包含长期有效凭据。\n\n## 量仔观察\n\n这份复盘对移动CI/CD用户和供应链安全团队影响直接，一手全文为E3并细化到15个workspace，但调查尚未关闭，GitHub侧证据仍缺。读者可将受影响通知、构建日志、Git授权、证书和部署密钥拆分核验，优先处理可长期使用的凭据，避免把平台恢复等同于取证完成。下一观察点是GitHub审计日志、最终报告、凭据最初泄露路径和独立取证机构的验证结论。",
+      "category": "security",
+      "tags": ["Bitrise", "供应链安全", "事件复盘", "CI/CD"],
+      "source_name": "Bitrise",
+      "source_url": "https://bitrise.io/blog/post/the-bitrise-security-incident-preliminary-review-and-recommended-steps",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "初步复盘新增有效入口、15个客户workspace及文件类型的可核边界，直接影响CI/CD凭据处置；官方证据为E3，但GitHub审计仍待补齐。"
+    },
+    {
+      "slug": "20261119-osaki-ransomware-production-stop",
+      "title": "大崎电气遭勒索软件攻击，智能电表生产与发货暂停",
+      "summary": "日本大崎电气工业披露，2026年11月17日发现服务器数据被加密并切断外部网络，埼玉研发制造基地及两家关联生产据点的生产系统停止，智能电表等产品暂停生产与发货。公司正与外部专家调查数据外泄，尚未公布攻击入口、勒索家族、复产日期或财务影响。",
+      "content": "2026-11-18，日本大崎电气工业发布勒索软件事件首报。公司称在2026-11-17 10:35 JST左右确认服务器数据被加密，并从当日中午起让系统与外部网络断开。事件已从IT异常扩展到实体运营：埼玉研发制造基地及相关生产据点的生产系统被关闭，智能电表等产品停止生产和发货。\n\n受影响生产据点包括Iwate Osaki Electric与Osaki Platech。公司成立由总裁兼COO负责的紧急响应总部，联同外部专家调查和恢复，并向警方及有关机关报告。客户和业务伙伴正在分批获得通知，但首报没有给出被影响订单、库存缓冲、替代产线或具体交付延迟范围。\n\n公告确认的是服务器加密、网络隔离和生产发货暂停，没有公开初始访问途径、攻击者、勒索软件家族或付款情况。公司仍在调查数据是否被外传，因而不能把加密事件自动写成已确认数据泄露，也不能从“勒索软件”标签推断某一团伙或利用链。\n\n恢复方面，公告称生产和发货恢复时间尚未确定，对财务业绩的影响也未知。电力计量设备客户与供应链伙伴应依据自身订单、库存和替代供应情况评估连续性，而不是等待一个笼统的“系统恢复”声明；即便办公网络先恢复，制造执行、质量追溯和发货系统也可能需要分别验证。\n\n企业侧应关注受影响方后续披露的复产范围、产品质量追溯完整性、远程连接与供应商账户审计，以及是否需要重新验证生产参数。对于同类制造企业，本事件提示应将身份、备份、产线隔离、手工降级和安全恢复标准放进业务连续性演练，而不只测试办公IT恢复。\n\n## 量仔观察\n\n这起事件对智能电表采购方、电力供应链和制造业安全运营有现实影响，受影响方首报为E3，可确认生产与发货中断；但证据仍是单方初报，外泄、入口和恢复日期未知。读者可先核对关键订单、替代库存和产线恢复验收条件，不应传播未经证实的攻击者归属。下一观察点是分阶段复产、数据外泄结论、财务影响和根因复盘。",
+      "category": "security",
+      "tags": ["勒索软件", "工业安全", "供应链", "智能电表"],
+      "source_name": "Osaki Electric",
+      "source_url": "https://www.osaki.co.jp/en/ir/news/auto_20261118582910/pdfFile.pdf",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "勒索事件已造成智能电表生产和发货中断，供应链影响明确且首报可核；但范围、外泄、攻击入口和复产时间尚未确定。"
+    },
+    {
+      "slug": "20261119-gemini-4-neon-release",
+      "title": "Google发布Gemini 4 Neon，开放API并公布100万token上下文定价",
+      "summary": "Google发布Gemini 4 Neon，向Gemini API、AI Studio、企业服务、Antigravity及付费用户开放。模型提供100万token上下文，输入、缓存和输出价为每百万token 3美元、0.15美元和15美元。Artificial Analysis测得xhigh档指数61、输出约110 token/s，但首答等待和任务时长较高。",
+      "content": "2026-11-18，Google发布Gemini 4 Neon，并开始在Gemini API、Google AI Studio、Gemini for business、Antigravity及Gemini应用的相应付费层级提供。官方把它定位为在复杂编码、知识工作和科学流程中平衡能力、速度与成本的模型，而不是取代同系列所有档位。\n\n[模型卡](https://deepmind.google/models/model-cards/gemini-4-neon/)列出文本、图像、音频和视频输入，统一上下文窗口最高100万token；默认同步输出上限为64000 token，背景长解码可扩展。API价格为每百万输入token 3美元、缓存输入0.15美元、输出15美元。具体可用性随渠道和订阅层级变化，因此“发布”不等于所有用户、地区和产品入口同时无条件开放。\n\n独立测量方面，[Artificial Analysis](https://artificialanalysis.ai/models/gemini-4-neon)在xhigh思考档给出Intelligence Index 61、输出速度约110 token/s、首个答案token等待约56.51秒，单个指数任务平均约21.5分钟、成本约6.44美元。该机构认为能力位于前列，但任务时长、价格和输出冗长度并不占优。这些数据只适用于其公开方法和特定档位，不能与厂商不同提示、预算或工具配置的成绩混用。\n\nGoogle模型卡还给出自家与部分外部基准结果，并说明完整Safety & Security Report将在随后几天发布。当前卡片称Neon相对Argon的一般能力提升未达到需要重新做全套关键能力评估的门槛，部分前沿风险判断沿用Argon；同时列出幻觉、越狱和间接提示注入仍是限制。沿用结论不等于Neon已经获得独立安全验证。\n\n研发和采购团队可先按真实任务比较xhigh与其他思考档，记录端到端等待、token消耗、缓存命中、工具调用成功率和输出可用率。对长上下文工作负载，还应验证100万token下的检索和证据一致性，而不是只看标称容量。涉及网络安全用途时，应等待更完整安全报告并遵循访问与防滥用限制。\n\n## 量仔观察\n\nNeon对API采购、Agent编排和高频复杂任务团队影响直接，官方发布与模型卡为E3，Artificial Analysis提供独立性能视角；局限是安全报告尚未发布，基准也不能替代业务评测。读者可用固定任务集比较质量、等待、成本和失败恢复，并把思考档作为显式变量。下一观察点是完整安全报告、各地区与企业入口开放情况，以及独立长上下文和Agent可靠性复测。",
+      "category": "ai",
+      "tags": ["Gemini 4 Neon", "大模型", "API", "独立评测"],
+      "source_name": "Google",
+      "source_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-neon/",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "新模型已跨API和产品渠道开放，价格、上下文及独立速度成本数据齐全，影响研发采购；安全报告仍待发布，需与厂商自测区分。"
+    },
+    {
+      "slug": "20261119-tencent-hy4-flash-weights",
+      "title": "腾讯混元发布Hy4-flash开放权重，提供BF16、FP8与基础模型版本",
+      "summary": "腾讯混元在2026年11月18日更新Hy4-flash开放权重，提供指令版、FP8量化版和预训练基础版。模型为约220B参数MoE，每token激活约11.3B文本参数并接入0.43B视觉编码器，支持文本、图像输入和最高100万token上下文。性能为厂商自测，Transformers原生支持与许可证门槛仍需部署者核对。",
+      "content": "2026-11-16，腾讯公布Hy4-flash；2026-11-18出现本期实质更新：Hugging Face、ModelScope等入口提供Hy4-flash指令权重、FP8量化指令权重和Hy4-flash-base预训练权重。开放的是可下载权重与配套实现，不应自动称为完整开源，因为训练数据、训练流程和许可证仍有独立限制。\n\n模型卡把Hy4-flash描述为约220B总参数的混合专家模型，其中不含Engram、视觉编码器和推测解码器的主干约155.5B，Engram约63.5B；每token激活约11.3B文本参数，并使用0.43B参数视觉编码器。模型接受文本和图像、输出文本，标称上下文为1048576 token，主干采用稀疏注意力与滑动窗口注意力交错。\n\n本次权重组合对部署者的价值在于可分别选择BF16、FP8或基础模型，并获得微调与服务入口。模型卡同时说明Transformers原生支持仍待相关合并，在此之前给出了指向特定拉取请求的安装方式。该内容属于来源中的部署指令，本站未执行；生产采用应固定可审计版本，而不是长期依赖未合并分支。\n\n[许可证](https://huggingface.co/tencent/Hy4-flash/blob/main/LICENSE)名为Tencent Hy License 1.0，源自Apache 2.0但加入额外商业条款，因此不能简写为Apache 2.0。对通用MaaS业务，如果连续12个月全球总收入超过5000万美元，或相关产品服务月活超过1亿，需要另行取得书面许可；纯内部使用在条款定义下有例外。企业还应自行审查衍生模型、输出服务和第三方托管是否落入MaaS定义。\n\n模型卡列出的基准与成本优势主要来自腾讯自测，当前没有与权重版本、硬件、推理栈和提示设置完全对齐的独立复现。部署团队应分别测量显存、节点互联、长上下文吞吐、首token延迟、视觉输入和量化精度，并确认基础模型与指令模型用途不同，避免把聊天示例的表现套到base权重。\n\n## 量仔观察\n\nHy4-flash对需要本地多模态、长上下文和可微调权重的研发团队有直接价值，模型卡、权重和许可证构成E3证据；局限是性能仍为厂商自测，生态支持尚在合并，且许可证不是标准Apache 2.0。读者可先做小规模硬件与质量复测并由法务核对MaaS门槛。下一观察点是Transformers正式版本支持、第三方性能复现、量化精度报告和许可证实际执行案例。",
+      "category": "ai",
+      "tags": ["Hy4-flash", "开放权重", "MoE", "多模态"],
+      "source_name": "Tencent Hunyuan",
+      "source_url": "https://huggingface.co/tencent/Hy4-flash",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "权重、量化版、基础版和许可证均已公开，便于本地部署与评估；证据为E3，但性能未独立复现且生态支持和商业条款仍有限制。"
+    },
+    {
+      "slug": "20261119-inventa-agent-research-framework",
+      "title": "Georgia Tech与Amazon提出Inventa，以验证共享知识协调自治研究单元",
+      "summary": "Georgia Tech与Amazon研究者发布Inventa预印本，用多个自治研究单元并行演化候选想法，只通过经验证的改进、组件和约束信息共享知识。作者在五项研究周期基准上报告领先：EurekaBench为73.6%对CORAL的56.2%，IdeaBench平均26个新想法并减少82%模型调用；结果尚无独立复现。",
+      "content": "2026-11-16，Georgia Tech与Amazon研究者提交预印本arXiv:2611.21847，提出Inventa自治科学发现框架。它针对多Agent研究中常见的想法趋同、未经验证内容污染共享记忆和重复无效搜索问题，把系统拆成多个相对独立的研究单元；该提交换算为北京时间处于本期72小时扩展窗口。\n\n每个研究单元由变异Agent生成候选想法，本地编排器会在停滞时调整工具链、替换模型或重启演化过程。单元之间不直接共享完整思考轨迹，而只把验证器确认的改进、可复用组件和约束违规写入共享知识。这个设计试图减少错误沿共享记忆扩散，同时保留跨单元复用有效发现的能力。\n\n作者在覆盖检索、构思、提案写作和科学规律发现的五项基准上评估。论文报告EurekaBench得分73.6%，高于CORAL的56.2%；在IdeaBench上平均发现26.0个新想法，比较对象ResearchAgent为18.6，同时模型调用减少82%。这些数字来自作者设置与实现，不能直接解释为现实科研产出提高或研究成本按同样比例下降。\n\n方法的可行动价值在于给Agent研发者一套可审计的隔离与共享结构：本地单元保存探索上下文，验证器控制进入全局知识的门槛，编排器按停滞信号调整策略。实际采用仍需定义“验证成功”的领域标准，并防止多个验证器共享同一模型偏差；若验证只依赖语言模型判断，错误仍可能以更高置信度进入共享层。\n\n预印本没有同行评审，也没有本期独立复现。基准任务与真实实验室在数据获取、工具可靠性、实验周期、安全约束和专家复核上差异很大，82%的调用节省还可能受模型选择、停止规则和候选去重影响。团队不应在缺少人工审批和预算限制时让系统直接驱动高成本或高风险实验。\n\n## 量仔观察\n\nInventa对研究Agent和编排平台开发者有方法价值，全文与实验表构成E3，但结论仍是作者自评的预印本。读者可先在低风险内部任务上复现五项指标，并记录验证器误判、共享知识污染、模型切换成本和人工干预次数，而不是只比较最终分数。下一观察点是公开实现、独立复现、消融实验和真实科研团队对“新颖且可行”结果的盲评。",
+      "category": "ai",
+      "tags": ["AI Agent", "自动科研", "预印本", "评测"],
+      "source_name": "arXiv",
+      "source_url": "https://arxiv.org/abs/2611.21847",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "框架给出验证共享知识与自治单元的明确机制，并在五项基准报告增益，原文为E3；但仅为作者自评预印本，尚无独立复现。"
+    },
+    {
+      "slug": "20261119-tradewaltz-production-resumed",
+      "title": "TradeWaltz恢复生产环境，培训环境仍保持停运",
+      "summary": "TradeWaltz于2026年11月18日12:00 JST恢复生产环境，这是11月18日日报第16报之后的实质进展；培训环境仍未恢复，另两项不在本次事件范围内的服务继续正常运行。公司此前确认130份贸易文件泄露，本次更新没有新增泄露数量或完整取证结论。",
+      "content": "2026-11-18 12:00 JST，TradeWaltz确认生产环境恢复服务；这是本站同日关于[第16报仍未恢复的前稿](https://wangyibiao.com/news/20261118-tradewaltz-recovery-delay-update-16)之后的实质变化。公司在第17报称已确认生产环境安全并完成主要恢复，培训环境继续停运，恢复时间将另行通知；TradeWaltz for Grain Importers与TradeWaltz for Export Documentary不在本次影响范围内。\n\n本次“最终报”主要确认业务恢复，没有改变此前已披露的130份贸易文件泄露范围，也没有给出新的攻击路径或完整取证结论。使用方可按业务和连接状态逐步恢复生产操作，但应把培训环境视为仍不可用，并继续关注异常邮件、凭据与后续调查更新。",
+      "category": "flash",
+      "tags": ["网络安全", "服务恢复", "TradeWaltz", "事故处置"],
+      "source_name": "TradeWaltz",
+      "source_url": "https://www.tradewaltz.com/news/13816",
+      "cover_image": null,
+      "published_at": "2026-11-19T08:37:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "生产环境实际恢复改变了使用方的运营判断，官方更新为E3；培训环境和取证仍未结束，影响范围未新增。"
+    }
+  ]
+}
