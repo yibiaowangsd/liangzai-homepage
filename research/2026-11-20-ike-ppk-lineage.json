@@ -1,0 +1,189 @@
+{
+  "slug": "ikev2-ppk-rotation-and-sa-lineage",
+  "date": "2026-11-20",
+  "updated": "2026-11-20",
+  "title": "IKEv2 换了后量子预共享密钥，哪些流量真正换代？",
+  "subtitle": "用 RFC 8784 与 RFC 9867 拆解 IKE 控制面、ESP 子 SA 和密钥轮换验收",
+  "question": "同一隧道下，为什么换了 IKE SA、换了一个 Child SA、成功引入新的 PPK 是三件不同的事？",
+  "status": "已核查正式 RFC、实现覆盖和版本，运行离线状态模型；没有实测握手或跨厂商互通。",
+  "tags": [
+    "IKEv2",
+    "IPsec",
+    "PPK",
+    "密码敏捷"
+  ],
+  "summary": [
+    "RFC 8784 先保护 ESP 派生；RFC 9867 可在 IKE_AUTH 前保护控制面，也允许给新建或重键的 SA 引入新 PPK。",
+    "IKE SA 重键不会同时改写现有 Child SA 的 ESP 密钥。不要把继承旧保护算成完成新一代轮换。",
+    "区分目标 SA、实际确认的 PPK 代次、是否继承和旧代退出时间，再定义轮换达标。"
+  ],
+  "scope": "与前篇 RFC 9370 多重密钥交换不同，本篇只追踪满足本地政策的共享秘密进入哪个 SA 以及何时可计为完成迁移；不把预共享密钥当成 KEM。",
+  "process": [
+    {
+      "title": "重建派生顺序",
+      "detail": "按 RFC 8784 §3、§6，RFC 9867 §3、§4 与 RFC 7296 §2.8 对照控制面和子 SA 生效点。"
+    },
+    {
+      "title": "核查实现覆盖",
+      "detail": "区分带草案功能的实际 Libreswan 版本、实现矩阵与尚未交付的重键支持。"
+    },
+    {
+      "title": "复算换代",
+      "detail": "分别追踪母 SA 控制面和派生根、两个并行 Child SA 对 PPK 代次的依赖。"
+    }
+  ],
+  "sections": [
+    {
+      "id": "threat",
+      "title": "1. 威胁模型：记录流量、未来破解经典密钥交换",
+      "paragraphs": [
+        "假定对手今天可记录 IKE/ESP，未来可恢复经典 (EC)DH 共享秘密；部署使用高熵、保密、双方获授权的 PPK 和足够强的对称变换。RFC 8784 §6 建议至少 256 比特熵，分发机制不在该 RFC 范围内。仅发现两端密钥 ID 相同，不证明拿到的是同一个秘密；也不能把 RFC 9867 的 8 字节候选确认字段误读为 PPK 长度或身份授权。[1][2]",
+        "本文离线结果只追踪对 PPK 代次的依赖，不证明协议安全。RFC 9867 §4 对初始 IKE_AUTH 还讨论主动攻击保护；不要将其外推为已失陷 IKE 通道仅靠重键即可恢复身份可信。既有录制流量不会被后来的轮换补救。"
+      ]
+    },
+    {
+      "id": "epochs",
+      "title": "2. PPK 混入的时点决定保护范围",
+      "paragraphs": [
+        "RFC 8784 在初始 IKE_AUTH 阶段混入 PPK，仅更新 SK_d、SK_pi、SK_pr；初始 IKE_AUTH 及初始 IKE SA 的控制面加密密钥不变，不能据此声称初始对端身份或控制消息具备抗量子机密性。首个 Child SA 密钥通过 SK_d 已可依赖 PPK。后来 IKE SA 重键可从旧 SK_d 继承保护，但不能通过 RFC 8784 在线换入新一代 PPK。[1][3]",
+        "RFC 9867 §3.1 在完成该 IKE_INTERMEDIATE 中其他重算后，最后混入 PPK，再重算整套 SK_*，从后续 IKE_AUTH 起使用。承载 PPK 候选的这轮交换本身仍用旧代密钥。响应方在 IKE_AUTH 确认对端身份后应按该身份的本地策略检查所选 PPK；不匹配时应中止，只有本地策略允许才可继续。[2]",
+        "RFC 9867 §3.2 允许把新 PPK 混入当前 SK_d，仅用于新目标 SA 的计算。Child A 重键不改变母 SA，也不改变 Child B。IKE SA 重键后，新母 SA 接管旧 Child SA，但既有 ESP 密钥仍不变；后续 Child SA 重键才可从新母根继承。用旧 IKE SA 保护的重键消息也不会因为新 IKE SA 建成而改用新密钥。[2][3]"
+      ]
+    },
+    {
+      "id": "model",
+      "title": "3. 离线对照：换一项，不等于换所有项",
+      "paragraphs": [
+        "除第二行对照外，各行独立从同一 RFC 8784 起点出发。P1/P2 指派生所依赖的最近 PPK 代，不是密钥值；“无”仅指没有所追踪的 PPK 贡献，不排除其他独立 PQ 机制。模型用两个并行 Child SA 检查影响范围，以及可选协商失败后的继承路径。实际运行 10 项状态断言；在仓库根目录执行 node research/experiments/2026-11-20/ppk-lineage.mjs 可复算。",
+        "无 P2 时，兼容路径可创建不含 P2 的新 SA，仍可能继承 P1；强制路径不会生成替代 SA，表格只表示拒绝瞬间的现存状态，不保证旧 SA 超出原有效期继续服务。响应方强制策略下应遵守 RFC 9867 §3.2 的 NO_PROPOSAL_CHOSEN 规定。[2]"
+      ],
+      "table": {
+        "headers": [
+          "事件",
+          "IKE 控制面",
+          "母派生根",
+          "Child A",
+          "Child B"
+        ],
+        "rows": [
+          [
+            "RFC 8784 初建",
+            "无",
+            "P1",
+            "P1",
+            "P1"
+          ],
+          [
+            "RFC 9867 初建对照",
+            "P1",
+            "P1",
+            "P1",
+            "P1"
+          ],
+          [
+            "仅用 P2 重键 A",
+            "无",
+            "P1",
+            "P2",
+            "P1"
+          ],
+          [
+            "仅用 P2 重键 IKE",
+            "P2",
+            "P2",
+            "P1",
+            "P1"
+          ],
+          [
+            "无 P2，兼容重键 IKE",
+            "P1",
+            "P1",
+            "P1",
+            "P1"
+          ],
+          [
+            "无 P2，拒绝重键 IKE",
+            "无",
+            "P1",
+            "P1",
+            "P1"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "cost",
+      "title": "4. 传输成本：报文变大，不一定多一轮",
+      "paragraphs": [
+        "按 RFC 7296 §3.10 的 Notify 格式及 RFC 9867 的确认字段，若每个编码后 PPK ID 为 16 字节（已含类型），一个候选的请求侧增量为 32 字节，选中响应为 24 字节。一个、两个、三个候选均成功选中时，两向合计分别为 56、88、120 字节。未算外层头、分片、填充与重传，不是抓包数据。[2][3]",
+        "复用已有 IKE_INTERMEDIATE 或计划内 CREATE_CHILD_SA 不额外引入一个交换；若为初始 PPK 单独增加 IKE_INTERMEDIATE，则多一轮往返。工程上应在设备真实路径 MTU 下验证，并区分报文尺寸、往返次数和断流时长。"
+      ]
+    },
+    {
+      "id": "interop",
+      "title": "5. 实现边界与可执行验收",
+      "paragraphs": [
+        "Libreswan v5.2 的发行说明描述实现所用的是草案 -04；项目现行矩阵将 RFC 9867 的 IKE_INTERMEDIATE 标为 v5.2，将 CREATE_CHILD_SA 标为未完成。strongSwan 的公开配置手册把 PPK 配置标为自 5.7.0 支持 RFC 8784。两个产品均有 PPK 配置，不等于可跨实现验证 RFC 9867 在线轮换。[4][5][6]",
+        "待做：用两个独立对端、合成密钥和至少两个 Child SA，分别覆盖双方支持、对端仅支持 8784、同 ID 异值、强制方拒绝、IKE/Child 同时重键。记录新旧 IKE SPI、ESP SPI、匿名化 PPK 代次、直接混入或继承、重叠时间与旧代退出；日志不写入密钥。主动丢包、身份约束、真正的跨实现行为和吞吐均未实测。"
+      ]
+    },
+    {
+      "id": "acceptance",
+      "title": "6. 验收标准：旧代停止承载流量才算完成",
+      "paragraphs": [
+        "迁移门槛建议：给每个流量选择器分别验收「现役 SA 已换代」与「旧代不再承载流量」。短时保留旧代必须有独立有效期和告警。只要一个现役 Child 仍用旧 ESP 密钥，就不能把整条隧道标为已完成 P2 轮换。",
+        "在验收报告中分别记部署计划中的目标代次、对端实际确认结果及有效 ESP SPI。旧代撤出时间是业务变量，不能用重键成功事件或配置生效时间替代。传输开销为格式推算，状态模型没有实现 PRF、网络重传、双端竞争或过期调度。"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "1",
+      "title": "RFC 8784: Mixing Preshared Keys in IKEv2",
+      "url": "https://www.rfc-editor.org/rfc/rfc8784.html",
+      "version": "Standards Track，2020-06",
+      "note": "§3、§6：混入范围与威胁边界。"
+    },
+    {
+      "id": "2",
+      "title": "RFC 9867: Enhanced Mixing PSKs in IKEv2 for PQ Security",
+      "url": "https://www.rfc-editor.org/rfc/rfc9867.html",
+      "version": "Standards Track，2025-11",
+      "note": "§3.1、§3.2、§4、附录 A。"
+    },
+    {
+      "id": "3",
+      "title": "RFC 7296: Internet Key Exchange Protocol Version 2",
+      "url": "https://www.rfc-editor.org/rfc/rfc7296.html",
+      "version": "Internet Standard，2014-10",
+      "note": "§2.8、§2.17–2.18、§3.10。"
+    },
+    {
+      "id": "4",
+      "title": "Libreswan RFC 实现矩阵",
+      "url": "https://libreswan.github.io/FAQ/Implemented-Standards",
+      "version": "项目文档，2026-11-20 核对",
+      "note": "分列 9867 两条路径。"
+    },
+    {
+      "id": "5",
+      "title": "Libreswan v5.2 发行说明",
+      "url": "https://github.com/libreswan/libreswan/releases/tag/v5.2",
+      "version": "v5.2，2025-02-26",
+      "note": "发行版本所用草案号。"
+    },
+    {
+      "id": "6",
+      "title": "strongSwan swanctl.conf 配置文档",
+      "url": "https://docs.strongswan.org/docs/latest/swanctl/swanctlConf.html",
+      "version": "RFC 8784 PPK 配置自 5.7.0",
+      "note": "不作为 RFC 9867 支持证明。"
+    }
+  ],
+  "revisions": [
+    {
+      "date": "2026-11-20",
+      "detail": "首发。"
+    }
+  ]
+}
