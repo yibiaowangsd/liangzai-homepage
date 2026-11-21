@@ -1,0 +1,82 @@
+{
+  "limit": 1500,
+  "ratesMbps": [
+    1,
+    6,
+    24
+  ],
+  "results": [
+    {
+      "mode": "OWE",
+      "mac": [
+        197,
+        193
+      ],
+      "delta": 0,
+      "headroom": [
+        1303,
+        1307
+      ],
+      "elementOverhead": 0,
+      "airtimeMs": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "mode": "ML-KEM-512",
+      "mac": [
+        1007,
+        971
+      ],
+      "delta": 1588,
+      "headroom": [
+        493,
+        529
+      ],
+      "elementOverhead": 20,
+      "airtimeMs": [
+        12.704,
+        2.1173333333333333,
+        0.5293333333333333
+      ]
+    },
+    {
+      "mode": "ML-KEM-768",
+      "mac": [
+        1393,
+        1293
+      ],
+      "delta": 2296,
+      "headroom": [
+        107,
+        207
+      ],
+      "elementOverhead": 24,
+      "airtimeMs": [
+        18.368,
+        3.0613333333333332,
+        0.7653333333333333
+      ]
+    },
+    {
+      "mode": "ML-KEM-1024",
+      "mac": [
+        1781,
+        1777
+      ],
+      "delta": 3168,
+      "headroom": [
+        -281,
+        -277
+      ],
+      "elementOverhead": 32,
+      "airtimeMs": [
+        25.344,
+        4.224,
+        1.056
+      ]
+    }
+  ]
+}
