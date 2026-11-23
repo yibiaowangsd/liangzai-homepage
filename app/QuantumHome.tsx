@@ -32,7 +32,7 @@ export default function QuantumHome() {
             <div className="mk-actions">
               <Link className="milk-button" data-tone="butter" href="/news">喝今天这一瓶</Link>
               <Link className="milk-link" href="/about">认识 Yibiao</Link>
-              <Link className="milk-link" href="/sidequests">逛逛小工具</Link>
+              <Link className="milk-link" href="/play">逛逛好奇游乐场</Link>
             </div>
           </div>
           <NaiwaAsks />

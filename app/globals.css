@@ -191,3 +191,7 @@ a { color: inherit; text-decoration: none; }
   .loadout-grid { padding: 70px 4px; }.mission-list article { grid-template-columns: 30px 1fr; }.mission-list p, .mission-list b { grid-column: 2; }.final-map { margin: 0; padding: 20px; }
   .arsenal-sources { margin: 0 20px; padding: 28px 4px; }.arsenal-sources div { grid-template-columns: 1fr; }.arsenal-footer { margin: 0 20px; grid-template-columns: 1fr auto; }.arsenal-footer p { display: none; }
 }
+
+/* Playroom breadcrumb: inherit each room’s palette. */
+.play-room-back{color:inherit;text-decoration:underline;text-underline-offset:.22em}
+.play-room-back:focus-visible{outline:2px solid currentColor;outline-offset:3px}
