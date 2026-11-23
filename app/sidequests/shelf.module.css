@@ -1,0 +1,30 @@
+.page{background:#f7f5ee;color:#242c24;min-height:80vh;padding:clamp(1.65rem,5vw,4.1rem) clamp(.85rem,3vw,2rem) 3rem}
+.wrap{max-width:1040px;margin:auto}
+.intro{position:relative;border-bottom:1px solid #cfcfbe;padding:0 0 clamp(1.4rem,4vw,2.5rem);margin:0 0 clamp(1rem,3vw,1.65rem)}
+.intro>p{font:600 .79rem ui-monospace,monospace;letter-spacing:.16em;color:#485a47;margin:0 0 1.1rem}
+.intro>p span{display:inline-block;width:.5rem;height:.5rem;background:#32624a;border-radius:50%;margin-right:.6rem}
+.intro h1{font-size:clamp(3.2rem,10vw,7.2rem);font-weight:830;line-height:1;letter-spacing:-.075em;margin:0 0 1rem}
+.lede{font-size:clamp(.98rem,2.4vw,1.24rem);line-height:1.65;color:#485248;max-width:40rem}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(.8rem,2.4vw,1.4rem)}
+.card{display:block;text-decoration:none;color:inherit;border-radius:1rem;border:1px solid #cfcfbe;overflow:hidden;background:#fffdf6;transition:border-color .2s ease,box-shadow .2s ease}
+.card:hover{border-color:#536951;box-shadow:0 7px 22px #29352914}
+.art{min-height:9rem;display:grid;grid-template-rows:auto 1fr;gap:.42rem;padding:1.25rem 1.4rem .6rem;box-sizing:border-box}
+.sound .art{background:#183a2d;color:#a8d5a1}
+.time .art{background:#dce5fb;color:#34467f}
+.art>span{font:600 .74rem ui-monospace,monospace;letter-spacing:.12em}
+.art svg{display:block;width:100%;max-height:9.5rem}
+.cardBody{display:flex;justify-content:space-between;align-items:end;gap:.75rem;padding:1.2rem 1.4rem}
+.cardBody h2{font-size:clamp(1.5rem,4vw,2.25rem);letter-spacing:-.06em;margin:0;font-weight:770}
+.cardBody p{font-size:.91rem;color:#47574e;margin:.55rem 0 0;line-height:1.65}
+.cardBody>span{font-size:1.7rem;color:#325b47}
+.credits{font-size:.82rem;color:#495546;margin:1.5rem 0 0;line-height:1.7}
+.credits a{text-decoration:underline;color:#264c3a;text-underline-offset:.25em}
+.page a:focus-visible{outline:3px solid #2a654d;outline-offset:3px}
+@media(max-width:620px){.grid{grid-template-columns:minmax(0,1fr)}.art{min-height:7.8rem;padding-top:1rem}.art svg{max-height:6.2rem}}
+@media(prefers-reduced-motion:reduce){.card{transition:none}}
+:global(:root[data-theme="midnight"]) .page{background:#141e1a;color:#edf3e8}
+:global(:root[data-theme="midnight"]) .intro,:global(:root[data-theme="midnight"]) .card{border-color:#52685a}
+:global(:root[data-theme="midnight"]) .card{background:#22352b}
+:global(:root[data-theme="midnight"]) .intro>p,:global(:root[data-theme="midnight"]) .lede,:global(:root[data-theme="midnight"]) .cardBody p,:global(:root[data-theme="midnight"]) .credits{color:#c3d0c0}
+:global(:root[data-theme="midnight"]) .credits a,:global(:root[data-theme="midnight"]) .cardBody>span{color:#b9e2af}
+:global(:root[data-theme="midnight"]) .page a:focus-visible{outline-color:#b9e2af}
