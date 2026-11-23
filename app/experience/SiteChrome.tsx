@@ -92,13 +92,13 @@ export function SiteHeader() {
         <nav className="desktop-nav" aria-label="主导航">
           {destinations
             .filter((item) =>
-              ["/", "/pqc-practice", "/news", "/tracking", "/topics", "/research", "/about"].includes(item.href),
+              ["/", "/pqc-practice", "/news", "/tracking", "/topics", "/research", "/sidequests", "/about"].includes(item.href),
             )
             .map((item) => (
               <NavigationLink
                 key={item.href}
                 href={item.href}
-                aria-current={path === item.href || (item.href !== "/" && path.startsWith(`${item.href}/`)) ? "page" : undefined}
+                aria-current={path === item.href ? "page" : (item.href !== "/" && path.startsWith(`${item.href}/`)) || (item.href === "/sidequests" && ["/sound-room", "/time-desk"].includes(path)) ? "location" : undefined}
               >
                 {item.href === "/" ? "首页" : item.name}
               </NavigationLink>
@@ -128,7 +128,7 @@ export function SiteFooter() {
         </div>
         <nav className="milk-footer-groups" aria-label="页脚导航">
           <div><span>阅读</span><Link href="/news">前沿新闻</Link><Link href="/tracking">动态跟踪</Link><Link href="/research">深度研究</Link><Link href="/topics">技术进展档案</Link><Link href="/pqc-arsenal">算法原理</Link></div>
-          <div><span>家里</span><Link href="/archive">量仔小传</Link><Link href="/storybook">星际漫游</Link><Link href="/models">角色模型</Link><Link href="/wo">我 · 网页回顾</Link></div>
+          <div><span>家里</span><Link href="/archive">量仔小传</Link><Link href="/storybook">星际漫游</Link><Link href="/models">角色模型</Link><Link href="/wo">我 · 网页回顾</Link><Link href="/sidequests">小工具</Link></div>
           <div><span>关于</span><Link href="/about#journey">个人经历</Link><Link href="/about#contact">联系与交流</Link><a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">本站源码</a></div>
         </nav>
       </div>

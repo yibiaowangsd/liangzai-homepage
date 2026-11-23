@@ -67,6 +67,24 @@ export const destinations = [
     keywords: "wo 我 app myapp 生活 时间轴 记录 记忆 回顾",
   },
   {
+    href: "/sidequests",
+    name: "小工具",
+    description: "打开就能用的声音、计时与跨时区工具。",
+    keywords: "tools 小工具 sidequests 时间 声音 时区",
+  },
+  {
+    href: "/sound-room",
+    name: "声音角落",
+    description: "在本机混搭细雨、风声、海浪与炉火，或开启专注计时。",
+    keywords: "sound 音量 白噪音 助眠 专注 番茄钟 环境音 计时",
+  },
+  {
+    href: "/time-desk",
+    name: "时差桌",
+    description: "查看多地本地时间和共同工作时段。",
+    keywords: "time UTC 时差 时区 会议 工作时间 夏令时",
+  },
+  {
     href: "/about",
     name: "关于我",
     description: "从山东大学，到量子安全工程。",
