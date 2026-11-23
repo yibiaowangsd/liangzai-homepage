@@ -1,0 +1,40 @@
+{
+  "implementation": "OpenSSL 3.5.7 9 Jun 2026 (Library: OpenSSL 3.5.7 9 Jun 2026)",
+  "host": "loopback only",
+  "cert_pem_sha256": "aa9343c677ad8bb9146aaaf633d1b303c6098dc9af94a97a4972000fe5939218",
+  "attempts": [
+    {
+      "config_epoch": 1,
+      "configured_group": "X25519",
+      "negotiated_group": "X25519",
+      "certificate_verify": "ecdsa_secp256r1_sha256",
+      "tls": "TLSv1.3",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "server_hello_count_including_hrr": 2,
+      "verified_hostname_and_trust": true,
+      "completed_http_response": true
+    },
+    {
+      "config_epoch": 2,
+      "configured_group": "X25519MLKEM768",
+      "negotiated_group": "X25519MLKEM768",
+      "certificate_verify": "ecdsa_secp256r1_sha256",
+      "tls": "TLSv1.3",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "server_hello_count_including_hrr": 1,
+      "verified_hostname_and_trust": true,
+      "completed_http_response": true
+    },
+    {
+      "config_epoch": 3,
+      "configured_group": "X25519",
+      "negotiated_group": "X25519",
+      "certificate_verify": "ecdsa_secp256r1_sha256",
+      "tls": "TLSv1.3",
+      "cipher": "TLS_AES_128_GCM_SHA256",
+      "server_hello_count_including_hrr": 2,
+      "verified_hostname_and_trust": true,
+      "completed_http_response": true
+    }
+  ]
+}

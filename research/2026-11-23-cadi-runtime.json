@@ -1,0 +1,217 @@
+{
+  "slug": "cadi-cbom-and-live-tls-evidence",
+  "date": "2026-11-23",
+  "updated": "2026-11-23",
+  "title": "清单里有 ML-KEM，线上连接就抗量子了吗？",
+  "subtitle": "从 CADI 的 CBOM 引用到一条可核验的 TLS 连接记录",
+  "question": "如何把软件声明、当前配置和实际会话分层归档，避免把支持某个算法写成已部署或已使用？",
+  "status": "已对照 CADI 两版与正式 RFC，完成 3 次 OpenSSL 回环握手；未做生产盘点",
+  "tags": [
+    "密码敏捷",
+    "CBOM",
+    "CADI",
+    "TLS 1.3",
+    "迁移验收"
+  ],
+  "summary": [
+    "CADI -03 可只引用 CBOM，内联对象可选。引用和时间戳都有用，但不能取代对配置来源、时效和会话的独立核验。",
+    "同一 OpenSSL 3.5.7 环境中仅改服务端组配置，三次连接依次选中经典、混合、经典组；服务端 CertificateVerify 始终是经典 ECDSA。",
+    "迁移报告应把支持能力、生效配置、运行证据分列，并为密钥协商、凭证和握手签名各记结果。"
+  ],
+  "scope": "对照 IETF 两版个人草案、正式 RFC 和官方实现。实测只涉及本机合成证书下的三次完整 TLS 连接；不是 YANG/CBOM 互通、性能或生产观测。",
+  "process": [
+    {
+      "title": "逐段比对草案",
+      "detail": "核对 -02/-03 的版本、YANG 树、引用字段和数据协调范围，再用 IETF 127 作者材料校验提案状态。"
+    },
+    {
+      "title": "把证据绑定到握手事件",
+      "detail": "用 TLS 1.3 与混合组 RFC 区分提议、最终组、证书路径、握手签名和应用保护。"
+    },
+    {
+      "title": "运行三阶段回环对照",
+      "detail": "固定客户端、套件、临时实验凭证，仅在三次独立握手间改变服务端组。保存去除报文原文和密钥的结果与可复跑脚本。"
+    }
+  ],
+  "sections": [
+    {
+      "id": "draft",
+      "title": "1. -03 改了清单的承载方式，没定义观测真值",
+      "paragraphs": [
+        "CADI 是两位华为作者提交的个人 Internet-Draft，-03 的文档头写有拟议的 Standards Track，但截至 11 月 23 日未被采纳为工作组文件或发布为标准。IETF 127 IVY 会议材料是作者报告，不能视为实现或部署。[1][2][3]",
+        "-02 已让网络设备 YANG 清单关联 CycloneDX CBOM，并有 URI、版本和散列等引用字段，也已经有 provided-by/depends-on。-03 不是首次引入 CBOM 或依赖关系。它将设备内联条目更名和改组为 crypto-object，并由可选的 crypto-objects 特性控制；只给 CBOM 引用也是一种表达方式。旧版 discovery 组的 method/confidence 不再保留，last-discovered 则成为对象级时间。草案第 5.5 节不规定发现来源或冲突数据的协调方法。[1][2]",
+        "-03 附录示例中的 TLS 1.3 依赖图能表达混合组、组件原语、设备证书和数据保护算法。它描述的是一个建模例子，既没有声称采集了真实设备，也没有给出任何握手轨迹或使用占比。[1]"
+      ]
+    },
+    {
+      "id": "layers",
+      "title": "2. 三层证据不可相互替代",
+      "paragraphs": [
+        "研究假设：清单生成方、配置导出方和探针的来源身份可以独立验证；三者仍可能取样过旧、范围不一致或落在不同实例。这里防的主要是把正确但不适用的记录作错误归因。若采集器或签发者失信，仅一致的散列不能恢复事实。CBOM 散列只能核对取得的字节是否匹配可信清单中记录的值，不能独立证明来源、当前配置或启用状态。",
+        "管理节点到业务前端、客户端到入口、入口到源站分别建档。同一 DNS 名称可因方向、端口、SNI、ALPN、终止层、实例与客户端提议而得出不同结果。一次经典选择可能符合兼容策略，不足以证明降级；一次混合成功也不能证明旧组被禁。"
+      ],
+      "table": {
+        "headers": [
+          "证据",
+          "能回答",
+          "不能回答"
+        ],
+        "rows": [
+          [
+            "供应或构建清单",
+            "某版本声明有哪些组件和能力",
+            "是否安装、默认是否启用、实际连接是否使用"
+          ],
+          [
+            "生效配置快照",
+            "给定实例、终止层和代次允许或强制什么",
+            "是否成功建立连接、选择分布及全部流量覆盖"
+          ],
+          [
+            "认证完成的会话观察",
+            "在该对端、策略、客户端与时段下实际选了什么",
+            "同池其他实例、其他方向、未测客户端、未来代次"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "tls",
+      "title": "3. TLS 迁移至少留四个独立字段",
+      "paragraphs": [
+        "RFC 9846 是 TLS 1.3 正式规范，RFC 10024 定义三个 TLS 1.3 传统／后量子混合密钥协商组，包括 X25519MLKEM768。选组只回答密钥建立，不能当作后量子身份认证。初始 ClientHello 是客户端提议；HelloRetryRequest 的 key_share 是请求新份额，不是完成握手的证据；应记录最终 ServerHello 的组、对端身份校验与会话完成结果。[4][5]",
+        "分别保存最终协商组、服务端 CertificateVerify 签名算法、叶证书 SPKI 公钥算法、实际采用的证书验证路径及每级签发签名算法。不要从其中一项推导其他项；数据面 AEAD 套件也单列。会话恢复时另记 PSK 恢复与是否进行新的 (EC)DHE/混合协商，未观察到的证书认证标明不适用或未知，不能用本连接反推初始认证。[4][5]"
+      ]
+    },
+    {
+      "id": "experiment",
+      "title": "4. 已运行：保持认证不变，切换三次密钥协商组",
+      "paragraphs": [
+        "同机 127.0.0.1，OpenSSL 3.5.7 CLI，两端同实现。三阶段分别重启 s_server，仅修改服务端 -groups；新 s_client 不加载旧会话，固定 SNI synthetic.local、组提议、同一临时 P-256 自签名证书和 TLS_AES_128_GCM_SHA256。客户端明确匹配主机名，并把该试验证书配置为本次信任锚，不使用公共 CA。[6][7]",
+        "每次解析跟踪里的最后一个 ServerHello 与 CertificateVerify，并同时断言校验成功且应用层 HTTP 返回 200。报表的 SHA-256 对应试验中的 PEM 输入文件，不能当作逐会话提取的线上证书 DER 指纹。这三次没有采集多级链或验证任何后量子证书；也没有运行 YANG/CBOM 工具。早期两个 ServerHello 计数包含 HRR，仅是轨迹注记，不是时延。"
+      ],
+      "table": {
+        "headers": [
+          "配置代次",
+          "服务端配置 → 实际选择",
+          "CertificateVerify",
+          "校验/HTTP"
+        ],
+        "rows": [
+          [
+            "1",
+            "X25519 → X25519",
+            "ecdsa_secp256r1_sha256",
+            "主机名及信任通过 / 200"
+          ],
+          [
+            "2",
+            "X25519MLKEM768 → X25519MLKEM768",
+            "ecdsa_secp256r1_sha256",
+            "主机名及信任通过 / 200"
+          ],
+          [
+            "3",
+            "X25519 → X25519",
+            "ecdsa_secp256r1_sha256",
+            "主机名及信任通过 / 200"
+          ]
+        ]
+      },
+      "code": "python3 research/experiments/2026-11-23/tls-group-probe.py\nnode --test tests/research-cadi-runtime.test.mjs"
+    },
+    {
+      "id": "contract",
+      "title": "5. 推荐的合并规则与下一步验证",
+      "paragraphs": [
+        "先冻结范围，再给结论。以服务身份、入口/源站方向、实例、软件与生效配置代次、SNI/ALPN、对端或客户端配置类别、完整/恢复模式、观察时间窗为连接证据的边界。计划中的校验器只在可验证来源、当前代次与观测范围同时匹配时引用运行记录；不能证明代次时可保留“已观测”事件，但不推定当前状态。",
+        "本轮没做跨库互通、供应商清单比对、性能、强制策略或生产覆盖。下一步用授权的双实现台架，生成同构建 CBOM，并在两个实例之间配置不同组；固定客户端和信任链，做三对分别控制的比较：组变而认证不变，认证变而组不变，恢复与完整连接分别计数。记录每格尝试数与完成数，保留未知及失败，按范围和代次生成记录而不是持续累加绿灯。"
+      ],
+      "table": {
+        "headers": [
+          "待验证场景",
+          "预期判读"
+        ],
+        "rows": [
+          [
+            "引用指向旧快照或内容散列不符",
+            "陈列具体冲突；不填“当前已验证”，也不自动判“无 PQC”"
+          ],
+          [
+            "滚回经典、旧混合事件仍在窗口内",
+            "旧代次只作历史证据；回滚后重新采样"
+          ],
+          [
+            "入口混合、入口到源站经典",
+            "分开列，两段证据不能互相覆盖"
+          ],
+          [
+            "成功协商混合，但证书验证未完成",
+            "仅作握手中间观察，不能写作验证过的会话"
+          ],
+          [
+            "不同实例配置相反，或存在恢复会话",
+            "按实例与会话类型分组；未测覆盖不填百分百"
+          ]
+        ]
+      }
+    }
+  ],
+  "sources": [
+    {
+      "id": "1",
+      "title": "CADI 个人草案 -03",
+      "url": "https://datatracker.ietf.org/doc/html/draft-liu-cadi-03#section-5.2",
+      "version": "2026-11-18，个人 Internet-Draft",
+      "note": "核对 §5.2–5.5、模型和附录示例，未发布为 RFC。"
+    },
+    {
+      "id": "2",
+      "title": "CADI 个人草案 -02",
+      "url": "https://datatracker.ietf.org/doc/html/draft-liu-cadi-02",
+      "version": "2026-11-02，个人 Internet-Draft",
+      "note": "对照资产清单、CBOM 引用及发现字段。"
+    },
+    {
+      "id": "3",
+      "title": "IETF 127 IVY：CADI 作者报告",
+      "url": "https://datatracker.ietf.org/meeting/127/materials/slides-127-ivy-cryptographic-asset-discovery-and-inventory-00",
+      "version": "2026-11-20，会议材料",
+      "note": "展示方案与请求反馈，不是采纳或部署证据。"
+    },
+    {
+      "id": "4",
+      "title": "RFC 9846：TLS 1.3",
+      "url": "https://www.rfc-editor.org/rfc/rfc9846.html",
+      "version": "Proposed Standard，取代 RFC 8446",
+      "note": "据此分开协商、握手认证、应用保护及恢复。"
+    },
+    {
+      "id": "5",
+      "title": "RFC 10024：TLS 1.3 PQ/T 混合密钥协商",
+      "url": "https://www.rfc-editor.org/rfc/rfc10024.html",
+      "version": "2026-08，Proposed Standard",
+      "note": "X25519MLKEM768 等组定义；范围不含后量子身份认证。"
+    },
+    {
+      "id": "6",
+      "title": "OpenSSL 3.5 官方版本记录",
+      "url": "https://www.openssl-library.org/news/openssl-3.5-notes/index.html#major-changes-between-openssl-356-and-openssl-357-9-jun-2026",
+      "version": "3.5.7，2026-06-09",
+      "note": "本地单实现对照的精确版本。"
+    },
+    {
+      "id": "7",
+      "title": "OpenSSL 3.5 s_client 文档",
+      "url": "https://docs.openssl.org/3.5/man1/openssl-s_client/",
+      "version": "3.5 手册",
+      "note": "核对 -groups、-trace、-verify_hostname 和 -verify_return_error。"
+    }
+  ],
+  "revisions": [
+    {
+      "date": "2026-11-23",
+      "detail": "首次发布：草案差异、三阶段回环对照及下一轮证据对账试验。"
+    }
+  ]
+}
