@@ -67,6 +67,30 @@ export const destinations = [
     keywords: "wo 我 app myapp 生活 时间轴 记录 记忆 回顾",
   },
   {
+    href: "/play",
+    name: "好奇游乐场",
+    description: "和网站宠物玩，挑战每日谜题，画一张像素明信片。",
+    keywords: "play 游乐场 游戏 互动 宠物 画画 明信片",
+  },
+  {
+    href: "/pet",
+    name: "星团小屋",
+    description: "摸摸、喂点心、一起玩，在浏览器里养一只小动物。",
+    keywords: "pet 团团 站宠 宠物 小动物 领养 投喂 捉星星",
+  },
+  {
+    href: "/daily-play",
+    name: "星阵点灯",
+    description: "每天一局逻辑谜题，让整片星阵亮起来。",
+    keywords: "daily game 每日谜题 休闲 逻辑 解谜 游戏",
+  },
+  {
+    href: "/pixel-postcard",
+    name: "像素明信片",
+    description: "画一张像素小画，下载图片或分享链接。",
+    keywords: "pixel 明信片 像素 画板 画画 绘画 PNG 创作",
+  },
+  {
     href: "/sidequests",
     name: "小工具",
     description: "打开就能用的声音、计时与跨时区工具。",
