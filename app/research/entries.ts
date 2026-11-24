@@ -1,3 +1,4 @@
+import sshIdentityEntry from "../../research/2026-11-24-ssh-composite-host-identity.json";
 import cadiRuntimeEntry from "../../research/2026-11-23-cadi-runtime.json";
 import edhocKemEntry from "../../research/2026-11-22-edhoc-kem-exporter.json";
 import pqOweEntry from "../../research/2026-11-21-pq-owe-budget.json";
@@ -13,4 +14,4 @@ import recoveryEntry from "../../research/2026-11-15-tls-keyupdate-recovery.json
 import firstEntry from "../../research/2026-11-08-tls-hybrid-binding.json";
 import type { ResearchEntry } from "./types";
 /** Explicit imports keep publishing deterministic; latest research appears first. */
-export const researchEntries: ResearchEntry[] = [cadiRuntimeEntry, edhocKemEntry, pqOweEntry, ikePpkEntry, qkdPoolEntry, rejectionEntry, compressionEntry, sshEntry, recoveryEntry, quicEntry, pskEntry, ikeEntry, firstEntry].sort((a, b) => b.date.localeCompare(a.date));
+export const researchEntries: ResearchEntry[] = [sshIdentityEntry, cadiRuntimeEntry, edhocKemEntry, pqOweEntry, ikePpkEntry, qkdPoolEntry, rejectionEntry, compressionEntry, sshEntry, recoveryEntry, quicEntry, pskEntry, ikeEntry, firstEntry].sort((a, b) => b.date.localeCompare(a.date));

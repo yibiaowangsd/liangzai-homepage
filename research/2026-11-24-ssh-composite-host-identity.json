@@ -1,0 +1,70 @@
+{
+  "slug": "ssh-composite-host-identity-and-fingerprint",
+  "date": "2026-11-24",
+  "updated": "2026-11-24",
+  "title": "SSH 升级支持复合签名，为什么连上的还是经典主机密钥？",
+  "subtitle": "从 Bitvise 的新旧配置分叉，到两个可复算的 SSHFP 指纹向量",
+  "question": "如何分别证明客户端能通告复合算法、实际会话用上复合主机签名，以及客户端可信地认出了同一台主机？",
+  "status": "已核对正式 RFC、工作组草案与厂商发布说明；两组公开指纹向量已离线复算，未跑跨厂商握手",
+  "tags": ["SSH", "ML-DSA", "主机认证", "密码敏捷", "SSHFP"],
+  "summary": [
+    "混合 KEX、复合主机签名和指纹信任是三个不同层次。一个升级可能只改变软件能力，既不生成新主机密钥，也不改变保存的客户端偏好。",
+    "两组草案公开向量中，完整 SSH 公钥编码的 SHA-256 与草案完全一致；只哈希内部公钥字段，两组都不匹配。",
+    "SSH 公钥算法名称进入 IANA 注册表，不意味着 DNS SSHFP 的数字算法类型已经分配。验收先用独立确认的主机公钥，再单独观察所选签名算法。"
+  ],
+  "scope": "分析当前公开版本、规范与发行说明；实验只计算两个公开样例的编码和指纹，未运行 Windows FIPS 模式、Bitvise/OpenSSH 互通、真实 DNS 或复合验签。",
+  "process": [
+    {"title":"把协议层次分开","detail":"用 RFC 4251、4253、4255 对照混合密钥建立、主机签名、指纹计算和可信绑定。"},
+    {"title":"确认升级行为由什么决定","detail":"核对 Bitvise 客户端和服务端各自的首个发布版本、新装与升级的行为、FIPS 模式开关，并对照 OpenSSH 10.6 处理旧实验格式的说明。"},
+    {"title":"按偏移独立复算指纹","detail":"从 -01 纯文本附录提取两段 Public key 的十六进制，校验连续偏移、算法名和两个长度字段。Python hashlib 复算并与 §6 对比，Node 复测固定公开夹具。"},
+    {"title":"把未测项放入验收矩阵","detail":"把客户端偏好与服务器真实主机密钥分成两个自变量，固定 KEX 与环境；未做 Windows 配置改动，也未执行跨厂商连接。"}
+  ],
+  "sections": [
+    {"id":"threat-model","title":"1. 威胁模型：保护会话内容，不等于认出服务器","paragraphs":[
+      "这里关注主动攻击者试图冒充服务器，以及迁移过程中管理员误把「支持」登记为「已经使用」。SSH 的 KEX 建立共享密钥，服务器再以主机私钥认证交换结果；客户端还需要接受该公钥与目标端点之间的可信绑定。一个混合 KEX 与一个经典主机签名可以同时出现在同一条连接上。对手将来能否打破会话保密性，与其能否实时冒充一台主机，是不同安全问题。[1][2]",
+      "草案定义的复合签名不是「两种签名任选其一」。对同一个 SSH 认证事件，复合验证依赖两个组件的规定输入都通过。迁移安全仍取决于复合构造的安全假设、实现正确性、随机源及私钥保护，并依赖先验可信的主机身份；首次连接未经核实就接受指纹，不会因签名变成复合而获得身份保证。对传统算法另开回退也意味着有能力与实际执行不同。[2][3]"
+    ]},
+    {"id":"rollout","title":"2. 版本相同，安装历史仍会改写结果","paragraphs":[
+      "Bitvise 在 2026-11-09 的客户端 9.67、服务端 9.68 发布说明中列出 ssh-mldsa44-ed25519，适用于服务端与用户认证。Windows FIPS 140 模式开启时该算法不可用；这只是产品行为，既不是 FIPS 204 对 SSH 的限制，也不是认证声明。11-16 的 9.69 主要补充 SFTP 兼容修正。实际实验应记录当次精确构建。[4][5]",
+      "不开启该模式的服务器新装默认生成 RSA-3072 和复合主机密钥；升级保留原有主机密钥。客户端新配置优先复合，已保存配置保留顺序并把新算法附加到末尾。哪种主机密钥实际可用仍取决于服务端库存和有效配置。OpenSSH 10.6 的发行说明也明确采用不带厂商后缀的名称，并提示此前试验版密钥需要移除或重新生成；不要按名字近似就导入旧试验文件。[4][5][6]",
+      "这里采用当前 Bitvise/OpenSSH 的发布文本判断非后缀名支持，而不把 -01 的实现情况段落视为当前版本清单。厂商发行说明能说明功能和默认行为，不能证明用户的机器已生成密钥、已协商或已互通。Bitvise 证据只覆盖 44/Ed25519，不把 IANA 也登记的 87/P-384 解释为这两个具体版本都支持。[3][4][5][6][7]"
+    ]},
+    {"id":"bytes","title":"3. 字节契约：哈希完整 SSH blob，不只哈希公钥材料","paragraphs":[
+      "RFC 4251 的 string 有 4 字节无符号大端长度前缀。-01 §4.1.3 的 blob 先存算法名 string，再存复合公钥 string。44/Ed25519 的原始字段为 1312+32 字节；87/P-384 的向量为 2592 字节 ML-DSA 公钥，随后是 4 字节内层长度和 97 字节非压缩点（首字节 04）。长度字段和名称都进入完整 blob 的指纹输入；签名 blob、整行文本公钥、十六进制字符串或 Base64 文本均不是该输入。[1][3]",
+      "§6 的两个样例使用 SHA-256。IANA SSH 的公钥名称注册表列出复合名称，DNS SSHFP 则把「公钥算法数字类型」和「指纹散列类型」分表。SHA-256 的散列类型 2 已分配并不能补上两个复合公钥的数字类型；-01 仍用 TBA，不应直接复制样例到生产 DNS，也不能给它套经典 Ed25519 的类型。[3][7][8][9]"
+    ],"code":"SHA256(uint32_be(len(name)) || name || uint32_be(len(raw)) || raw)"},
+    {"id":"experiment","title":"4. 已完成的离线实验：两组完整匹配，两组 raw 对照不匹配","paragraphs":[
+      "只取 2026-11-17 版附录 A 的公开公钥，不取相邻私钥或签名向量。按 hexdump 的连续偏移收集字节，按两个长度字段解析到底，并为 P-384 核对内层 97 字节点长度。先以 Python hashlib 计算，再用 Node crypto 与测试脚本复核；全长结果逐字节对照草案 §6，raw-only 是同一个输入样例的错误编码基线。[3][10]",
+      "完整 SHA-256 分别是 2eb99bdc32f68032042d5e9865fac1b6a90496ffe7f5f1099c46822fa2287928 和 db7feec102ec9bad805f2a068069c5a324ab928e9bca04ce20c4742c9b893cdd；表中仅展示前 12 个十六进制字符。已核验的是编码边界与散列输入，不是算法证明、验签、传输成本或 DNSSEC 验收。"
+    ],"table":{"headers":["样例","复合字段","完整 blob","完整前缀 / raw 前缀","符合 §6"],"rows":[
+      ["ML-DSA-44 + Ed25519","1344 B","1371 B","2eb99bdc32f6 / 1460136e7a98","完整匹配 / raw 不匹配"],
+      ["ML-DSA-87 + P-384","2693 B","2717 B","db7feec102ec / e7e2994aef4f","完整匹配 / raw 不匹配"]
+    ]}},
+    {"id":"acceptance","title":"5. 待做互通：把配置、协商和信任分别打勾","paragraphs":[
+      "建议先选同一 KEX、同一认证目标和同一批临时实验身份，分别以 Bitvise 和 OpenSSH 扮演客户端和服务端；先用经典主机密钥作为基线，再进四格。表中预期只是根据发布说明推导，服务端密钥存在和配置生效都必须实查。若最终落到经典算法，不能归为复合认证，但也不自动等同于攻击。若客户端已设复合专属策略，则没有可信复合密钥可用时应该明确失败，而非静默算通过。[2][4][5][6]"
+    ],"table":{"headers":["固定版本的服务端库存","客户端配置","应核实"],"rows":[
+      ["新装，存在复合与 RSA","新配置","靠前的是不是复合；能否用预先可信分发的复合公钥完成主机验证"],
+      ["新装，存在复合与 RSA","保留经典优先的配置","经典依然排在前面时，实际选择是什么"],
+      ["升级，保留经典库存","新配置","客户端虽通告复合，服务端是否没有对应可用密钥"],
+      ["升级，保留经典库存","保留经典优先的配置","对照经典基线；独立生成并启用临时复合密钥、调整相关策略后另跑"]
+    ]}},
+    {"id":"limits","title":"6. 结论、证据边界与下一步","bullets":[
+      "迁移验收至少记录双方构建与模式、主机密钥来源、发出的主机算法候选、选中的主机签名、信任方式和日志标识。主机证书主体公钥、签发 CA 的签名算法、用户认证和 KEX 各有单独结果。",
+      "从可信渠道获得主机公钥或完整指纹，再用固定策略验证；如需保留旧端兼容，先在实验中验证可信的新密钥已分发，再变更偏好并观察命中率。不要以客户端不报错替代信任或协商证据。",
+      "本次没有 Windows 实测。若组织启用了 Windows FIPS 模式，先按策略在隔离实验配置验证，不为试验临时放宽生产合规配置。未测证书互通和签名，未分配的 SSHFP 类型只保留离线向量。"
+    ]}
+  ],
+  "sources": [
+    {"id":"1","title":"RFC 4251: SSH Protocol Architecture","url":"https://www.rfc-editor.org/rfc/rfc4251.html#section-5","version":"RFC 4251，2006-01","note":"正式协议框架与 string 编码。"},
+    {"id":"2","title":"RFC 4253: SSH Transport Layer Protocol","url":"https://www.rfc-editor.org/rfc/rfc4253.html#section-8","version":"RFC 4253，2006-01","note":"交换结果、服务器签名与客户端信任。"},
+    {"id":"3","title":"Post-Quantum Composite Signatures in SSH","url":"https://datatracker.ietf.org/doc/html/draft-ietf-sshm-composite-sigs-01","version":"SSHM 工作组草案 -01，2026-11-17（非 RFC）","note":"查 §§4、6、8、9 与附录 A。"},
+    {"id":"4","title":"Bitvise SSH Client version history","url":"https://bitvise.com/ssh-client-version-history-9","version":"9.67（2026-11-09）；9.69（11-16）","note":"新旧连接配置优先级与 FIPS 模式。"},
+    {"id":"5","title":"Bitvise SSH Server version history","url":"https://bitvise.com/ssh-server-version-history","version":"9.68（2026-11-09）；9.69（11-16）","note":"新装密钥与保留密钥区别。"},
+    {"id":"6","title":"OpenSSH 10.6 release notes","url":"https://www.openssh.org/txt/release-10.6","version":"OpenSSH 10.6","note":"正式名称与旧试验密钥迁移边界。"},
+    {"id":"7","title":"IANA Secure Shell Parameters","url":"https://www.iana.org/assignments/ssh-parameters/ssh-parameters.xhtml","version":"2026-11-24 查阅","note":"公钥算法名称表。"},
+    {"id":"8","title":"IANA DNS SSHFP Resource Record Parameters","url":"https://www.iana.org/assignments/dns-sshfp-rr-parameters/dns-sshfp-rr-parameters.xhtml","version":"2026-11-24 查阅","note":"DNS 公钥类型表与散列类型表。"},
+    {"id":"9","title":"RFC 4255: Using DNS to Securely Publish SSH Key Fingerprints","url":"https://www.rfc-editor.org/rfc/rfc4255.html","version":"RFC 4255，2006-01","note":"SSHFP 与可信 DNS 绑定的标准基线。"},
+    {"id":"10","title":"可复跑的公开向量测试","url":"https://github.com/yibiaowangsd/liangzai-homepage/blob/main/tests/ssh-composite-host-identity.test.mjs","version":"2026-11-24 研究附件","note":"仅公开编码和散列测试，不调用 SSH 连接。"}
+  ],
+  "revisions": [{"date":"2026-11-24","detail":"首发；记录公开向量复算、发布状态和下一步迁移矩阵。"}]
+}
