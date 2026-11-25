@@ -1,0 +1,64 @@
+{
+  "slug": "pretzel-prepared-key-and-verification-cost",
+  "date": "2026-11-25",
+  "updated": "2026-11-25",
+  "title": "签名小了 59%，认证会快多少？用 Pretzel 拆开冷验签与热验签",
+  "subtitle": "从预印本 Table 7 复算命中率敏感性，给协议迁移定义可比较的验收口径",
+  "question": "如果服务端证书公钥被客户端反复使用，Pretzel 相对 ML-DSA-65 的原语验签优势会怎样变化？字节、预计算和协议认证证据应如何分账？",
+  "status": "已复算作者公开数据的命中率模型；未运行 Pretzel 签名或 TLS 握手",
+  "tags": ["PQC", "签名认证", "Pretzel", "ML-DSA", "TLS 1.3"],
+  "summary": [
+    "Pretzel-(4,4) 原始签名较 ML-DSA-65 少 1948 B，原始公钥少 210 B；不能把两者直接当作 HTTPS 首飞或证书链整体节省。",
+    "基于作者同一张表的均值复算：双方公钥预处理均不命中时，Pretzel 原语验签约为基线的 55.5%；均命中时约为 90.4%。这是对公开数据的建模，不是本站测速。",
+    "准备态缓存必须与证书或验证结论缓存分离。命中可复用公钥计算，不可省掉对本次握手 transcript 的签名验证。"
+  ],
+  "scope": "使用预印本作者的单平台原语数据、正式 ML-DSA/X.509/TLS 规范和可检查的研究实现。实验是 Python 十进制及 Node 整数复算；不声称独立重跑作者性能、验证算法安全、取得 TLS code point 或完成互通。",
+  "process": [
+    {"title":"锁定出处和版本","detail":"核对 ePrint 2026/2970 的提交与更新日期，并下载作者仓库固定提交的 PDF、API 文档与跑分适配器说明；未确认 ePrint 更新与仓库 PDF 是否字节相同。"},
+    {"title":"拆开认证中的三个对象","detail":"用 FIPS 204、RFC 9881 和 RFC 8446 区分原始签名、公钥，以及证书链与握手的实际编码；只在同一参数目标上对照，不将预印本视为标准。"},
+    {"title":"建立双路径敏感性模型","detail":"只取仓库 PDF Table 7 的冷、热完整行，不跨表拼接。Python Decimal 复算六点；Node 用整数固定边界、差异命中率和字节减法。"},
+    {"title":"核对测量中的实现差异","detail":"对照固定提交另一次跑分对准备态、分配、清理和 DIT 的记录；将其作为方法敏感性证据，而不合并两个数据集。"}
+  ],
+  "sections": [
+    {"id":"scope-and-threat","title":"1. 威胁模型：攻击者可以换消息，不能继承上一次验签","paragraphs":[
+      "场景是抵抗主动冒充或篡改握手的证书型 TLS 1.3 认证。保持 KEX、套件、证书验证策略和连接模式不变，研究签名原语的成本，不声称缩短签名会提升 KEX 保密性。TLS CertificateVerify 使用规定的角色上下文和握手 transcript hash；重复遇到同一公钥，也必须对本次消息做验证。恢复握手另分流，不能把没有 CertificateVerify 的握手当作一次热验签。[3]",
+      "把准备态理解为从序列化公钥导出的计算材料，不是「已信任」标志。对端可提交不同的证书或公钥，实际接入还要限制准备态缓存的每个分片与总容量。实验里可以按负载测淘汰与内存，不用生产 TLS 服务做压测。"
+    ]},
+    {"id":"mechanism","title":"2. 更窄的签名和更轻的公钥展开，是两件不同的事","paragraphs":[
+      "Pretzel 延续 Fiat–Shamir with aborts，使用迭代拒绝采样维持响应分布、收窄遮罩，并在验证中增加响应约束。作者给出量子随机预言机模型下向 Module-LWE 和 Module-SIS 的归约，不依赖 self-target 假设；归约非紧，参数还依赖攻击估计。这是作者论证和设计目标，不是 NIST 认可，更不证明实现侧信道安全。[1][2]",
+      "独立的工程差异发生在准备态：作者实现直接以 NTT 域存放公钥向量、采样矩阵坐标；§7.2 对比 16 与 30 个矩阵多项式，以及 ML-DSA-65 的公钥向量变换。因此公钥准备差距，不应拿来替代准备完以后每次验签的差距。发布的是限 Apple silicon/macOS 15.2+ 的未审计研究代码；作者未评估功耗或电磁泄露。[1][5]"
+    ]},
+    {"id":"byte-accounting","title":"3. 字节账：1948 B 是一次签名的差，不是一条证书链","paragraphs":[
+      "FIPS 204 / RFC 9881 的 ML-DSA-65 原始签名与公钥分别为 3309 B、1952 B；Pretzel-(4,4) 原始编码为 1361 B、1742 B。单替换 CertificateVerify 的签名负载，可作 1948 B 的反事实估计（约 58.9%）；假定连叶证书的主体公钥负载也同样替换，两个原始字段合计差 2158 B。两种估算都不是 Pretzel 的标准 TLS 编码，未计不同 OID、DER 长度编码、压缩、分片或加密开销。[1][2][3][4]",
+      "证书上的签名由签发者生成，握手的 CertificateVerify 由端点生成。前者是否也变化，要单独指定签发算法与证书路径；本估算固定它们，不把公钥短 210 B 代入签发签名，也不把未发送的信任锚算进网络。"
+    ]},
+    {"id":"sensitivity","title":"4. 可复算结果：同命中率下，优势随公钥复用增加而收窄","paragraphs":[
+      "输入是作者仓库 PDF Table 7 的平均线程 CPU 时间：Apple M2 Pro/macOS、32 B 消息、空算法上下文。冷用从序列化公钥开始且含释放在内的完整验签行，热用事先准备好公钥后的验签行。用相同命中率 h 对两边做线性加权。表中百分数为两项建模均值之商，不是作者对各配对运行比值取几何均值，也不提供置信区间。独立复算只验证算术。[1][7]",
+      "命中率若不同，排序也可能变化：基线命中 90% 时是 7.8603 μs；Pretzel 若只命中 50% 则是 10.874 μs。同模型下要到约 74.95% 才相当，不是现实缓存设计门槛。这个反例说明比较两种算法时，应记录两边的实际命中率与相同容量下的行为，而不是只报一个热缓存数字。"
+    ],
+    "code":"E[T] = (1 − h) × T_cold + h × T_warm",
+    "table":{"headers":["双方相同的准备态命中率","Pretzel-(4,4) 模型 μs","ML-DSA-65 模型 μs","Pretzel / ML-DSA-65"],"rows":[
+      ["0%","16.914","30.480","55.5%"],["25%","13.894","24.197","57.4%"],["50%","10.874","17.914","60.7%"],["75%","7.854","11.630","67.5%"],["90%","6.042","7.860","76.9%"],["100%","4.834","5.347","90.4%"]
+    ]}},
+    {"id":"baseline-and-limits","title":"5. 两份作者跑分不能混算，也不是协议级延迟","paragraphs":[
+      "仓库 README 记录另一次独立跑法：默认构建下，冷、热比值分别为 0.5821、0.9107；不可用来替代上述 PDF 的输入。基线参考 AWS-LC a3d1e685…，热路径用基准适配器，不是开放给所有 TLS 调用者的承诺。适配器说明列出两边不同的堆分配、清理工作以及 DIT 配置；空上下文 32 B 原语测试也不能代替 TLS 完整的 CertificateVerify 输入。论文 Table 7 中该参数组的签名用已准备好的私钥，不能外推到每次导入密钥或频繁轮换。[1][6]",
+      "未计证书解析、证书链和名称校验、握手散列、限额和缓存锁、CPU 调度、网络 RTT 或证书体积导致的丢包。命中率模型假定两条路径各自平均成本不随流量变化。它用于设计实验，不用于给出站点吞吐或部署建议。"
+    ]},
+    {"id":"acceptance","title":"6. 下一步：固定认证语义，再测试冷、热和轮换","bullets":[
+      "先做独立基准：固定 M2 Pro/macOS 构建、AWS-LC 提交、编译参数、DIT 和清理策略；使用符合 RFC 8446 构造的合成输入，分别记录序列化公钥冷验、准备态热验和首次导入，保留重复运行与 p50/p95。再记录字节和两方案同字节配额下的 RSS、命中率和淘汰，不按缓存条数假定预算相同。",
+      "准备态可按签名算法/参数、原始公钥编码和后端代际命名；升级或切换 provider 时清理旧代际。名称、信任锚、路径、有效期及策略的验证不能继承准备态缓存结果；轮换和不同 transcript 下各做一次失败对照，确认不会复用此前的验签结论。",
+      "先在隔离工具里校验格式、安全假设和平台成本；若未来有可互通规范，再独立验证算法协商、X.509 标识、验证失败和回退策略。在此之前，不占用 ML-DSA 标识或把 Pretzel 作为生产迁移选项。"
+    ]}
+  ],
+  "sources": [
+    {"id":"1","title":"Pretzel：作者固定提交的论文 PDF","url":"https://github.com/a16z/pretzel/blob/22a5a995f96f804345d822f3dc3349ad0738c48c/paper/pretzel.pdf","version":"仓库 22a5a995，2026-11-21；ePrint 2026/2970 记录 11-21 提交、11-23 更新","note":"查 §2.4、§5、§7、Tables 6–7。按固定 PDF 复算，不假定与更新后的 ePrint 完全相同。"},
+    {"id":"2","title":"NIST FIPS 204：ML-DSA","url":"https://csrc.nist.gov/pubs/fips/204/final","version":"正式标准，2024-08-13","note":"规格与 Table 2；Pretzel 不在该标准内。"},
+    {"id":"3","title":"TLS 1.3：CertificateVerify","url":"https://www.rfc-editor.org/rfc/rfc8446.html#section-4.4.3","version":"RFC 8446，2018-08","note":"签名消息、角色上下文及握手绑定。"},
+    {"id":"4","title":"X.509 中的 ML-DSA 标识","url":"https://www.rfc-editor.org/rfc/rfc9881.html","version":"RFC 9881，2025-10","note":"算法标识、签名和主体公钥的证书承载。"},
+    {"id":"5","title":"Pretzel-(4,4) 研究实现与 API","url":"https://github.com/a16z/pretzel/blob/22a5a995f96f804345d822f3dc3349ad0738c48c/crates/pretzel-4-4/README.md","version":"22a5a995，2026-11-21","note":"PreparedPk、序列化长度、支持平台和未审计声明。"},
+    {"id":"6","title":"作者的 AWS-LC 对照方法","url":"https://github.com/a16z/pretzel/blob/22a5a995f96f804345d822f3dc3349ad0738c48c/bench/mldsa-comparison/README.md","version":"22a5a995；AWS-LC a3d1e685552f05a9ad04a2946962c03e97bdecac","note":"适配器与不同内存/DIT 条件；独立于 PDF 的另一轮结果。"},
+    {"id":"7","title":"站点可复跑的敏感性测试","url":"https://github.com/yibiaowangsd/liangzai-homepage/blob/main/tests/pretzel-verify-cost.test.mjs","version":"2026-11-25","note":"整数复算，不运行签名或 TLS。"},
+    {"id":"8","title":"Cryptology ePrint Archive：Pretzel","url":"https://eprint.iacr.asia/2026/2970","version":"预印本 2026/2970，2026-11-21 提交，11-23 更新","note":"归档信息；不是正式标准或部署。"}
+  ],
+  "revisions":[{"date":"2026-11-25","detail":"首发。记录冷/热验签口径、公开数据复算和独立验收建议。"}]
+}
