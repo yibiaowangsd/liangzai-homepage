@@ -61,7 +61,7 @@ test("renders the homepage: Naiwa, the latest dispatch and the practice destinat
   ]) {
     assert.ok(html.includes(`href="${route}"`), `Homepage links to ${route}`);
   }
-  assert.match(html, /进入密码实验室/);
+  assert.match(html, /<a\b(?=[^>]*\bdata-tone="milk")(?=[^>]*\bhref="\/pqc-practice")[^>]*>进入密码实验室<\/a>/);
   assert.match(html, /打开显示设置/);
   assert.match(html, /喂自己/);
   assert.match(html, /奶蛙/);
