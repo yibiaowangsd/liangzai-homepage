@@ -1,5 +1,10 @@
 /* About: the person behind the two characters. */
 .ab-page { overflow-x: clip; }
+.ab-page :is(.ab-intro, .ab-head > p, .ab-contact h2 + p) { white-space: pre-line; }
+.ab-page:not(:lang(zh-CN)) :is(h2, h3) { overflow-wrap: anywhere; }
+.ab-page:where(:lang(en), :lang(fr), :lang(de), :lang(es), :lang(ru)) {
+  --milk-display: Georgia, "Times New Roman", serif;
+}
 .ab-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 110px); align-items: center; min-height: min(780px, calc(100svh - var(--site-header-height, 72px))); padding: clamp(48px, 7vw, 110px) var(--milk-gutter) clamp(56px, 6vw, 96px); }
 .ab-kicker { display: flex; align-items: baseline; gap: 12px; font-size: 15px; color: var(--milk-dim); }
 .ab-kicker i { font-size: clamp(24px, 2.2vw, 34px); color: var(--milk-accent); }

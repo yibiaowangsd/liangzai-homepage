@@ -1,0 +1,181 @@
+{
+  "chrome": {
+    "brand": { "name": "Liangzai", "tagline": "Actualité tech et expériences pratiques", "home": "Accueil de Liangzai", "skip": "Aller au contenu principal" },
+    "nav": { "label": "Navigation principale", "home": "Accueil" },
+    "settings": {
+      "language": "Choisir la langue", "button": "Réglages", "open": "Ouvrir les réglages d’affichage", "title": "Réglages d’affichage",
+      "theme": "Thème", "paper": "Papier", "midnight": "Minuit",
+      "motion": "Animations", "resume": "Reprendre", "pause": "Mettre en pause", "note": "Les animations respectent aussi le réglage de réduction des mouvements de votre appareil."
+    },
+    "search": {
+      "button": "Rechercher", "open": "Rechercher sur le site, raccourci Ctrl ou Commande plus K", "find": "Trouver des articles et des rubriques",
+      "title": "Recherche sur le site", "close": "Fermer", "closeLabel": "Fermer la recherche", "placeholder": "Rechercher un article, un algorithme ou une rubrique, par ex. AWS ou ML-KEM",
+      "all": "Toutes les rubriques", "loading": "Recherche d’articles…", "error": "La recherche d’articles est momentanément indisponible. Vous pouvez parcourir les rubriques.",
+      "results": "Articles : {articles} · Rubriques : {sections}", "partial": "Articles affichés : {count} sur {total} · Rubriques : {sections}",
+      "article": "Actu", "section": "Rubrique", "articles": "Articles d’actualité", "sections": "Rubriques du site",
+      "empty": "Aucun article ni rubrique ne correspond. Essayez un autre mot-clé.", "keys": "↑ ↓ Sélectionner · Entrée pour ouvrir", "shortcut": "Ctrl / ⌘ K pour ouvrir la recherche"
+    },
+    "footer": {
+      "sleeper": "Naiwa dort sur le ventre à côté d’un biberon vide", "night": "Chut, Naiwa dort",
+      "note": "Le biberon du jour est vide. Le prochain bulletin sera prêt demain à 08 h 10. D’ici là, tournez les pages doucement.",
+      "nav": "Navigation de pied de page", "reading": "À lire", "family": "À la maison", "about": "À propos", "topics": "Dossiers techniques",
+      "algorithms": "Comprendre les algorithmes", "models": "Modèles 3D des personnages", "journey": "Mon parcours", "contact": "Me contacter",
+      "source": "Code source du site", "signature": "Liangzai et Naiwa", "top": "Retour en haut"
+    },
+    "gauge": { "label": "Remonter en haut de la page pour un autre biberon", "remaining": "Reste\n{ml} ml", "empty": "Fini\nEncore" },
+    "categories": {
+      "pqc": "Algorithmes post-quantiques", "migration": "Migration post-quantique", "protocol": "Protocoles post-quantiques", "standards": "Normes", "security": "Cybersécurité",
+      "ai": "Actualité de l’IA", "ngcc": "Appel NGCC en cryptographie à clé publique", "flash": "Brèves", "industry": "Actualité du secteur", "daily": "Bulletin quotidien"
+    },
+    "destinations": {
+      "/": { "name": "Explorer l’accueil", "description": "Suivre l’actualité et découvrir comment les technologies évoluent et se déploient." },
+      "/news": { "name": "Actualités", "description": "Suivre les avancées en cryptographie, sécurité et intelligence artificielle." },
+      "/tracking": { "name": "Veille PQC", "description": "Consulter les normes post-quantiques, la prise en charge par les composants, les mesures de performance et les plans de migration." },
+      "/models": { "name": "Modèles 3D", "description": "Faire pivoter et agrandir les modèles de Liangzai et Naiwa." },
+      "/storybook": { "name": "Voyage parmi les étoiles", "description": "Un conte du soir de onze pages sur Liangzai et Naiwa qui se serrent les coudes." },
+      "/archive": { "name": "Portraits", "description": "Rencontrer Liangzai, qui mesure tout, et Naiwa, qui tient bon." },
+      "/pqc-arsenal": { "name": "Guide crypto", "description": "Se familiariser avec les mathématiques de la cryptographie post-quantique." },
+      "/pqc-practice": { "name": "Labo crypto", "description": "Exécuter de vrais algorithmes, encapsuler des clés, signer et vérifier." },
+      "/research": { "name": "Recherche", "description": "Explorer chaque jour une question à partir de méthodes, de preuves et de résultats vérifiables." },
+      "/topics": { "name": "Dossiers", "description": "Suivre des algorithmes, des protocoles et des projets dans le temps et retrouver les sources." },
+      "/wo": { "name": "WO · Bilan sur le web", "description": "Consulter sur son appareil les journaux de vie, la chronologie, les tendances et les souvenirs." },
+      "/play": { "name": "Terrain de jeu", "description": "Jouer avec la mascotte, résoudre l’énigme du jour ou dessiner une carte en pixels." },
+      "/pet": { "name": "La maison de Puff", "description": "Adopter un petit compagnon dans le navigateur, lui donner une friandise et jouer avec lui." },
+      "/daily-play": { "name": "Allumez les étoiles", "description": "Une énigme logique par jour pour allumer toute la grille." },
+      "/pixel-postcard": { "name": "Carte en pixels", "description": "Dessiner en pixels, télécharger l’image ou partager un lien." },
+      "/sidequests": { "name": "Outils", "description": "Ouvrir des outils de son, de minuterie et de fuseaux horaires." },
+      "/sound-room": { "name": "Coin sonore", "description": "Mélanger pluie, vent, vagues et feu de cheminée sur son appareil, ou lancer une minuterie de concentration." },
+      "/time-desk": { "name": "Fuseaux horaires", "description": "Voir l’heure locale et les plages de travail communes dans plusieurs villes." },
+      "/about": { "name": "À propos", "description": "De l’université du Shandong à l’ingénierie de la sécurité quantique." }
+    }
+  },
+  "home": {
+    "metadata": {
+      "title": "Liangzai · Actualités et bulletins tech", "siteName": "Yibiao · Liangzai",
+      "description": "Suivez chaque jour les algorithmes, les protocoles et la migration post-quantiques, les normes, la cybersécurité, l’IA et l’appel NGCC en cryptographie à clé publique. Consultez les sources et essayez de vrais algorithmes dans le labo.",
+      "imageAlt": "La porte du coffre cryptographique éclairée en bleu · Bulletins tech de Liangzai"
+    },
+    "hero": {
+      "title": "Apprendre un peu\nchaque jour",
+      "description": "Je suis Yibiao et je travaille sur la cryptographie post-quantique et les protocoles sécurisés. Voici ma petite cuisine pour les curieux : un bulletin quotidien, un labo où tournent de vrais algorithmes et deux petits compagnons, Liangzai et Naiwa.",
+      "news": "Lire le bulletin du jour", "about": "Rencontrer Yibiao", "play": "Aller au terrain de jeu"
+    },
+    "greeting": {
+      "late": ["Encore debout ?", "Le lait est toujours chaud."], "morning": ["Bonjour !", "Le lait est prêt."],
+      "noon": ["Il est midi.", "Une gorgée avant de reprendre ?"], "afternoon": ["Bon après-midi !", "Vous arrivez au bon moment."],
+      "evening": ["Bonsoir !", "Il en reste un peu dans le biberon du jour."]
+    },
+    "naiwa": {
+      "action": "Toucher Naiwa pour changer de question", "alt": "Naiwa, une grenouille jaune beurre au ventre rond et aux yeux cerclés de vert, assis avec un biberon à moitié plein", "hint": "Touchez-le pour changer de question",
+      "questions": {
+        "news": ["Coa. Que s’est-il passé dans le monde aujourd’hui ?", "Lire le bulletin du jour"],
+        "algorithms": ["Pourquoi peut-on casser les anciennes clés ?", "Ouvrir le guide crypto"],
+        "lab": ["Peut-on vraiment générer des clés dans un navigateur ?", "Essayer dans le labo"],
+        "story": ["Comment Liangzai et moi nous sommes-nous rencontrés ?", "Lire le conte du soir"],
+        "about": ["Qui s’occupe de nous ?", "Faire connaissance avec Yibiao"]
+      }
+    },
+    "day": {
+      "label": "Le programme du jour",
+      "morning": ["Matin", "Un biberon d’actus"], "noon": ["Midi", "Un tour au labo"], "family": ["Fin de journée", "Nos deux compagnons"], "night": ["Soir", "Un conte avant de dormir"]
+    },
+    "morning": {
+      "time": "Matin · Mise à jour quotidienne à cette heure", "title": "Dernier bulletin",
+      "description": "Suivez la cryptographie post-quantique, les protocoles et la migration post-quantiques, les normes, la cybersécurité, l’IA et l’appel à candidatures NGCC en cryptographie à clé publique.",
+      "categories": "Rubriques d’actualité", "loading": "Le bulletin du jour se prépare…", "loadingLink": "Aller directement aux actualités",
+      "briefing": "Lire le bulletin complet", "tracking": "Consulter la veille PQC", "topics": "Suivre les algorithmes et les protocoles",
+      "subscribe": "Choisissez vos thèmes et recevez le bulletin quotidien par e-mail ou dans votre groupe de discussion.", "approval": "L’envoi commence après approbation de votre demande.", "subscribeLink": "S’abonner",
+      "unavailable": "Le dernier bulletin est momentanément indisponible. Réessayez dans un instant.", "newsLink": "Aller aux actualités", "latest": "Dernière édition",
+      "edition": "Bulletin technologique", "featured": "Articles à la une : {count}", "source": "Source originale", "articleLanguage": "Articles en chinois"
+    },
+    "noon": {
+      "time": "Midi · Place à la pratique", "title": "Des algorithmes aux protocoles", "description": "Voyez comment un échange établit une clé, authentifie les parties et s’intègre aux systèmes existants.",
+      "kicker": "dans votre navigateur", "labTitle": "Tester l’encapsulation\nde clés",
+      "labDescription": "Générez une paire de clés ML-KEM, encapsulez et décapsulez, puis comparez les secrets partagés. Vous pouvez aussi importer des vecteurs de test pour vérifier la signature et sa validation.",
+      "lab": "Ouvrir le labo crypto", "algorithms": "Comprendre les algorithmes", "available": "Algorithmes disponibles",
+      "engineering": {
+        "hybrid": ["Échange de clés hybride", "Voir comment associer des algorithmes classiques à ML-KEM et utiliser leurs secrets partagés pour dériver les clés du protocole."],
+        "agility": ["Agilité cryptographique", "Relier le choix des algorithmes, le paramétrage et la négociation du protocole pour permettre une migration progressive."],
+        "interop": ["Interopérabilité et performances", "Vérifier les résultats avec des vecteurs normalisés et des tests entre implémentations, puis mesurer la durée des échanges."]
+      },
+      "more": "Pour aller plus loin", "research": "Notes de recherche", "topics": "Dossiers techniques"
+    },
+    "family": {
+      "time": "Fin de journée · Tout le monde est là", "title": "L’un mesure, l’autre veille", "description": "Deux façons d’aborder la technique, incarnées par deux petits compagnons.",
+      "liangzai": {
+        "role": "celui qui mesure", "name": "Liangzai", "alt": "Liangzai en armure bleue et blanche, avec une antenne bleue",
+        "description": "Il ne se rassure qu’après avoir tout mesuré. Il s’occupe des sources, du temps des échanges et de chaque vecteur de test.", "action": "Lire le portrait de Liangzai"
+      },
+      "naiwa": {
+        "role": "celui qui tient bon", "name": "Naiwa", "alt": "Naiwa, jaune beurre, bien campé sur ses pattes, le ventre rond et les yeux cerclés de vert",
+        "description": "Rond et discret, il ne recule jamais. En attendant une réponse, il garde le biberon et aide tout le monde à tenir un peu plus longtemps.", "action": "Lire le portrait de Naiwa"
+      },
+      "more": "Voir de plus près", "models": "Faire pivoter les modèles 3D", "archive": "Ouvrir les deux portraits"
+    },
+    "night": {
+      "time": "Soir · Avant d’éteindre", "title": "Après le labo,\nun conte du soir",
+      "description": "Voyage parmi les étoiles raconte, en onze pages illustrées et commentées, comment Liangzai et Naiwa affrontent le seigneur Shor ensemble. Dans l’histoire, il s’appelle encore Nailong. Il l’écoute tous les soirs et s’endort généralement avant la neuvième page.",
+      "story": "Ouvrir Voyage parmi les étoiles", "archive": "Lire le portrait de Liangzai", "coverAlt": "Couverture, où Liangzai et Nailong défendent l’Étoile quantique dos à dos", "listenerAlt": "Naiwa somnole avec un album bleu dans les bras"
+    }
+  },
+  "about": {
+    "metadata": {
+      "title": "À propos · Wang Yibiao",
+      "description": "Site personnel de Yibiao. J’ai étudié la cybersécurité à l’université du Shandong de 2018 à 2025. Je travaille chez China Telecom Quantum Group sur la cryptographie post-quantique, les protocoles sécurisés et l’ingénierie cryptographique."
+    },
+    "hero": {
+      "kicker": "Portrait", "label": "À propos", "hello": "Bonjour, je suis",
+      "intro": "De l’université du Shandong à l’exploration de la cryptographie et de la sécurité",
+      "bio": "J’ai obtenu une licence et un master en cybersécurité à l’université du Shandong. Je travaille aujourd’hui chez China Telecom Quantum Group. Je consigne ici mes travaux et mes essais en code et en design.",
+      "alt": "Naiwa salue d’une main et tient un biberon de l’autre"
+    },
+    "card": {
+      "label": "Carte de visite flottante de Wang Yibiao", "brand": "Cryptographie et ingénierie", "specialty": "Cryptographie post-quantique et protocoles sécurisés",
+      "work": "Emploi", "employer": "China Telecom Quantum Group", "workDetail": "Association de la PQC et de la QKD",
+      "education": "Études", "university": "Université du Shandong", "degrees": "Licence et master en cybersécurité",
+      "home": "Retour à l’accueil de Wang Yibiao", "github": "Voir le profil GitHub de Wang Yibiao"
+    },
+    "index": { "label": "Sections du profil", "note": "Un parcours qui continue de s’écrire" },
+    "journey": {
+      "label": "Mon parcours", "title": "Le chemin parcouru", "description": "Sept ans à l’université du Shandong, de la cybersécurité à la pratique de la sécurité quantique", "current": "Actuellement",
+      "work": {
+        "period": "Depuis 2025", "type": "Emploi", "place": "China Telecom Quantum Group", "detail": "Cryptographie post-quantique et protocoles sécurisés",
+        "description": "Je mets en pratique la recherche en cryptographie et en sécurité, en travaillant sur la migration des protocoles, l’agilité cryptographique et l’association de la PQC et de la QKD."
+      },
+      "master": {
+        "period": "2022–2025", "type": "Master", "place": "Université du Shandong", "detail": "Cybersécurité",
+        "description": "J’ai poursuivi mes études et mes recherches en cybersécurité en approfondissant les bases acquises en licence."
+      },
+      "bachelor": {
+        "period": "2018–2022", "type": "Licence", "place": "Université du Shandong", "detail": "Cybersécurité",
+        "description": "J’ai commencé mes études de cybersécurité à l’université du Shandong. C’est là que j’ai découvert la cryptographie et les techniques de sécurité."
+      }
+    },
+    "focus": {
+      "kicker": "Aujourd’hui", "label": "Axes techniques", "title": "Mes sujets de travail", "description": "Des algorithmes aux protocoles, jusqu’aux mises en œuvre sur le terrain",
+      "pqc": {
+        "role": "Ce dont s’occupe Liangzai", "title": "Cryptographie post-quantique",
+        "description": "J’implémente, je teste et j’optimise les algorithmes post-quantiques pour les faire fonctionner dans des systèmes réels.", "tags": ["Implémentation", "Tests et validation", "Optimisation"]
+      },
+      "protocols": {
+        "role": "Ce dont s’occupe Naiwa", "title": "Protocoles sécurisés",
+        "description": "J’étudie la migration post-quantique, l’échange de clés hybride et l’agilité cryptographique pour TLS, TLCP, SSH et IKE.", "tags": ["Migration des protocoles", "Échange de clés hybride", "Agilité cryptographique"]
+      },
+      "engineering": {
+        "role": "Ce qu’ils font ensemble", "title": "Ingénierie cryptographique",
+        "description": "Je travaille sur l’association de la PQC et de la QKD ainsi que sur le raccordement des bibliothèques, des interfaces et des adaptations multiplateformes.", "tags": ["PQC et QKD", "Bibliothèques cryptographiques", "Intégration de systèmes"]
+      }
+    },
+    "projects": {
+      "kicker": "Après le travail", "label": "Projets personnels", "title": "Ce que je crée à côté", "description": "La curiosité se transforme en code et les idées en expériences à essayer",
+      "home": { "title": "Le monde numérique de Liangzai", "description": "Les personnages, les récits et les outils interactifs rendent les technologies abstraites plus concrètes.", "action": "Explorer l’accueil" },
+      "algorithms": { "title": "Guide crypto", "description": "Partir d’explications visuelles pour comprendre les mathématiques de la cryptographie post-quantique.", "action": "Lire le guide" },
+      "lab": { "title": "Labo crypto", "description": "Exécutez les algorithmes dans votre navigateur et essayez l’encapsulation de clés ou la vérification de signatures.", "action": "Lancer une expérience" }
+    },
+    "contact": {
+      "kicker": "Bonjour", "label": "Me trouver", "title": "Ravi de vous voir ici",
+      "description": "Si vous vous intéressez à la cryptographie, à la sécurité ou aux façons créatives d’expliquer la technique, retrouvez mes projets et mon code sur GitHub.",
+      "action": "Voir mon GitHub", "alt": "Naiwa penche la tête et lève une main"
+    }
+  }
+}

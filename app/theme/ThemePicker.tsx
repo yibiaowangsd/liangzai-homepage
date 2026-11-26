@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
+import { useSiteLanguage } from "../i18n/LocaleProvider";
 
 function subscribe(onChange: () => void) {
   window.addEventListener("liangzai:theme-change", onChange);
@@ -16,20 +17,20 @@ function getServerPreference() { return "paper"; }
 
 export default function ThemePicker() {
   const preference = useSyncExternalStore(subscribe, getPreference, getServerPreference);
+  const { chrome: { settings } } = useSiteLanguage();
   return (
     <label className="theme-picker">
       <span className="theme-picker-swatch" aria-hidden="true" />
-      <span className="theme-picker-label">主题</span>
       <select
-        aria-label="页面主题"
+        aria-label={settings.theme}
         data-theme-select="react"
         value={preference}
         onChange={(event) => window.dispatchEvent(new CustomEvent("liangzai:theme-request", {
           detail: event.currentTarget.value,
         }))}
       >
-        <option value="paper">纸白</option>
-        <option value="midnight">午夜</option>
+        <option value="paper">{settings.paper}</option>
+        <option value="midnight">{settings.midnight}</option>
       </select>
     </label>
   );

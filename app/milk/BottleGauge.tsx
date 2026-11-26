@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
+import { formatMessage } from "../i18n/locales";
+import { useSiteLanguage } from "../i18n/LocaleProvider";
 
 const CAPACITY = 240;
 const routes = new Set(["/", "/about", "/archive"]);
@@ -13,6 +15,7 @@ export default function BottleGauge() {
   const root = useRef<HTMLButtonElement>(null);
   const label = useRef<HTMLSpanElement>(null);
   const shown = routes.has(path);
+  const { chrome: { gauge } } = useSiteLanguage();
 
   useEffect(() => {
     const el = root.current;
@@ -25,7 +28,7 @@ export default function BottleGauge() {
       const left = Math.round(((1 - drunk) * CAPACITY) / 10) * 10;
       el.style.setProperty("--level", String(1 - drunk));
       el.dataset.empty = String(left === 0);
-      if (label.current) label.current.textContent = left === 0 ? "喝完啦\n再来一瓶" : `还剩\n${left} ml`;
+      if (label.current) label.current.textContent = left === 0 ? gauge.empty : formatMessage(gauge.remaining, { ml: left });
     };
     const request = () => { if (!frame) frame = requestAnimationFrame(measure); };
     measure();
@@ -39,11 +42,11 @@ export default function BottleGauge() {
       removeEventListener("resize", request);
       observer.disconnect();
     };
-  }, [shown, path]);
+  }, [shown, path, gauge]);
 
   if (!shown) return null;
   return (
-    <button ref={root} type="button" className="milk-gauge" aria-label="回到页面顶部，再来一瓶"
+    <button ref={root} type="button" className="milk-gauge" aria-label={gauge.label}
       onClick={() => scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}>
       <svg viewBox="0 0 34 132" aria-hidden="true" fill="none">
         <defs><clipPath id="milk-gauge-body"><rect x="3" y="30" width="28" height="99" rx="9" /></clipPath></defs>
@@ -56,7 +59,7 @@ export default function BottleGauge() {
         <rect x="3" y="30" width="28" height="99" rx="9" stroke="currentColor" strokeWidth="1.6" />
         {[0, 1, 2, 3, 4].map(i => <path key={i} d={`M${i % 2 ? 23 : 20} ${46 + i * 17}h${i % 2 ? 5 : 8}`} stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />)}
       </svg>
-      <span ref={label} className="milk-gauge-label">{`还剩\n${CAPACITY} ml`}</span>
+      <span ref={label} className="milk-gauge-label">{formatMessage(gauge.remaining, { ml: CAPACITY })}</span>
     </button>
   );
 }

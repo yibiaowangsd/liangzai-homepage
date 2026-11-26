@@ -1,0 +1,181 @@
+{
+  "chrome": {
+    "brand": { "name": "Liangzai", "tagline": "Tech news and hands-on experiments", "home": "Liangzai home", "skip": "Skip to main content" },
+    "nav": { "label": "Main navigation", "home": "Home" },
+    "settings": {
+      "language": "Choose a language", "button": "Settings", "open": "Open display settings", "title": "Display settings",
+      "theme": "Theme", "paper": "Paper", "midnight": "Midnight",
+      "motion": "Animation", "resume": "Resume", "pause": "Pause", "note": "Animation also follows your device’s reduced motion preference."
+    },
+    "search": {
+      "button": "Search", "open": "Search the site, shortcut Ctrl or Command plus K", "find": "Find articles and sections",
+      "title": "Site search", "close": "Close", "closeLabel": "Close search", "placeholder": "Search articles, algorithms or sections, e.g. AWS or ML-KEM",
+      "all": "All sections", "loading": "Searching news…", "error": "News search is temporarily unavailable. You can still browse sections.",
+      "results": "News articles: {articles} · Sections: {sections}", "partial": "Showing {count} of {total} articles · Sections: {sections}",
+      "article": "News", "section": "Section", "articles": "News articles", "sections": "Site sections",
+      "empty": "No matching articles or sections. Try a different search term.", "keys": "↑ ↓ Select · Enter Open", "shortcut": "Ctrl / ⌘ K opens search"
+    },
+    "footer": {
+      "sleeper": "Naiwa asleep on his belly next to an empty milk bottle", "night": "Shh, Naiwa is asleep",
+      "note": "That’s today’s bottle finished. A fresh briefing will be ready tomorrow at 08:10. Until then, turn the pages gently.",
+      "nav": "Footer navigation", "reading": "Reading", "family": "At home", "about": "About", "topics": "Technology dossiers",
+      "algorithms": "How the algorithms work", "models": "Character models", "journey": "My journey", "contact": "Get in touch",
+      "source": "Site source code", "signature": "Liangzai and Naiwa", "top": "Back to top"
+    },
+    "gauge": { "label": "Back to the top for another bottle", "remaining": "Left\n{ml} ml", "empty": "All done\nRefill" },
+    "categories": {
+      "pqc": "Post-quantum algorithms", "migration": "PQC migration", "protocol": "Quantum-safe protocols", "standards": "Standards", "security": "Cybersecurity",
+      "ai": "AI developments", "ngcc": "NGCC public-key call", "flash": "News flashes", "industry": "Industry news", "daily": "Daily briefing"
+    },
+    "destinations": {
+      "/": { "name": "Explore the homepage", "description": "Start with the latest news and follow how technologies evolve and are put to work." },
+      "/news": { "name": "Tech News", "description": "Follow developments in cryptography, security and AI." },
+      "/tracking": { "name": "PQC Tracker", "description": "Browse post-quantum standards, component support, benchmarks and migration roadmaps." },
+      "/models": { "name": "3D Models", "description": "Rotate and zoom in for a closer look at Liangzai and Naiwa." },
+      "/storybook": { "name": "Journey Among the Stars", "description": "An eleven-page bedtime story about Liangzai and Naiwa standing together." },
+      "/archive": { "name": "Character Profiles", "description": "Meet Liangzai, who measures everything, and Naiwa, who holds his ground." },
+      "/pqc-arsenal": { "name": "Cryptography Guide", "description": "Build an intuition for the mathematics behind post-quantum cryptography." },
+      "/pqc-practice": { "name": "Crypto Lab", "description": "Run real algorithms and try encapsulation, signing and verification." },
+      "/research": { "name": "Research", "description": "Dig into a question each day with methods, evidence and verifiable results." },
+      "/topics": { "name": "Tech Dossiers", "description": "Follow algorithms, protocols and projects over time and trace developments back to their sources." },
+      "/wo": { "name": "WO · Web Review", "description": "Open life logs on your device to revisit the timeline, trends and saved memories." },
+      "/play": { "name": "Curiosity Playground", "description": "Play with the site pet, solve the daily puzzle or draw a pixel postcard." },
+      "/pet": { "name": "Puff’s House", "description": "Adopt a little browser pet, give it a treat and play together." },
+      "/daily-play": { "name": "Light the Stars", "description": "Solve a new logic puzzle every day and light up the entire grid." },
+      "/pixel-postcard": { "name": "Pixel Postcard", "description": "Draw pixel art, download it as an image or share a link." },
+      "/sidequests": { "name": "Tools", "description": "Open tools for sound, timers and time zones." },
+      "/sound-room": { "name": "Sound Room", "description": "Mix rain, wind, waves and a crackling fire on your device, or start a focus timer." },
+      "/time-desk": { "name": "Time Desk", "description": "Check local times and overlapping working hours in different places." },
+      "/about": { "name": "About Me", "description": "From Shandong University to quantum security engineering." }
+    }
+  },
+  "home": {
+    "metadata": {
+      "title": "Liangzai · Tech News and Briefings", "siteName": "Yibiao · Liangzai",
+      "description": "Follow daily news on post-quantum algorithms, quantum-safe migration and protocols, standards, cybersecurity, AI and the NGCC public-key call. Read the original sources and run real algorithms in the crypto lab.",
+      "imageAlt": "Blue light on the cryptography vault door · Liangzai Tech Briefings"
+    },
+    "hero": {
+      "title": "Learn a little\nevery day",
+      "description": "I’m Yibiao. I work on post-quantum cryptography and secure protocols. This is my little kitchen for curious minds, with a daily briefing, a lab that runs real algorithms, and two characters keeping me company, Liangzai and Naiwa.",
+      "news": "Read today’s briefing", "about": "Meet Yibiao", "play": "Visit the playground"
+    },
+    "greeting": {
+      "late": ["Still up?", "The milk is still warm."], "morning": ["Good morning,", "the milk is ready."],
+      "noon": ["It’s noon.", "Take a sip before getting back to work."], "afternoon": ["Good afternoon!", "You’re just in time."],
+      "evening": ["Good evening,", "there’s still a little left in today’s bottle."]
+    },
+    "naiwa": {
+      "action": "Tap Naiwa for another question", "alt": "Naiwa, a butter-yellow frog with a round belly and green eye rings, sitting with a half-full bottle", "hint": "Tap him for another question",
+      "questions": {
+        "news": ["Ribbit. What happened in the world today?", "Read today’s briefing"],
+        "algorithms": ["Why can old keys be cracked?", "Open the cryptography guide"],
+        "lab": ["Can you really generate keys in a browser?", "Try it in the lab"],
+        "story": ["How did Liangzai and I meet?", "Read the bedtime story"],
+        "about": ["Who takes care of us?", "Meet Yibiao"]
+      }
+    },
+    "day": {
+      "label": "Today’s schedule",
+      "morning": ["Morning", "A bottle of news"], "noon": ["Midday", "Time in the lab"], "family": ["Dusk", "Meet the pair"], "night": ["Evening", "A bedtime story"]
+    },
+    "morning": {
+      "time": "Morning · Updated daily at this time", "title": "Latest briefing",
+      "description": "Follow post-quantum cryptography, quantum-safe protocols and migration, standards, cybersecurity, AI and the NGCC public-key call.",
+      "categories": "News categories", "loading": "Warming up today’s briefing…", "loadingLink": "Go straight to the news",
+      "briefing": "Read the full briefing", "tracking": "Open the PQC tracker", "topics": "Follow specific algorithms and protocols",
+      "subscribe": "Choose your topics and get the daily briefing by email or group chat.", "approval": "Delivery starts once your request is approved.", "subscribeLink": "Subscribe",
+      "unavailable": "The latest briefing is temporarily unavailable. Try again soon.", "newsLink": "Go to the news page", "latest": "Latest edition",
+      "edition": "Technology briefing", "featured": "Featured stories: {count}", "source": "Original source", "articleLanguage": "Articles in Chinese"
+    },
+    "noon": {
+      "time": "Midday · Time to try it", "title": "From algorithms to protocols", "description": "See how a handshake establishes a key, authenticates peers and fits into existing systems.",
+      "kicker": "in your browser", "labTitle": "Try key encapsulation\nin your browser",
+      "labDescription": "Generate an ML-KEM key pair, encapsulate and decapsulate, then compare the shared secrets. You can also import test vectors and check signing and verification.",
+      "lab": "Open the crypto lab", "algorithms": "Learn how the algorithms work", "available": "Available algorithms",
+      "engineering": {
+        "hybrid": ["Hybrid key exchange", "See how classical algorithms and ML-KEM work together, and how their shared secrets feed into protocol key derivation."],
+        "agility": ["Crypto agility", "Connect algorithm selection, parameter settings and protocol negotiation to support a phased migration."],
+        "interop": ["Interoperability and performance", "Use standard vectors, cross-implementation tests and handshake timings to check correctness and measure the cost."]
+      },
+      "more": "Explore further", "research": "Research notes", "topics": "Technology dossiers"
+    },
+    "family": {
+      "time": "Dusk · Everyone’s home", "title": "One measures, one stands guard", "description": "Two different approaches to technology, brought to life as two little characters.",
+      "liangzai": {
+        "role": "the one who measures", "name": "Liangzai", "alt": "Liangzai in blue and white armor with a blue antenna",
+        "description": "He measures everything before he can relax. News sources, handshake times and every test vector are his responsibility.", "action": "Read Liangzai’s profile"
+      },
+      "naiwa": {
+        "role": "the one who stays", "name": "Naiwa", "alt": "Naiwa standing steady, with a butter-yellow body, round belly and green eye rings",
+        "description": "Round and quiet, he never backs away. He holds the milk bottle and keeps everyone going a little longer while they wait for an answer.", "action": "Read Naiwa’s profile"
+      },
+      "more": "Take a closer look", "models": "Rotate the character models", "archive": "Open both character profiles"
+    },
+    "night": {
+      "time": "Evening · Before lights out", "title": "A bedtime story\nafter the engineering",
+      "description": "Journey Among the Stars is an eleven-page illustrated and narrated story about Liangzai and Naiwa facing Lord Shor together. In the story, he still goes by Nailong. He listens every night and usually drifts off before page nine.",
+      "story": "Open Journey Among the Stars", "archive": "Read Liangzai’s profile", "coverAlt": "Book cover showing Liangzai and Nailong protecting the Quantum Star back to back", "listenerAlt": "A sleepy Naiwa holding a blue picture book"
+    }
+  },
+  "about": {
+    "metadata": {
+      "title": "About · Wang Yibiao",
+      "description": "Yibiao’s personal website. I studied cybersecurity at Shandong University from 2018 to 2025 and now work at China Telecom Quantum Group on post-quantum cryptography, secure protocols and cryptographic engineering."
+    },
+    "hero": {
+      "kicker": "About,", "label": "My profile", "hello": "Hi, I’m",
+      "intro": "From Shandong University onward, exploring cryptography and security",
+      "bio": "I earned my bachelor’s and master’s degrees in cybersecurity at Shandong University and now work at China Telecom Quantum Group. This is where I document my technical work and share experiments in code and design.",
+      "alt": "Naiwa waving hello with a milk bottle in one hand"
+    },
+    "card": {
+      "label": "Wang Yibiao’s floating business card", "brand": "Cryptography and engineering", "specialty": "Post-quantum cryptography and secure protocols",
+      "work": "Work", "employer": "China Telecom Quantum Group", "workDetail": "Combining PQC and QKD",
+      "education": "Study", "university": "Shandong University", "degrees": "BSc and MSc in Cybersecurity",
+      "home": "Back to Wang Yibiao’s homepage", "github": "Visit Wang Yibiao on GitHub"
+    },
+    "index": { "label": "About page sections", "note": "A personal record still in progress" },
+    "journey": {
+      "label": "My journey", "title": "How I got here", "description": "Seven years at Shandong University, from studying cybersecurity to working in quantum security", "current": "Current",
+      "work": {
+        "period": "2025–present", "type": "Work", "place": "China Telecom Quantum Group", "detail": "Post-quantum cryptography and secure protocols",
+        "description": "I bring cryptography and security research into engineering practice, with a focus on quantum-safe protocol migration, crypto agility and the combined use of PQC and QKD."
+      },
+      "master": {
+        "period": "2022–2025", "type": "Master’s", "place": "Shandong University", "detail": "Cybersecurity",
+        "description": "I continued studying and researching cybersecurity, building on the foundations of my undergraduate degree."
+      },
+      "bachelor": {
+        "period": "2018–2022", "type": "Bachelor’s", "place": "Shandong University", "detail": "Cybersecurity",
+        "description": "I began studying cybersecurity at Shandong University and discovered cryptography and security technology."
+      }
+    },
+    "focus": {
+      "kicker": "Now,", "label": "Technical focus", "title": "What I’m working on", "description": "From algorithms and protocols to engineering that can be deployed",
+      "pqc": {
+        "role": "Liangzai’s part", "title": "Post-quantum cryptography",
+        "description": "I implement, test and tune post-quantum algorithms so they work in real systems.", "tags": ["Implementation", "Testing and validation", "Performance tuning"]
+      },
+      "protocols": {
+        "role": "Naiwa’s part", "title": "Secure protocols",
+        "description": "I explore quantum-safe migration, hybrid key exchange and crypto agility in TLS, TLCP, SSH and IKE.", "tags": ["Protocol migration", "Hybrid key exchange", "Crypto agility"]
+      },
+      "engineering": {
+        "role": "What they work on together", "title": "Cryptographic engineering",
+        "description": "I work on combining PQC and QKD and connecting libraries, interfaces and cross-platform adaptations into usable systems.", "tags": ["PQC and QKD", "Cryptographic libraries", "System integration"]
+      }
+    },
+    "projects": {
+      "kicker": "After hours,", "label": "Personal projects", "title": "What I build after work", "description": "I turn curiosity into code and ideas into things you can try",
+      "home": { "title": "Liangzai’s digital world", "description": "Characters, stories and interactive tools make abstract technology tangible.", "action": "Explore the homepage" },
+      "algorithms": { "title": "Cryptography guide", "description": "Use visual explanations to build an intuition for the math behind post-quantum cryptography.", "action": "Read the guide" },
+      "lab": { "title": "Crypto lab", "description": "Run the algorithms in your browser and try key encapsulation or signature verification.", "action": "Start an experiment" }
+    },
+    "contact": {
+      "kicker": "Hello,", "label": "Find me", "title": "Glad you’re here",
+      "description": "If you’re interested in cryptography, security or creative ways to explain technology, take a look at my code and projects on GitHub.",
+      "action": "Visit my GitHub", "alt": "Naiwa tilting his head and raising one hand"
+    }
+  }
+}

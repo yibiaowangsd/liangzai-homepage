@@ -6,7 +6,8 @@ import { flushSync } from "react-dom";
 import { usePathname } from "next/navigation";
 import { searchDestinations } from "./destinations";
 import { normalizeSearchQuery, searchPublishedNews, type NewsSearchResult } from "../../public/assets/news-search.js";
-import { categoryLabels } from "../news/news-api";
+import { defaultLocale, formatMessage } from "../i18n/locales";
+import { useSiteLanguage } from "../i18n/LocaleProvider";
 import "./jump-navigation.css";
 
 export default function JumpNavigation({
@@ -23,15 +24,30 @@ export default function JumpNavigation({
   const input = useRef<HTMLInputElement>(null);
   const items = useRef<HTMLUListElement>(null);
   const path = usePathname();
+  const { locale, chrome } = useSiteLanguage();
+  const copy = chrome.search;
+  const categories: Record<string, string> = chrome.categories;
   const normalizedQuery = normalizeSearchQuery(query);
   const articleResults = news.query === normalizedQuery && normalizedQuery ? news.results : [];
-  const destinations = searchDestinations(normalizedQuery);
+  const destinations = searchDestinations(normalizedQuery, chrome.destinations);
   const searching = !!normalizedQuery && (news.query !== normalizedQuery || news.status === "loading");
   const searchFailed = news.query === normalizedQuery && news.status === "error";
   const results = [
-    ...articleResults.map(item => ({ ...item, kind: "article" as const, detail: ["新闻", item.date, categoryLabels[item.category], item.source].filter(Boolean).join(" · ") })),
-    ...destinations.map(item => ({ ...item, kind: "destination" as const, detail: "栏目" })),
+    ...articleResults.map(item => ({
+      ...item,
+      kind: "article" as const,
+      detail: [copy.article, item.date, Object.hasOwn(categories, item.category) ? categories[item.category] : "", item.source].filter(Boolean).join(" · "),
+    })),
+    ...destinations.map(item => ({ ...item, kind: "destination" as const, detail: copy.section })),
   ];
+  const number = new Intl.NumberFormat(locale);
+  const articles = number.format(articleResults.length);
+  const sections = number.format(destinations.length);
+  const resultCount = news.total > articleResults.length
+    ? formatMessage(copy.partial, { count: articles, total: number.format(news.total), sections })
+    : formatMessage(copy.results, { articles, sections });
+  const resultStatus = !normalizedQuery ? copy.all : searching ? copy.loading : searchFailed ? copy.error
+    : resultCount;
   const openRef = useRef(onOpen);
   const blockedRef = useRef(blocked);
   useEffect(() => {
@@ -114,7 +130,7 @@ export default function JumpNavigation({
         type="button"
         className="jump-trigger"
         disabled={blocked}
-        aria-label="搜索全站，快捷键 Ctrl 或 Command 加 K"
+        aria-label={copy.open}
         aria-haspopup="dialog"
         onClick={() => {
           onOpen();
@@ -122,7 +138,8 @@ export default function JumpNavigation({
           setOpen(true);
         }}
       >
-        <span>搜索</span>
+        <svg className="jump-search-icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" /><path d="m13 13 4 4" /></svg>
+        <span>{copy.button}</span>
         <kbd>K</kbd>
       </button>
       {open && (
@@ -155,25 +172,25 @@ export default function JumpNavigation({
         >
           <div className="jump-heading">
             <div>
-              <p>查找文章与栏目</p>
-              <h2 id="jump-title">搜索全站</h2>
+              <p>{copy.find}</p>
+              <h2 id="jump-title">{copy.title}</h2>
             </div>
             <button
               type="button"
               onClick={() => setOpen(false)}
-              aria-label="关闭搜索"
+              aria-label={copy.closeLabel}
             >
-              关闭 <kbd>Esc</kbd>
+              {copy.close} <kbd>Esc</kbd>
             </button>
           </div>
           <label className="jump-search" htmlFor="jump-query">
-            <span>搜索</span>
+            <span>{copy.button}</span>
             <input
               ref={input}
               id="jump-query"
               type="search"
               value={query}
-              placeholder="搜索文章、算法或栏目，如 AWS、ML-KEM"
+              placeholder={copy.placeholder}
               autoComplete="off"
               maxLength={120}
               onChange={(event) => setQuery(event.target.value)}
@@ -182,7 +199,7 @@ export default function JumpNavigation({
             />
           </label>
           <p className="jump-result-count" role="status">
-            {!normalizedQuery ? "所有栏目" : searching ? "正在搜索新闻…" : searchFailed ? "新闻搜索暂时不可用，可继续浏览栏目" : `${news.total > articleResults.length ? `显示 ${articleResults.length} / ${news.total}` : articleResults.length} 篇新闻 · ${destinations.length} 个栏目`}
+            {resultStatus}
           </p>
           <ul
             ref={items}
@@ -192,15 +209,16 @@ export default function JumpNavigation({
             aria-busy={searching}
           >
             {results.map((item, i) => {
+              const article = item.kind === "article";
               const content = (
                 <>
                   <span className="jump-index">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span>
-                    <strong>{item.name}</strong>
+                    <strong lang={article ? defaultLocale : undefined}>{item.name}</strong>
                     <small className="jump-result-detail">{item.detail}</small>
-                    <small>{item.description}</small>
+                    <small lang={article ? defaultLocale : undefined}>{item.description}</small>
                   </span>
                   <span aria-hidden="true"></span>
                 </>
@@ -213,7 +231,7 @@ export default function JumpNavigation({
               };
               return (
                 <li key={item.href}>
-                  {(i === 0 || i === articleResults.length) && <p className="jump-group-label">{item.kind === "article" ? "新闻文章" : "栏目导航"}</p>}
+                  {(i === 0 || i === articleResults.length) && <p className="jump-group-label">{article ? copy.articles : copy.sections}</p>}
                   {item.href === "/pqc-practice" ? (
                     <a href={item.href} {...props}>
                       {content}
@@ -229,12 +247,12 @@ export default function JumpNavigation({
           </ul>
           {normalizedQuery && !searching && !searchFailed && !results.length && (
             <p className="jump-empty">
-              没有找到匹配的文章或栏目。试试其他关键词。
+              {copy.empty}
             </p>
           )}
           <div className="jump-help">
-            <span>↑ ↓ 选择 · Enter 进入</span>
-            <span>Ctrl / ⌘ K 随时打开</span>
+            <span>{copy.keys}</span>
+            <span>{copy.shortcut}</span>
           </div>
         </dialog>
       )}

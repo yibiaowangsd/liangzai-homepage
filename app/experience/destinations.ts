@@ -1,128 +1,97 @@
+import chinese from "../i18n/messages/zh-CN.json" with { type: "json" };
+
 /** Shared names and routes for the header, exploration index and jump search. */
-export const destinations = [
+const routes = [
   {
     href: "/",
-    name: "探索首页",
-    description: "从前沿新闻出发，跟进技术变化与实践。",
     keywords: "home 首页 量仔 liangzai 新闻 前沿 简报",
   },
   {
     href: "/news",
-    name: "前沿新闻",
-    description: "跟进密码、安全与人工智能的新进展。",
     keywords: "news 新闻 ai 前沿 技术 标准 资讯",
   },
   {
     href: "/tracking",
-    name: "动态跟踪",
-    description: "查看后量子标准、组件支持、性能及各地迁移路线。",
     keywords: "tracking 动态 跟踪 pqc 组件 政策 性能 标准资料",
   },
   {
     href: "/models",
-    name: "模型鉴赏",
-    description: "旋转、缩放，近距离欣赏量仔与奶蛙。",
     keywords: "models 模型 鉴赏 量仔 奶蛙 奶龙 旋转 三维",
   },
   {
     href: "/storybook",
-    name: "星际漫游",
-    description: "量仔与奶蛙，十一页关于并肩的睡前故事。",
     keywords: "story 故事 星际 奶蛙 奶龙 冒险 绘本 睡前",
   },
   {
     href: "/archive",
-    name: "量仔小传",
-    description: "两份角色档案：负责测量的量仔，和负责守着的奶蛙。",
     keywords: "guardian 人物 档案 量仔 奶蛙 角色",
   },
   {
     href: "/pqc-arsenal",
-    name: "密码图鉴",
-    description: "从数学直觉，走近后量子密码。",
     keywords: "pqc 算法 密码 ml-kem ml-dsa slh-dsa fn-dsa 原理",
   },
   {
     href: "/pqc-practice",
-    name: "密码实验室",
-    description: "运行真实算法，亲手封装、签名与验证。",
     keywords: "wasm 实验 lab 密钥 签名 哈希 验证 sm2 测试",
   },
   {
     href: "/research",
-    name: "深度研究",
-    description: "每日深入一个问题，公开研究过程、证据与可验证成果。",
     keywords: "research 研究 深度 协议 实验 论文 过程 成果",
   },
   {
     href: "/topics",
-    name: "技术档案",
-    description: "按算法、协议与项目持续追踪进展，回查原始证据。",
     keywords: "topic 追踪 关注 档案 进展 ml-kem ml-dsa aigis tls uvw",
   },
   {
     href: "/wo",
-    name: "我 · 网页回顾",
-    description: "在本机读取生活记录，回看时间轴、多日变化与已有记忆。",
     keywords: "wo 我 app myapp 生活 时间轴 记录 记忆 回顾",
   },
   {
     href: "/play",
-    name: "好奇游乐场",
-    description: "和网站宠物玩，挑战每日谜题，画一张像素明信片。",
     keywords: "play 游乐场 游戏 互动 宠物 画画 明信片",
   },
   {
     href: "/pet",
-    name: "星团小屋",
-    description: "摸摸、喂点心、一起玩，在浏览器里养一只小动物。",
     keywords: "pet 团团 站宠 宠物 小动物 领养 投喂 捉星星",
   },
   {
     href: "/daily-play",
-    name: "星阵点灯",
-    description: "每天一局逻辑谜题，让整片星阵亮起来。",
     keywords: "daily game 每日谜题 休闲 逻辑 解谜 游戏",
   },
   {
     href: "/pixel-postcard",
-    name: "像素明信片",
-    description: "画一张像素小画，下载图片或分享链接。",
     keywords: "pixel 明信片 像素 画板 画画 绘画 PNG 创作",
   },
   {
     href: "/sidequests",
-    name: "小工具",
-    description: "打开就能用的声音、计时与跨时区工具。",
     keywords: "tools 小工具 sidequests 时间 声音 时区",
   },
   {
     href: "/sound-room",
-    name: "声音角落",
-    description: "在本机混搭细雨、风声、海浪与炉火，或开启专注计时。",
     keywords: "sound 音量 白噪音 助眠 专注 番茄钟 环境音 计时",
   },
   {
     href: "/time-desk",
-    name: "时差桌",
-    description: "查看多地本地时间和共同工作时段。",
     keywords: "time UTC 时差 时区 会议 工作时间 夏令时",
   },
   {
     href: "/about",
-    name: "关于我",
-    description: "从山东大学，到量子安全工程。",
     keywords: "about yibiao wang 个人 经历 关于我 山东大学",
   },
-];
+] as const;
 
-export function searchDestinations(query: string) {
+type DestinationLabels = typeof chinese.chrome.destinations;
+
+export const destinations = routes.map(route => ({
+  ...route,
+  ...chinese.chrome.destinations[route.href],
+}));
+
+export function searchDestinations(query: string, labels: DestinationLabels = chinese.chrome.destinations) {
   const terms = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  return destinations.filter((item) =>
-    terms.every((term) =>
-      `${item.name} ${item.description} ${item.keywords}`
-        .toLocaleLowerCase()
-        .includes(term),
-    ),
-  );
+  return destinations.flatMap(item => {
+    const { name, description } = labels[item.href];
+    const searchable = `${name} ${description} ${item.name} ${item.description} ${item.keywords}`.toLocaleLowerCase();
+    return terms.every(term => searchable.includes(term)) ? [{ ...item, name, description }] : [];
+  });
 }

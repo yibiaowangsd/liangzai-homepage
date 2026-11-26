@@ -1,0 +1,181 @@
+{
+  "chrome": {
+    "brand": { "name": "Liangzai", "tagline": "Techniknachrichten und praktische Experimente", "home": "Liangzais Startseite", "skip": "Zum Hauptinhalt springen" },
+    "nav": { "label": "Hauptnavigation", "home": "Start" },
+    "settings": {
+      "language": "Sprache auswählen", "button": "Optionen", "open": "Anzeigeoptionen öffnen", "title": "Anzeigeoptionen",
+      "theme": "Farbschema", "paper": "Papier", "midnight": "Mitternacht",
+      "motion": "Animationen", "resume": "Fortsetzen", "pause": "Pausieren", "note": "Die Animationen berücksichtigen auch die Einstellung für weniger Bewegung auf deinem Gerät."
+    },
+    "search": {
+      "button": "Suche", "open": "Website durchsuchen, Kürzel Strg oder Befehl plus K", "find": "Artikel und Bereiche finden",
+      "title": "Website durchsuchen", "close": "Schließen", "closeLabel": "Suche schließen", "placeholder": "Artikel, Algorithmen oder Bereiche suchen, z. B. AWS oder ML-KEM",
+      "all": "Alle Bereiche", "loading": "Nachrichten werden durchsucht…", "error": "Die Nachrichtensuche ist vorübergehend nicht verfügbar. Du kannst weiter in den Bereichen stöbern.",
+      "results": "Artikel: {articles} · Bereiche: {sections}", "partial": "{count} von {total} Artikeln · Bereiche: {sections}",
+      "article": "Nachricht", "section": "Bereich", "articles": "Nachrichtenartikel", "sections": "Website-Bereiche",
+      "empty": "Keine passenden Artikel oder Bereiche. Probiere einen anderen Suchbegriff.", "keys": "↑ ↓ Auswählen · Eingabe zum Öffnen", "shortcut": "Strg / ⌘ K öffnet die Suche"
+    },
+    "footer": {
+      "sleeper": "Naiwa schläft auf dem Bauch neben einer leeren Milchflasche", "night": "Psst, Naiwa schläft",
+      "note": "Die Flasche für heute ist leer. Morgen um 08:10 Uhr ist das nächste Briefing fertig. Blättere bis dahin leise weiter.",
+      "nav": "Fußzeilennavigation", "reading": "Zum Lesen", "family": "Zu Hause", "about": "Über mich", "topics": "Technikdossiers",
+      "algorithms": "So funktionieren die Algorithmen", "models": "Figurenmodelle", "journey": "Mein Werdegang", "contact": "Kontakt",
+      "source": "Quellcode der Website", "signature": "Liangzai und Naiwa", "top": "Nach oben"
+    },
+    "gauge": { "label": "Für eine neue Flasche nach oben", "remaining": "Noch\n{ml} ml", "empty": "Leer\nNachfüllen" },
+    "categories": {
+      "pqc": "Post-Quanten-Algorithmen", "migration": "PQC-Migration", "protocol": "Quantensichere Protokolle", "standards": "Normen", "security": "Cybersicherheit",
+      "ai": "KI-Entwicklungen", "ngcc": "NGCC-Aufruf für Public-Key-Verfahren", "flash": "Kurzmeldungen", "industry": "Branchennachrichten", "daily": "Tägliches Briefing"
+    },
+    "destinations": {
+      "/": { "name": "Startseite erkunden", "description": "Mit den neuesten Meldungen einsteigen und verfolgen, wie Technik sich entwickelt und eingesetzt wird." },
+      "/news": { "name": "Nachrichten", "description": "Entwicklungen in Kryptografie, Sicherheit und KI verfolgen." },
+      "/tracking": { "name": "PQC-Tracker", "description": "Post-Quanten-Standards, Komponentenunterstützung, Benchmarks und Migrationspläne nachschlagen." },
+      "/models": { "name": "3D-Modelle", "description": "Liangzai und Naiwa drehen, heranzoomen und genauer ansehen." },
+      "/storybook": { "name": "Reise zu den Sternen", "description": "Elf Seiten über Liangzai und Naiwa, die zusammenhalten – eine Geschichte für den Abend." },
+      "/archive": { "name": "Figurenprofile", "description": "Liangzai misst alles, Naiwa hält die Stellung. Hier lernst du beide kennen." },
+      "/pqc-arsenal": { "name": "Krypto-Handbuch", "description": "Ein Gespür für die Mathematik hinter der Post-Quanten-Kryptografie entwickeln." },
+      "/pqc-practice": { "name": "Krypto-Labor", "description": "Echte Algorithmen ausführen, Schlüssel kapseln, signieren und verifizieren." },
+      "/research": { "name": "Forschung", "description": "Jeden Tag eine Frage mit Methoden, Belegen und überprüfbaren Ergebnissen vertiefen." },
+      "/topics": { "name": "Technikdossiers", "description": "Algorithmen, Protokolle und Projekte im Zeitverlauf verfolgen und die Quellen nachlesen." },
+      "/wo": { "name": "WO · Web-Rückblick", "description": "Lokale Tagesaufzeichnungen öffnen und Zeitleiste, Trends und gespeicherte Erinnerungen ansehen." },
+      "/play": { "name": "Spielplatz", "description": "Mit dem Maskottchen spielen, das Tagesrätsel lösen oder eine Pixelpostkarte zeichnen." },
+      "/pet": { "name": "Puffs Zuhause", "description": "Ein kleines Tier im Browser aufnehmen, ihm Leckerli geben und mit ihm spielen." },
+      "/daily-play": { "name": "Sternenlichter", "description": "Jeden Tag ein Logikrätsel lösen und das ganze Sternenfeld zum Leuchten bringen." },
+      "/pixel-postcard": { "name": "Pixelpostkarte", "description": "Pixelbilder zeichnen, herunterladen oder als Link teilen." },
+      "/sidequests": { "name": "Werkzeuge", "description": "Werkzeuge für Klänge, Timer und Zeitzonen öffnen." },
+      "/sound-room": { "name": "Klangecke", "description": "Regen, Wind, Wellen und Kaminfeuer auf dem Gerät mischen oder einen Fokustimer starten." },
+      "/time-desk": { "name": "Zeitzonen", "description": "Ortszeiten und gemeinsame Arbeitszeiten verschiedener Orte vergleichen." },
+      "/about": { "name": "Über mich", "description": "Von der Shandong-Universität zur Entwicklung quantensicherer Systeme." }
+    }
+  },
+  "home": {
+    "metadata": {
+      "title": "Liangzai · Techniknachrichten und Briefings", "siteName": "Yibiao · Liangzai",
+      "description": "Tägliche Nachrichten zu Post-Quanten-Algorithmen, quantensicherer Migration und Protokollen, Normen, Cybersicherheit, KI und dem NGCC-Aufruf für Public-Key-Verfahren. Originalquellen lesen und echte Algorithmen im Krypto-Labor ausführen.",
+      "imageAlt": "Blaues Licht auf der Tür des Krypto-Tresors · Liangzais Technikbriefings"
+    },
+    "hero": {
+      "title": "Jeden Tag etwas\nNeues lernen",
+      "description": "Ich bin Yibiao und arbeite an Post-Quanten-Kryptografie und sicheren Protokollen. Das hier ist meine kleine Küche für Neugierige, mit einem täglichen Briefing, einem Labor für echte Algorithmen und zwei kleinen Gefährten, Liangzai und Naiwa.",
+      "news": "Briefing von heute lesen", "about": "Yibiao kennenlernen", "play": "Zum Spielplatz"
+    },
+    "greeting": {
+      "late": ["Noch wach?", "Die Milch ist noch warm."], "morning": ["Guten Morgen!", "Die Milch ist fertig."],
+      "noon": ["Es ist Mittag.", "Erst einen Schluck, dann weiter."], "afternoon": ["Guten Nachmittag!", "Du kommst gerade richtig."],
+      "evening": ["Guten Abend!", "In der Flasche von heute ist noch etwas drin."]
+    },
+    "naiwa": {
+      "action": "Naiwa antippen, um eine andere Frage zu hören", "alt": "Naiwa, ein buttergelber Frosch mit rundem Bauch und grünen Augenringen, sitzt mit einer halb vollen Milchflasche da", "hint": "Tipp ihn für eine neue Frage an",
+      "questions": {
+        "news": ["Quak. Was ist heute in der Welt passiert?", "Zum Briefing von heute"],
+        "algorithms": ["Warum lassen sich alte Schlüssel knacken?", "Zum Krypto-Handbuch"],
+        "lab": ["Kann man Schlüssel wirklich im Browser erzeugen?", "Im Labor ausprobieren"],
+        "story": ["Wie haben Liangzai und ich uns kennengelernt?", "Die Gute-Nacht-Geschichte öffnen"],
+        "about": ["Wer kümmert sich um uns?", "Yibiao kennenlernen"]
+      }
+    },
+    "day": {
+      "label": "Tagesablauf",
+      "morning": ["Morgens", "Eine Flasche Nachrichten"], "noon": ["Mittags", "Zeit im Labor"], "family": ["Spätnachmittags", "Die beiden kennenlernen"], "night": ["Abends", "Eine Gute-Nacht-Geschichte"]
+    },
+    "morning": {
+      "time": "Morgens · Täglich um diese Uhrzeit aktualisiert", "title": "Neuestes Briefing",
+      "description": "Nachrichten über Post-Quanten-Kryptografie, quantensichere Protokolle und Migration, Normen, Cybersicherheit, KI sowie den NGCC-Aufruf für Public-Key-Verfahren.",
+      "categories": "Nachrichtenrubriken", "loading": "Das heutige Briefing wird vorbereitet…", "loadingLink": "Direkt zu den Nachrichten",
+      "briefing": "Das ganze Briefing lesen", "tracking": "PQC-Tracker öffnen", "topics": "Algorithmen und Protokolle verfolgen",
+      "subscribe": "Wähle deine Themen und erhalte das tägliche Briefing per E-Mail oder im Gruppenchat.", "approval": "Der Versand beginnt nach Freigabe deiner Anfrage.", "subscribeLink": "Abonnieren",
+      "unavailable": "Das aktuelle Briefing ist vorübergehend nicht verfügbar. Versuche es später erneut.", "newsLink": "Zur Nachrichtenseite", "latest": "Neueste Ausgabe",
+      "edition": "Technikbriefing", "featured": "Ausgewählte Artikel: {count}", "source": "Originalquelle", "articleLanguage": "Artikel auf Chinesisch"
+    },
+    "noon": {
+      "time": "Mittags · Zeit zum Ausprobieren", "title": "Vom Algorithmus zum Protokoll", "description": "Erfahre, wie ein Handshake Schlüssel aushandelt, Teilnehmer authentifiziert und sich in bestehende Systeme einfügt.",
+      "kicker": "im Browser", "labTitle": "Schlüsselkapselung\nausprobieren",
+      "labDescription": "Erzeuge ein ML-KEM-Schlüsselpaar, kapsle und entkapsle den Schlüssel und vergleiche die gemeinsamen Geheimnisse. Du kannst auch Testvektoren importieren und Signaturen erzeugen und prüfen.",
+      "lab": "Krypto-Labor öffnen", "algorithms": "Algorithmen verstehen", "available": "Verfügbare Algorithmen",
+      "engineering": {
+        "hybrid": ["Hybrider Schlüsselaustausch", "Klassische Algorithmen und ML-KEM kombinieren und die gemeinsamen Geheimnisse für die Schlüsselableitung im Protokoll nutzen."],
+        "agility": ["Kryptoagilität", "Algorithmenauswahl, Parametereinstellungen und Protokollaushandlung für eine schrittweise Migration abstimmen."],
+        "interop": ["Interoperabilität und Leistung", "Mit Standardvektoren, Tests zwischen Implementierungen und Handshake-Messungen die Korrektheit und den Aufwand prüfen."]
+      },
+      "more": "Zum Vertiefen", "research": "Forschungsnotizen", "topics": "Technikdossiers"
+    },
+    "family": {
+      "time": "Spätnachmittags · Alle sind zu Hause", "title": "Einer misst, einer wacht", "description": "Zwei ganz unterschiedliche Herangehensweisen an Technik, verkörpert von zwei kleinen Figuren.",
+      "liangzai": {
+        "role": "der alles misst", "name": "Liangzai", "alt": "Liangzai in blau-weißer Rüstung mit blauer Antenne",
+        "description": "Erst wenn er alles gemessen hat, ist er beruhigt. Er kümmert sich um Nachrichtenquellen, Handshake-Zeiten und jeden Testvektor.", "action": "Liangzais Profil lesen"
+      },
+      "naiwa": {
+        "role": "der die Stellung hält", "name": "Naiwa", "alt": "Naiwa steht fest auf dem Boden, ist buttergelb und hat einen runden Bauch und grüne Augenringe",
+        "description": "Rund und ruhig, aber er weicht keinen Schritt. Während alle auf eine Antwort warten, hält er die Milchflasche fest und gibt ihnen Zeit.", "action": "Naiwas Profil lesen"
+      },
+      "more": "Genauer hinsehen", "models": "Die Figurenmodelle drehen", "archive": "Beide Figurenprofile öffnen"
+    },
+    "night": {
+      "time": "Abends · Bevor das Licht ausgeht", "title": "Nach der Technik\neine Geschichte",
+      "description": "Reise zu den Sternen erzählt auf elf illustrierten Seiten mit Hörtext, wie Liangzai und Naiwa gemeinsam dem finsteren Shor entgegentreten. In der Geschichte heißt er noch Nailong. Er hört sie jeden Abend und schläft meist vor Seite neun ein.",
+      "story": "Reise zu den Sternen öffnen", "archive": "Liangzais Profil lesen", "coverAlt": "Auf dem Buchcover schützen Liangzai und Nailong Rücken an Rücken den Quantenstern", "listenerAlt": "Naiwa wird müde und hält ein blaues Bilderbuch"
+    }
+  },
+  "about": {
+    "metadata": {
+      "title": "Über mich · Wang Yibiao",
+      "description": "Yibiaos persönliche Website. Von 2018 bis 2025 habe ich an der Shandong-Universität Cybersicherheit studiert. Jetzt arbeite ich bei der China Telecom Quantum Group an Post-Quanten-Kryptografie, sicheren Protokollen und Kryptografie-Engineering."
+    },
+    "hero": {
+      "kicker": "Profil", "label": "Über mich", "hello": "Hallo, ich bin",
+      "intro": "Von der Shandong-Universität zur Arbeit an Kryptografie und Sicherheit",
+      "bio": "Ich habe an der Shandong-Universität einen Bachelor und Master in Cybersicherheit abgeschlossen und arbeite jetzt bei der China Telecom Quantum Group. Hier dokumentiere ich meine technische Arbeit und teile Experimente mit Code und Design.",
+      "alt": "Naiwa winkt und hält in der anderen Hand eine Milchflasche"
+    },
+    "card": {
+      "label": "Schwebende Visitenkarte von Wang Yibiao", "brand": "Kryptografie in der Praxis", "specialty": "Post-Quanten-Kryptografie und sichere Protokolle",
+      "work": "Arbeit", "employer": "China Telecom Quantum Group", "workDetail": "Kombination von PQC und QKD",
+      "education": "Studium", "university": "Shandong-Universität", "degrees": "Bachelor und Master in Cybersicherheit",
+      "home": "Zur Startseite von Wang Yibiao", "github": "Wang Yibiao auf GitHub"
+    },
+    "index": { "label": "Abschnitte des Profils", "note": "Ein persönlicher Werdegang, der weitergeht" },
+    "journey": {
+      "label": "Mein Werdegang", "title": "Wie ich hierherkam", "description": "Sieben Jahre an der Shandong-Universität, vom Studium der Cybersicherheit zur Arbeit an quantensicheren Systemen", "current": "Aktuell",
+      "work": {
+        "period": "Seit 2025", "type": "Beruf", "place": "China Telecom Quantum Group", "detail": "Post-Quanten-Kryptografie und sichere Protokolle",
+        "description": "Ich setze Kryptografie- und Sicherheitsforschung praktisch um. Im Mittelpunkt stehen die Umstellung auf quantensichere Protokolle, Kryptoagilität und der gemeinsame Einsatz von PQC und QKD."
+      },
+      "master": {
+        "period": "2022–2025", "type": "Master", "place": "Shandong-Universität", "detail": "Cybersicherheit",
+        "description": "Ich habe mein Studium und meine Forschung zur Cybersicherheit fortgesetzt und die Grundlagen aus dem Bachelor vertieft."
+      },
+      "bachelor": {
+        "period": "2018–2022", "type": "Bachelor", "place": "Shandong-Universität", "detail": "Cybersicherheit",
+        "description": "An der Shandong-Universität begann ich mit dem Studium der Cybersicherheit und entdeckte Kryptografie und Sicherheitstechnik."
+      }
+    },
+    "focus": {
+      "kicker": "Derzeit", "label": "Technische Schwerpunkte", "title": "Woran ich arbeite", "description": "Von Algorithmen und Protokollen zu Anwendungen, die sich praktisch einsetzen lassen",
+      "pqc": {
+        "role": "Liangzais Aufgabe", "title": "Post-Quanten-Kryptografie",
+        "description": "Ich implementiere, teste und optimiere Post-Quanten-Algorithmen für den Einsatz in realen Systemen.", "tags": ["Implementierung", "Tests und Validierung", "Leistungsoptimierung"]
+      },
+      "protocols": {
+        "role": "Naiwas Aufgabe", "title": "Sichere Protokolle",
+        "description": "Ich untersuche quantensichere Migration, hybriden Schlüsselaustausch und Kryptoagilität für TLS, TLCP, SSH und IKE.", "tags": ["Protokollmigration", "Hybrider Schlüsselaustausch", "Kryptoagilität"]
+      },
+      "engineering": {
+        "role": "Was beide zusammen tun", "title": "Kryptografie-Engineering",
+        "description": "Ich arbeite daran, PQC und QKD zu kombinieren und Bibliotheken, Schnittstellen und plattformübergreifende Anpassungen in Systeme zu integrieren.", "tags": ["PQC und QKD", "Kryptobibliotheken", "Systemintegration"]
+      }
+    },
+    "projects": {
+      "kicker": "Nach Feierabend", "label": "Eigene Projekte", "title": "Was ich nebenbei entwickle", "description": "Aus Neugier wird Code, aus Ideen werden Dinge zum Ausprobieren",
+      "home": { "title": "Liangzais digitale Welt", "description": "Figuren, Geschichten und interaktive Werkzeuge machen abstrakte Technik greifbar.", "action": "Startseite erkunden" },
+      "algorithms": { "title": "Krypto-Handbuch", "description": "Mit visuellen Erklärungen die Mathematik der Post-Quanten-Kryptografie verstehen.", "action": "Handbuch lesen" },
+      "lab": { "title": "Krypto-Labor", "description": "Algorithmen im Browser ausführen und Schlüsselkapselung oder Signaturprüfung ausprobieren.", "action": "Experiment starten" }
+    },
+    "contact": {
+      "kicker": "Hallo", "label": "Kontakt", "title": "Schön, dass du da bist",
+      "description": "Wenn dich Kryptografie, Sicherheit oder kreative Technikerklärungen interessieren, findest du meinen Code und meine Projekte auf GitHub.",
+      "action": "Mein GitHub-Profil", "alt": "Naiwa legt den Kopf schief und hebt eine Hand"
+    }
+  }
+}

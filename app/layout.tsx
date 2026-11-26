@@ -13,6 +13,8 @@ import AboutPushTransition from "./experience/AboutPushTransition";
 import PageArrival from "./experience/PageArrival";
 import { SiteHeader, SiteFooter } from "./experience/SiteChrome";
 import BottleGauge from "./milk/BottleGauge";
+import { LocaleProvider, PageLanguage } from "./i18n/LocaleProvider";
+import { getSiteLanguage } from "./i18n/site-language";
 
 export const metadata: Metadata = {
   title: "Yibiao · 量仔与奶蛙",
@@ -25,11 +27,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const { locale, messages } = await getSiteLanguage();
   return (
-    <html lang="zh-CN" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <meta name="theme-color" content="#F6F5EF" suppressHydrationWarning />
         {/* Synchronous by design: a saved theme must apply before the first paint. */}
@@ -37,16 +40,18 @@ export default function RootLayout({
         <script src="/theme/site-theme.js?v=20261004-editorial" />
       </head>
       <body className="studio-theme">
-        <HomeEffectsProvider>
-          <ExperienceProvider>
-            <PageArrival />
-            <AboutPushTransition />
-            <SiteHeader />
-            {children}
-            <SiteFooter />
-            <BottleGauge />
-          </ExperienceProvider>
-        </HomeEffectsProvider>
+        <LocaleProvider locale={locale} chrome={messages.chrome}>
+          <HomeEffectsProvider>
+            <ExperienceProvider>
+              <PageArrival />
+              <AboutPushTransition />
+              <SiteHeader />
+              <PageLanguage>{children}</PageLanguage>
+              <SiteFooter />
+              <BottleGauge />
+            </ExperienceProvider>
+          </HomeEffectsProvider>
+        </LocaleProvider>
       </body>
     </html>
   );
