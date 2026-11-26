@@ -73,7 +73,7 @@ export default async function QuantumHome() {
               <p className="mk-lab-kicker milk-latin">{home.noon.kicker}</p>
               <h3 className="milk-display">{home.noon.labTitle}</h3>
               <p>{home.noon.labDescription}</p>
-              <div className="mk-actions"><a className="milk-button" href="/pqc-practice">{home.noon.lab}</a><Link className="milk-link" href="/pqc-arsenal">{home.noon.algorithms}</Link></div>
+              <div className="mk-actions"><a className="milk-button" data-tone="milk" href="/pqc-practice">{home.noon.lab}</a><Link className="milk-link" href="/pqc-arsenal">{home.noon.algorithms}</Link></div>
               <ul className="mk-lab-meta" aria-label={home.noon.available}><li>ML-KEM</li><li>ML-DSA</li><li>SLH-DSA</li><li>SM2</li></ul>
             </div>
             <div className="mk-lab-stage" aria-hidden="true">

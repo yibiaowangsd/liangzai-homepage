@@ -93,7 +93,6 @@
 .mk-lab-kicker { font-size: clamp(20px, 1.8vw, 28px); color: var(--milk-butter); }
 .mk-lab-copy h3 { margin-top: 12px; font-size: clamp(30px, 3.8vw, 64px); }
 .mk-lab-copy > p:not(.mk-lab-kicker) { max-width: 31em; margin-top: 22px; font-size: 16px; line-height: 1.9; color: #e6ebff; }
-.mk-lab .milk-button { background: var(--milk-white); color: var(--milk-cobalt-deep); }
 .mk-lab-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 32px; }
 .mk-lab-meta li { padding: 6px 14px; border: 1px solid #ffffff59; border-radius: 999px; font: 12.5px/1.5 var(--milk-mono); }
 .mk-lab-stage { position: relative; align-self: end; justify-self: center; width: min(86%, 400px); }
