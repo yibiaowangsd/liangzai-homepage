@@ -1,3 +1,4 @@
+import mldsaImportEntry from "../../research/2026-11-26-mldsa-pkcs8-import.json";
 import pretzelEntry from "../../research/2026-11-25-pretzel-verify-cost.json";
 import sshIdentityEntry from "../../research/2026-11-24-ssh-composite-host-identity.json";
 import cadiRuntimeEntry from "../../research/2026-11-23-cadi-runtime.json";
@@ -15,4 +16,4 @@ import recoveryEntry from "../../research/2026-11-15-tls-keyupdate-recovery.json
 import firstEntry from "../../research/2026-11-08-tls-hybrid-binding.json";
 import type { ResearchEntry } from "./types";
 /** Explicit imports keep publishing deterministic; latest research appears first. */
-export const researchEntries: ResearchEntry[] = [pretzelEntry, sshIdentityEntry, cadiRuntimeEntry, edhocKemEntry, pqOweEntry, ikePpkEntry, qkdPoolEntry, rejectionEntry, compressionEntry, sshEntry, recoveryEntry, quicEntry, pskEntry, ikeEntry, firstEntry].sort((a, b) => b.date.localeCompare(a.date));
+export const researchEntries: ResearchEntry[] = [mldsaImportEntry, pretzelEntry, sshIdentityEntry, cadiRuntimeEntry, edhocKemEntry, pqOweEntry, ikePpkEntry, qkdPoolEntry, rejectionEntry, compressionEntry, sshEntry, recoveryEntry, quicEntry, pskEntry, ikeEntry, firstEntry].sort((a, b) => b.date.localeCompare(a.date));
