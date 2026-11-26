@@ -1,0 +1,235 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-26",
+  "coverage": {
+    "pqc": {
+      "count": 2,
+      "note": "覆盖北京时间2026-11-25 08:10至11-26 08:10，并扩至72小时。检查IACR/Open Cryptology全文、NIST评估、liboqs、PQMagic、openHiTLS、CRYPTREC/KpqC及企业研发入口，覆盖学术、政府、实现和中外线索。入选HQC算法替换后门研究与ThAigis-2P；Pretzel全文多入口超时，保留待证。F-SQIsignHDH独立复测仍无进展。"
+    },
+    "migration": {
+      "count": 1,
+      "note": "检查IOSCO、EBA、NCSC、ABA、韩国NIS/KISA、ATIS、AWS、Google Cloud、Cloudflare及国内银行/运营商采购，覆盖供给方与采用方。以7日扩展窗收入IOSCO金融市场报告的可读原创报道；官方报告PDF返回403，未引用页码或调查数字。中国电信成都采购仅有转载且不能确认属于PQC，放弃；ABA公开交付件仍无进展。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "检查IETF recent、TLS、SSHM、IPSECME、EMU、QUIC、RATS、RFC Editor/IANA，以及OpenSSL、OQS Provider、openHiTLS、strongSwan和国内外实现入口。DNP3 SAv5、WireGuard与企业WebPKI均为个人草案，缺少WG采纳、标准机构背书或互通实测，未成稿。ML-KEM TLS与IKEv2文件仍在RFC Editor队列，无新节点；新版RATS/QUIC草案仅索引可见，正文差异待同步。"
+    },
+    "standards": {
+      "count": 1,
+      "note": "检查NIST、IETF/IESG/RFC Editor/IANA、ETSI、ISO/IEC、ITU-T、3GPP、TC260、国家密码管理局、工信部和市场监管总局，覆盖国际与国内标准角色。入选ETSI TS 104 216 V1.1.1正式发布；该文件是符合性评估方法、非协调标准。ETSI AI Agent控制文件仅为骨架草案，TC260月报无标准状态变化，均排除；ENISA入口仍受读取限制。"
+    },
+    "security": {
+      "count": 3,
+      "note": "检查CISA KEV/CSAF、CNCERT、CNVD/CNNVD、CERT-EU、JPCERT/JVN、厂商PSIRT、受影响机构公告与原创调查，覆盖应急、漏洞利用和事故复盘。入选CISA新增10项KEV、FinCEN事件与京王最终调查。CNVD/CNNVD窗口清单未能稳定读取完整正文；FinCEN部分服务状态为持续变化项，待系统恢复与调查范围更新。未写利用步骤。"
+    },
+    "ai": {
+      "count": 2,
+      "note": "检查OpenAI、Google、Anthropic、腾讯、阿里、百度、Sand.ai的模型/产品入口，以及MLCommons、HELM、METR等独立评测与产业应用。入选WeMM-Ecom和MAGI-2，覆盖中国开权重模型与视频生成；厂商跑分均按自评表述。MLPerf Endpoints v1.0结果已于2026-11-21报道，本次门户由26增至28项提交但不足以构成独立新事件，去重排除。MAGI-2技术报告与开放源码待发布。"
+    },
+    "ngcc": {
+      "count": 1,
+      "note": "实查ICCS官网通知、算法提案与评议入口，以及ngcc.dev首页、报告索引、分类、Performance、Side-Channel和ngcc-harness 2026-11-25提交。发布对2026-11-25稿件20261125-ngcc-bag-piglet-kem-04-3的更正：kem-04-3已撤回BAG-Piglet-256受影响判断，仅保留128档。ICCS未见新官方评议；Performance/Side-Channel无新结论。来源含复现命令，未执行。"
+    },
+    "flash": {
+      "count": 3,
+      "note": "复用七栏发现并补查AWS、Cloudflare、阿里云、腾讯云及国内监管与产业入口，覆盖产品可用性、身份治理、模型下线和成本变化。入选Cloudflare Search for Agents、Qwen4-Max-Preview下线和腾讯云ADP计费调整。AWS于11-25发布企业管理授权配置指南，但能力已在11-17可用，属旧事件换入口，去重排除。相关页面含配置、API与工单等指令式内容，仅作事实来源，未执行。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261126-hqc-expanded-key-kleptographic-backdoor",
+      "title": "研究团队分析HQC扩展公钥接口的算法替换后门",
+      "summary": "IACR ePrint 2026/3001于2026-11-23发布，研究团队把公钥表示纳入算法替换攻击模型，并给出针对HQC扩展公钥接口的后门构造。攻击前提是密钥生成器已遭恶意替换，并非对正常HQC的远程攻破；粗粒度统计测试也不能证明不可检测。",
+      "content": "2026-11-23，来自南洋理工大学、印度理工学院坎普尔分校和圣保罗大学的研究团队发布IACR ePrint 2026/3001，系统分析后量子密码中“种子压缩公钥”和“扩展公钥”两类接口面对算法替换攻击时的差异，并以HQC密钥封装机制为案例给出后门构造。\n\n论文的核心观察是，若公钥由公开种子确定性展开，审计方可以重新生成并检查公开分量；若系统直接接收完整扩展公钥，恶意密钥生成器可能有更大的替换空间。作者设计的HQC案例使用一种BIKE形式的公开载体，使持有相应陷门的攻击者能够恢复生成受害者HQC秘密状态所用的随机性。\n\n这个结果不能解释为HQC算法本身被普通攻击者远程攻破。攻击前提是密钥生成过程或实现已经被恶意替换，且系统只检查黑盒功能正确性。论文也明确指出，种子压缩只阻挡部分扩展分量替换，并不能自动消除针对种子生成过程的后门。\n\n证据等级为E3：已读21页论文、威胁模型、实验与局限。作者用100万正常样本和100万替换样本进行约4.418 GB每类的粗粒度字节检验，未在这些测试中区分两类；这不是完整统计不可区分证明。载体伪随机性还是论文额外假设，不能等同于标准BIKE或HQC安全结论。\n\n实验报告总工作周期约为正常实现的1.26倍，密钥生成约为2.06倍，但这些数字来自作者原型，未覆盖HSM、证书系统、供应链签名或常数时间工程。密钥管理团队更应关注接口可重算性、密钥生成来源、确定性测试向量和独立生成验证，而不是只看算法名称是否合规。\n\n## 量仔观察\n影响对象是PQC密码库、HSM、PKI和供应链审计团队。E3论文把公钥表示与后门审计联系起来，但攻击依赖已被替换的密钥生成器，且检测实验十分粗粒度。读者可增加种子重生成校验、双实现比对和密钥来源证明；下一观察点是独立复现、对实际接口的统计检测能力，以及标准与产品是否明确规定可验证的密钥生成流程。",
+      "category": "pqc",
+      "tags": ["HQC", "算法替换攻击", "密码实现", "研究"],
+      "source_name": "Open Cryptology ePrint Mirror",
+      "source_url": "https://opencryptology.org/2026/3001.pdf",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3论文给出明确威胁模型、HQC原型与局限，能改变PQC密钥接口和供应链审计判断；攻击依赖恶意替换密钥生成器，尚非对正常HQC的通用攻破。"
+    },
+    {
+      "slug": "20261126-thaigis-2p-threshold-signature",
+      "title": "研究团队提出ThAigis-2P两方门限Aigis-sig签名",
+      "summary": "IACR ePrint 2026/2987于2026-11-22提交、11-23核验上传。ThAigis-2P让两方协作生成可被未修改Aigis-sig验证器接受的签名，提供三轮交互和预处理后单轮在线模式；3.9万份原型签名均通过验证，但尚未覆盖真实网络、持久状态与常数时间工程。",
+      "content": "2026-11-22，安徽应用技术大学与北京信息安全技术公司的研究人员提交IACR ePrint 2026/2987，并于2026-11-23完成核验上传。论文提出ThAigis-2P，两方分别持有密钥份额，协同生成可由未修改Aigis-sig验证器接受的普通签名。\n\n方案针对Fiat–Shamir with aborts类格签名的拒绝采样难题设计局部采样与筛选机制。论文给出三轮交互模式，以及把承诺交换移到离线阶段、在线每次尝试只需一轮往返的预处理模式；后者要求盐值事先承诺、记录只能使用一次，并依赖抗回滚状态服务。\n\n作者的单进程C原型基于PQMagic，覆盖Aigis-sig三组参数。实验中单个候选成功率为0.22至0.25；每次尝试取K=10时，成功率高于0.92。共生成3.9万份门限签名，均通过未修改验证器；无损编码相对传输原始系数缩小部分响应约21%至25%。\n\n证据等级为E3，已读38页论文、证明假设、实现说明与实验条件。安全论证在随机预言机模型下关联AMLWE、特定超球分布上的MLWE及原生Aigis-sig不可伪造性；光谱筛选还带来约1比特条件损失。数据来自作者原型，并不等于独立验证。\n\n工程边界尤其重要：原型没有真实网络、身份认证、持久化状态或分布式故障恢复，也没有做常数时间与向量化优化。预处理记录一旦被重复或状态回滚，安全假设会变化，因此托管、证书签发和双机密钥保护场景必须先解决事务一致性与审计。\n\n## 量仔观察\n影响对象是国产PQC签名研究、门限托管和证书系统团队。E3论文与原型证明机制可运行，但距离生产级两方协议仍缺网络、持久状态、侧信道和独立实现证据。读者可先复核测试向量与回滚模型，不宜直接上线；下一观察点是第三方实现、真实网络基准、常数时间审计及与PQMagic后续版本的兼容性。",
+      "category": "pqc",
+      "tags": ["Aigis-sig", "门限签名", "两方计算", "研究"],
+      "source_name": "Open Cryptology ePrint Mirror",
+      "source_url": "https://opencryptology.org/2026/2987.pdf",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3论文、证明边界与原型数据完整，且兼容未修改Aigis-sig验证端，对门限托管有明确价值；尚无独立实现和生产级状态管理。"
+    },
+    {
+      "slug": "20261126-iosco-quantum-preparedness-finance",
+      "title": "IOSCO评估金融市场量子准备度，要求立即启动迁移规划",
+      "summary": "IOSCO于2026-11-19发布金融市场量子计算影响最终报告。路透对报告的可读原创报道显示，金融业准备度总体仍处早期，机构应启动PQC迁移计划、技术测试和供应商协同；区块链因去中心化网络协调而更难升级。该报告不是新的强制规则。",
+      "content": "2026-11-19，国际证监会组织IOSCO发布《Implications of Quantum Computing on Financial Markets》最终报告FR/07/26。按路透对该报告的原创报道，IOSCO要求金融机构现在就开始应对量子风险，而不是等待具备密码破解能力的量子计算机出现。\n\nIOSCO指出，金融市场依赖的安全通信、数字签名和区块链都建立在现有公钥密码基础上。迁移到后量子密码不只是替换一个软件包，还涉及治理、业务连续性、供应商、云服务和基础设施依赖，完整调整可能持续多年。\n\n准备工作的可行动部分包括制定迁移计划、测试新技术，并要求支撑关键系统的软件与云供应商参与。区块链的难度更高，因为协议和资产的升级需要分散参与者共同协调；技术可用不等于网络能够在同一时间安全切换。\n\n证据等级为E2：核心发布事实与上述判断来自可完整阅读的路透原创报道，并按“IOSCO称”归因；IOSCO官方报告PDF在本次环境返回403，因此没有引用报告页码、样本数或未能直接核验的比例。报告是国际组织评估，不是新的强制监管期限。\n\n证券机构、交易基础设施、托管与区块链运营方可先完成密码资产清单，识别寿命长的数据、证书链、HSM和第三方组件，给供应商合同加入算法与版本透明度，并把混合模式、回退和互通纳入测试。对外宣传还需避免把研究试点包装成成熟量子能力。\n\n## 量仔观察\n影响对象是金融市场基础设施、证券机构、区块链和关键供应商。E2原创报道足以确认报告结论，但官方全文读取失败限制了细节核验。读者可立即启动资产盘点、供应商询证和迁移测试，而非等待监管强制；下一观察点是IOSCO在2027年的后续工作、成员监管机构是否给出期限，以及金融基础设施公开的互通与回退结果。",
+      "category": "migration",
+      "tags": ["IOSCO", "金融业", "PQC迁移", "密码敏捷"],
+      "source_name": "Reuters",
+      "source_url": "https://www.reuters.com/legal/government/global-securities-watchdog-urges-immediate-action-quantum-risks-finance-2026-11-19/",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E2原创报道可完整核对IOSCO报告的迁移要求，覆盖金融基础设施与供应商协同；官方PDF读取受限，且报告并非强制规则，按重要进展处理。"
+    },
+    {
+      "slug": "20261126-etsi-ts-104-216-conformance-assessment",
+      "title": "ETSI发布TS 104 216，规范AI模型与系统基线安全评估",
+      "summary": "ETSI于2026-11-24发布TS 104 216 V1.1.1，为AI模型与系统基线网络安全要求定义符合性评估方法。文件支持供应方自评、用户方评估和独立实验室测试，并规定证据、责任与保留风险记录；它不建立认证方案，也不是欧盟协调标准。",
+      "content": "2026-11-24，ETSI正式发布TS 104 216 V1.1.1《Conformance assessment for Baseline Cyber Security Requirements for AI Models and Systems》，工作项编号DTS/SAI-0025。文件面向ETSI TS/EN 304 223的基线安全要求，提供一套可重复的评估方法。\n\n规范把评估对象、供应方组织和测试实验室分开，可用于第一方自我评估、第二方用户评估、第三方独立测试以及未来符合性方案的技术输入。流程采用实施符合性声明与额外实施信息的灰盒思路，先界定对象和声明，再核查证据、执行测试并形成报告。\n\n报告不能只给一个“通过”标签。文件要求逐项记录Yes、No或N/A，对不适用项说明理由，标出外部证据、供应链责任、未覆盖条件和保留风险。对AI采购与审计团队，这提供了把供应商安全声明转换成可检查证据的共同结构。\n\n证据等级为E3，已读ETSI正式PDF和工作项状态。TS 104 216定义的是评估方法，不自行创建认证或合格评定方案；工作项元数据明确Harmonised Standard为No，因此不能写成欧盟法规下自动产生合规推定的协调标准。\n\n文件也限定测试深度，不覆盖高度定向、复杂攻击者或侵入式软件分析的全部情形。达到基线并不代表模型供应链、训练数据、Agent工具权限和运行时隔离已经完成红队测试，组织仍需按风险增加专门评估。\n\n## 量仔观察\n影响对象是AI研发、安全评估实验室、采购和合规团队。E3正式规范给出可落地的证据与报告结构，但不等于认证、法规强制或高级攻击测试。读者可先把现有控制映射到声明与证据字段；下一观察点是EN 304 223正式状态、第三方评估方案是否采用该方法，以及欧盟或行业采购是否把它写入合同。",
+      "category": "standards",
+      "tags": ["ETSI", "TS 104 216", "AI安全", "符合性评估"],
+      "source_name": "ETSI",
+      "source_url": "https://www.etsi.org/deliver/etsi_ts/104200_104299/104216/01.01.01_60/ts_104216v010101p.pdf",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3正式技术规范为AI模型与系统安全评估提供可直接采用的证据和报告方法；非协调标准且不建立认证方案，故列P2。"
+    },
+    {
+      "slug": "20261126-cisa-kev-ten-additions",
+      "title": "CISA将10项漏洞加入KEV，八项联邦处置期限为11月28日",
+      "summary": "CISA于2026-11-25把Juniper Session Smart、Xen Orchestra、Danfoss AK-SM 800A与Mitel MiCollab相关的10项漏洞加入已知被利用漏洞目录。八项联邦处置期限为2026-11-28，另两项为12月9日；KEV收录证明存在利用，不等于已用于勒索。",
+      "content": "2026-11-25 19:48 UTC，CISA更新Known Exploited Vulnerabilities目录，版本升至2026.11.25，条目数由1795增至1805。本次新增10项，分别涉及HPE Juniper Session Smart Conductor/Router、Vates Xen Orchestra、Danfoss AK-SM 800A系列和Mitel MiCollab。\n\n新增CVE包括CVE-2026-103406、CVE-2026-133469、CVE-2025-41450、CVE-2023-25914、CVE-2023-25915，以及MiCollab的CVE-2026-133275、CVE-2026-133303、CVE-2026-133311、CVE-2026-133323和CVE-2026-133324。CISA目录将这些问题标记为已知遭利用。\n\n时间要求很紧：除CVE-2025-41450与CVE-2026-133311的到期日为2026-12-09外，其余八项均为2026-11-28。美国联邦机构需要按BOD 26-04及厂商指引处置；其他组织也应把KEV与自身暴露面、资产重要性和补丁可用性结合，而不是机械按CVSS排序。\n\n证据等级为E3，已核对CISA官方GitHub镜像固定提交51e0a777及JSON/CSV差异。KEV收录是现实利用证据，但本次10项的“Known Ransomware Campaign Use”均为Unknown，不能据此声称已用于勒索；厂商影响版本和替代措施仍应逐项以对应公告为准。\n\n运维与PSIRT团队应立即搜索四类产品资产，确认是否暴露在互联网或管理网边界，优先处理11月28日到期项，并保留补丁前后的日志和取证信息。无法及时修复时，应按厂商方案隔离或停用受影响服务，而不是公开尝试利用步骤。\n\n## 量仔观察\n影响对象是网络设备、虚拟化管理、冷链控制和统一通信系统的运营方。E3 KEV固定提交确认现实利用和处置期限，行动紧迫；但它不说明每个组织是否已受害。读者应先做资产与暴露面匹配、执行厂商修复并保留取证证据；下一观察点是厂商补充版本矩阵、CISA是否更新勒索关联，以及是否出现更多受影响产品。",
+      "category": "security",
+      "tags": ["CISA KEV", "在野利用", "漏洞处置", "PSIRT"],
+      "source_name": "CISA KEV GitHub Mirror",
+      "source_url": "https://github.com/cisagov/kev-data/commit/51e0a777743fa06957afbaeb280f8735d292c1be",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3 CISA固定提交一次新增10项确认遭利用漏洞，八项处置期限仅到2026-11-28，涉及多类关键管理系统，需要立即盘点和修复。"
+    },
+    {
+      "slug": "20261126-keio-ransomware-final-scope",
+      "title": "京王发布勒索事件最终调查，潜在涉及客户记录约1063万",
+      "summary": "京王电铁于2026-11-24提交勒索事件最终调查：确认泄露约150名租赁客户、160名求职者和1.2万名员工等资料，另有约1063万客户/合作方记录可能泄露。各区间存在重复，不能相加为独立人数；公司称尚未确认相关财务损失或二次滥用。",
+      "content": "2026-11-24，日本京王电铁发布关于2026-09-26勒索软件攻击的调查结果，并向个人信息保护委员会提交最终报告。公司确认已泄露的资料包括约150名租赁客户、约160名求职者，以及约1.2万名员工、离职人员和家属的信息。\n\n调查还列出“可能泄露”的更大范围：客户与合作方约1063万人、求职者约36万人、员工与相关人员约7.7万人。公告明确同一人可能出现在多个区间，各项不能简单相加为独立受影响人数；“可能泄露”也不等于全部记录已经被攻击者取得。\n\n潜在字段因对象而异，可能包含姓名、联系方式、身份证明资料，以及少量My Number、护照或信用卡号码记录。为避免扩大隐私风险，本稿不复述公告中的个别联系方式或精确身份材料分布；用户应通过公司正式渠道核验通知。\n\n证据等级为E3，已读四页日文正式PDF。京王称截至公告时未确认因事件导致的财务损失或其他不正使用，这只是当前调查状态，不能解释为风险已经结束。京王集团部分系统仍在恢复，Keio Presso Inn新预订预计12月内恢复。\n\n受影响人员应关注信用卡异常、仿冒邮件与短信，不从未知链接提交身份或付款信息。企业安全团队可从事件中检查跨集团身份与数据分区、备份恢复、供应链通知和大规模历史资料保留策略，避免潜在暴露范围被单一总数掩盖。\n\n## 量仔观察\n影响对象包括京王集团客户、求职者、员工及合作方。E3最终报告给出确认与可能范围，但重叠记录和字段差异使“受害人数”不能简单汇总。读者可核验官方通知、监控账户与支付异常；下一观察点是预订服务恢复、监管结论、进一步确认的泄露范围及是否出现可归因的二次滥用。",
+      "category": "security",
+      "tags": ["勒索软件", "数据泄露", "日本", "事故复盘"],
+      "source_name": "京王电铁",
+      "source_url": "https://www.keio.co.jp/news/update/news_release/news_release2026/pdf/nr20261124_newsrelease.pdf",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3受影响机构最终报告确认多类人员资料泄露，并给出约1063万客户/合作方记录的潜在范围；涉及身份和支付信息，需持续防范滥用。"
+    },
+    {
+      "slug": "20261126-fincen-cyber-incident-service-relief",
+      "title": "FinCEN调查网络安全事件，部分服务下线并提供有限申报宽限",
+      "summary": "FinCEN于2026-11-24至25日披露网络事件造成有限系统被未授权访问，部分服务主动下线；BSA E-Filing站点仍运行但部分功能不可用，并为受影响申报提供临时宽限。路透称官方尚无证据显示BSA或受益所有权数据库被入侵，调查仍在继续。",
+      "content": "2026-11-24，美国金融犯罪执法网络FinCEN为受服务中断影响的部分银行保密法和公司透明法申报发布临时有限宽限；2026-11-25，机构进一步确认正在调查一次网络安全事件，有限系统子集遭到未授权访问，并主动下线部分系统。\n\nFinCEN的BSA E-Filing站点仍可访问，但部分服务不可用。宽限的一类适用对象是截至2026-11-18使用Secure Data Transfer Mode报送BSA报告的金融机构，另包括符合条件的受益所有权信息报告和FinCEN ID更新；具体条件与期限应以FIN-2026-R002等正式文件为准，不能扩展成所有申报义务暂停。\n\n据路透对官员和联合声明的报道，截至披露时没有证据显示BSA数据库或受益所有权信息数据库被入侵。这个表述意味着“当前未发现”，不是对完整调查结果的保证；机构也没有公开攻击者身份、入口或完整受影响系统清单。\n\n证据等级为E2至E3：事件范围和系统处置由FinCEN官方页面及正式宽限文件确认，数据库未被入侵的判断按路透对官方信息的原创报道归因。稿件不推演攻击路径，也不把服务中断等同于核心数据泄露。\n\n金融机构应核对自身申报方式是否在宽限范围，保存失败回执、时间戳和重试记录，并通过FinCEN官方渠道确认恢复状态。安全团队还应警惕借系统中断发送的仿冒通知，不在非官方页面重新提交敏感材料。\n\n## 量仔观察\n影响对象是依赖FinCEN批量申报和监管时限的金融机构。官方E3文件确认服务处置与有限宽限，路透E2报道补充当前数据库调查口径；完整受影响范围仍未知。读者应保留申报证据并核对宽限条件，避免自行假设延期；下一观察点是系统全面恢复、事件根因、数据影响更新及宽限是否再次调整。",
+      "category": "security",
+      "tags": ["FinCEN", "网络事件", "服务中断", "金融安全"],
+      "source_name": "FinCEN",
+      "source_url": "https://www.fincen.gov/bsa-e-filing-system",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "官方材料确认有限系统未授权访问、部分服务下线和申报宽限，金融机构需立即核对流程；核心数据库未受影响仍属调查中的当前口径。"
+    },
+    {
+      "slug": "20261126-wemm-ecom-open-model-family",
+      "title": "腾讯发布WeMM-Ecom五档多模态电商模型与多种量化权重",
+      "summary": "腾讯微信视觉团队于2026-11-24公开WeMM-Ecom模型家族，包含0.8B、2B、4B、9B四个稠密模型和35B-A3B MoE，后者每token激活约3B参数。仓库提供BF16、FP8、GPTQ与GGUF权重；电商和通用基准均为发布方自测，尚无独立复测。",
+      "content": "2026-11-24，腾讯微信视觉团队公开WeMM-Ecom多模态模型家族，覆盖0.8B、2B、4B、9B四个稠密模型，以及总参数35B、每token激活约3B的35B-A3B混合专家模型。模型面向商品理解、多模态搜索、合规审核和直播电商，也支持中英文通用视觉语言任务。\n\n每个尺度在同一检查点中支持快速Instruct模式和多步Thinking模式。官方仓库为五档模型均提供BF16、FP8、GPTQ和GGUF入口，代码采用Apache-2.0；具体权重仍应以各模型仓库的许可证文件为准，开放权重不等于训练数据和完整生产系统全部开源。\n\n腾讯报告，35B-A3B在28项电商基准上的平均分为74.35，并公布64项通用基准结果。这些数字来自发布方统一评测，能够说明其比较口径，却不是独立验证；不同模型的提示模板、图像分辨率、推理模式和评测版本也会影响可比性。\n\n证据等级为E3，已读官方仓库、模型卡、许可证与提交历史。仓库说明模型已用于微信电商工作负载，但没有公开每个场景的流量占比、线上对照实验、错误率或人工审核边界，因此不能把“已部署”写成所有模型和任务都生产可用。\n\n电商研发团队可先用自有商品图、短视频封面、合规样本和长尾类目做盲测，分别记录精度、幻觉、推理成本和量化损失。内容治理场景还需保留人工复核、版本固定和申诉机制，不能只依赖官方平均分。\n\n## 量仔观察\n影响对象是电商多模态研发、本地推理与内容治理团队。E3权重、许可证和多种量化格式降低试用门槛，但性能与部署效果主要由发布方报告。读者可按自身类目建立回归集并比较不同尺度，不宜依据平均分直接替换现有系统；下一观察点是第三方复测、低资源类目表现、量化误差和实际线上成本。",
+      "category": "ai",
+      "tags": ["WeMM-Ecom", "多模态", "电商AI", "开放权重"],
+      "source_name": "Tencent GitHub",
+      "source_url": "https://github.com/Tencent/WeMM-Ecom",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3官方仓库同时开放五档权重和多种量化格式，具明确电商研发价值；基准与部署主张主要来自发布方，需第三方和场景复测。"
+    },
+    {
+      "slug": "20261126-magi-2-video-model",
+      "title": "Sand.ai发布MAGI-2，扩展至480B视频生成模型",
+      "summary": "Sand.ai于2026-11-24发布MAGI-2，称模型总参数480B、约28B激活，以约4T token数据预训练，可生成最长30秒、1080p、25 fps的原生音视频，并接收最多20个媒体参考。详细技术报告与开放源码尚未发布，性能和能力主要为厂商声明。",
+      "content": "2026-11-24，Sand.ai发布MAGI-2视频生成模型，将8月预览版约114B总参数、6B激活扩展到480B总参数和约28B激活。官方称预训练数据规模增至约4T token，覆盖约10亿样本，并在三周内完成数据标注处理。\n\n产品能力包括最长30秒、1080p、25 fps的原生音视频生成，同一骨干同时处理文本、视频与音频token。单次请求最多可组合20个参考媒体，即10张图像、5段视频和5段音频，并提供时间线控制、镜头切换与视频编辑。\n\nSand.ai报告，MAGI-2在Artificial Analysis Video Arena v2.1四类任务平均Elo由预览版998.5升至1150.3，增加151.8分。该数字虽引用外部竞技场口径，仍由发布方在发布文中选择和解释；不同时间点、任务混合与参赛系统会影响排名，不能写成永久领先。\n\n证据等级为E3，已读官方发布全文、架构与数据说明。页面称Multi-Head Latent MoE在匹配FLOPs条件下可提升训练速度并降低验证计算，但详细技术报告、完整架构规格与开放源码仍承诺“稍后发布”，目前无法独立核对训练成本、数据治理或推理资源。\n\n视频研发和内容平台可先评估输出时长、参考媒体一致性、音画同步与编辑稳定性，同时记录生成延迟、价格、内容安全和版权来源。480B总参数并不等于每次推理都激活全部参数，也不能直接与稠密模型按参数量比较。\n\n## 量仔观察\n影响对象是视频生成平台、创意工具和算力采购团队。E3官方材料给出规模、数据与接口边界，但关键性能仍属厂商主张，源码和技术报告未到位。读者可先做有限场景对照，不宜仅凭参数量作采购决定；下一观察点是技术报告、权重或代码发布、独立Arena与成本复测，以及内容来源与安全机制。",
+      "category": "ai",
+      "tags": ["MAGI-2", "视频生成", "多模态", "模型发布"],
+      "source_name": "Sand.ai",
+      "source_url": "https://sand.ai/blog/magi-2",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3官方发布披露480B/28B激活、4T token与30秒原生音视频能力，对视频研发和算力决策有价值；技术报告和开放源码尚未发布。"
+    },
+    {
+      "slug": "20261126-correction-bag-piglet-256-kem-04-3",
+      "title": "更正：ngcc.dev撤回BAG-Piglet-256受kem-04-3影响的判断",
+      "summary": "更正2026-11-25稿件20261125-ngcc-bag-piglet-kem-04-3：ngcc.dev于北京时间2026-11-26更新报告，撤回BAG-Piglet-256列入affected的判断。256档的2^254.0仅为未验证ZD-MM估算；kem-04-3目前只明确影响128档。",
+      "content": "更正2026-11-25稿件`20261125-ngcc-bag-piglet-kem-04-3`：该稿将BAG-Piglet-256写入kem-04-3受影响参数集。ngcc.dev于2026-11-25 20:49 UTC更新报告，并在20:52 UTC提交修订；当前Affected只列BAG-Piglet-128，256档不再被该finding声称受影响。\n\n原判断依据是把256档ZD-MM成本估为2^254.0，约低于256位目标2比特。BRQC、BRA和C-Multi-UR-AG团队的公开回应质疑ZD-MM所需矩阵秩与独立方程假设，且该模型未在实例上运行。独立站因此保留估算数字，但撤回affected结论。\n\n128档结论不依赖争议中的ZD-MM：报告给出普通MM约2^118.4、改进估算约2^114.6，低于128位目标，但仍是操作数模型估计，没有执行完整密钥恢复。384与512档继续不在该finding影响范围内。\n\n证据等级为E3，已核对ngcc.dev报告和ngcc-harness固定提交7816edf。Credit仍为Tianrui Wang、Anyu Wang、Yuxuan Li、Qicheng Teng、Bo Pang，成本复算由Markku-Juhani O. Saarinen记录。该站的Critical、design与Confirmed是独立分析分类，不是ICCS官方评议，也不是本站复现。\n\n报告仍没有候选团队提交的修订参数、实现版本或复测通过记录。此前按未验证估算给出的256档可能修复成本只能作为假设性分析，不能再写成受影响参数的实际修复要求；本站不修改历史文件，以本更正明确替代原稿相关判断。\n\n## 量仔观察\n影响对象是评估BAG-Piglet参数与NGCC候选状态的研究者。E3更新与固定提交足以确认范围收缩，但128档仍只是成本模型结论。读者应把256档从kem-04-3的affected记录中移除，并保留争议假设；下一观察点是作者正式回应、ZD-MM模型验证、修订规格与实现，以及ICCS是否发布官方评议。",
+      "category": "ngcc",
+      "tags": ["更正", "BAG-Piglet", "kem-04-3", "NGCC"],
+      "source_name": "ngcc.dev",
+      "source_url": "https://ngcc.dev/reports/kem-04.html",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3报告和固定提交撤回昨日稿件对BAG-Piglet-256的核心受影响判断，必须及时更正；128档结论仍保留且需与ICCS官方状态区分。"
+    },
+    {
+      "slug": "20261126-cloudflare-search-for-agents",
+      "title": "Cloudflare向所有套餐开放Search for Agents Beta",
+      "summary": "Cloudflare于2026-11-25发布Search for Agents Beta，网站可通过`/.well-known/search`向代理返回带来源的Markdown检索内容，支持GET及RFC 10008 QUERY方法，按AI Search价格与套餐额度计费。",
+      "content": "2026-11-25，Cloudflare宣布Search for Agents向免费和付费套餐开放Beta。站点通过`/.well-known/search`暴露检索端点，代理可用GET或RFC 10008的QUERY方法查询；响应是带来源的Markdown检索内容，不是再次生成的答案。\n\n该能力基于账户内AI Search实例，沿用索引、查询价格和额度，并受站点公开内容、抓取控制与安全策略约束。网站运营方应先确认哪些页面可被索引、返回内容是否含敏感信息，以及代理访问的速率、认证与日志策略。",
+      "category": "flash",
+      "tags": ["Cloudflare", "Agent", "搜索", "Beta"],
+      "source_name": "Cloudflare Blog",
+      "source_url": "https://blog.cloudflare.com/search-for-agents/",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3官方发布给出可直接部署的网站代理搜索入口和协议边界，影响文档与内容平台；仍为Beta且沿用AI Search成本与限制。"
+    },
+    {
+      "slug": "20261126-qwen4-max-preview-retired",
+      "title": "阿里云下线Qwen4-Max-Preview并自动路由至正式版",
+      "summary": "阿里云Model Studio于2026-11-25下线Qwen4-Max-Preview；对旧模型ID的请求将自动路由到qwen4-max，并按正式版标准价格计费，预览期折扣不再适用。",
+      "content": "2026-11-25，阿里云Model Studio更新模型清单，确认Qwen4-Max-Preview下线。继续使用旧模型ID的请求会自动路由至qwen4-max，并按正式版标准价格计费，预览期限时折扣结束。\n\n自动路由降低了接口立即报错的风险，但也可能改变成本、输出行为和回归基线。API使用方应固定测试样本，核对账单、模型返回标识和依赖的提示模板；若需要严格版本复现，不应只依赖旧ID继续运行。",
+      "category": "flash",
+      "tags": ["Qwen4-Max", "模型下线", "API", "价格变化"],
+      "source_name": "Alibaba Cloud Model Studio",
+      "source_url": "https://www.alibabacloud.com/help/zh/model-studio/newly-released-models",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3官方清单确认旧ID自动迁移和计费变化，现有API用户需立即核对成本与输出回归；技术机制简明，适合快讯。"
+    },
+    {
+      "slug": "20261126-tencent-adp-document-pricing",
+      "title": "腾讯云ADP下调实时文档解析价格并新增计费项",
+      "summary": "腾讯云智能体开发平台自2026-11-26调整文档解析计费：对话实时上传和DocParse由0.2元/页降至0.03元/页，并新增拆分与表头解析费用；知识库异步场景限免至12月25日。",
+      "content": "2026-11-26，腾讯云ADP文档解析新价格生效：对话实时上传和DocParse工具从0.2元/页降至0.03元/页；文档拆分为0.025元/百万token，表头解析为0.0015元/次。\n\n知识库异步解析全部计费项在2026-11-26至12-25限免，2026-12-26恢复公告价格；实时上传和插件工具不参加限免。团队应分别测算页数、token与调用次数，避免把一个月限免当作长期成本。",
+      "category": "flash",
+      "tags": ["腾讯云", "ADP", "文档解析", "价格变化"],
+      "source_name": "腾讯云",
+      "source_url": "https://cloud.tencent.com/announce/detail/2565",
+      "cover_image": null,
+      "published_at": "2026-11-26T08:20:00+08:00",
+      "status": "published",
+      "priority": "P3",
+      "priority_reason": "E3官方公告给出明确降价、计费拆分和限免结束日期，对使用文档解析的团队有成本行动价值；影响范围限于ADP相关场景。"
+    }
+  ]
+}
