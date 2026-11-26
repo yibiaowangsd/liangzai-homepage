@@ -85,6 +85,7 @@
 .identity p { margin: 6px 0 0; font-size: 12px; line-height: 1.5; letter-spacing: .09em; color: #354457; }
 .details { display: grid; gap: 10px; margin: 0; padding: 12px 0 0; border-top: 1px solid #354a602f; box-shadow: inset 0 1px 0 #ffffff45; }
 .details > div { display: grid; grid-template-columns: 32px 1fr; gap: 10px; }
+.details:not(:lang(zh-CN)) > div { grid-template-columns: 62px 1fr; }
 .details dt { padding-top: 2px; font-size: 10px; color: #516174; }
 .details dd { margin: 0; font-size: 12px; font-weight: 500; color: #202f42; line-height: 1.4; }
 .details dd span { display: block; margin-top: 3px; font-size: 10px; line-height: 1.4; font-weight: 400; color: #4a596c; letter-spacing: .015em; }

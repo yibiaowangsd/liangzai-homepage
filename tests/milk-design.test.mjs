@@ -35,7 +35,8 @@ test('bottle gauge and ambient motion respect reduced motion and stay out of wor
   assert.match(gauge, /const routes = new Set\(\["\/", "\/about", "\/archive"\]\)/);
   assert.match(gauge, /prefers-reduced-motion: reduce/);
   assert.match(gauge, /cancelAnimationFrame/);
-  assert.match(gauge, /aria-label="回到页面顶部，再来一瓶"/);
+  assert.match(gauge, /aria-label=\{gauge\.label\}/);
+  assert.equal(JSON.parse(await read('app/i18n/messages/zh-CN.json')).chrome.gauge.label, '回到页面顶部，再来一瓶');
   const css = await read('public/theme/milk.css');
   assert.match(css, /@media \(prefers-reduced-motion: reduce\) \{ \.milk-surface svg \{ animation: none; \} \}/);
   assert.match(css, /\[data-motion="paused"\] \.milk-surface svg \{ animation: none; \}/);
@@ -43,7 +44,7 @@ test('bottle gauge and ambient motion respect reduced motion and stay out of wor
 });
 
 test('new pages call the yellow character 奶蛙 while the recorded story keeps 奶龙', async () => {
-  for (const file of ['app/QuantumHome.tsx', 'app/about/page.tsx', 'app/archive/page.tsx', 'app/models/page.tsx', 'app/experience/SiteChrome.tsx']) {
+  for (const file of ['app/i18n/messages/zh-CN.json', 'app/archive/page.tsx', 'app/models/page.tsx']) {
     const source = await read(file);
     assert.match(source, /奶蛙/, file);
     assert.doesNotMatch(source, /奶娃/, file);
@@ -61,9 +62,9 @@ test('literal page headings omit sentence-ending full stops but preserve body pr
       assert.doesNotMatch(heading[1], /。/, item);
     }
   }
-  const home = await read('app/QuantumHome.tsx');
-  assert.match(home, /关注标准、网络安全、AI 与 NGCC 公钥征集的新进展。/);
-  assert.match(home, /验证一次密钥封装/);
+  const { home } = JSON.parse(await read('app/i18n/messages/zh-CN.json'));
+  assert.match(home.morning.description, /关注标准、网络安全、AI 与 NGCC 公钥征集的新进展。/);
+  assert.match(home.noon.labTitle, /验证一次密钥封装/);
 });
 
 test('all laboratory transports have contained opaque surfaces and no escaping wires', async () => {

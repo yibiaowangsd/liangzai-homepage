@@ -1,0 +1,181 @@
+{
+  "chrome": {
+    "brand": { "name": "量仔", "tagline": "前沿新闻与技术实践", "home": "量仔首页", "skip": "跳到主要内容" },
+    "nav": { "label": "主导航", "home": "首页" },
+    "settings": {
+      "language": "选择语言", "button": "设置", "open": "打开显示设置", "title": "显示设置",
+      "theme": "页面主题", "paper": "纸白", "midnight": "午夜",
+      "motion": "页面动效", "resume": "开启动效", "pause": "暂停动效", "note": "动效同时遵循系统的减少动态效果设置。"
+    },
+    "search": {
+      "button": "搜索", "open": "搜索全站，快捷键 Ctrl 或 Command 加 K", "find": "查找文章与栏目",
+      "title": "搜索全站", "close": "关闭", "closeLabel": "关闭搜索", "placeholder": "搜索文章、算法或栏目，如 AWS、ML-KEM",
+      "all": "所有栏目", "loading": "正在搜索新闻…", "error": "新闻搜索暂时不可用，可继续浏览栏目",
+      "results": "{articles} 篇新闻 · {sections} 个栏目", "partial": "显示 {count} / {total} 篇新闻 · {sections} 个栏目",
+      "article": "新闻", "section": "栏目", "articles": "新闻文章", "sections": "栏目导航",
+      "empty": "没有找到匹配的文章或栏目。试试其他关键词。", "keys": "↑ ↓ 选择 · Enter 进入", "shortcut": "Ctrl / ⌘ K 随时打开"
+    },
+    "footer": {
+      "sleeper": "喝完奶、趴着睡着的奶蛙，空奶瓶倒在身边", "night": "嘘，奶蛙睡着了",
+      "note": "今天这一瓶喝完了。明早 08:10，新的简报会重新温好；在那之前，轻一点翻页。",
+      "nav": "页脚导航", "reading": "阅读", "family": "家里", "about": "关于", "topics": "技术进展档案",
+      "algorithms": "算法原理", "models": "角色模型", "journey": "个人经历", "contact": "联系与交流",
+      "source": "本站源码", "signature": "量仔与奶蛙", "top": "回到顶部"
+    },
+    "gauge": { "label": "回到页面顶部，再来一瓶", "remaining": "还剩\n{ml} ml", "empty": "喝完啦\n再来一瓶" },
+    "categories": {
+      "pqc": "后量子算法", "migration": "抗量子迁移", "protocol": "抗量子协议", "standards": "标准动态", "security": "网络安全",
+      "ai": "AI 前沿", "ngcc": "NGCC 公钥征集", "flash": "快讯", "industry": "产业动态", "daily": "每日前沿"
+    },
+    "destinations": {
+      "/": { "name": "探索首页", "description": "从前沿新闻出发，跟进技术变化与实践。" },
+      "/news": { "name": "前沿新闻", "description": "跟进密码、安全与人工智能的新进展。" },
+      "/tracking": { "name": "动态跟踪", "description": "查看后量子标准、组件支持、性能及各地迁移路线。" },
+      "/models": { "name": "模型鉴赏", "description": "旋转、缩放，近距离欣赏量仔与奶蛙。" },
+      "/storybook": { "name": "星际漫游", "description": "量仔与奶蛙，十一页关于并肩的睡前故事。" },
+      "/archive": { "name": "量仔小传", "description": "两份角色档案：负责测量的量仔，和负责守着的奶蛙。" },
+      "/pqc-arsenal": { "name": "密码图鉴", "description": "从数学直觉，走近后量子密码。" },
+      "/pqc-practice": { "name": "密码实验室", "description": "运行真实算法，亲手封装、签名与验证。" },
+      "/research": { "name": "深度研究", "description": "每日深入一个问题，公开研究过程、证据与可验证成果。" },
+      "/topics": { "name": "技术档案", "description": "按算法、协议与项目持续追踪进展，回查原始证据。" },
+      "/wo": { "name": "我 · 网页回顾", "description": "在本机读取生活记录，回看时间轴、多日变化与已有记忆。" },
+      "/play": { "name": "好奇游乐场", "description": "和网站宠物玩，挑战每日谜题，画一张像素明信片。" },
+      "/pet": { "name": "星团小屋", "description": "摸摸、喂点心、一起玩，在浏览器里养一只小动物。" },
+      "/daily-play": { "name": "星阵点灯", "description": "每天一局逻辑谜题，让整片星阵亮起来。" },
+      "/pixel-postcard": { "name": "像素明信片", "description": "画一张像素小画，下载图片或分享链接。" },
+      "/sidequests": { "name": "小工具", "description": "打开就能用的声音、计时与跨时区工具。" },
+      "/sound-room": { "name": "声音角落", "description": "在本机混搭细雨、风声、海浪与炉火，或开启专注计时。" },
+      "/time-desk": { "name": "时差桌", "description": "查看多地本地时间和共同工作时段。" },
+      "/about": { "name": "关于我", "description": "从山东大学，到量子安全工程。" }
+    }
+  },
+  "home": {
+    "metadata": {
+      "title": "量仔 · 前沿新闻与技术简报", "siteName": "Yibiao · 量仔",
+      "description": "每日追踪后量子密码、抗量子迁移与协议、标准动态、网络安全、AI 前沿和 NGCC 公钥征集。阅读专题解读与快讯，查阅原始来源，也可进入密码实验室验证真实算法。",
+      "imageAlt": "蓝色光线照亮的密码之门 · 量仔前沿新闻与技术简报"
+    },
+    "hero": {
+      "title": "每天，喂自己\n一点新东西",
+      "description": "我是 Yibiao，做抗量子密码与安全协议。这里是我给好奇心开的小厨房：每天温一瓶前沿简报，留一间能跑真实算法的实验室，再养两个小家伙：量仔和奶蛙。",
+      "news": "喝今天这一瓶", "about": "认识 Yibiao", "play": "逛逛好奇游乐场"
+    },
+    "greeting": {
+      "late": ["Still up?", "夜深了，奶还温着"], "morning": ["Good morning,", "早上好，奶已经温好"],
+      "noon": ["Good noon,", "中午好，先喝一口再忙"], "afternoon": ["Good afternoon,", "下午好，来得正是时候"],
+      "evening": ["Good evening,", "晚上好，今天的还没喝完"]
+    },
+    "naiwa": {
+      "action": "戳一下奶蛙，换一个问题", "alt": "奶蛙：奶黄色、圆肚皮、绿眼圈的小家伙，抱着半瓶奶坐着", "hint": "戳一下，他会换个问题",
+      "questions": {
+        "news": ["呱。今天世界上，又发生了什么？", "去读今日简报"],
+        "algorithms": ["为什么旧钥匙会被看穿？", "去翻密码图鉴"],
+        "lab": ["密钥真的能在浏览器里生出来吗？", "去实验室试一次"],
+        "story": ["我和量仔是怎么认识的？", "去听睡前故事"],
+        "about": ["养我们的那个人，是谁？", "去认识 Yibiao"]
+      }
+    },
+    "day": {
+      "label": "这一天的安排",
+      "morning": ["早", "一瓶简报"], "noon": ["午", "一间实验室"], "family": ["傍晚", "家里两位"], "night": ["晚", "一个睡前故事"]
+    },
+    "morning": {
+      "time": "早 · 每天这个点更新", "title": "最新简报",
+      "description": "追踪后量子密码、抗量子协议与迁移，\n关注标准、网络安全、AI 与 NGCC 公钥征集的新进展。",
+      "categories": "新闻栏目", "loading": "正在温今天这一瓶…", "loadingLink": "直接去新闻页",
+      "briefing": "阅读完整技术简报", "tracking": "动态跟踪", "topics": "按算法与协议追踪后续进展",
+      "subscribe": "按板块订阅，每天在邮箱或群聊读前沿。", "approval": "申请审核通过后接收。", "subscribeLink": "订阅日报",
+      "unavailable": "暂时无法读取最新简报，请稍后重试。", "newsLink": "前往新闻页", "latest": "最新一期",
+      "edition": "前沿技术简报", "featured": "本页精选 {count} 条", "source": "原始来源", "articleLanguage": ""
+    },
+    "noon": {
+      "time": "午 · 动手的时间", "title": "从算法，到协议", "description": "关注一次握手如何建立密钥、完成认证，\n也关注它如何兼容现有系统。",
+      "kicker": "in your browser", "labTitle": "在浏览器里，\n验证一次密钥封装",
+      "labDescription": "生成 ML-KEM 密钥，完成封装与解封，比较双方共享秘密。也可以导入测试向量，检查签名与验签结果。",
+      "lab": "进入密码实验室", "algorithms": "阅读算法原理", "available": "可运行的算法",
+      "engineering": {
+        "hybrid": ["混合密钥协商", "经典算法与 ML-KEM 如何组合，如何将共享秘密接入协议密钥派生。"],
+        "agility": ["密码敏捷", "让算法选择、参数配置与协议协商衔接，支持逐步迁移。"],
+        "interop": ["互通与性能", "从标准向量、跨实现验证到握手耗时，检查正确性与工程代价。"]
+      },
+      "more": "想看得更深：", "research": "深度研究札记", "topics": "技术进展档案"
+    },
+    "family": {
+      "time": "傍晚 · 家里人到齐", "title": "一个量，一个守", "description": "做技术的两种脾气，\n刚好长成了两个小家伙。",
+      "liangzai": {
+        "role": "the one who measures", "name": "量仔", "alt": "蓝白机甲、头顶蓝色天线的量仔",
+        "description": "什么都要量一量才放心。新闻的来源、握手的耗时、每一个测试向量，都归他管。", "action": "读量仔小传"
+      },
+      "naiwa": {
+        "role": "the one who stays", "name": "奶蛙", "alt": "奶黄色、圆肚皮、绿眼圈的奶蛙稳稳站着",
+        "description": "圆滚滚，话不多，却一步不退。答案出现以前，他负责抱着奶瓶，替大家多撑一会儿。", "action": "看奶蛙的档案"
+      },
+      "more": "想凑近看：", "models": "旋转查看角色模型", "archive": "翻开两份角色档案"
+    },
+    "night": {
+      "time": "晚 · 关灯之前", "title": "工程之外，\n一个睡前故事",
+      "description": "《星际漫游》，量仔与奶蛙并肩迎战 Shor 大魔王的十一页插画故事，配逐页旁白。故事里大家还叫他奶龙；他每晚都要再听一遍，通常撑不到第九页。",
+      "story": "翻开星际漫游", "archive": "量仔小传", "coverAlt": "量仔和奶龙背靠背守护量子星的绘本封面", "listenerAlt": "抱着一本蓝色绘本、已经犯困的奶蛙"
+    }
+  },
+  "about": {
+    "metadata": {
+      "title": "关于我 Wang Yibiao",
+      "description": "Yibiao 的个人主页。2018 至 2025 年在山东大学学习网络空间安全，现就职于中电信量子集团，关注抗量子密码、安全协议与密码工程。"
+    },
+    "hero": {
+      "kicker": "About,", "label": "关于我", "hello": "你好 我是",
+      "intro": "从山大出发\n在密码与安全的世界里继续探索",
+      "bio": "我在山东大学完成了网络空间安全专业的本科与硕士学习，现在中电信量子集团工作。这里记录我的技术探索，也收藏一些关于代码、设计与好奇心的尝试。",
+      "alt": "一手拿着奶瓶、一手挥着打招呼的奶蛙"
+    },
+    "card": {
+      "label": "Wang Yibiao 的悬浮个人名片", "brand": "密码学与工程实践", "specialty": "抗量子密码与安全协议",
+      "work": "工作", "employer": "中电信量子集团", "workDetail": "PQC 与 QKD 融合应用",
+      "education": "教育", "university": "山东大学", "degrees": "网络空间安全 本科与硕士",
+      "home": "返回 Wang Yibiao 的主页", "github": "访问 Wang Yibiao 的 GitHub"
+    },
+    "index": { "label": "个人主页目录", "note": "一份仍在续写的个人记录" },
+    "journey": {
+      "label": "我的经历", "title": "一路走来", "description": "七年山大学习时光\n从网络空间安全走向量子安全实践", "current": "现在",
+      "work": {
+        "period": "2025 至今", "type": "工作", "place": "中电信量子集团", "detail": "抗量子密码与安全协议",
+        "description": "将对密码与安全的研究延伸到工程实践，关注抗量子协议改造、密码敏捷，以及 PQC 与 QKD 的融合应用。"
+      },
+      "master": {
+        "period": "2022—2025", "type": "硕士", "place": "山东大学", "detail": "网络空间安全",
+        "description": "继续在网络空间安全领域学习与研究，从本科阶段的专业积累走向更深入的探索。"
+      },
+      "bachelor": {
+        "period": "2018—2022", "type": "本科", "place": "山东大学", "detail": "网络空间安全",
+        "description": "在山大开启网络空间安全的学习之路，也是我走近密码学与安全技术的起点。"
+      }
+    },
+    "focus": {
+      "kicker": "Now,", "label": "技术方向", "title": "我正在关注", "description": "从算法到协议\n再到可以落地的工程实现",
+      "pqc": {
+        "role": "量仔管的那部分", "title": "抗量子密码",
+        "description": "关注后量子算法实现、测试验证与性能优化，让密码算法在真实系统中运行起来。", "tags": ["算法实现", "测试验证", "性能优化"]
+      },
+      "protocols": {
+        "role": "奶蛙管的那部分", "title": "安全协议",
+        "description": "围绕 TLS、TLCP、SSH 与 IKE 协议，探索抗量子迁移、混合密钥协商与密码敏捷。", "tags": ["协议改造", "混合协商", "密码敏捷"]
+      },
+      "engineering": {
+        "role": "两个一起管的那部分", "title": "密码工程",
+        "description": "关心 PQC 与 QKD 如何协同，也关心算法库、接口与跨平台适配如何衔接成可用的能力。", "tags": ["PQC 与 QKD", "算法库", "系统集成"]
+      }
+    },
+    "projects": {
+      "kicker": "After hours,", "label": "个人项目", "title": "工作之外的创造", "description": "把好奇心写进代码\n把想法做成可以体验的作品",
+      "home": { "title": "量仔的数字世界", "description": "用角色、故事和交互，把抽象的技术变成一个可以探索的世界。", "action": "探索首页" },
+      "algorithms": { "title": "密码图鉴", "description": "从直觉走向原理，用可视化理解后量子密码背后的数学问题。", "action": "阅读图鉴" },
+      "lab": { "title": "密码实验室", "description": "把算法带进浏览器，亲手完成一次密钥封装或签名验证。", "action": "开始实验" }
+    },
+    "contact": {
+      "kicker": "Hello,", "label": "找到我", "title": "很高兴在这里遇见你",
+      "description": "如果你也对密码、安全或有趣的技术表达感兴趣\n欢迎来 GitHub 看看我的代码与项目",
+      "action": "访问我的 GitHub", "alt": "歪着头、举起一只手的奶蛙"
+    }
+  }
+}

@@ -3,9 +3,10 @@
 import { useEffect, useId, useRef, type PointerEvent } from "react";
 import Link from "next/link";
 import { useExperience } from "../experience/Motion";
+import type { Messages } from "../i18n/site-language";
 import styles from "./FloatingIdentity.module.css";
 
-export default function FloatingIdentity() {
+export default function FloatingIdentity({ copy }: { copy: Messages["about"]["card"] }) {
   const goldId = useId();
   const stage = useRef<HTMLElement>(null);
   const card = useRef<HTMLDivElement>(null);
@@ -63,7 +64,7 @@ export default function FloatingIdentity() {
 
   return (
     <aside data-theme-surface="silver" className={styles.stage} ref={stage} data-intro
-      data-enabled={enabled} aria-label="Wang Yibiao 的悬浮个人名片"
+      data-enabled={enabled} aria-label={copy.label}
       onPointerMove={move} onPointerLeave={reset} onPointerCancel={reset}>
       <div className={styles.halo} aria-hidden="true" />
       <div className={styles.shadow} aria-hidden="true" />
@@ -90,20 +91,20 @@ export default function FloatingIdentity() {
             </svg>
             <div className={styles.content}>
               <div className={styles.topline}>
-                <span className={styles.brand}><i aria-hidden="true" />密码学与工程实践</span>
+                <span className={styles.brand}><i aria-hidden="true" />{copy.brand}</span>
               </div>
               <div className={styles.identity}>
                 <h2>Wang Yibiao</h2>
-                <p>抗量子密码与安全协议</p>
+                <p>{copy.specialty}</p>
               </div>
               <dl className={styles.details}>
-                <div><dt>工作</dt><dd>中电信量子集团<span>PQC 与 QKD 融合应用</span></dd></div>
-                <div><dt>教育</dt><dd>山东大学<span>网络空间安全 本科与硕士</span></dd></div>
+                <div><dt>{copy.work}</dt><dd>{copy.employer}<span>{copy.workDetail}</span></dd></div>
+                <div><dt>{copy.education}</dt><dd>{copy.university}<span>{copy.degrees}</span></dd></div>
               </dl>
             </div>
             <div className={styles.bottomline}>
-              <Link href="/" aria-label="返回 Wang Yibiao 的主页">wangyibiao.com</Link>
-              <a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer" aria-label="访问 Wang Yibiao 的 GitHub">GitHub<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 8H7a5 5 0 0 0 0 10h3a5 5 0 0 0 5-5M15 16h2a5 5 0 0 0 0-10h-3a5 5 0 0 0-5 5" /></svg></a>
+              <Link href="/" aria-label={copy.home}>wangyibiao.com</Link>
+              <a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer" aria-label={copy.github}>GitHub<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 8H7a5 5 0 0 0 0 10h3a5 5 0 0 0 5-5M15 16h2a5 5 0 0 0 0-10h-3a5 5 0 0 0-5 5" /></svg></a>
             </div>
           </div>
         </div>

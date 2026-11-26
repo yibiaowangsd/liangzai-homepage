@@ -3,6 +3,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ComponentProps } from "react";
 import { useExperience } from "./Motion";
+import { defaultLocale } from "../i18n/locales";
+import { useSiteLanguage } from "../i18n/LocaleProvider";
+import LanguagePicker from "../i18n/LanguagePicker";
 import { destinations } from "./destinations";
 import JumpNavigation from "./JumpNavigation";
 import ThemePicker from "../theme/ThemePicker";
@@ -23,6 +26,7 @@ function SiteSettings() {
   const trigger = useRef<HTMLButtonElement>(null);
   const focusFirst = useRef(false);
   const { paused, toggle } = useExperience();
+  const { chrome: { settings } } = useSiteLanguage();
   useEffect(() => {
     if (!open) return;
     if (focusFirst.current) {
@@ -53,30 +57,35 @@ function SiteSettings() {
     };
   }, [open]);
   return <div className="site-settings" ref={root}>
-    <button ref={trigger} className="menu-toggle" type="button" aria-label="打开显示设置" aria-expanded={open} aria-controls="site-settings-panel" onClick={() => setOpen(value => !value)} onKeyDown={event => {
+    <button ref={trigger} className="menu-toggle" type="button" aria-label={settings.open} aria-expanded={open} aria-controls="site-settings-panel" onClick={() => setOpen(value => !value)} onKeyDown={event => {
       if (event.key === "ArrowDown") {
         event.preventDefault();
         if (open) root.current?.querySelector("select")?.focus();
         else { focusFirst.current = true; setOpen(true); }
       }
-    }}><span>设置</span><svg className="settings-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg></button>
-    {open && <section className="site-settings-panel" id="site-settings-panel" aria-label="显示设置">
-      <h2>显示设置</h2>
-      <div className="settings-row"><span>页面主题</span><ThemePicker /></div>
-      <div className="settings-row"><span>页面动效</span><button className="settings-motion" type="button" onClick={toggle} aria-pressed={paused}>{paused ? "开启动效" : "暂停动效"}</button></div>
-      <p>动效同时遵循系统的减少动态效果设置。</p>
+    }}>
+      <span>{settings.button}</span>
+      <svg className="settings-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4" /></svg>
+      <svg className="settings-icon" viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M3 10h14M3 15h14M7 3v4m6 1v4m-5 1v4" /></svg>
+    </button>
+    {open && <section className="site-settings-panel" id="site-settings-panel" aria-label={settings.title}>
+      <h2>{settings.title}</h2>
+      <div className="settings-row"><span>{settings.theme}</span><ThemePicker /></div>
+      <div className="settings-row"><span>{settings.motion}</span><button className="settings-motion" type="button" onClick={toggle} aria-pressed={paused}>{paused ? settings.resume : settings.pause}</button></div>
+      <p>{settings.note}</p>
     </section>}
   </div>;
 }
 export function SiteHeader() {
   const path = usePathname();
+  const { locale, chrome } = useSiteLanguage();
   return (
     <>
       <a className="skip-link" href="#main-content">
-        跳到主要内容
+        {chrome.brand.skip}
       </a>
-      <header className="site-chrome" data-scene={path === "/" ? "home" : path === "/storybook" ? "night" : "page"}>
-        <Link className="brand" href="/" aria-label="量仔首页">
+      <header className="site-chrome" data-localized={locale !== defaultLocale || undefined} data-scene={path === "/" ? "home" : path === "/storybook" ? "night" : "page"}>
+        <Link className="brand" href="/" aria-label={chrome.brand.home}>
           <span className="brand-mark" aria-hidden="true">
             <img
               src="/assets/liangzai-mark.svg"
@@ -86,10 +95,10 @@ export function SiteHeader() {
             />
           </span>
           <strong>
-            量仔<span>前沿新闻与技术实践</span>
+            {chrome.brand.name}<span>{chrome.brand.tagline}</span>
           </strong>
         </Link>
-        <nav className="desktop-nav" aria-label="主导航">
+        <nav className="desktop-nav" aria-label={chrome.nav.label}>
           {destinations
             .filter((item) =>
               ["/", "/pqc-practice", "/news", "/tracking", "/topics", "/research", "/sidequests", "/about"].includes(item.href),
@@ -100,12 +109,13 @@ export function SiteHeader() {
                 href={item.href}
                 aria-current={path === item.href ? "page" : (item.href !== "/" && path.startsWith(`${item.href}/`)) || (item.href === "/sidequests" && ["/sound-room", "/time-desk"].includes(path)) ? "location" : undefined}
               >
-                {item.href === "/" ? "首页" : item.name}
+                {item.href === "/" ? chrome.nav.home : chrome.destinations[item.href].name}
               </NavigationLink>
             ))}
         </nav>
         <div className="chrome-actions">
           <JumpNavigation onOpen={() => document.dispatchEvent(new Event("liangzai:close-settings"))} />
+          <LanguagePicker />
           <SiteSettings key={path} />
         </div>
       </header>
@@ -117,24 +127,25 @@ const storyRoutes = new Set(["/", "/about", "/archive", "/models", "/storybook"]
 
 export function SiteFooter() {
   const path = usePathname();
+  const { chrome: { footer, destinations: links } } = useSiteLanguage();
   return (
     <footer className="milk-footer" data-flush={path === "/storybook" || undefined} data-size={storyRoutes.has(path) ? undefined : "compact"}>
-      <img className="milk-footer-sleeper" src="/assets/naiwa/sleep.webp" width="1140" height="760" alt="喝完奶、趴着睡着的奶蛙，空奶瓶倒在身边" loading="lazy" decoding="async" />
+      <img className="milk-footer-sleeper" src="/assets/naiwa/sleep.webp" width="1140" height="760" alt={footer.sleeper} loading="lazy" decoding="async" />
       <span className="milk-footer-zzz" aria-hidden="true">z z z</span>
       <div className="milk-footer-top">
         <div>
-          <p className="milk-footer-night">嘘，奶蛙睡着了</p>
-          <p>今天这一瓶喝完了。明早 08:10，新的简报会重新温好；在那之前，轻一点翻页。</p>
+          <p className="milk-footer-night">{footer.night}</p>
+          <p>{footer.note}</p>
         </div>
-        <nav className="milk-footer-groups" aria-label="页脚导航">
-          <div><span>阅读</span><Link href="/news">前沿新闻</Link><Link href="/tracking">动态跟踪</Link><Link href="/research">深度研究</Link><Link href="/topics">技术进展档案</Link><Link href="/pqc-arsenal">算法原理</Link></div>
-          <div><span>家里</span><Link href="/archive">量仔小传</Link><Link href="/storybook">星际漫游</Link><Link href="/models">角色模型</Link><Link href="/wo">我 · 网页回顾</Link><Link href="/play">好奇游乐场</Link><Link href="/sidequests">小工具</Link></div>
-          <div><span>关于</span><Link href="/about#journey">个人经历</Link><Link href="/about#contact">联系与交流</Link><a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">本站源码</a></div>
+        <nav className="milk-footer-groups" aria-label={footer.nav}>
+          <div><span>{footer.reading}</span><Link href="/news">{links["/news"].name}</Link><Link href="/tracking">{links["/tracking"].name}</Link><Link href="/research">{links["/research"].name}</Link><Link href="/topics">{footer.topics}</Link><Link href="/pqc-arsenal">{footer.algorithms}</Link></div>
+          <div><span>{footer.family}</span><Link href="/archive">{links["/archive"].name}</Link><Link href="/storybook">{links["/storybook"].name}</Link><Link href="/models">{footer.models}</Link><Link href="/wo">{links["/wo"].name}</Link><Link href="/play">{links["/play"].name}</Link><Link href="/sidequests">{links["/sidequests"].name}</Link></div>
+          <div><span>{footer.about}</span><Link href="/about#journey">{footer.journey}</Link><Link href="/about#contact">{footer.contact}</Link><a href="https://github.com/yibiaowangsd" target="_blank" rel="noreferrer">GitHub</a><a href="https://github.com/yibiaowangsd/liangzai-homepage" target="_blank" rel="noreferrer">{footer.source}</a></div>
         </nav>
       </div>
       <div className="milk-footer-bottom">
-        <span>© 2026 Yibiao · 量仔与奶蛙</span>
-        <a href="#main-content">回到顶部 ↑</a>
+        <span>© 2026 Yibiao · {footer.signature}</span>
+        <a href="#main-content">{footer.top} <span aria-hidden="true">↑</span></a>
       </div>
     </footer>
   );
