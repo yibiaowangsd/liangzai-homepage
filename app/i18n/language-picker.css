@@ -1,3 +1,7 @@
+.site-chrome:where(:lang(en), :lang(fr), :lang(de), :lang(es), :lang(ru)),
+.milk-footer:where(:lang(en), :lang(fr), :lang(de), :lang(es), :lang(ru)) {
+  --milk-display: Georgia, "Times New Roman", serif;
+}
 .language-picker {
   position: relative;
   display: inline-flex;

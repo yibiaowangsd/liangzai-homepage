@@ -4,6 +4,10 @@
 .mk-home :is(.mk-hero h1, .mk-head > p, .mk-lab h3, .mk-night h2) { white-space: pre-line; }
 .mk-home:not(:lang(zh-CN)) :is(h1, h2, h3, .mk-day span, .mk-engineering dt) { overflow-wrap: anywhere; }
 .mk-home:not(:lang(zh-CN)) .mk-hero h1 { font-size: clamp(38px, min(6.2vw, 11vh), 100px); }
+.mk-home:where(:lang(en), :lang(fr), :lang(de), :lang(es), :lang(ru)) {
+  --milk-display: Georgia, "Times New Roman", serif;
+}
+.mk-home:not(:lang(zh-CN)) :is(.mk-hero h1, .mk-lab h3, .mk-night h2) { white-space: normal; }
 
 /* ---------- Hero ---------- */
 .mk-hero { position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); grid-template-rows: 1fr auto; column-gap: clamp(24px, 4vw, 80px); min-height: min(920px, calc(100svh - var(--site-header-height, 72px))); padding: clamp(24px, 4vh, 64px) var(--milk-gutter) 0; background: var(--milk-cobalt); color: var(--milk-white); isolation: isolate; }
