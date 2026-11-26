@@ -1,0 +1,67 @@
+{
+  "slug": "mldsa-pkcs8-format-and-key-consistency",
+  "date": "2026-11-26",
+  "updated": "2026-11-26",
+  "title": "同一把 ML-DSA 密钥，为什么换库后导不进去？",
+  "subtitle": "实跑 RFC 9881 的六个 PKCS#8 向量，分清格式支持、密钥一致性和签名互通",
+  "question": "把 ML-DSA-44 签名服务迁到另一套密码库时，如何判断是密钥容器不兼容、密钥材料不一致，还是签名本身不互通？",
+  "status": "已在 Linux/amd64 实跑 6 个公开向量、同库验证及双向签名验签；未测试 HSM、FIPS provider 或 TLS",
+  "tags": ["PQC", "ML-DSA", "PKCS#8", "OpenSSL", "Go", "密码迁移"],
+  "summary": [
+    "同一份 RFC 标准样本中，OpenSSL 3.5.9 默认 provider 导入了三个有效编码，并拒绝三个不一致样本；Go 1.27.4 只导入了 seed-only，连其余两个有效编码也因格式不支持而拒绝。",
+    "三种有效编码在 OpenSSL 导出字节一致的 SPKI，三份签名均通过 Go 验证；Go 从 seed-only 导入后签出的签名也通过 OpenSSL 验证。密钥容器不互通与算法不互通不能画等号。",
+    "新建密钥优先在经验证的边界保留可用 seed 或使用不出硬件的密钥引用。存量 expanded-only 无法通过展开算法逆求 seed，不应静默重建并当作原密钥。"
+  ],
+  "scope": "公开 RFC 9881 ML-DSA-44 测试件，Linux/amd64，OpenSSL 3.5.9 default provider 与 Go 1.27.4 crypto/x509、crypto/mldsa 的默认行为。仅验证一次选定消息与空上下文，无用户或生产密钥，未做性能、协议握手、合规认证或漏洞判定。",
+  "process": [
+    {"title":"固定标准和样本","detail":"从 RFC Editor 文本的 C.1.1、C.4 分别抽取三个有效和三个不一致的 PEM，严格解码为 DER，逐个固定长度、SHA-256 与案例顺序。"},
+    {"title":"只量导入结果","detail":"OpenSSL pkey 读取 DER 并尝试导出 SPKI；Go 通过 x509.ParsePKCS8PrivateKey 读取同一批 DER。记录拒绝发生在哪一层，不测试被拒样本的签名。"},
+    {"title":"把签名互通单独验证","detail":"三种有效形式由 OpenSSL 导出 SPKI、分别对同一非预哈希消息签名；Go 从 seed-only 得到相同 SPKI，并验证三份签名。再用 Go 签名，由 OpenSSL 验证。"},
+    {"title":"把现象对照到实现","detail":"核对 Go 1.27.4 公共解析路径与 OpenSSL 的 provider 源码、手册。工具输出、源代码解释与未验证环境分别标注。"}
+  ],
+  "sections": [
+    {"id":"threat-scope","title":"1. 风险边界：备份能打开，不等于密钥能恢复","paragraphs":[
+      "考虑签名服务更换密码后端、从备份恢复或向新节点迁移。输入可能因错误的导出配置、库版本、容器转换或传输损坏而失配。我们只验证导入时能否判断兼容和一致，并用事先固定的公钥标识确认仍是同一身份。不假设能控制签名服务，也不测试线上系统。",
+      "攻击者是否有权替换密钥是另一层问题。即使一个由他人生成的新密钥编码完全自洽，也不能视为旧密钥恢复成功。可信的预期 SPKI 指纹、密钥 ID 和访问控制不能靠容器自检代替。"
+    ]},
+    {"id":"representations","title":"2. 同一个算法标识，三种私钥表示","paragraphs":[
+      "FIPS 204 定义 ML-DSA。RFC 9881 §8.1 推荐保存或传输 32 字节种子；容器也能承载 FIPS 204 展开私钥，或同时承载两种表示。C.1.1 三份样本源自同一 seed；54、2588、2626 字节是各 PKCS#8 DER 总长，不等于原始私钥长度。[1][2]",
+      "对 both 格式，§8.2 建议用种子重新生成展开私钥并逐字节比对；若执行检查且不一致，则必须拒绝。expanded-only 没有 seed，这一步不能做。实现仍可检查能否从相关私钥字段重建一致的公钥部分，或比对外部已知公钥；两类检查的证据强度不同。[1]"
+    ]},
+    {"id":"matrix","title":"3. 已实测：拒绝相同的文件，含义可以完全不同","paragraphs":[
+      "OpenSSL 默认 provider 的 C.4 #1 诊断是展开私钥与种子不匹配；#2、#3 均报告私钥与其公钥部分不匹配，工具没有从错误文字进一步区分 tr 与 t0，差别由 RFC 样本定义确认。Go 的报错按容器分组，正确的 expanded-only 与损坏样本同样不支持，不能将这些失败记作 Go 已验证 expanded 的一致性。[1][3][4][5]",
+      "对照价值在于每种负例旁都有同格式的正常样本。只跑负例，即使两库都失败，也不知道哪一层拒绝。"
+    ],"table":{"headers":["RFC 测例","PKCS#8 DER","OpenSSL 3.5.9 default","Go 1.27.4 crypto/x509"],"rows":[
+      ["C.1.1.1 有效 seed-only","54 B","导入成功","导入成功"],
+      ["C.1.1.2 有效 expanded-only","2588 B","导入成功","格式不支持"],
+      ["C.1.1.3 有效 both","2626 B","导入成功","格式不支持"],
+      ["C.4 #1 seed/expanded 不一致","2626 B","导入拒绝：与 seed 不匹配","格式不支持"],
+      ["C.4 #2 expanded 的 tr 不一致","2588 B","导入拒绝：公钥部分不匹配","格式不支持"],
+      ["C.4 #3 expanded 的 t0 不一致","2588 B","导入拒绝：公钥部分不匹配","格式不支持"]
+    ]}},
+    {"id":"cross-verify","title":"4. 已实测：私钥导入不兼容但签名可以互验","paragraphs":[
+      "三个正对照经 OpenSSL 导出同一份 SPKI DER，SHA-256 为 837832708c5236d951581f1fddf2b79991b3424a0486d16da1ddad0fd69701be；Go 对 seed-only 解码得到的 SPKI 字节也一致。该指纹仅用于标识公开测试件。[1][6]",
+      "同一固定消息、纯 ML-DSA-44、空上下文：OpenSSL 的三份签名各 2420 B，均由 OpenSSL 与 Go 验证；Go 生成的 2420 B 签名也由 OpenSSL 验证。比较的是签名有效性，不要求使用随机性的签名逐字节相同。它没有检验证书链、CertificateVerify 的输入构造或 TLS 算法协商。[2][6]"
+    ]},
+    {"id":"implementation","title":"5. 用源码解释原因，不把这次结果推广到所有后端","paragraphs":[
+      "Go 标记版的 PKCS#8 解析分支按 ASN.1 CHOICE 区分输入，明确拒绝 expanded-only 和 both。OpenSSL 可识别这两种表示；核对 3.5.9 源码：种子重新展开时比较保留的展开私钥；对 expanded-only，则通过重算与比较 t0，并检查重建公钥的哈希是否等于 tr。两处展开校验错误可能归到同一条诊断。不能将手册中的种子优先理解成对所有配套材料无条件忽略，也不能据此推断其他 provider、构建或配置。[3][4][5][7][8]",
+      "没有测试 raw key 导入、PKCS#11、HSM、Windows、FIPS provider、其他参数级别或跨平台。公开种子样本无需保护，但生产 seed 与展开私钥同等敏感；测试日志不应打印任一私钥字段。本实验不是对验签偶发结果、实现侧信道或任意缺陷的复现。"
+    ]},
+    {"id":"acceptance","title":"6. 迁移验收：依次验证容器、身份、签名和服务","bullets":[
+      "为每个目标 API 写正负成对用例，记录不支持格式、格式识别但材料不一致、导入成功三类结果，另记后续签名与验签结果。先用公开向量复测，再用隔离生成的测试密钥检查目标 HSM 或 provider。",
+      "已具备可信且获准迁移的 seed 时，向目标系统使用双方支持的 seed-only 格式，必须匹配预期公钥并做双向签验。只有 expanded-only 时，优先保留原有签名后端；若目标确不支持该形式且无法保留后端，走显式密钥轮换与证书更新，不伪造或寻找种子。",
+      "在测试环境模拟重启、恢复、轮换、回滚，核对密钥身份与证书绑定，并单独跑协议级互通。用版本化的能力清单区分私钥容器支持、签名算法和参数支持、实际证书/握手使用，避免只报一个「支持 ML-DSA」。"
+    ],"code":"python3 scripts/check-mldsa-pkcs8-rfc9881.py rfc9881.txt --go /path/to/go1.27.4/bin/go"}
+  ],
+  "sources": [
+    {"id":"1","title":"RFC 9881：ML-DSA 私钥格式与公开测试向量","url":"https://www.rfc-editor.org/rfc/rfc9881.html#section-8.1","version":"IETF Proposed Standard，2025-10","note":"§8.1、§8.2、附录 C.1.1 和 C.4；实验向量来自 RFC Editor 的纯文本。"},
+    {"id":"2","title":"NIST FIPS 204：ML-DSA","url":"https://csrc.nist.gov/pubs/fips/204/final","version":"正式标准，2024-08-13","note":"密钥生成、编码及签名的算法规范；不等于 PKCS#8 解码支持。"},
+    {"id":"3","title":"OpenSSL 3.5：EVP_PKEY-ML-DSA","url":"https://docs.openssl.org/3.5/man7/EVP_PKEY-ML-DSA/","version":"3.5 系列手册；实测 3.5.9 default provider","note":"种子存储及 provider 配置；不同配置须另测。"},
+    {"id":"4","title":"Go 1.27.4：x509.ParsePKCS8PrivateKey","url":"https://github.com/golang/go/blob/go1.27.4/src/crypto/x509/pkcs8.go#L77-L101","version":"go1.27.4 官方源码标签","note":"三种 ASN.1 选择的分支与格式拒绝层。"},
+    {"id":"5","title":"Go 官方发布包及校验和","url":"https://go.dev/dl/","version":"go1.27.4 linux-amd64 官方包","note":"使用页面公开的 SHA-256 核对下载后再执行。"},
+    {"id":"6","title":"本站复现脚本：RFC 9881 公开向量","url":"https://github.com/yibiaowangsd/liangzai-homepage/blob/main/scripts/check-mldsa-pkcs8-rfc9881.py","version":"2026-11-26，依赖本地 RFC 文本与指定工具","note":"锁定六个 DER 的 SHA-256；脚本旁的 Go 验证程序用于双向验签，不访问网络。"},
+    {"id":"7","title":"OpenSSL 3.5.9：从种子展开并比较伴随私钥","url":"https://github.com/openssl/openssl/blob/openssl-3.5.9/crypto/ml_dsa/ml_dsa_key.c#L469-L500","version":"openssl-3.5.9 源码标签","note":"完整长度比较出现在种子再生成路径；不据此声称比较是恒时。"},
+    {"id":"8","title":"OpenSSL 3.5.9：展开私钥的公钥部分检查","url":"https://github.com/openssl/openssl/blob/openssl-3.5.9/crypto/ml_dsa/ml_dsa_encoders.c#L809-L819","version":"openssl-3.5.9 源码标签","note":"解码调用密钥公钥重建函数，该函数另比较 t0；解码再比较 tr。"}
+  ],
+  "revisions": [{"date":"2026-11-26","detail":"首发。记录公开密钥容器实验、独立签名互验和迁移验收边界。"}]
+}
