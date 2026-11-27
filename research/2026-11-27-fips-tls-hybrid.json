@@ -1,0 +1,178 @@
+{
+  "slug": "fips-tls-hybrid-service-boundary",
+  "date": "2026-11-27",
+  "updated": "2026-11-27",
+  "title": "单独的 X25519 被拒，为什么混合 TLS 还能握手？",
+  "subtitle": "OpenSSL 3.5.9 实测：区分协议协商、密码服务指示与验证边界",
+  "question": "启用 OpenSSL 3.5.9 FIPS Provider 并强制 fips=yes 后，为什么独立 X25519 无法配置，而含它的 X25519MLKEM768 能协商？这可以作为哪一级迁移验收证据？",
+  "status": "标准与安全策略对照 · 本机回环和 EVP 实测",
+  "tags": [
+    "TLS 1.3",
+    "ML-KEM",
+    "OpenSSL",
+    "FIPS 140-3",
+    "密码敏捷"
+  ],
+  "summary": [
+    "同一份 OpenSSL 3.5.9，维持 ECDSA 证书和逐组锁定的测试条件：默认 Provider 四组均能完成握手；FIPS 路径拒绝独立 X25519，P-256 和两个混合组仍完成 TLS 1.3 及 HTTPS 请求。",
+    "另做 EVP 封装、解封装实验：FIPS 路径的三个服务实例都读到指示值 1；X25519MLKEM768 返回的是 64 字节组合输入，而不是这条 TLS 连接的流量密钥。模块策略未声明 KEM-HybridFull。",
+    "迁移验收应分别记录实际协商组、对端认证、服务级指示和目标环境验证范围。不能用其中一项替代其他项。"
+  ],
+  "scope": "只研究 RFC 10024 的 TLS 1.3 密钥建立、OpenSSL 3.5.9 的操作级证据与 CMVP #5586 的边界。没有测 TLCP、生产环境、真实证书链、跨厂商互通、性能或整机合规。",
+  "process": [
+    {
+      "title": "锁定原始规范",
+      "detail": "对照 RFC 10024 的组与字节顺序、CMVP #5586 的有效状态及 v1.3 安全策略 §2.5、§2.7(o)、§4.3、§11。把协议标准和模块验证分开。"
+    },
+    {
+      "title": "固定实现和配置",
+      "detail": "校对官方 3.5.9 源码包 SHA-256；在 Debian 13 x86-64 以 enable-fips 自行编译。fipsinstall -pedantic 自检通过，独立 -verify 通过。同一程序分别运行仅 default 和仅 base+fips（fips=yes），核对实际加载的 Provider。"
+    },
+    {
+      "title": "独立取两类运行证据",
+      "detail": "对照运行 8 个单组选项的本机 TLS 场景；再用 2 套配置各做 3 个 EVP 封装、解封装往返，读操作 Provider、指示和长度，不输出秘密。"
+    }
+  ],
+  "sections": [
+    {
+      "id": "scope",
+      "title": "威胁模型：把“加密”和“认证”分开",
+      "paragraphs": [
+        "对长期保密数据，假设被动对手可存档今天的 TLS 流量，并在未来破解经典 ECDHE。混合密钥建立的目标是在规范组合和密钥调度正确实现、ML-KEM 仍安全、端点和随机性未失陷时，避免仅因经典分量被破解就泄露会话。主动对手和身份认证是另一层：本次握手仍使用 ECDSA，不证明抗量子身份认证。",
+        "另一个验收风险是部署误配：加载了模块不代表目标操作真的走该模块；某个组能握手也不代表会话使用的所有服务和运行环境都在验证范围内。"
+      ]
+    },
+    {
+      "id": "boundary",
+      "title": "为什么拒绝独立组，却允许混合组？",
+      "paragraphs": [
+        "RFC 10024 是 Proposed Standard。它把 ECDHE 与 ML-KEM 绑定为有独立标识和固定编码的 TLS 组。对于 X25519MLKEM768，ML-KEM 的共享秘密在前、X25519 在后；对于 SecP256r1MLKEM768，ECDHE 在前。组合串作为输入继续进入 TLS 1.3 密钥调度，不直接用作流量密钥。",
+        "在 #5586 的安全策略中，独立 X25519 不是批准用法；§2.7(o) 列出的三个混合组合则供模块外部应用用作 TLS 1.3 混合密钥交换的组成部分。该节明确未声明 KEM-HybridFull。也就是说，模块允许指定组合里的经典分量，不等于批准独立 X25519，也不等于为外部协议栈整条连接背书。"
+      ]
+    },
+    {
+      "id": "tls",
+      "title": "实测一：同一个证书，八种 TLS 配置",
+      "paragraphs": [
+        "OpenSSL s_server 与 s_client 只在 127.0.0.1 通信。使用同一张临时 ECDSA P-256/localhost 证书，客户端显式信任该证书并强制校验主机名。每行客户端和服务端都只配表中一个组；成功行均报告相应参数、TLS 1.3、ecdsa_secp256r1_sha256、Verification: OK 和 HTTP 200。"
+      ],
+      "table": {
+        "headers": [
+          "显式组",
+          "仅 default",
+          "base + fips，fips=yes"
+        ],
+        "rows": [
+          [
+            "P-256",
+            "成功",
+            "成功"
+          ],
+          [
+            "X25519",
+            "成功",
+            "双方在设置 -groups 时拒绝，退出码 1"
+          ],
+          [
+            "X25519MLKEM768",
+            "成功",
+            "成功"
+          ],
+          [
+            "SecP256r1MLKEM768",
+            "成功",
+            "成功"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "evp",
+      "title": "实测二：直接读取封装和解封装的指示",
+      "paragraphs": [
+        "生成临时密钥后，对同一密文分别封装、解封装并比较秘密；对实际执行的两个 EVP_PKEY_CTX 分别询问 fips-indicator，并用 EVP_PKEY_CTX_get0_provider 核对提供者。三组两路径的秘密均匹配。默认路径三个样本均未取得指示（查询返回 0，初始哨兵未变）；不能把它当成明确的业务合规判定。下表是 FIPS 路径实测。"
+      ],
+      "table": {
+        "headers": [
+          "EVP 服务",
+          "密文/组合秘密（字节）",
+          "封装/解封装指示"
+        ],
+        "rows": [
+          [
+            "ML-KEM-768",
+            "1088 / 32",
+            "1 / 1"
+          ],
+          [
+            "X25519MLKEM768",
+            "1120 / 64",
+            "1 / 1"
+          ],
+          [
+            "SecP256r1MLKEM768",
+            "1153 / 64",
+            "1 / 1"
+          ]
+        ]
+      },
+      "bullets": [
+        "64 字节是两个 32 字节分量的组合，不是 512 比特安全强度声明；1153 字节比 1120 字节多 33 字节，来自经典分量编码差异。密文长度不等于整次 TLS 握手长度。",
+        "直接 EVP 调用和回环 TLS 是两个实验。并未为 s_server/s_client 的每次内部服务调用采集指示；不能把第一列的连接与第二组实验的指示当成同一条追踪。"
+      ]
+    },
+    {
+      "id": "acceptance",
+      "title": "迁移验收：四条证据分别过关",
+      "bullets": [
+        "协议行为：按新连接记录协议、实际协商组、是否复用会话、对端认证算法和信任结果。仅接上端口或配置中出现组名不算通过。",
+        "服务行为：固定库及 Provider 版本、模块哈希和属性约束；从实际执行的操作上下文采集指示，区分 1、0 和未得到值。不能把通用的 Provider 加载成功或属性查询成功当成同样证据。",
+        "配置约束：把经典单组、目标混合组、混合强制策略分别做成可回归用例；下一步以只允许经典组的对端对照，核对迁移策略下失败还是显式允许回退，并补会话恢复和负载均衡终止点。该步骤尚未执行。",
+        "验证边界：把证书编号、安全策略版本、运行平台、构建/安装方式、密钥和熵来源分别审查。本次 Debian 13 实验不是对文档所列测试平台或真实部署的复现，不作 FIPS 合规声明；表中结果不能外推到 TLCP、其他版本、产品或生产流量。"
+      ]
+    }
+  ],
+  "sources": [
+    {
+      "id": "cmvp",
+      "title": "NIST CMVP 模块证书 #5586",
+      "url": "https://csrc.nist.gov/projects/cryptographic-module-validation-program/certificate/5586",
+      "version": "FIPS 140-3 Level 1 · Active",
+      "note": "证书状态及经批准模式、生成与外部注入 SSP 的限制。"
+    },
+    {
+      "id": "policy",
+      "title": "OpenSSL FIPS Provider Non-Proprietary Security Policy",
+      "url": "https://csrc.nist.gov/CSRC/media/projects/cryptographic-module-validation-program/documents/security-policies/140sp5586.pdf",
+      "version": "v1.3 · 2026-11-18",
+      "note": "模块边界、独立 X25519、混合 KEM 适用范围、服务指示和安装。"
+    },
+    {
+      "id": "rfc",
+      "title": "RFC 10024：TLS 1.3 PQ/T 混合密钥建立",
+      "url": "https://www.rfc-editor.org/rfc/rfc10024.html",
+      "version": "Proposed Standard · 2026-08",
+      "note": "三个命名组、组件顺序及 TLS 1.3 密钥调度。"
+    },
+    {
+      "id": "openssl",
+      "title": "OpenSSL 3.5.9 源码发布",
+      "url": "https://github.com/openssl/openssl/releases/tag/openssl-3.5.9",
+      "version": "3.5.9 · 2026-09-29",
+      "note": "实验从该版本官方源码包自行构建。"
+    },
+    {
+      "id": "repro",
+      "title": "复现说明、脚本和两份原始实验日志",
+      "url": "https://github.com/yibiaowangsd/liangzai-homepage/tree/main/research/experiments/2026-11-27",
+      "version": "2026-11-27",
+      "note": "本机回环及 EVP；不包含实验用私钥或共享秘密。"
+    }
+  ],
+  "revisions": [
+    {
+      "date": "2026-11-27",
+      "detail": "初版：核对标准与模块边界，完成 8 次 TLS 配置对照和 6 次 EVP 封装/解封装对照。"
+    }
+  ]
+}

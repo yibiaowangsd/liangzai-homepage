@@ -1,0 +1,6 @@
+ML-KEM-768 default:query=0,value=-99 default:query=0,value=-99 ciphertext_bytes=1088 secret_bytes=32 match=1
+X25519MLKEM768 default:query=0,value=-99 default:query=0,value=-99 ciphertext_bytes=1120 secret_bytes=64 match=1
+SecP256r1MLKEM768 default:query=0,value=-99 default:query=0,value=-99 ciphertext_bytes=1153 secret_bytes=64 match=1
+ML-KEM-768 fips:query=1,value=1 fips:query=1,value=1 ciphertext_bytes=1088 secret_bytes=32 match=1
+X25519MLKEM768 fips:query=1,value=1 fips:query=1,value=1 ciphertext_bytes=1120 secret_bytes=64 match=1
+SecP256r1MLKEM768 fips:query=1,value=1 fips:query=1,value=1 ciphertext_bytes=1153 secret_bytes=64 match=1
