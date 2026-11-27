@@ -1,0 +1,8 @@
+{
+  "date": "2026-11-27",
+  "campaign_id": "resend-2026-11-27",
+  "scope": "all-effective-subscribers-once",
+  "edition_file": "news/inbox/2026-11-27.json",
+  "edition_sha256": "d7d66b997bd4f2e0bf0ee484246506fd1b1960f2eefa1d63b4b6d85273f856ce",
+  "reason": "用户明确要求对2026-11-27更新后的18篇日报补发一次；按有效订阅、已确认邮箱、审批状态、原有栏目选择及群机器人发送配置执行。"
+}
