@@ -3,8 +3,8 @@
   "date": "2026-11-27",
   "coverage": {
     "pqc": {
-      "count": 2,
-      "note": "扫描IACR ePrint、NIST PQC、PQ Code Package、liboqs及国内密码库入口，覆盖学术、企业研发、评估与实现，时间窗由24小时扩至7日。入选ML-KEM/ML-DSA原生实现v2.1.0与Pretzel紧凑格签名；其余多为旧稿重复或维护性提交。Pretzel尚无独立密码分析，列为后续观察点。"
+      "count": 5,
+      "note": "扫描IACR ePrint、NIST PQC、PQ Code Package、liboqs及国内密码库入口，覆盖学术、企业研发、评估与实现，时间窗由24小时扩至7日。入选ML-KEM/ML-DSA原生实现v2.1.0与Pretzel紧凑格签名；其余多为旧稿重复或维护性提交。Pretzel尚无独立密码分析，列为后续观察点。 补充检索11/23—27 AI实验室与早期理论动态，读取Aaronson博客、Google Research、Anthropic、OpenAI原始仓库说明；收录可归属公开主张，均标明待验证。P=BQP相关X检索线索无法核读原帖，暂不独立成稿，待实验室原始声明及证明；Google完整PDF无法核读，Lean待公开；VP/VNP待独立审查。MiniMax 11/22已报，CryptanalysisBench原论文7月发布，本次研讨未见实质新结果，不重报。线上API读取失败，依据近7期仓库去重。其余栏目保留当日上午结果。"
     },
     "migration": {
       "count": 3,
@@ -36,6 +36,69 @@
     }
   },
   "items": [
+    {
+      "category": "pqc",
+      "cover_image": null,
+      "published_at": "2026-11-27T09:31:40+08:00",
+      "status": "published",
+      "priority": "P2",
+      "slug": "20261127-aaronson-ai-cryptography-rumors",
+      "title": "【待验证】Scott Aaronson回应AI实验室密码分析传闻，RSA破解尚无公开证据",
+      "summary": "理论计算机科学家Scott Aaronson于11月25日公开谈及AI实验室可能掌握尚未披露的密码学研究成果，并强调自己对具体内容缺乏把握。围绕整数分解是否进入多项式时间、RSA与椭圆曲线密码安全的讨论正在升温，但目前尚不能据此确认标准参数密码系统已遭破解。",
+      "content": "2026-11-25，理论计算机科学家Scott Aaronson在其个人研究博客Shtetl-Optimized发文，谈及近期AI辅助数学研究及密码学领域可能存在的未公开进展。他表示从多个消息来源听到相关说法，对存在重要研究成果较有信心，但在看到技术细节或获得实验室直接说明前，对具体成果保持明显保留。\n\n这场讨论引起关注的原因在于整数分解问题的复杂度。如果研究者能够给出适用于一般输入、运行时间随输入比特长度呈多项式增长的经典分解算法，那么RSA依赖的困难性基础将受到直接挑战。然而，理论上的多项式时间与现实可执行攻击并不等价，指数次数、常数、内存以及实际密钥规模仍会决定攻击成本。\n\nAaronson在其博文评论区进一步区分了整数分解与更广泛的公钥密码问题：即使分解在理论上变得容易，也不能自动推导出椭圆曲线离散对数问题或其他困难问题可以用相同方法求解。对于比特币等主要依赖椭圆曲线签名的系统，需要另行验证相关攻击的适用范围。其公开表态不构成对ECDSA破解传闻的确认。\n\n同样需要区分计算复杂性类别。假设未来证明P=BQP，则意味着有界错误量子多项式时间可判定问题能够在经典确定性多项式时间内求解；这会改变对量子算法复杂度优势的认识，并在适当的搜索到判定归约下影响整数分解等问题。但这只是条件性推论，不是已公开验证的定理，也不能因此断言全部PQC算法失效。P≠NP本身同样不足以证明某个密码构造安全。\n\n截至本次补充检索，可核实的是Aaronson发表了上述公开讨论，而不是某家实验室已经实现对RSA-2048、标准椭圆曲线或后量子标准算法的实际密钥恢复。消息来源的数量也不能证明彼此独立。后续应以实验室正式声明、完整数学证明、针对标准参数的实验和独立专家评审为判断依据。\n\n## 量仔观察\n\n对于密码工程人员，这是一项值得持续跟踪的风险信号，但不宜作为立刻停用某种算法的技术依据。应继续推进密码资产盘点、算法敏捷和多技术路线评估，并将研究监测范围从量子攻击扩展至AI辅助经典密码分析。尤其需要分别记录安全假设、复杂度结论、可执行算法与标准参数攻击证据，防止将不同层面的进展混为一谈。后续重点观察原始论文、证明审查和实验室澄清。\n\n原始讨论：[Scott Aaronson，2026-11-25博客及后续评论](https://scottaaronson.blog/?p=10379)。",
+      "tags": [
+        "AI密码分析",
+        "密码学理论",
+        "RSA",
+        "计算复杂性",
+        "待验证"
+      ],
+      "source_name": "Scott Aaronson · Shtetl-Optimized",
+      "source_url": "https://scottaaronson.blog/?p=10379",
+      "priority_reason": "涉及现有公钥密码安全基础，值得提前开展风险研判；可直接核实研究者公开讨论，但具体实验室成果、证明和标准参数攻击均未得到验证。"
+    },
+    {
+      "category": "pqc",
+      "cover_image": null,
+      "published_at": "2026-11-27T09:31:40+08:00",
+      "status": "published",
+      "priority": "P2",
+      "slug": "20261127-google-cogentic-integer-factorization",
+      "title": "【待验证】Google Cogentic提出无条件次指数时间整数分解算法",
+      "summary": "Google Research于11月25日公开Cogentic生成的整数分解研究，声称给出不依赖未证明数论假设、期望时间为L_N[1/3,105]的经典随机算法。其价值在于改善严格理论复杂度上界，而非宣布多项式时间分解或实用RSA破解；完整形式化证明仍待公开复核。",
+      "content": "2026-11-25，Google Research公开了题为Unconditional Integer Factorization in Time L_N[1/3, O(1)]的研究材料。项目说明称，基于Gemini 4的多智能体数学研究框架Cogentic生成了相关证明与形式化工作，目标是在不依赖尚未证明的数论假设的条件下，为一般整数的完全因式分解建立严格复杂度上界。\n\n按照研究仓库的公开说明，作者声称构造了一种零错误随机算法，在经典统一多带图灵机模型下，对任意整数N≥2给出完整素因子分解。最坏情形下的期望时间上界为L_N[1/3,105]，工作空间上界为L_N[1/3,40]，其中L_N[α,c]表示exp(c(log N)^α(log log N)^(1−α))形式的次指数增长。输出素因子还会进行确定性素性验证以及乘积校验。\n\n这项主张的重要性在于区分已证明的复杂度上界与依赖启发式假设的复杂度估计。传统通用数域筛法在实践中已经是大整数分解的重要方法，其常见渐近复杂度估计为L_N[1/3,c]。如果Cogentic的证明经过严格核验，意味着相同的渐近指数形式可以获得新的无条件理论支持，而不是说现有实际分解程序的运行速度就一定会改善。\n\n需要特别强调，L_N[1/3,105]并不是关于N的比特长度的多项式时间。常数105也不能被忽略，更不能将不同算法的渐近表达直接换算为标准RSA密钥的破解时长。这份公开说明没有给出RSA-2048等标准密钥规模的实际分解演示。因此，本次发布与网络上有关整数分解进入P类的传闻不能混为一谈。\n\n研究团队称Cogentic完成了基于Mathlib和Lean 4的完整形式化，并将在后续材料中发布。此次补充检索实际读取了项目原始说明，但未能取得可完整核读的论文PDF或形式化工程，因而不能对证明正确性作独立确认。Scott Aaronson在11月25日公开评论中也将Google相关工作视为理论层面的进展，而非已展示实际密码攻击能力的结果。\n\n## 量仔观察\n\n该成果最值得关注的是AI参与基础数学研究的方式及严格复杂度界可能发生的变化。密码研究团队应将它与实际密码分析实验、标准安全级别评估分开管理，暂不依据该主张调整RSA参数或后量子算法选型。下一步应关注完整Lean工程发布、定理陈述是否准确对应论文复杂度、独立数学审查以及能否建立可比较的实际运行基准。若证明得到确认，再评估是否存在可转化为工程密码分析的技术。\n\n原始说明：[Google Research项目仓库](https://github.com/google-research/google-research/blob/master/cogentic_research_papers/integer_factorization/README.md)。相关专家讨论：[Aaronson评论](https://scottaaronson.blog/?p=10379)。",
+      "tags": [
+        "AI数学研究",
+        "整数分解",
+        "RSA",
+        "复杂度",
+        "待验证"
+      ],
+      "source_name": "Google Research · Cogentic",
+      "source_url": "https://github.com/google-research/google-research/blob/master/cogentic_research_papers/integer_factorization/README.md",
+      "priority_reason": "公开研究直接针对RSA相关数学困难问题，若成立具有理论价值；项目已披露复杂度主张，但论文完整证明及Lean工程尚未独立核验，不构成实用密码破解证据。"
+    },
+    {
+      "category": "pqc",
+      "cover_image": null,
+      "published_at": "2026-11-27T09:31:40+08:00",
+      "status": "published",
+      "priority": "P2",
+      "slug": "20261127-openai-anthropic-vp-vnp",
+      "title": "【待验证】Anthropic与OpenAI发布VP≠VNP证明材料，仍不能推出P≠NP",
+      "summary": "Anthropic与OpenAI近日分别公开代数复杂性理论中VP与VNP分离的研究材料及部分或相应Lean形式化成果，OpenAI随后更新了相关结果。该方向涉及算术电路的计算下界，对理解密码学困难性有间接研究价值，但不同于通常的P与NP问题，也不能直接证明任何具体密码算法安全或失效。",
+      "content": "2026-11-23，Anthropic公开了由内部研究版Claude参与生成的VP与VNP分离研究材料，提供论文及Lean 4形式化工程。OpenAI也于同日公开相关预印本，并在2026-11-24发布更新研究，将原有结果纳入更广泛的代数复杂性理论框架。两家实验室的公开材料均属于值得跟踪的AI辅助数学研究主张。\n\nVP与VNP属于Valiant代数复杂性理论体系，研究对象是多项式族及其算术电路复杂度，而不是直接对普通比特输入上的所有判定问题进行分类。VP大体描述能够用多项式规模算术电路计算的多项式族，VNP则允许通过特定指数规模求和定义多项式族。证明二者分离意味着在相应计算模型中存在不能由多项式规模算术电路表达的VNP问题族。\n\nAnthropic仓库说明声称，哈密顿回路多项式以及适当特征条件下的积和式需要超多项式规模的算术电路，并据此建立分离结论。OpenAI预印本也声称获得相应电路下界，其11月24日更新又给出更广泛的代数层级结果及强化下界。公开项目说明提供了部分形式化证明的入口，但材料的存在不等同于本文已独立检查全部定理与证明。\n\n这些理论工作与密码学的关系在于计算困难性、复杂度下界以及安全归约等问题。密码学希望建立攻击者在特定模型和资源限制下无法有效完成某项计算的依据，因此新的下界技术有潜在研究价值。不过，算术电路模型的下界不能未经额外归约直接转化为一般图灵机或布尔电路的下界，也不能由VP≠VNP直接推出P≠NP。\n\n进一步说，即使未来证明P≠NP，也只能说明至少有某些NP问题无法在确定性多项式时间内解决；这不自动保证最坏情况之外的平均情况困难性，不等于单向函数存在的完整证明，更不能证明RSA、格密码或具体密钥封装机制的安全性。仍须审查各算法依赖的困难问题、分布、归约及攻击模型。\n\n## 量仔观察\n\n对密码算法研发而言，这一动态值得作为基础理论和AI辅助形式化验证的观察对象。短期应关注证明范围、形式化定理与自然语言数学陈述是否一致，以及独立研究者是否确认结果；长期可以研究相关方法能否迁移至密码安全证明、归约分析和反例发现。Anthropic的公开说明明确指出证明尚未经人类数学家检查，本次也没有独立运行Lean验证，因此不能将研究主张表述为最终确认的密码学结论。\n\n原始材料：[Anthropic VP/VNP仓库说明](https://github.com/anthropics/formal-math/blob/main/vp-vnp/README.md)；[OpenAI原始预印本说明](https://github.com/openai/math/blob/main/preprints/VP-and-VNP-are-different-November-23-2026/README.md)；[OpenAI更新记录](https://github.com/openai/math/blob/main/history.md)。",
+      "tags": [
+        "AI数学研究",
+        "计算复杂性",
+        "VP-VNP",
+        "形式化验证",
+        "待验证"
+      ],
+      "source_name": "Anthropic / OpenAI数学研究仓库",
+      "source_url": "https://github.com/anthropics/formal-math/blob/main/vp-vnp/README.md",
+      "priority_reason": "代数复杂性下界具有基础理论研究价值，实验室已公开相应研究与形式化材料，但不等于P与NP分离，更非具体密码安全结论；需独立审阅。"
+    },
     {
       "slug": "20261127-pq-code-package-v210",
       "title": "PQ Code Package发布ML-KEM与ML-DSA原生实现v2.1.0",
