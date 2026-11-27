@@ -1,0 +1,10 @@
+default Providers: /   default /     name: OpenSSL Default Provider /     version: 3.5.9 /     status: active
+default P-256 client_rc 0 server_rc 0 http200 True | Protocol version: TLSv1.3; Signature type: ecdsa_secp256r1_sha256; Verification: OK; Peer Temp Key: ECDH, prime256v1, 256 bits | 
+default X25519 client_rc 0 server_rc 0 http200 True | Protocol version: TLSv1.3; Signature type: ecdsa_secp256r1_sha256; Verification: OK; Peer Temp Key: X25519, 253 bits | 
+default X25519MLKEM768 client_rc 0 server_rc 0 http200 True | Protocol version: TLSv1.3; Signature type: ecdsa_secp256r1_sha256; Verification: OK; Negotiated TLS1.3 group: X25519MLKEM768 | 
+default SecP256r1MLKEM768 client_rc 0 server_rc 0 http200 True | Protocol version: TLSv1.3; Signature type: ecdsa_secp256r1_sha256; Verification: OK; Negotiated TLS1.3 group: SecP256r1MLKEM768 | 
+fips Providers: /   base /     name: OpenSSL Base Provider /     version: 3.5.9 /     status: active /   fips /     name: OpenSSL FIPS Provider /     version: 3.5.9 /     status: active
+fips P-256 client_rc 0 server_rc 0 http200 True | Protocol version: TLSv1.3; Signature type: ecdsa_secp256r1_sha256; Verification: OK; Peer Temp Key: ECDH, prime256v1, 256 bits | 
+fips X25519 client_rc 1 server_rc 1 http200 False | Call to SSL_CONF_cmd(-groups, X25519) failed | Call to SSL_CONF_cmd(-groups, X25519) failed
+fips X25519MLKEM768 client_rc 0 server_rc 0 http200 True | Protocol version: TLSv1.3; Signature type: ecdsa_secp256r1_sha256; Verification: OK; Negotiated TLS1.3 group: X25519MLKEM768 | 
+fips SecP256r1MLKEM768 client_rc 0 server_rc 0 http200 True | Protocol version: TLSv1.3; Signature type: ecdsa_secp256r1_sha256; Verification: OK; Negotiated TLS1.3 group: SecP256r1MLKEM768 | 
