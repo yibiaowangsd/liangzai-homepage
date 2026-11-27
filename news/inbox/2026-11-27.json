@@ -1,0 +1,355 @@
+{
+  "schema_version": 3,
+  "date": "2026-11-27",
+  "coverage": {
+    "pqc": {
+      "count": 2,
+      "note": "扫描IACR ePrint、NIST PQC、PQ Code Package、liboqs及国内密码库入口，覆盖学术、企业研发、评估与实现，时间窗由24小时扩至7日。入选ML-KEM/ML-DSA原生实现v2.1.0与Pretzel紧凑格签名；其余多为旧稿重复或维护性提交。Pretzel尚无独立密码分析，列为后续观察点。"
+    },
+    "migration": {
+      "count": 3,
+      "note": "检查英国央行/PRA/FCA、NCSC、Internet Society、AWS、Cloudflare及金融和云采用方入口，覆盖供给方方案与用户/行业实践，重点窗口为2026-11-26并扩至7日。入选英国金融稳定报告、Web端PQTLS实测与AWS-LC治理方案；继续观察CMORG既有结构化方法的落地更新、浏览器端PQC签名及AWS-LC后续FIPS模块状态。"
+    },
+    "protocol": {
+      "count": 0,
+      "note": "复查近7期待跟进，并扫描IETF Datatracker、RFC Editor、IANA TLS/SSH/QUIC/IKE注册表及OpenSSL、OpenSSH、strongSwan等实现入口，覆盖TLS、SSH、IKE/IPsec、QUIC、PKI和中外线索。ML-KEM TLS/IKEv2队列及主要注册表无新状态；2026-11-26新增项主要为未获WG采纳的个人草案。draft-intra-handshake-fail-67待完成版本差异、CVE与厂商回应核验；OpenSSL 2026-11-24 QUIC安全公告待2026-12-01修复版后复查。"
+    },
+    "standards": {
+      "count": 0,
+      "note": "扫描IETF recent/Last Call/IESG/RFC Editor、IANA、NIST PQC、ETSI CYBER QSC、ISO/IEC、ITU-T、3GPP与全国网安标委入口。MLS PQ与SLH-DSA JOSE/COSE仍处2026-12-03截止的Last Call，近7期已报且无新状态；ISO TR 26752.2、3GPP Rel-20 PQC工作项、ITU-T与TC260未见本期节点。ETSI TR 104 239-4的搜索索引与动态页状态冲突，待稳定的一手元数据确认。"
+    },
+    "security": {
+      "count": 3,
+      "note": "检索2026-11-26 08:10至11-27 08:10北京时间并扩展至7日，扫描CISA KEV、CERT-EU、JPCERT/JVN、CNNVD/CNVD/CNCERT，Palo Alto、Mitel等PSIRT及Bithumb、Zodia等受影响机构。入选PAN-OS在野利用、MiCollab取证链与Bithumb更新。Zodia托管事件有时效价值，但官方原文不可读且根因、人数与密钥影响未披露，作为高价值候选放弃。CISA KEV截至11-25无新增；FinCEN、JAXA、N-able、GL.iNet与OpenRouter待跟进均无实质更新。"
+    },
+    "ai": {
+      "count": 3,
+      "note": "检查中国inclusionAI、Qwen、百度，北美NVIDIA、Google Cloud、OpenAI、AWS、Artificial Analysis、METR、HELM、MLCommons，欧洲/英国Mistral与AISI，亚太Sakana、Upstage，覆盖模型/权重、产品、训练推理、独立评测和应用。入选BioReason-Pro 2、Nemotron 3.5 Parse开放数据与Ming-Image-0.2-Design；NVIDIA两条分别属于生命科学模型和文档解析训练数据。MAGI-2技术报告、WeMM-Ecom独立复测、Gemini 4 Neon安全材料均无进展。"
+    },
+    "ngcc": {
+      "count": 1,
+      "note": "实查NICCS首页、通知/公钥Round 1候选与算法评议入口，以及ngcc.dev首页、Security索引、分类、TSUOV/BAG-Piglet报告、Performance、Side-Channel和ngcc-harness至2026-11-25批次。窗口内无新finding；扩至7日后补证TSUOV sign-31-9，2026-11-24仅索引、现详情与复现仓库可读。NICCS候选动态表及PKC Forum原帖403，未见作者回应、修订版、复测或ICCS正式结论；来源含复现命令，未执行。"
+    },
+    "flash": {
+      "count": 3,
+      "note": "复用七栏发现并补查网信办、工信部、发改委、腾讯/阿里/华为云及Google Cloud、AWS、GitHub、Cloudflare、Hugging Face/ggml、NVIDIA。入选新一代通信网络实施方案、Vertex AI Extensions迁移截止节点与llama.cpp/AMD公开基准。网信办公共页注明正文有删减，未推断未公开条款；Google仅确认计划在2026-11-26之后关闭，未确认实际关闭完成。腾讯云与阿里云近期模型下线或价格信息多为旧公告或近2日已报，未重复。"
+    }
+  },
+  "items": [
+    {
+      "slug": "20261127-pq-code-package-v210",
+      "title": "PQ Code Package发布ML-KEM与ML-DSA原生实现v2.1.0",
+      "summary": "PQ Code Package于2026-11-26同步发布mldsa-native与mlkem-native v2.1.0，在AVX-512平台提高ML-DSA-87和ML-KEM-1024吞吐，并削减多处栈内存占用；版本还加入RV32IM后端、证明捕获/回放和更完整的CBMC检查，但下游liboqs整合仍在推进。",
+      "content": "2026-11-26，PQ Code Package发布mldsa-native与mlkem-native v2.1.0。两个项目分别实现ML-DSA数字签名和ML-KEM密钥封装，本次不是算法参数变化，而是面向原生CPU后端、内存占用与形式化检查的一次联合工程发布；[ML-KEM发行说明](https://github.com/pq-code-package/mlkem-native/releases/tag/v2.1.0)与ML-DSA说明给出了各自的测试范围。\n\n在维护者公布的AVX-512测试中，ML-DSA-87的密钥生成提高约22%—29%，签名提高15%—19%，验证提高18%—27%；ML-KEM-1024在AMD c7a实例的周期数下降约11%—16%，在Intel c7i/c8i下降约16%—23%。这些数字来自项目自测，取决于CPU、编译器、批次和基线版本，不能直接外推到所有部署。\n\n内存方面，ML-DSA-87的大内存路径中，签名栈占用由约21.3 kB降至14.2 kB，密钥生成由18.8 kB降至10.6 kB，公钥恢复由22.0 kB降至14.8 kB；ML-KEM则移除一处分配576字节的栈缓冲区。mldsa-native还增加RV32IM后端，但恒定时间前提要求目标处理器的整数乘法延迟不依赖数据。\n\n验证能力也有增量：两项目都加入基于HOLTrace的证明捕获与回放流程，mldsa-native报告211/218个CBMC harness已由两个求解器检查，mlkem-native报告64位目标的harness已用两个求解器覆盖。尚不能据此把所有平台、编译选项和调用方式都视为已证明；liboqs的相关整合仍是开放工作，不能写成下游已正式采用。\n\n## 量仔观察\n\n对维护密码库、嵌入式固件和高吞吐服务的团队，这一版本最值得验证的是自己的目标CPU、栈预算与构建选项，而不是照搬云实例百分比。证据为项目完整发行说明和测试数据，强于单个提交，但仍缺独立复测。建议在固定编译器和真实报文负载下回归性能与恒定时间属性，并观察liboqs等消费者何时合并、以及剩余CBMC harness是否完成双求解器验证。",
+      "category": "pqc",
+      "tags": [
+        "PQC",
+        "ML-KEM",
+        "ML-DSA",
+        "密码实现",
+        "版本发布"
+      ],
+      "source_name": "PQ Code Package",
+      "source_url": "https://github.com/pq-code-package/mldsa-native/releases/tag/v2.1.0",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：已读两个项目完整发行说明；影响实现性能、栈预算和验证流程，但数据主要来自维护者自测，且下游整合尚未完成。"
+    },
+    {
+      "slug": "20261127-pretzel-compact-lattice-signature",
+      "title": "Pretzel论文提出基于Module-LWE与Module-SIS的紧凑格签名",
+      "summary": "Pretzel论文于2026-11-21被IACR ePrint接收、11-23修订，给出不依赖自目标类假设的格签名。在作者参数与实现中，NIST第2、3、5类签名尺寸比ML-DSA小约52%—59%，第3类为1361字节；证明非紧且签名重启受秘密状态影响，尚无独立密码分析。",
+      "content": "2026-11-21，Pretzel论文被IACR ePrint接收，并于2026-11-23修订。作者提出一套基于Module-LWE与Module-SIS问题、在量子随机预言机模型中分析的格签名，目标是在不采用自目标类额外假设的前提下压缩签名尺寸；本文按原始论文陈述，不把其自称安全性等同独立确认。\n\n论文给出的NIST第2、3、5类参数中，签名尺寸相对ML-DSA缩小约52%—59%。第3类Pretzel签名为1361字节，论文列出的SHUTTLE为1589字节、ML-DSA-65为3309字节。尺寸比较基于论文所选参数与安全估计，不能脱离密钥尺寸、失败概率、实现策略和证明损失单独判断优劣。\n\n作者还提供Apple M2 Pro上的实现结果，并报告其参考实现快于同机测试的ML-DSA。与SHUTTLE等其他论文的速度数字不宜横向拼接，因为机器、编译器、优化程度和测量方法并不一致；当前可确认的新增点是构造、参数集及作者实现，而不是经第三方验证的生产性能结论。\n\n安全分析的主要限制同样写在论文中：归约并非紧致，具体参数依赖启发式成本估计；签名过程含拒绝采样与重启，而重启决定与秘密状态有关，工程实现需要避免由时间或控制流泄露信息。当前没有公开的独立密码分析、侧信道评估或标准化机构采纳记录。\n\n## 量仔观察\n\nPretzel对关注短签名、证书和受限链路的密码设计者具有研究价值，但距离迁移选型仍很远。现有证据是108页原始论文及作者实现，结论成熟度高于摘要线索、低于多方复现。读者可复核参数估计、证明损失与重启路径，暂不应据此替换ML-DSA。下一观察点是独立密码分析、恒定时间实现审计及跨平台可复现基准是否出现。",
+      "category": "pqc",
+      "tags": [
+        "PQC",
+        "格密码",
+        "数字签名",
+        "Module-LWE",
+        "论文"
+      ],
+      "source_name": "IACR Cryptology ePrint Archive",
+      "source_url": "https://eprint.iacr.org/2026/2970",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：已读108页原始论文；签名尺寸和假设路线有明确研究价值，但参数、安全与性能尚缺独立复核，未进入标准或部署阶段。"
+    },
+    {
+      "slug": "20261127-boe-pqc-financial-stability",
+      "title": "英国央行金融政策委员会将抗量子迁移列为金融稳定优先事项",
+      "summary": "英国央行于2026-11-26发布金融稳定报告，要求把PQC迁移从单机构密码升级扩展为跨机构系统性风险管理，关注共同技术供应商、交易链依赖、跨境节奏差异与人才竞争。报告沿用英国2028、2031、2035里程碑，并未创设新的强制截止日。",
+      "content": "2026-11-26，英国央行发布11月《金融稳定报告》，金融政策委员会把有序迁移到抗量子密码列为优先事项。报告的新增重点不是再次宣布算法，而是要求从迁移前、迁移中和迁移后分析系统性风险，尤其关注金融市场基础设施、银行及其共同依赖如何在同一时间窗口内相互影响。\n\n报告指出，共同云、软件、身份和通信供应商可能形成相关性风险：一家关键服务商的迁移方式、容量限制或故障，会同时影响多家机构。交易链上的上下游若采用不同节奏，混合算法、证书、硬件安全模块和回退机制也可能出现互操作缺口；跨境机构还要处理司法辖区时间表不一致的问题。\n\n委员会同时关注有限的密码工程、测试和项目管理资源会在行业内竞争。报告称CMORG已经发布共享部门依赖PQC准备度的结构化评估方法，英国央行、审慎监管局和金融行为监管局还将继续通过CMORG协调关键依赖与迁移顺序。这里的措辞是金融稳定监督与协调方向，不应写成针对所有机构已经生效的新技术规则。\n\n报告沿用英国既有的2028年发现与规划、2031年优先迁移、2035年完成迁移里程碑，没有设置新的法定截止日。金融机构应把资产清单、供应商能力、PKI与HSM更新、交易链互通及故障回退纳入同一治理框架，并把关键第三方的交付能力作为风险假设，而不是只检查本机构是否支持ML-KEM或ML-DSA。\n\n## 量仔观察\n\n这份报告对银行、清算机构、云与安全供应商的意义在于：迁移成败将按系统关联性而非单个项目验收来判断。证据来自英国央行完整官方报告，权威性高，但既有评估方法如何进入日常监督仍待观察。读者现在可补充共同依赖、跨境节奏和稀缺技能的压力测试；下一观察点是CMORG方法的后续更新、监管问卷或监督期望何时转化为可操作条目。",
+      "category": "migration",
+      "tags": [
+        "PQC迁移",
+        "金融稳定",
+        "英国央行",
+        "供应链",
+        "监管"
+      ],
+      "source_name": "Bank of England",
+      "source_url": "https://www.bankofengland.co.uk/financial-stability-report/2026/november-2026",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：英国央行正式报告把PQC迁移纳入金融系统性风险管理，影响范围覆盖机构、市场基础设施与共同供应商，需尽早调整治理和压力测试。"
+    },
+    {
+      "slug": "20261127-web-pqtls-concentration-study",
+      "title": "UNSW与Internet Society测得Web端混合PQTLS采用集中于基础设施提供商",
+      "summary": "Internet Society于2026-11-26发布UNSW测量结果：在684494个稳定域名、超过20亿次TLS 1.3握手中，混合PQTLS协商率从2025年7月的31.3%升至2026年3月的49.2%，但93.9%的采用可能由基础设施提供商托管；分组后所有者管理域名采用率仅9.6%和8.4%。",
+      "content": "2026-11-26，Internet Society公布新南威尔士大学Web端后量子TLS测量的完整解读。研究从2025年7月至2026年3月持续探测约100万个HTTPS端点，其中684494个域名构成稳定面板，累计完成超过20亿次TLS 1.3握手，用以区分是否能协商混合密钥交换及实际由谁提供能力。\n\n稳定面板中，支持混合PQTLS的比例从31.3%升至49.2%，成功的混合协商均使用X25519MLKEM768。研究没有发现后量子签名证书认证，说明当前Web部署的主要增量仍在临时密钥交换，而证书链和身份认证大多继续使用经典签名。\n\n表面覆盖率掩盖了集中度：研究估计93.9%的混合能力来自基础设施提供商管理，Cloudflare与Fastly合计约占相关部署七成。研究按国家迁移目标分组后，可能由域名所有者管理的域名采用率分别只有9.6%和8.4%；这不是全部组织的总体采用率，却显示平台默认值可显著抬高域名统计。\n\n在328000多个可匹配域名中，混合握手与X25519握手的中位延迟差为0毫秒，但结果来自公共Web、特定探测位置和截至2026年3月的数据，不能外推到移动弱网、私有网络或大证书链。运营方应把域名覆盖、配置控制权和端到端认证分开统计，并在真实路径上测试MTU、中间盒与尾延迟。\n\n## 量仔观察\n\n这项测量对CISO、网络平台和采购团队的直接价值，是避免用“近半网站支持”替代本组织准备度。证据包含公开方法、长期面板与原始项目页，但尚不能证明所有托管客户主动选择或理解PQC。建议盘点哪些域名只是由CDN自动获得能力，哪些内部服务真正完成互通和回退测试；下一观察点是PQC签名证书是否出现，以及所有者管理域名的采用率能否持续上升。",
+      "category": "migration",
+      "tags": [
+        "PQC迁移",
+        "TLS 1.3",
+        "ML-KEM",
+        "测量",
+        "CDN"
+      ],
+      "source_name": "Internet Society Pulse",
+      "source_url": "https://pulse.internetsociety.org/en/blog/2026/11/post-quantum-tls-is-reaching-the-web-but-adoption-is-more-concentrated-than-it-looks/",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：公开方法覆盖超过20亿次握手，揭示域名覆盖与组织真实迁移的差异；数据止于2026年3月，仍需后续和多网络复测。"
+    },
+    {
+      "slug": "20261127-aws-lc-routine-pqc-updates",
+      "title": "AWS以AWS-LC长期支持版稳定ABI推动PQC更新常态化",
+      "summary": "AWS于2026-11-25发布AWS-LC迁移实践，主张用长期支持版稳定ABI、少量加密库依赖和自动验证降低持续更新成本。其Graviton4同可用区测试中，X25519+ML-KEM-768完整连接比P-256+RSA-2048增加约12微秒和2.3 kB；ML-DSA证书握手报文增至17—24 kB。",
+      "content": "2026-11-25，AWS发布以AWS-LC为核心的后量子迁移工程说明，重点从一次性启用算法转向可重复升级：通过长期支持发行版的稳定ABI、减少应用直接依赖的密码库数量、持续机器证明和FIPS模块交付，让算法与实现更新能按常规软件生命周期进入测试、发布和回滚流程。\n\nAWS在Graviton4、同一可用区的自测中，使用X25519+ML-KEM-768的完整连接相对P-256+RSA-2048增加约12微秒，并增加约2.3 kB传输量。该比较同时改变了密钥交换与认证基线，且只代表厂商给定硬件、拓扑、编译与负载，不能直接作为其他云、跨地域或客户端设备的容量结论。\n\n当证书链使用ML-DSA时，AWS给出的服务器握手报文约为17—24 kB，经典配置约为4—7 kB。工程上需要把证书链大小、分片、MTU、中间盒、CPU与尾延迟一起压测，而不是只记录单次握手平均耗时；混合阶段还要明确回退发生时是否可观测、是否会把策略悄然降回经典算法。\n\n合规状态需要区分：AWS-LC FIPS 3.0模块包含已验证的ML-KEM；包含ML-DSA的后续模块仍只是提交验证，不能写成已获FIPS验证。该方案说明了供给方如何组织更新，但没有替采用方完成资产清单、应用兼容、密钥生命周期和供应商退出测试。\n\n## 量仔观察\n\n对大型软件平台，真正可持续的PQC迁移往往取决于依赖收敛、ABI稳定和可回滚发布，而不只是第一次握手成功。证据是AWS官方架构说明和自测，机制清楚但性能缺独立复现。建议读者在自己的链路和证书配置下复测，并将验证状态写入采购与上线门槛；下一观察点是ML-DSA FIPS模块何时完成验证，以及实际客户负载中报文膨胀如何处理。",
+      "category": "migration",
+      "tags": [
+        "PQC迁移",
+        "AWS-LC",
+        "FIPS",
+        "ML-KEM",
+        "ML-DSA"
+      ],
+      "source_name": "AWS Security Blog",
+      "source_url": "https://aws.amazon.com/blogs/security/make-post-quantum-cryptography-updates-routine-with-aws-lc/",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方说明给出治理机制、测试条件与验证状态，适合迁移工程参考；性能为单方测试，ML-DSA模块尚未完成FIPS验证。"
+    },
+    {
+      "slug": "20261127-pan-os-cve-2026-46300-exploitation",
+      "title": "Palo Alto Networks确认CVE-2026-46300被用于攻击互联网暴露的PAN-OS管理面",
+      "summary": "Palo Alto Networks的PAN-SA-2026-0015时间线记载2026-11-24首次发布，页头元数据标注11-25发布。公告确认Linux本地提权漏洞CVE-2026-46300已被用于攻击互联网可达的PAN-OS管理接口；已知路径需先从暴露管理面取得入口，厂商要求暴露设备立即升级并限制访问。",
+      "content": "2026-11-24，Palo Alto Networks在PAN-SA-2026-0015时间线中记载首次发布，页面元数据则标注2026-11-25发布。公告确认CVE-2026-46300已出现在针对互联网暴露PAN-OS管理接口的攻击中。该问题是Linux内核本地权限提升漏洞，单独并不提供远程初始访问；厂商观察到的链条需要攻击者先从暴露管理面取得执行条件。\n\n厂商称，已知利用首先依赖互联网可达管理接口上的PHP2Shell路径，之后才利用CVE-2026-46300提升权限。目前没有公开其他利用方式。这里应区分“已观察到在野利用”与“任何PAN-OS设备都可被直接远程攻击”：暴露配置和前置入侵条件决定风险，不能只用CVSS或KEV标签替代。\n\n修复版本因分支而异，涵盖10.2.7-h41、10.2.10-h45、10.2.13-h29、10.2.16-h14、10.2.18-h15，11.1/11.2/12.1多个维护版本，以及12.2.4-h3及更高版本。管理员必须按厂商表格匹配自己的分支，不能把某一最低版本机械套用到所有设备。\n\n厂商建议：若管理接口或带管理配置的dataplane接口能从互联网访问，应立即升级并限制到可信内部IP；已遵循隔离建议的环境风险显著降低，但仍应在维护窗口升级。事件响应还应检查暴露时间、异常管理登录和权限提升痕迹，而不是把补丁安装等同于确认未被入侵。\n\n## 量仔观察\n\n该事件影响直接面向防火墙管理员与SOC，证据来自厂商PSIRT的在野利用确认，紧迫度高。公告FAQ对另一编号的交叉引用存在不一致，本文仅采用主表中的CVE-2026-46300与版本矩阵。读者应先收敛管理面暴露，再升级、排查和轮换可能受影响凭据；下一观察点是厂商是否发布更多攻击范围、入侵指标或修订后的链条说明。",
+      "category": "security",
+      "tags": [
+        "PAN-OS",
+        "CVE-2026-46300",
+        "在野利用",
+        "防火墙",
+        "补丁"
+      ],
+      "source_name": "Palo Alto Networks PSIRT",
+      "source_url": "https://security.paloaltonetworks.com/PAN-SA-2026-0015",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：厂商明确确认在野利用并给出修复矩阵；互联网暴露管理面需立即收敛与升级，同时应按前置条件判断而非泛化。"
+    },
+    {
+      "slug": "20261127-micollab-pre-disclosure-exploitation",
+      "title": "Accenture披露MiCollab漏洞公开前已出现入侵链",
+      "summary": "Accenture于2026年11月公布MiCollab事件取证：一名受害者在Mitel 2026-11-16披露漏洞前已出现Webshell，攻击者约30分钟取得root，并在约32分钟后使用LDAP连接器凭据访问域控制器。Mitel确认10.3.0.18及更早版本受影响并提供补丁。",
+      "content": "2026-11-16，Mitel首次发布MISA-2026-0012；Accenture随后在2026年11月公开MiCollab事件取证，披露一名受害者在该公告之前已出现Webshell。时间线显示，首个相关请求后约12分钟出现命令活动，约30分钟取得root，约32分钟后使用LDAP连接器凭据向域控制器认证。\n\n[Mitel公告](https://www.mitel.com/support/security-advisories/mitel-product-security-advisory-misa-2026-0012)列出AWV组件的五个漏洞，包括任意文件上传、XML注入、未授权访问、命令注入和认证绕过；组合利用可能放大影响。受影响范围为MiCollab 10.3（10.3.0.18）及更早受支持版本，厂商为10.3.0.18提供补丁，也可升级到后续版本。\n\nAccenture还发现第二家组织使用了相同攻击基础设施，但没有确认其初始进入方式。因此，可以确认的是至少一个事件的取证链与时间先于公开披露，不能把所有观察到的组织都归因于同一漏洞，也不能把研究者对工具生成方式的推断写成攻击者身份或能力已获证明。\n\n无法及时安装补丁的组织，可按Mitel建议限制AWV组件的外部访问。若系统在2026-11-16前后曾对外开放，仅升级不足以排除既有入侵，应检查Web层持久化、root活动、LDAP连接器凭据使用及域控制器认证，并轮换可能暴露的服务凭据；本文不提供可利用步骤或完整攻击链。\n\n## 量仔观察\n\n统一通信系统连接目录、会议与企业身份，漏洞一旦被串联，影响会从应用主机迅速扩展到域环境。证据由原始取证报告和Mitel PSIRT相互支撑，但第二个样本的入口仍未证实。运维与响应团队应把补丁、外部暴露收敛和历史狩猎同步执行；下一观察点是Mitel或更多受害方是否给出更完整的在野利用范围与入侵时间线。",
+      "category": "security",
+      "tags": [
+        "MiCollab",
+        "Mitel",
+        "在野利用",
+        "身份安全",
+        "事件响应"
+      ],
+      "source_name": "Accenture Cyber Intelligence",
+      "source_url": "https://accenture.github.io/cyber-intelligence/micollab-exploitation/",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P1",
+      "priority_reason": "E3：原始取证与厂商公告共同确认公开披露前的实战链条，且目录凭据被用于横向认证；暴露组织需补丁与历史狩猎并行。"
+    },
+    {
+      "slug": "20261127-bithumb-breach-scope-update",
+      "title": "Bithumb更新内部群件泄露事件的访问时段与数据范围",
+      "summary": "Bithumb于2026-11-25 18:00韩国时间更新内部移动群件事件，确认未授权访问发生在2026-10-12至10-27，潜在泄露字段扩至最多19类，涵盖身份、账户、交易和钱包地址等信息。交易系统与客户数据库分离，厂商称尚未发现其被直接入侵，但未公开修订后的总人数。",
+      "content": "2026-11-25 18:00韩国时间，Bithumb更新其内部移动群件系统泄露公告。公司称，外部未授权访问发生于2026-10-12 13:49至10-27 15:22；本次是对2026-10-29已披露事件的范围修订，不是另一起新入侵。新增点是受影响对象与字段在后续调查中扩大。\n\n公告列出的潜在字段最多19类，包括会员编号、姓名、联系方式、出生日期、身份证明、银行账户、住址、工作信息、交易记录和钱包地址等，但并非每名受影响者都涉及全部字段。受影响对象包括客户、合作方员工以及现任或离任员工；公司未在这次更新中给出可直接核实的修订后总人数。\n\nBithumb称，涉事系统是与交易账户、资产系统和客户数据库分离的内部业务系统，当前没有发现交易服务或客户数据库被直接攻破的迹象。这个表述是公司调查口径，不能写成资产绝对安全，也不能由“分离”推断攻击者没有获得可用于钓鱼、冒名或社工的信息。\n\n公司已停用受影响群件、封堵访问路径、修复所称根因，并扩大异常登录、交易与提款监控；确认受影响者将收到个别通知。用户应通过官方渠道核对通知，警惕利用已泄露身份与交易信息实施的定向诈骗，并检查多因素认证和关联账户异常，而不是点击来历不明的查询链接。\n\n## 量仔观察\n\n这次更新的重要性在于事件持续调查改变了暴露时间和数据分类，说明初始人数或字段不应被当作最终边界。证据来自受影响机构的详细公告，但仍缺独立取证和修订后人数。安全与合规团队可据字段类型重新评估二次伤害并保留通知证据；下一观察点是监管调查、最终人数、根因说明及是否出现可确认的账户滥用。",
+      "category": "security",
+      "tags": [
+        "Bithumb",
+        "数据泄露",
+        "身份安全",
+        "加密资产",
+        "事件更新"
+      ],
+      "source_name": "Bithumb",
+      "source_url": "https://feed.bithumb.com/notice/1655458",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：受影响机构更新了明确的访问时段和数据类型，二次伤害可操作性高；最终人数、独立取证和资产影响仍未完整披露。"
+    },
+    {
+      "slug": "20261127-bioreason-pro-2-release",
+      "title": "NVIDIA发布BioReason-Pro 2蛋白功能推理模型与训练代码",
+      "summary": "NVIDIA于2026-11-24发布9B参数BioReason-Pro 2的SFT与RL权重、MIT代码和模型卡。模型把Qwen3.5-9B与冻结的ESM3蛋白编码器结合，输出功能假设和GO术语；合作方Goodfire还报告序列特征识别由44%升至84%，但结果不是独立评测，论文仍在准备中。",
+      "content": "2026-11-24，NVIDIA发布BioReason-Pro 2的9B参数SFT与RL检查点、训练与推理代码及详细模型卡。系统以Qwen3.5-9B为语言骨干，连接冻结的ESM3蛋白编码器和Gene Ontology图编码器，输入蛋白序列、可选结构与生物学上下文，输出推理过程、功能摘要和GO术语。\n\nSFT版本使用272688条推理轨迹，RL版本在此基础上采用GRPO训练；模型权重采用OpenMDW-1.1，代码为MIT许可证，ESM3组件需单独下载。模型卡明确这是初始研究发布，输出是供专家与实验验证的假设，不是已核实注释，也不用于临床、诊断或患者照护。\n\n[合作方Goodfire报告](https://www.goodfire.com/research/building-stronger-biological-reasoning-models)，在调整训练输入与蛋白表示后，序列特征识别从44%升至84%，特征定位到5个氨基酸范围内的比例约85%，并对两个低注释人类蛋白进行了湿实验验证。这些实验由项目合作方完成，并非独立第三方评测；模型卡也说明完整论文仍在准备中。\n\n部署门槛并不低：模型卡给出的最低推理配置为一张80 GB NVIDIA GPU，序列最长2000个残基、文本上下文16384 token。团队在采用前应核对许可证组合、ESM3单独依赖、训练数据时间截点与任务外泛化，并用自己的已知蛋白和盲测集合验证错误模式。\n\n## 量仔观察\n\n这次发布对计算生物学团队的价值，是权重、代码、训练拆分和限制同时公开，使方法能进入复核，而不是只给演示。证据包括模型卡和合作方实验，但尚无独立湿实验或同行评审论文。读者可先把它用于候选排序与可解释性研究，保留专家审查和实验闭环；下一观察点是论文、外部盲测及更小显存配置能否复现其优势。",
+      "category": "ai",
+      "tags": [
+        "AI",
+        "生命科学",
+        "蛋白质",
+        "开放权重",
+        "模型发布"
+      ],
+      "source_name": "NVIDIA Hugging Face",
+      "source_url": "https://huggingface.co/nvidia/BioReason-Pro-2-9B-RL",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：权重、代码、模型卡和合作方实验均可读，适合研究复核；论文与独立湿实验尚缺，且模型明确不适用于临床决策。"
+    },
+    {
+      "slug": "20261127-nemotron-35-parse-open-data",
+      "title": "NVIDIA开放Nemotron 3.5 Parse合成数据与SFT至RLVR训练流程",
+      "summary": "NVIDIA与Hugging Face于2026-11-26公开Nemotron 3.5 Parse的文档解析数据与训练流程，包括998万张合成图表、100万张合成表格和790万份多语种OCR样本，并给出SFT到GRPO/RLVR的适配方法。数据为CC BY 4.0，但部分Dataset Viewer读取失败，样本级质量仍待审计。",
+      "content": "2026-11-26，NVIDIA与Hugging Face发布围绕Nemotron 3.5 Parse的开放数据和训练说明，目标是让团队针对图表、表格、版面与多语种OCR复现或适配文档解析模型。新增资产包括约998万张Synthetic Charts V1、100万张Synthetic Tables V1和790万份OCR Synthetic Multilingual v2样本。\n\n文章给出从监督微调到GRPO/RLVR的训练路径，并说明如何为不同文档域构造可验证奖励和格式约束。数据集标注为CC BY 4.0，训练示例与模型代码另按相应仓库许可证使用；开放数据不等同所有生成来源、字体、语言和真实文档分布都已审计。\n\n性能部分中，NVIDIA在H200、BF16等给定条件下报告DFlash2相对基线在并发1时约7.62倍、并发512时约1.52倍加速。DFlash2本身并非本日首次发布，且这些是厂商控制环境的结果；随着并发提高，收益显著收窄，不能直接外推到其他GPU、图像尺寸或端到端服务吞吐。\n\n实际复核中，部分Hugging Face Dataset Viewer页面返回错误，数据仓库与元数据可见，但这限制了即时样本抽查。准备使用的团队应下载固定版本，统计语言、版面、字符集和难例分布，再用真实扫描件、隐私脱敏文档和任务特定评分进行二次评估。\n\n## 量仔观察\n\n对文档AI研发者，最大增量是大规模训练资产和SFT至RLVR方法同时公开，能减少从论文描述到数据工程的落差。证据为官方数据卡和训练说明，但质量、合成偏差及厂商性能仍待外部复核。建议把数据当作可组合原料而非现成真值；下一观察点是Dataset Viewer恢复、数据版本冻结，以及独立团队在真实多语种文档上的可复现结果。",
+      "category": "ai",
+      "tags": [
+        "AI",
+        "文档解析",
+        "开放数据",
+        "RLVR",
+        "OCR"
+      ],
+      "source_name": "Hugging Face",
+      "source_url": "https://huggingface.co/blog/nvidia/building-on-nemotron-35-parse-open-data-fine-tunin",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：数据卡和训练流程可读，规模与适配价值明确；部分预览失败，样本质量与H200性能仍需独立审计和复测。"
+    },
+    {
+      "slug": "20261127-ming-image-02-design",
+      "title": "inclusionAI发布Ming-Image-0.2-Design并登上开放权重人类偏好榜首",
+      "summary": "inclusionAI于2026-11-26公开6B参数Ming-Image-0.2-Design权重，采用MIT许可证，面向电商、UI与空间设计等图像生成。Artificial Analysis在4936次人类偏好样本上给出1095±12 Elo，暂列开放权重榜首；该指标反映成对偏好，不等于文字准确性或生产可靠性。",
+      "content": "2026-11-26，inclusionAI公开Ming-Image-0.2-Design模型卡与权重。模型为约6B参数的DiT文本生成图像系统，采用MIT许可证，官方把电商视觉、UI设计和空间设计列为主要场景，并建议在2048×2048分辨率、12步、CFG 1.0与BF16配置下运行。\n\n官方材料强调构图、光照和文字呈现相对前版改进，但这些仍是开发方主张。模型卡给出的验证环境为单张80 GiB GPU，未提供覆盖不同显卡、批量并发、中文长文本和复杂排版的完整生产基准，部署团队不能只根据示例图估算成本或稳定性。\n\n独立评测机构[Artificial Analysis](https://artificialanalysis.ai/image/leaderboard/text-to-image/open-weights)的AA-Image-T2I v2.1开放权重榜，在4936次成对人类偏好样本上给出1095±12 Elo，检查时列第1；第二名H3-Image为1066±14。置信区间与样本量应一起阅读，排行榜也会随新增投票和模型更新变化。\n\n人类偏好Elo衡量整体观感选择，不直接证明文字拼写、提示词遵循、版权风险、事实准确性或特定商业工作流可用。采用方仍需用品牌资产、敏感内容、中文排版和一致性任务建立私有测试集，并记录权重版本、随机种子、显存和生成时延。\n\n## 量仔观察\n\n这次发布对开源图像生成团队有双重信号：权重与许可证降低试用门槛，独立偏好榜提供了超出厂商自测的参照。证据强于单方宣传，但榜单只覆盖一种评测维度。读者可把模型纳入候选池并做场景化复测，而不是直接替换现有管线；下一观察点是更多独立文字与编辑基准、低显存推理以及API或商用支持状态。",
+      "category": "ai",
+      "tags": [
+        "AI",
+        "图像生成",
+        "开放权重",
+        "独立评测",
+        "中国"
+      ],
+      "source_name": "inclusionAI Hugging Face",
+      "source_url": "https://huggingface.co/inclusionAI/Ming-Image-0.2-Design",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方权重与模型卡可读，并有Artificial Analysis成对人类偏好数据；榜单不覆盖文字准确性与生产可靠性，需场景化复测。"
+    },
+    {
+      "slug": "20261127-tsuov-sign-31-9-concurrency",
+      "title": "ngcc.dev记录TSUOV并发验证共享缓冲区可导致跨密钥伪造",
+      "summary": "ngcc.dev于2026-11-23记录TSUOV finding sign-31-9：参考与优化实现的sig_verify使用函数静态P3缓冲区，并发验证不同公钥时会互相覆盖。报告在TSUOV-128参考实现中构造跨密钥伪造，成功率随调度约1.4%—42.6%；这不是ICCS官方结论，也不是算法设计被攻破。",
+      "content": "2026-11-23，独立分析站ngcc.dev记录TSUOV候选sign-31的finding sign-31-9，核对对象为NICCS公开TSUOV.zip（SHA-256：7ab1effc5fe911c6ab9483ca44a9d9f6d6d911b03eee9f2873b384d97f9aee1d）及其中参考、优化实现。报告标为Implementation、High、Confirmed，影响128、256、512参数集；这些是ngcc.dev分类，不代表本站复现或ICCS正式评议。\n\n根因是sig_verify把公钥中的P3块解码到函数级static缓冲区，进程内所有调用共享该对象。不同线程同时验证不同公钥时，一个调用可在另一个调用读取矩阵期间覆盖P3。两把密钥、四线程的诚实验证测试中，TSUOV-128每400次出现368—395次失败；单线程或四线程验证同一密钥未出现该问题。\n\n报告进一步构造跨密钥场景：攻击者选择消息和随机签名，解88个F31方程，在1220个P3未知量中编码攻击者公钥；当受害者公钥验证与攻击者公钥验证并发交错时，伪造签名在受害者公钥下约有1.4%—42.6%的尝试被接受，成功率受线程调度影响。前提是同一进程允许并发验证攻击者控制的公钥。\n\n发现Credit为LK-PQC-Hunter，使用LKQ PQC Hunter自动工具；跨密钥伪造由Markku-Juhani O. Saarinen完成，报告注明有AI assistance。这是共享可变状态造成的实现缺陷，不是TSUOV数学设计或声称安全级别被降低。建议每次调用使用独立P3存储，并检查sig_keygen的类似缓冲区；尚无作者回应、修订版本或修复后复测。\n\n## 量仔观察\n\n该问题对并发验签服务、证书网关和多租户密码API影响最大，因为测试单线程正确并不能覆盖跨密钥竞争。证据包括稳定finding编号、源码位置、对照组和可复现实验，但本站没有执行仓库命令，且NGCC仍处征集评议阶段。实现方应隔离每次调用状态并加入线程压力测试；下一观察点是作者补丁、版本号、公开回应及第三方复测。",
+      "category": "ngcc",
+      "tags": [
+        "NGCC",
+        "TSUOV",
+        "sign-31-9",
+        "并发安全",
+        "数字签名"
+      ],
+      "source_name": "ngcc.dev",
+      "source_url": "https://ngcc.dev/reports/sign-31.html",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：独立报告给出稳定finding、源码根因、对照组和跨密钥演示；前提明确且非设计攻破，尚无作者修复或ICCS正式结论。"
+    },
+    {
+      "slug": "20261127-china-next-generation-network-plan",
+      "title": "三部门发布《新一代通信网建设实施方案》",
+      "summary": "工信部、国家发展改革委与国家网信办联合方案于2026-11-26公开，提出到2030年推进5G-A、6G、400/800 Gbps算力链路、1.6 Tbps试验及智能体互联网络，并推动6万家企业实施网络改造升级；公开页注明正文有删减，6G商用只给出“适时启动”而无确切日期。",
+      "content": "2026-11-26，国家网信办公开工信部、国家发展改革委、国家网信办联合印发的《新一代通信网建设实施方案》，文号为工信部联通信〔2026〕267号，文件落款为2026-11-17。方案面向2030年，提出推进5G-A与6G、400/800 Gbps算力链路、1.6 Tbps试验、智能体互联网络和通信安全韧性，并推动6万家企业实施网络改造升级。\n\n这些内容是产业与基础设施方向和量化任务；方案提出“适时启动6G商用”，但没有给出确切年份、覆盖范围或验收状态，不能写成已经商用。公开页面明确标注“本文有删减”，因此本文只陈述可读条款；运营商、设备商和工业用户可据此调整技术跟踪与试点储备，后续仍需等待具体标准、项目、验收口径和投资安排。",
+      "category": "flash",
+      "tags": [
+        "通信网络",
+        "6G",
+        "算力网络",
+        "产业政策",
+        "中国"
+      ],
+      "source_name": "国家互联网信息办公室",
+      "source_url": "https://www.cac.gov.cn/2026-11/26/c_1797453575920530.htm",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：三部门正式方案含明确到2030年的网络能力与工业升级目标；公开文本有删减，实施细则与验收口径仍待后续。"
+    },
+    {
+      "slug": "20261127-vertex-ai-extensions-deadline",
+      "title": "Google Cloud的Vertex AI Extensions计划关闭节点到达",
+      "summary": "Google Cloud既有弃用公告称将在2026-11-26之后关闭Vertex AI Extensions，并建议迁移到Agent Platform。计划关闭节点现已到达，但官方发布说明尚未确认全部实例已经停止；仍依赖该服务的团队应核对实际调用、替代能力与回滚，不要把计划日期写成完成状态。",
+      "content": "2026-11-26，Google Cloud为Vertex AI Extensions设定的计划关闭节点到达。官方在2026-05-26的发布说明中称该服务已弃用，并计划在2026-11-26之后关闭，建议迁移到Agent Platform以避免服务中断；页面没有把这一天定义为统一的迁移截止日。\n\n截至本期核验，官方页面只确认计划与迁移方向，没有确认所有实例已经实际关闭。仍在使用Extensions的团队应立即核对生产调用、身份权限、工具接入和Agent Platform功能差异，并以监控与错误日志判断状态；不能仅凭日期假定停服已经完成或自动迁移已经发生。",
+      "category": "flash",
+      "tags": [
+        "AI",
+        "Google Cloud",
+        "Vertex AI",
+        "服务下线",
+        "迁移"
+      ],
+      "source_name": "Google Cloud",
+      "source_url": "https://docs.cloud.google.com/vertex-ai/generative-ai/docs/release-notes",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P2",
+      "priority_reason": "E3：官方发布说明给出明确的弃用与计划关闭日期，可能造成服务中断；实际关闭完成状态尚未获得官方确认。"
+    },
+    {
+      "slug": "20261127-llamacpp-amd-benchmark-dashboard",
+      "title": "llama.cpp与AMD开放持续性能基准面板",
+      "summary": "llama.cpp与AMD于2026-11-26公开面向Radeon 8060S和Radeon AI Pro R9700S的持续基准，跟踪不同构建、模型和量化下的PP512、TG128与长上下文表现；每个配置运行10次并公开JSONL原始结果，适合发现回归，但不构成跨厂商通用性能结论。",
+      "content": "2026-11-26，llama.cpp与AMD公开持续性能基准项目，覆盖Radeon 8060S和Radeon AI Pro R9700S，按构建版本、模型与量化配置记录PP512、TG128和上下文扩展结果。项目计划每周运行，每个配置重复10次，并公开JSONL原始数据。\n\n该面板的价值是让维护者观察同一硬件与固定流程上的趋势和回归，而不是给出所有GPU的统一排名。模型、驱动、编译选项、功耗和批量设置都会影响结果；研发团队可把它作为回归线索，再在自己的硬件与服务负载上复测，避免把单一平台趋势直接转化为采购结论。",
+      "category": "flash",
+      "tags": [
+        "AI",
+        "llama.cpp",
+        "AMD",
+        "推理性能",
+        "公开基准"
+      ],
+      "source_name": "Hugging Face",
+      "source_url": "https://huggingface.co/blog/ggml-org/llamacpp-amd-bench",
+      "cover_image": null,
+      "published_at": "2026-11-27T08:40:00+08:00",
+      "status": "published",
+      "priority": "P3",
+      "priority_reason": "E3：公开持续方法与原始JSONL有助于回归追踪；仅覆盖两款AMD平台，不能替代跨硬件或生产负载评估。"
+    }
+  ]
+}
