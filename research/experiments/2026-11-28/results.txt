@@ -1,0 +1,8 @@
+OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)
+case | final group | psk offered | selected PSK index | fresh CertificateVerify | HTTP
+issue-classical | ecdh_x25519 | False | none | True | 200
+full-hybrid | X25519MLKEM768 | False | none | True | 200
+resume-classical | ecdh_x25519 | True | 0 | False | 200
+resume-hybrid | X25519MLKEM768 | True | 0 | False | 200
+post-cutover | X25519MLKEM768 | True | none | True | 200
+resume-new | X25519MLKEM768 | True | 0 | False | 200
